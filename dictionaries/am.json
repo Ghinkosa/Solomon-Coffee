@@ -1,0 +1,304 @@
+{
+  "wishlist": {
+    "title": "የምኞት ዝርዝሬ",
+    "subtitle": "የሚወዷቸውን ዕቃዎች ለቆይታ ያስቀምጡ",
+    "loginDetails": "የሚወዷቸውን ምርቶች ለማስቀመጥ እና ለማየት እባክዎ ይግቡ። የሚወዷቸው ዕቃዎች እንዳያመልጥዎት!"
+  },
+  "cart": {
+    "title": "የግዢ ቅርጫት"
+  },
+  "logo": {
+    "first": "ሰሎሞን",
+    "second": "ቡና"
+  },
+  "header": {
+    "menu": {
+      "home": "መነሻ",
+      "shop": "ሱቅ",
+      "deals": "ቅናሾች",
+      "orders": "ትዕዛዞች",
+      "contact": "ያግኙን",
+      "blog": "ብሎግ"
+    },
+    "auth": {
+      "welcome": "እንኳን ደህና መጡ",
+      "signIn": "ይግቡ",
+      "signUp": "ይመዝገቡ",
+      "welcomeBack": "እንኳን ደህና መለሱ!",
+      "createAccount": "አካውንት ይክፈቱ",
+      "signInDescription": "ወደ አካውንትዎ ለመግባት እባክዎ ይግቡ",
+      "signUpDescription": "ግዢ ለመጀመር ከእኛ ጋር ይቀላቀሉ"
+    },
+    "search": {
+      "placeholder": "ምርቶችን ይፈልጉ..."
+    },
+    "language": {
+      "select": "ቋንቋ ይምረጡ",
+      "en": "እንግሊዝኛ",
+      "it": "ጣሊያንኛ",
+      "fr": "ፈረንሳይኛ",
+      "hi": "ሂንዲ",
+      "ar": "አረብኛ"
+    }
+  },
+  "loading": {
+    "auth": {
+      "title": "የማረጋገጫ ሂደት በመጫን ላይ...",
+      "description": "የመግቢያ ገጽዎን እስክናዘጋጅ ድረስ እባክዎ በትዕግስት ይጠብቁ።"
+    },
+    "main": {
+      "step1": "የግዢ ልምድዎን በማዘጋጀት ላይ...",
+      "step2": "ምርቶችን በመጫን ላይ...",
+      "step3": "የማድረሻ አማራጮችን በማስተካከል ላይ...",
+      "step4": "ሊጠናቀቅ ጥቂት ቀርቷል!",
+      "description": "የግዢ ሂደቱን እስክናዘጋጅ ድረስ እባክዎ በትዕግስት ይጠብቁ።",
+      "complete": "ተጠናቀቀ"
+    }
+  },
+  "home": {
+    "featuredProducts": {
+      "title": "ልዩ ምርቶች",
+      "description": "በጥንቃቄ የተመረጡ ምርጥ ምርቶቻችንን ይመልከቱ",
+      "view": "እይታ:",
+      "sortBy": "በምን ይደደር...",
+      "products": "ምርቶች",
+      "filters": "ማጣሪያዎች",
+      "advancedFilters": "ተጨማሪ ማጣሪያዎች",
+      "priceRange": "የዋጋ ክልል",
+      "stockStatus": "የክምችት ሁኔታ",
+      "quality": "የምርት ጥራት",
+      "apply": "ማጣሪያዎችን ተግብር",
+      "clear": "ማጣሪያዎችን አጽዳ",
+      "loadMore": "ተጨማሪ ምርቶችን አሳይ"
+    },
+    "popularCategories": {
+      "title": "ተወዳጅ ዘርፎች",
+      "description": "ተወዳጅ የምርት ዘርፎቻችንን ይቃኙ እና የሚፈልጉትን ያግኙ",
+      "browseAll": "ሁሉንም ዘርፎች ይመልከቱ",
+      "explore": "ይቃኙ",
+      "thisCategory": "ይህ ዘርፍ",
+      "shopNow": "አሁኑኑ ይግዙ",
+      "stats": {
+        "categories": "ዘርፎች",
+        "products": "ምርቶች",
+        "support": "ድጋፍ"
+      }
+    },
+    "shopFeatures": {
+      "title": "ለምን ከእኛ ይገዛሉ?",
+      "description": "ለጥራት፣ ለደህንነት እና ለየት ያለ አገልግሎት ያለንን ቁርጠኝነት በመስመር ላይ ግዢ ይለማመዱ",
+      "learnMore": "የበለጠ ለማወቅ እዚህ ይጫኑ",
+      "stats": {
+        "happyCustomers": "ደስተኛ ደንበኞች",
+        "productsSold": "የተሸጡ ምርቶች",
+        "satisfactionRate": "የእርካታ መጠን",
+        "customerSupport": "የደንበኞች ድጋፍ"
+      },
+      "secureShopping": {
+        "title": "አስተማማኝ ግዢ",
+        "description": "በSSL የተመሰጠረ 100% አስተማማኝ ክፍያ"
+      },
+      "freeDelivery": {
+        "title": "ነፃ ማድረሻ",
+        "description": "ከ50 ዩሮ በላይ ለሆኑ ትዕዛዞች ነፃ ማድረሻ"
+      },
+      "easyPayments": {
+        "title": "ቀላል ክፍያዎች",
+        "description": "በርካታ የክፍያ አማራጮች ይገኛሉ"
+      },
+      "support247": {
+        "title": "የ24/7 ድጋፍ",
+        "description": "በማንኛውም ጊዜ ዝግጁ የሆነ የደንበኞች ድጋፍ"
+      },
+      "easyReturns": {
+        "title": "ቀላል ተመላሽ",
+        "description": "የ30 ቀናት ያለምንም እንግልት የመመለስ መብት"
+      },
+      "qualityAssured": {
+        "title": "ጥራቱ የተረጋገጠ",
+        "description": "100% ኦሪጅናል ምርቶች መሆናቸው የተረጋገጠ"
+      },
+      "fastProcessing": {
+        "title": "ፈጣን ሂደት",
+        "description": "ትዕዛዞች በ24 ሰዓታት ውስጥ ይከናወናሉ"
+      },
+      "bestPrices": {
+        "title": "ምርጥ ዋጋዎች",
+        "description": "ተወዳዳሪ ዋጋዎች ከታላላቅ ቅናሾች ጋር"
+      }
+    },
+    "latestBlog": {
+      "title": "የቅርብ ጊዜ የብሎግ ጽሁፎች",
+      "description": "አዳዲስ ምክሮችን፣ ዘዴዎችን እና የዘርፉን ዜናዎች ይከታተሉ",
+      "viewAll": "ሁሉንም ጽሁፎች ይመልከቱ",
+      "readMore": "የበለጠ ያንብቡ"
+    },
+    "shopByBrands": {
+      "title": "በብራንድ ይግዙ",
+      "description": "ከሚወዷቸው እና ከሚተማመኑባቸው ብራንዶች ምርቶችን ያግኙ",
+      "exploreAll": "ሁሉንም ብራንዶች ይቃኙ",
+      "trusted": "ታማኝ ብራንዶች እና ሌሎችም",
+      "whyChooseUs": "ለምን እኛን ይመርጣሉ?",
+      "experience": "ከከፍተኛ አገልግሎት ጋር ምርጥ የግዢ ልምድ እናቀርባለን",
+      "customerTrusted": "በአለም ዙሪያ በሺዎች በሚቆጠሩ ደንበኞች የታመነ",
+      "freeDelivery": "ነፃ ማድረሻ",
+      "freeDeliveryDesc": "ከ100 ዩሮ በላይ ነፃ ማድረሻ",
+      "freeReturn": "ነፃ ተመላሽ",
+      "customerSupport": "የደንበኞች አገልግሎት",
+      "customerSupportDesc": "ደግ የደንበኞች አገልግሎት 24/7",
+      "moneyBack": "ገንዘብ ተመላሽ ዋስትና",
+      "qualityChecked": "ጥራቱ በቡድናችን ተረጋግጧል"
+    }
+  },
+  "userDropdown": {
+    "walletBalance": "የኪስ ቦርሳ ቀሪ ሂሳብ",
+    "myProfile": "ፕሮፋይሌ",
+    "myOrders": "ትዕዛዞቼ",
+    "wishlist": "የምኞት ዝርዝር",
+    "dashboard": "ዳሽቦርድ",
+    "notifications": "ማሳወቂያዎች",
+    "settings": "ቅንብሮች",
+    "employeeDashboard": "የሰራተኛ ዳሽቦርድ",
+    "helpSupport": "እርዳታ እና ድጋፍ",
+    "adminPanel": "የአስተዳዳሪ ፓነል",
+    "signOut": "ይውጡ",
+    "language": "ቋንቋ"
+  },
+  "premium": {
+    "title": "ወደ ፕሪሚየም ይሳደጉ",
+    "subtitle": "ሁሉንም የፕሪሚየም አገልግሎቶች ያግኙ",
+    "cta": "አሁኑኑ ፕሪሚየም ይሁኑ",
+    "tooltip": "ወደ ፕሪሚየም ያሳድጉ",
+    "footer": {
+      "oneTime": "የአንድ ጊዜ ክፍያ",
+      "lifetime": "የህይወት ዘመን ተደራሽነት",
+      "updates": "ሁሉንም አዳዲስ ማሻሻያዎች ያካተተ",
+      "secure": "አስተማማኝ ክፍያ",
+      "support": "የፕሪሚየም ድጋፍ"
+    },
+    "features": {
+      "analytics": {
+        "title": "የላቀ ትንታኔ ዳሽቦርድ",
+        "description": "ሙሉ የንግድ መረጃዎች እና ሪፖርቶች"
+      },
+      "employees": {
+        "title": "የሰራተኞች አስተዳደር ስርዓት",
+        "description": "የተለያዩ የሰራተኛ ሚናዎች እና ፈቃዶች መቆጣጠሪያ"
+      },
+      "reviews": {
+        "title": "የአስተያየቶች መቆጣጠሪያ መሳሪያ",
+        "description": "የደንበኞችን አስተያየት ይከታተሉ እና ያስተዳድሩ"
+      },
+      "subscription": {
+        "title": "የደንበኝነት ምዝገባ አስተዳደር",
+        "description": "የጋዜጣ እና የኢሜል ዘመቻ መሳሪያዎች"
+      },
+      "insights": {
+        "title": "የደንበኞች መረጃ እና ሪፖርት",
+        "description": "ዝርዝር ትንታኔ እና የደንበኞች ባህሪ"
+      },
+      "export": {
+        "title": "መረጃዎችን ወደ Excel/CSV ይላኩ",
+        "description": "ሁሉንም መረጃዎች ለተጨማሪ ትንታኔ ወደ ውጭ ይላኩ"
+      },
+      "branding": {
+        "title": "ብጁ የአስተዳዳሪ ብራንዲንግ",
+        "description": "የአስተዳዳሪ ፓነልዎን እንደፍላጎትዎ ያስውቡ"
+      },
+      "support": {
+        "title": "ቅድሚያ የሚሰጠው ድጋፍ እና ማሻሻያ",
+        "description": "ፈጣን ድጋፍ እና አዳዲስ አገልግሎቶችን ቀድሞ የማግኘት እድል"
+      }
+    }
+  },
+  "shop": {
+    "title": "የምርቶች ሱቅ",
+    "description": "ለፍላጎትዎ የሚሆኑ አስደናቂ ምርቶችን ያግኙ",
+    "clearFilters": "ሁሉንም ማጣሪያዎች አጽዳ",
+    "activeFilters": "የሚሰሩ ማጣሪያዎች:",
+    "category": "ዘርፍ:",
+    "brand": "ብራንድ:",
+    "price": "ዋጋ:",
+    "showFilters": "ማጣሪያዎችን አሳይ",
+    "hideFilters": "ማጣሪያዎችን ደብቅ",
+    "filters": "ማጣሪያዎች",
+    "applyFilters": "ማጣሪያዎችን ተግብር",
+    "productsFound": "የተገኙ ምርቶች",
+    "showingAll": "ያሉትን ሁሉንም ምርቶች በማሳየት ላይ"
+  },
+  "deals": {
+    "hero": {
+      "badge": "ትኩስ ቅናሾች",
+      "upToOff": "እስከ {maxDiscount}% ቅናሽ",
+      "title": "የሳምንቱ ትኩስ ቅናሾች",
+      "description": "እነዚህን አስደናቂ የአጭር ጊዜ ቅናሾች እንዳያመልጥዎት! በሚወዷቸው ምርቶች ላይ እስከ {maxDiscount}% በሚደርስ ቅናሽ ትልቅ ገንዘብ ይቆጥቡ። ክምችቱ ውስን ነው።",
+      "stats": {
+        "products": "ምርቶች",
+        "avgDiscount": "አማካይ ቅናሽ",
+        "happyCustomers": "ደስተኛ ደንበኞች"
+      }
+    },
+    "features": {
+      "lightning": {
+        "title": "ፈጣን ሽያጭ",
+        "description": "ለተወሰነ ሰዓት የሚቆዩ ፈጣን ቅናሾች"
+      },
+      "premium": {
+        "title": "ከፍተኛ ጥራት",
+        "description": "ከፍተኛ ደረጃ የተሰጣቸው ምርጥ ምርቶች"
+      },
+      "favorites": {
+        "title": "የደንበኞች ምርጫ",
+        "description": "በደንበኞቻችን ዘንድ በጣም የተወደዱ ዕቃዎች"
+      },
+      "limited": {
+        "title": "ለተወሰነ ጊዜ",
+        "description": "ይፍጠኑ! እነዚህ ቅናሾች ረጅም ጊዜ አይቆዩም"
+      }
+    },
+    "collection": {
+      "title": "የትኩስ ቅናሾች ስብስብ",
+      "description": "በምርጥ ምርቶች ላይ አስደናቂ ቅናሾችን ያግኙ። በእነዚህ ልዩ ዋጋዎች የሚገኙት ምርቶች ብዛት ውስን ነው።",
+      "noDeals": {
+        "title": "በአሁኑ ጊዜ ምንም ቅናሽ የለም",
+        "description": "ለአስደናቂ ቅናሾች በቅርቡ ተመልሰው ይምጡ!",
+        "button": "ሁሉንም ምርቶች ይመልከቱ"
+      }
+    },
+    "cta": {
+      "title": "እነዚህን አስደናቂ ቅናሾች እንዳያመልጥዎት!",
+      "description": "ስለ ፈጣን ሽያጮች፣ ልዩ ቅናሾች እና አዳዲስ ምርቶች መረጃ ለማግኘት ለጋዜጣችን ይመዝገቡ።",
+      "explore": "ሁሉንም ምርቶች ይቃኙ",
+      "subscribe": "ለቅናሾች ይመዝገቡ"
+    }
+  },
+  "blog": {
+    "hero": {
+      "badge": "ብሎጋችን",
+      "title": "ታሪኮች፣ ምክሮች እና ሃሳቦች",
+      "description": "አዳዲስ አዝማሚያዎችን፣ የባለሙያ ምክሮችን እና የቡድናችንን የጀርባ ታሪኮች ያግኙ። በጽሁፎቻችን አማካኝነት መረጃ ያግኙ።",
+      "stats": {
+        "articles": "ጽሁፎች",
+        "readers": "አንባቢዎች",
+        "authors": "ደራሲያን"
+      }
+    },
+    "list": {
+      "title": "የቅርብ ጊዜ ጽሁፎች",
+      "description": "በአዳዲስ ጽሁፎቻችን እና ሃሳቦቻችን መረጃ ያግኙ",
+      "readMore": "የበለጠ ያንብቡ",
+      "minRead": "ደቂቃ ንባብ",
+      "noPosts": {
+        "title": "እስካሁን ምንም የብሎግ ጽሁፍ የለም",
+        "description": "በአስደናቂ ይዘቶች ላይ እየሰራን ነው። በቅርቡ ተመልሰው ይምጡ!",
+        "button": "ወደ መነሻ ገጽ ይመለሱ"
+      }
+    },
+    "newsletter": {
+      "title": "መረጃ ይከታተሉ",
+      "description": "ለጋዜጣችን ይመዝገቡ እና ምንም አይነት መረጃ እንዳያመልጥዎት። የቅርብ ጊዜ ጽሁፎችን እና ምክሮችን በቀጥታ በኢሜልዎ ያግኙ።",
+      "subscribe": "ለጋዜጣው ይመዝገቡ",
+      "browse": "ዘርፎችን ይመልከቱ"
+    }
+  }
+}
