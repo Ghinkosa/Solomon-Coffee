@@ -1,0 +1,7 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Use Netlify's Essential Next.js plugin (OpenNext) for Next.js 15
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
