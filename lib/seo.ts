@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { Product, Category } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 
-export const BASE_URL = "http://shopcartpro.reactbd.com";
+export const BASE_URL = "https://shebascoffee.com";
 
 /**
  * Generate metadata for product pages
@@ -11,7 +11,7 @@ export function generateProductMetadata(product: any): Metadata {
   const title = product.name || "Product";
   const description =
     product.description ||
-    `Buy ${title} online at ShopCart. ${
+    `Buy ${title} online at Sheba's Coffee. ${
       product.price ? `Price: $${product.price}` : ""
     }`;
   const imageUrl = product.images?.[0]
@@ -46,7 +46,7 @@ export function generateProductMetadata(product: any): Metadata {
           alt: title,
         },
       ],
-      siteName: "ShopCart",
+      siteName: "Sheba's Coffee",
     },
     twitter: {
       card: "summary_large_image",
@@ -70,7 +70,7 @@ export function generateCategoryMetadata(
   const title = category.title || "Category";
   const description =
     category.description ||
-    `Browse ${productCount} products in ${title} category at ShopCart. Find the best deals and quality items.`;
+    `Browse ${productCount} products in ${title} category at Sheba's Coffee. Find the best deals and quality items.`;
   const imageUrl = category.image
     ? urlFor(category.image).url()
     : "/og-image.jpg";
@@ -100,7 +100,7 @@ export function generateCategoryMetadata(
           alt: title,
         },
       ],
-      siteName: "ShopCart",
+      siteName: "Sheba's Coffee",
     },
     twitter: {
       card: "summary_large_image",
@@ -121,7 +121,7 @@ export function generateBlogMetadata(blog: any): Metadata {
   const title = blog.title || "Blog Post";
   const description =
     blog.description ||
-    `Read ${title} on ShopCart. Stay updated with the latest news and articles.`;
+    `Read ${title} on Sheba's Coffee. Stay updated with the latest news and articles.`;
   const imageUrl = blog.mainImage
     ? urlFor(blog.mainImage).url()
     : "/og-image.jpg";
@@ -130,7 +130,9 @@ export function generateBlogMetadata(blog: any): Metadata {
   return {
     title,
     description,
-    keywords: [title, "blog", "article", "news", "ShopCart"].filter(Boolean),
+    keywords: [title, "blog", "article", "news", "Sheba's Coffee"].filter(
+      Boolean,
+    ),
     openGraph: {
       type: "article",
       url,
@@ -144,9 +146,9 @@ export function generateBlogMetadata(blog: any): Metadata {
           alt: title,
         },
       ],
-      siteName: "ShopCart",
+      siteName: "Sheba's Coffee",
       publishedTime: blog.publishedAt,
-      authors: [blog.author?.name || "ShopCart"],
+      authors: [blog.author?.name || "Sheba's Coffee"],
     },
     twitter: {
       card: "summary_large_image",
@@ -168,7 +170,7 @@ export function generateProductSchema(product: any) {
 
   // Extract brand name if it's populated
   const brandName =
-    typeof product.brand === "object" ? product.brand?.name : "ShopCart";
+    typeof product.brand === "object" ? product.brand?.name : "Sheba's Coffee";
 
   return {
     "@context": "https://schema.org",
@@ -225,11 +227,11 @@ export function generateBlogSchema(blog: any) {
     dateModified: blog._updatedAt || blog.publishedAt,
     author: {
       "@type": "Person",
-      name: blog.author?.name || "ShopCart",
+      name: blog.author?.name || "Sheba's Coffee",
     },
     publisher: {
       "@type": "Organization",
-      name: "ShopCart",
+      name: "Sheba's Coffee",
       logo: {
         "@type": "ImageObject",
         url: `${BASE_URL}/logo.png`,
@@ -267,7 +269,7 @@ export function generateOrganizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "ShopCart",
+    name: "Sheba's Coffee",
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
     description:
@@ -280,10 +282,10 @@ export function generateOrganizationSchema() {
       availableLanguage: "en",
     },
     sameAs: [
-      "https://facebook.com/shopcart",
-      "https://twitter.com/shopcart",
-      "https://instagram.com/shopcart",
-      "https://linkedin.com/company/shopcart",
+      "https://facebook.com/shebascoffee",
+      "https://twitter.com/shebascoffee",
+      "https://instagram.com/shebascoffee",
+      "https://linkedin.com/company/shebas-coffee",
     ],
   };
 }
@@ -295,7 +297,7 @@ export function generateWebsiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "ShopCart",
+    name: "Sheba's Coffee",
     url: BASE_URL,
     potentialAction: {
       "@type": "SearchAction",
@@ -383,9 +385,9 @@ export function getCanonicalUrl(path: string): string {
  */
 export function generateHomeMetadata(): Metadata {
   return {
-    title: "ShopCart - Your Trusted Online Shopping Destination",
+    title: "Sheba's Coffee - Premium Coffee & Essentials",
     description:
-      "Discover amazing products at ShopCart, your trusted online shopping destination for quality items and exceptional customer service. Shop electronics, fashion, home goods and more with fast delivery.",
+      "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee with exceptional quality and service.",
     keywords: [
       "online shopping",
       "e-commerce",
@@ -399,23 +401,23 @@ export function generateHomeMetadata(): Metadata {
     openGraph: {
       type: "website",
       url: BASE_URL,
-      title: "ShopCart - Your Trusted Online Shopping Destination",
+      title: "Sheba's Coffee - Premium Coffee & Essentials",
       description:
-        "Discover amazing products at ShopCart. Shop electronics, fashion, home goods and more with fast delivery.",
+        "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
       images: [
         {
           url: "/og-image.jpg",
           width: 1200,
           height: 630,
-          alt: "ShopCart Online Store",
+          alt: "Sheba's Coffee Online Store",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "ShopCart - Your Trusted Online Shopping Destination",
+      title: "Sheba's Coffee - Premium Coffee & Essentials",
       description:
-        "Discover amazing products at ShopCart. Shop electronics, fashion, home goods and more.",
+        "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
       images: ["/og-image.jpg"],
     },
     alternates: {

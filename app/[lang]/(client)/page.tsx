@@ -94,7 +94,7 @@ export default async function Home({
               <span className="italic text-stone-600">An Educational Journey</span>
             </h2>
             <p className="text-lg text-stone-800/70 leading-relaxed">
-              At Sheba's Coffee, we believe that understanding the origin is as important as the taste.
+              At Solomon's Coffee, we believe that understanding the origin is as important as the taste.
               Our roasting process is a delicate balance of tradition and science, designed to highlight
               the unique terroir of Ethiopia's finest high-altitude farms.
             </p>

@@ -22,7 +22,7 @@ export default function PremiumFloatingButton({
   const [isExpanded, setIsExpanded] = useState(false);
   const upgradeUrl =
     process.env.NEXT_PUBLIC_PAID_VERSION ||
-    "https://www.buymeacoffee.com/noor_Mohammad";
+    "https://shebascoffee.com";
 
   // Fallback if dictionary is not loaded yet
   const t = dictionary?.premium || {

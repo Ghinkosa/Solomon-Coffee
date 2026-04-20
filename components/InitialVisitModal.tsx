@@ -124,7 +124,7 @@ const InitialVisitModal = () => {
 
                 {/* Action Button */}
                 <Link
-                  href="https://buymeacoffee.com/reactbd/extras"
+                  href="/shop"
                   className="w-full"
                 >
                   <motion.button
@@ -134,7 +134,7 @@ const InitialVisitModal = () => {
                     className="w-full py-4 px-6 bg-linear-to-r from-shop_dark_green to-shop_light_green hover:from-shop_btn_dark_green hover:to-shop_dark_green text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transform transition-all duration-300 flex items-center justify-center gap-2 group"
                   >
                     <Coffee className="w-5 h-5" />
-                    <span>Get Source Code</span>
+                    <span>Shop Sheba&apos;s Coffee</span>
                     <ExternalLink className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
                 </Link>
@@ -181,9 +181,7 @@ const InitialVisitModal = () => {
               </button>
 
               <Link
-                href="https://shopcart.reactbd.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/"
                 className="flex items-center gap-4 pr-6" // Added padding-right for close button space
               >
                 <div className="w-12 h-12 bg-linear-to-br from-shop_dark_green to-shop_light_green rounded-lg flex items-center justify-center text-white shadow-lg shrink-0">
@@ -191,10 +189,10 @@ const InitialVisitModal = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-dark-color text-sm">
-                    View ShopCart v1
+                    Visit Sheba&apos;s Coffee
                   </h3>
                   <p className="text-xs text-light-color mt-0.5">
-                    Check out the previous version
+                    Explore our curated coffee collection
                   </p>
                 </div>
                 <ArrowRight className="w-4 h-4 text-shop_dark_green -ml-1 group-hover:translate-x-1 transition-transform" />

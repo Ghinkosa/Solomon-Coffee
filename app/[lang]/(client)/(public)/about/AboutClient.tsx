@@ -90,7 +90,7 @@ const AboutClient = () => {
               Est. 2025
             </Badge>
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-              About ShopCart
+              About Sheba&apos;s Coffee
             </h1>
             <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
               We&apos;re revolutionizing online shopping with curated products,
@@ -253,7 +253,7 @@ const AboutClient = () => {
               Leadership Team
             </Badge>
             <h2 className="text-4xl font-bold text-shop_dark_green mb-4">
-              Meet the Minds Behind ShopCart
+              Meet the Minds Behind Sheba&apos;s Coffee
             </h2>
             <p className="text-lg text-dark-text max-w-2xl mx-auto">
               Our passionate team of experts working tirelessly to create the
@@ -308,8 +308,8 @@ const AboutClient = () => {
               Ready to Experience the Difference?
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join thousands of satisfied customers who trust ShopCart for their
-              shopping needs.
+              Join thousands of satisfied customers who trust Sheba&apos;s
+              Coffee for their daily brews and essentials.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

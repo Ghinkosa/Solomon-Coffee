@@ -56,27 +56,27 @@ export const supportData = [
 ];
 export const faqsData = [
   {
-    question: "What services does Shopcart offer?",
+    question: "What does Sheba's Coffee offer?",
     answer:
-      "Shopcart offers a wide range of technology solutions including custom software development, cloud services, and digital transformation consulting.",
+      "Sheba's Coffee offers premium roasted coffee, brewing essentials, and curated accessories for everyday coffee lovers.",
   },
   {
-    question: "How can I get support for Shopcart products?",
+    question: "How can I get support for Sheba's Coffee products?",
     answer:
-      "You can reach our support team through our contact page or by emailing support@Shopcart.com.",
+      "You can reach our support team through our contact page or by emailing support@shebascoffee.com.",
   },
   {
-    question: "Does Shopcart offer training for its products?",
+    question: "Does Sheba's Coffee provide brewing guidance?",
     answer:
-      "Yes, we offer comprehensive training programs for all our products and services. Please contact our sales team for more information.",
+      "Yes, we share practical brewing tips and guidance for our coffee products to help you get the best cup every time.",
   },
   {
-    question: "What industries does Shopcart serve?",
+    question: "Who is Sheba's Coffee for?",
     answer:
-      "Shopcart serves a wide range of industries including finance, healthcare, retail, and manufacturing.",
+      "Sheba's Coffee serves individual customers, offices, and hospitality teams looking for quality coffee and reliable service.",
   },
   {
-    question: "How does Shopcart ensure data security?",
+    question: "How does Sheba's Coffee protect customer data?",
     answer:
       "We employ industry-standard security measures and comply with all relevant data protection regulations to ensure the security of our clients' data.",
   },

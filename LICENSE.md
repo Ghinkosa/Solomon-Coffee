@@ -21,7 +21,7 @@ You are **NOT** allowed to:
 ### 3. OWNERSHIP
 
 - You do not own the intellectual property rights to the software. The software is licensed, not sold, to you.
-- All rights, title, and interest in and to the software (including any updates) remain with the original creator (**ReactBD**).
+- All rights, title, and interest in and to the software (including any updates) remain with the original creator (**Sheba's Coffee**).
 
 ### 4. TERMINATION
 

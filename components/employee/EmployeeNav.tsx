@@ -80,7 +80,8 @@ export default function EmployeeNav({ employee }: EmployeeNavProps) {
           {/* Logo & Brand */}
           <div className="flex items-center gap-4">
             <Link href="/employee" className="text-xl font-bold text-primary">
-              Shopcart <span className="text-sm font-normal">Employee</span>
+              Sheba&apos;s Coffee{" "}
+              <span className="text-sm font-normal">Employee</span>
             </Link>
             <Badge variant="outline" className="hidden md:flex">
               {getRoleDisplayName(employee.role)}

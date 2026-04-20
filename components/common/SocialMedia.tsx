@@ -16,31 +16,31 @@ interface Props {
 const socialLink = [
   {
     title: "Youtube",
-    href: "https://www.youtube.com/@reactjsBD",
+    href: "https://www.youtube.com/@shebascoffee",
     icon: <Youtube className="w-5 h-5" />,
     color: "hover:text-red-600 hover:border-red-600",
   },
   {
     title: "Github",
-    href: "https://github.com/noorjsdivs",
+    href: "https://github.com/shebascoffee",
     icon: <Github className="w-5 h-5" />,
     color: "hover:text-black hover:border-black",
   },
   {
     title: "Linkedin",
-    href: "https://www.linkedin.com/in/noor-mohammad-ab221a1b5/",
+    href: "https://www.linkedin.com/company/shebas-coffee",
     icon: <Linkedin className="w-5 h-5" />,
     color: "hover:text-blue-600 hover:border-blue-600",
   },
   {
     title: "Facebook",
-    href: "https://www.facebook.com/Noorlalu143",
+    href: "https://www.facebook.com/shebascoffee",
     icon: <Facebook className="w-5 h-5" />,
     color: "hover:text-blue-600 hover:border-blue-600",
   },
   {
     title: "Slack",
-    href: "https://www.youtube.com/@reactjsBD",
+    href: "https://shebascoffee.com",
     icon: <Slack className="w-5 h-5" />,
     color: "hover:text-purple-600 hover:border-purple-600",
   },

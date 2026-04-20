@@ -1,4 +1,4 @@
-# 🛒 ShopCart Pro - Ultimate E-Commerce Solution
+# 🛒 Sheba's Coffee - E-Commerce Platform
 
 <div align="center">
 
@@ -9,7 +9,7 @@
 
 **The complete, production-ready e-commerce platform built for modern businesses.**
 
-[🚀 View Live Demo](https://shopcartpro.reactbd.com) • [📖 Setup Guide](./SETUP.md) • [❤️ Support](https://buymeacoffee.com/reactbd/)
+[🚀 View Live Demo](https://shebascoffee.com) • [📖 Setup Guide](./SETUP.md)
 
 </div>
 
@@ -17,11 +17,11 @@
 
 ## 📸 Platform Overview
 
-[![ShopCart Pro Preview](./public/preview.png)](https://buymeacoffee.com/reactbd/e/475244)
+[![Sheba's Coffee Preview](./public/preview.png)](https://shebascoffee.com)
 
-ShopCart Pro is a comprehensive e-commerce solution engineered for performance, scalability, and conversion. Built with the latest Next.js 16, React 19, and TypeScript stack, it offers an enterprise-grade shopping experience right out of the box.
+Sheba's Coffee is a comprehensive e-commerce solution engineered for performance, scalability, and conversion. Built with the latest Next.js 16, React 19, and TypeScript stack, it offers an enterprise-grade shopping experience right out of the box.
 
-Whether you're launching a fashion brand, electronics store, or digital marketplace, ShopCart Pro provides the robust foundation you need to succeed.
+Whether you're launching a coffee brand or specialty retail store, Sheba's Coffee provides the robust foundation you need to succeed.
 
 ---
 
@@ -119,7 +119,7 @@ Getting your store up and running is simple.
 2.  **Install Dependencies**
 
     ```bash
-    cd shopcart-pro
+    cd shebas-coffee
     npm install
     # or
     pnpm install
@@ -147,7 +147,7 @@ Getting your store up and running is simple.
 
 ## 🌍 Internationalization (i18n) - 5 Languages Supported
 
-ShopCart Pro comes pre-configured with support for **5 languages** out of the box, making it easy to launch your store globally.
+Sheba's Coffee comes pre-configured with support for **5 languages** out of the box, making it easy to launch your store globally.
 
 ### Supported Languages
 
@@ -194,7 +194,7 @@ For detailed configuration instructions, please refer to the [**SETUP.md**](./SE
 ## 📁 Project Structure
 
 ```
-shopcart-pro/
+shebas-coffee/
 ├── app/                  # Next.js App Router (Pages & Layouts)
 │   ├── (client)/         # Public storefront pages
 │   ├── (admin)/          # Admin dashboard pages
@@ -221,12 +221,10 @@ This software is provided under a commercial license. You are free to use it for
 
 If you encounter any issues or have questions about the setup:
 
-- **Buy Me a Coffee**: [https://buymeacoffee.com/reactbd](https://buymeacoffee.com/reactbd).
 - **Documentation**: Check the [SETUP.md](./SETUP.md) file first.
-- **Video Tutorials**: Watch our setup walkthroughs on [YouTube](https://youtube.com/@reactjsbd).
-- **Email Support**: Contact us at [support@reactbd.com](mailto:reactjsbd@gmail.com).
+- **Email Support**: Contact us at [support@shebascoffee.com](mailto:support@shebascoffee.com).
 
 <div align="center">
-  <p>Thank you for choosing ShopCart Pro!</p>
-  <p>© 2026 reactbd.com. All rights reserved.</p>
+  <p>Thank you for choosing Sheba's Coffee!</p>
+  <p>© 2026 shebascoffee.com. All rights reserved.</p>
 </div>

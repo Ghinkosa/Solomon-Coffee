@@ -518,10 +518,10 @@ const PrivacyPage = () => {
                 <p className="text-sm text-light-text mt-6">
                   Email us directly at{" "}
                   <a
-                    href="mailto:privacy@shopcart.com"
+                    href="mailto:privacy@shebascoffee.com"
                     className="text-shop_light_green hover:underline"
                   >
-                    privacy@shopcart.com
+                    privacy@shebascoffee.com
                   </a>
                 </p>
               </CardContent>

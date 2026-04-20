@@ -4,7 +4,7 @@ import AboutClient from "./AboutClient";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Learn more about ShopCart, our story, values, and the team behind your favorite online shopping destination.",
+    "Learn more about Sheba's Coffee, our story, values, and the team behind your favorite coffee destination.",
 };
 
 const AboutPage = () => {

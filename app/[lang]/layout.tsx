@@ -4,11 +4,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
 import { UserDataProvider } from "@/contexts/UserDataContext";
-import PremiumFloatingButton from "@/components/PremiumFloatingButton";
-import InitialVisitModal from "@/components/InitialVisitModal";
 import "../globals.css";
-import { getDictionary } from "@/lib/dictionary";
-import { i18n, type Locale } from "@/i18n-config";
+import { i18n } from "@/i18n-config";
 
 const poppins = localFont({
   src: "../fonts/Poppins.woff2",
@@ -33,11 +30,11 @@ import { BASE_URL } from "@/lib/seo";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    template: "%s | ShopCart - Premium Online Shopping",
-    default: "ShopCart - Your Trusted Online Shopping Destination",
+    template: "%s | Sheba's Coffee",
+    default: "Sheba's Coffee - Premium Coffee & Essentials",
   },
   description:
-    "Discover amazing products at ShopCart, your trusted online shopping destination for quality items and exceptional customer service. Shop electronics, fashion, home goods and more with fast delivery.",
+    "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee with exceptional quality and service.",
   keywords: [
     "online shopping",
     "e-commerce",
@@ -48,11 +45,11 @@ export const metadata: Metadata = {
     "home goods",
     "deals",
     "discounts",
-    "ShopCart",
+    "Sheba's Coffee",
   ],
-  authors: [{ name: "ShopCart" }],
-  creator: "ShopCart",
-  publisher: "ShopCart",
+  authors: [{ name: "Sheba's Coffee" }],
+  creator: "Sheba's Coffee",
+  publisher: "Sheba's Coffee",
   formatDetection: {
     email: false,
     address: false,
@@ -62,26 +59,26 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: BASE_URL,
-    siteName: "ShopCart",
-    title: "ShopCart - Your Trusted Online Shopping Destination",
+    siteName: "Sheba's Coffee",
+    title: "Sheba's Coffee - Premium Coffee & Essentials",
     description:
-      "Discover amazing products at ShopCart, your trusted online shopping destination for quality items and exceptional customer service.",
+      "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "ShopCart Online Store",
+        alt: "Sheba's Coffee Online Store",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ShopCart - Your Trusted Online Shopping Destination",
+    title: "Sheba's Coffee - Premium Coffee & Essentials",
     description:
-      "Discover amazing products at ShopCart, your trusted online shopping destination for quality items and exceptional customer service.",
+      "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
     images: ["/og-image.jpg"],
-    creator: "@shopcart",
+    creator: "@shebascoffee",
   },
   robots: {
     index: true,
@@ -115,7 +112,6 @@ export default async function RootLayout({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const dictionary = await getDictionary(lang as Locale);
 
   return (
     <ClerkProvider>
@@ -124,8 +120,6 @@ export default async function RootLayout({
           className={`${poppins.variable} ${raleway.variable} ${opensans.variable} antialiased`}
         >
           <UserDataProvider>{children}</UserDataProvider>
-          <PremiumFloatingButton dictionary={dictionary} />
-          <InitialVisitModal />
           <Toaster
             position="bottom-right"
             richColors

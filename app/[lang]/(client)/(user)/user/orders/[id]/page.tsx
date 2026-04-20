@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `Order ${order.orderNumber} - Shopcart`,
+    title: `Order ${order.orderNumber} - Sheba's Coffee`,
     description: `Order details for ${order.customerName}`,
   };
 }
