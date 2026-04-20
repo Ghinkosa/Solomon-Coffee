@@ -16,7 +16,7 @@ const Logo = ({
   className,
   variant = "default",
   lang = "en",
-  logoText = { first: "Solomon", second: "Coffee" },
+  logoText = { first: "Sheba's", second: "Coffee" },
 }: LogoProps) => {
   // Small variant for footer
   if (variant === "sm") {
