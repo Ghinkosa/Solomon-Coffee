@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { ChevronDown } from "lucide-react";
-import Image from "next/image";
 
 interface LanguageSwitcherProps {
   lang: string;
@@ -24,6 +23,8 @@ const localeNames: Record<Locale, string> = {
   ar: "Arabic",
   am: "Amharic",
 };
+
+const visibleLocales: Locale[] = ["en", "am"];
 
 // Map locales to potential flag images or just initials?
 // User asked for "language initial".
@@ -61,7 +62,7 @@ const LanguageSwitcher = ({ lang }: LanguageSwitcherProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
-        {i18n.locales.map((locale) => (
+        {visibleLocales.map((locale) => (
           <DropdownMenuItem
             key={locale}
             onClick={() => handleLocaleChange(locale)}
