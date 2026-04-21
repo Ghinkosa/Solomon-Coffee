@@ -70,24 +70,26 @@ const ProductSpecs = ({ product }: ProductSpecsProps) => {
         </CardContent>
       </Card>
 
-      {/* Warranty */}
+      {/* Freshness & Support */}
       <Card className="border-2 border-gray-100 hover:border-shop_light_green/30 transition-colors">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-shop_orange" />
-            <CardTitle className="text-sm font-semibold">Warranty</CardTitle>
+            <CardTitle className="text-sm font-semibold">
+              Freshness & Support
+            </CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <div className="text-gray-600">
-            <span className="font-medium text-shop_dark_green">1 Year</span>{" "}
-            Manufacturer Warranty
+            <span className="font-medium text-shop_dark_green">Fresh Roast</span>{" "}
+            Quality Guarantee
           </div>
           <div className="text-gray-600">
-            <span className="font-medium text-shop_dark_green">30 Days</span>{" "}
-            Return Policy
+            <span className="font-medium text-shop_dark_green">7 Days</span>{" "}
+            Damaged or Incorrect Item Support
           </div>
-          <div className="text-gray-600">Free Tech Support</div>
+          <div className="text-gray-600">Free Brewing Guidance</div>
         </CardContent>
       </Card>
 

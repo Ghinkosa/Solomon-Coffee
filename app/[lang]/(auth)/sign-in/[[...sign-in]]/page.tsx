@@ -28,7 +28,7 @@ const SignInContent = () => {
     {
       icon: Star,
       title: "Premium Experience",
-      description: "Access exclusive deals and personalized recommendations",
+      description: "Access exclusive coffee offers and personalized brew picks",
     },
   ];
 
@@ -71,7 +71,7 @@ const SignInContent = () => {
                 </h1>
                 <p className="text-lg text-dark-text mb-8 leading-relaxed">
                   Sign in to access your account, track orders, and enjoy
-                  personalized shopping experiences at{" "}
+                  personalized coffee recommendations at{" "}
                   {contactConfig.company.name}.
                 </p>
               </motion.div>

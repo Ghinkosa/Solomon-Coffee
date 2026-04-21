@@ -14,49 +14,49 @@ export async function GET(request: NextRequest) {
       {
         _id: "1",
         orderNumber: "ORD-2023-1001",
-        totalAmount: 299.99,
+        totalAmount: 49.99,
         status: "Processing",
         createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         items: [
           {
-            name: "Wireless Headphones",
+            name: "Ethiopian Single-Origin Beans",
             quantity: 1,
-            price: 199.99,
+            price: 24.99,
           },
           {
-            name: "Phone Case",
+            name: "Pour-Over Paper Filters",
             quantity: 2,
-            price: 50.0,
+            price: 12.5,
           },
         ],
       },
       {
         _id: "2",
         orderNumber: "ORD-2023-1000",
-        totalAmount: 159.99,
+        totalAmount: 34.99,
         status: "Shipped",
         createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
         items: [
           {
-            name: "Bluetooth Speaker",
+            name: "Stainless Steel French Press",
             quantity: 1,
-            price: 159.99,
+            price: 34.99,
           },
         ],
       },
       {
         _id: "3",
         orderNumber: "ORD-2023-0999",
-        totalAmount: 89.99,
+        totalAmount: 27.0,
         status: "Delivered",
         createdAt: new Date(
           Date.now() - 10 * 24 * 60 * 60 * 1000
         ).toISOString(),
         items: [
           {
-            name: "USB Cable",
+            name: "Espresso Blend Beans",
             quantity: 3,
-            price: 29.99,
+            price: 9.0,
           },
         ],
       },

@@ -44,7 +44,7 @@ const TermsPage = () => {
         "By accessing and using Sheba&apos;s Coffee&apos;s website and services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
         "These terms constitute a legally binding agreement between you and Sheba&apos;s Coffee. If you do not agree with any part of these terms, you must not use our services.",
         "We may update these terms from time to time. Continued use of our services after changes indicates your acceptance of the modified terms.",
-        "These terms apply to all users, including browsers, vendors, customers, merchants, and contributors of content.",
+        "These terms apply to all users, including browsers, customers, and contributors of content.",
       ],
     },
     {
@@ -88,7 +88,7 @@ const TermsPage = () => {
         "Your privacy is important to us. Please review our Privacy Policy to understand how we collect, use, and protect your personal information.",
         "We implement industry-standard security measures to protect your data, but cannot guarantee absolute security of information transmitted over the internet.",
         "You have the right to access, update, or delete your personal information. Contact our support team for assistance with data requests.",
-        "We may use cookies and similar technologies to improve your shopping experience and analyze website usage patterns.",
+        "We may use cookies and similar technologies to improve your coffee shopping experience and analyze website usage patterns.",
       ],
     },
     {

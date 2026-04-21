@@ -3,7 +3,7 @@ import { contactConfig } from "@/config/contact";
 
 export const metadata: Metadata = {
   title: `Authentication - ${contactConfig.company.name}`,
-  description: `Sign in or create an account with ${contactConfig.company.name} to access exclusive deals, track orders, and enjoy personalized shopping experiences.`,
+  description: `Sign in or create an account with ${contactConfig.company.name} to access exclusive coffee offers, track orders, and save your brewing preferences.`,
   keywords: [
     "sign in",
     "sign up",

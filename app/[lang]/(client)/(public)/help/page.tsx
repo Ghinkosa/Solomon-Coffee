@@ -38,17 +38,17 @@ const HelpPage = () => {
     {
       title: "Getting Started",
       icon: BookOpen,
-      description: "Learn the basics of shopping with us",
+      description: "Learn the basics of ordering coffee with us",
       color: "from-shop_light_green to-shop_dark_green",
       links: [
         { title: "How to Create an Account", href: "/faq#account-1" },
-        { title: "Placing Your First Order", href: "/faq#shopping-1" },
+        { title: "Placing Your First Coffee Order", href: "/faq#shopping-1" },
         { title: "Setting Up Payment Methods", href: "/faq#payment-1" },
         { title: "Managing Your Profile", href: "/faq#account-3" },
       ],
     },
     {
-      title: "Orders & Shopping",
+      title: "Orders & Coffee",
       icon: ShoppingBag,
       description: "Everything about placing and managing orders",
       color: "from-shop_orange to-shop_light_orange",
@@ -86,13 +86,13 @@ const HelpPage = () => {
     {
       title: "Returns & Exchanges",
       icon: RotateCcw,
-      description: "Return policy, exchanges, and refunds",
+      description: "Return policy and refunds for coffee orders",
       color: "from-dark-red to-light-orange",
       links: [
         { title: "Return Policy", href: "/faq#returns-1" },
         { title: "How to Return Items", href: "/faq#returns-2" },
         { title: "Refund Timeline", href: "/faq#returns-3" },
-        { title: "Exchanges", href: "/faq#returns-4" },
+        { title: "Replacement Requests", href: "/faq#returns-4" },
       ],
     },
     {
@@ -128,9 +128,9 @@ const HelpPage = () => {
     },
     {
       title: "Return an Item",
-      description: "Start a return or exchange process",
+      description: "Report a damaged or incorrect coffee order",
       icon: RotateCcw,
-      action: "Start Return",
+      action: "Start Request",
       href: "/orders",
       color: "bg-dark-blue",
     },
@@ -185,7 +185,7 @@ const HelpPage = () => {
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">Help Center</h1>
             <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
               Find answers, get support, and resolve issues quickly. We&apos;re
-              here to help you have the best shopping experience.
+              here to help you enjoy the best coffee experience.
             </p>
           </motion.div>
         </Container>

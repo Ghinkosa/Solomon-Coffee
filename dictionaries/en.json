@@ -27,7 +27,7 @@
       "welcomeBack": "Welcome Back!",
       "createAccount": "Create Account",
       "signInDescription": "Sign in to access your account",
-      "signUpDescription": "Join us to start shopping"
+      "signUpDescription": "Join us to start exploring coffee"
     },
     "search": {
       "placeholder": "Search for products..."
@@ -48,7 +48,7 @@
       "description": "Please wait while we prepare your sign-in experience."
     },
     "main": {
-      "step1": "Preparing your shopping experience...",
+      "step1": "Preparing your coffee experience...",
       "step2": "Loading products...",
       "step3": "Setting up delivery options...",
       "step4": "Almost ready!",
@@ -87,7 +87,7 @@
     },
     "shopFeatures": {
       "title": "Why Shop With Us",
-      "description": "Experience the best online shopping with our commitment to quality, security, and exceptional service",
+      "description": "Experience better coffee shopping with our commitment to quality, freshness, and exceptional service",
       "learnMore": "Click to learn more",
       "stats": {
         "happyCustomers": "Happy Customers",
@@ -136,11 +136,11 @@
     },
     "shopByBrands": {
       "title": "Shop By Brands",
-      "description": "Discover products from your favorite trusted brands",
-      "exploreAll": "Explore All Brands",
-      "trusted": "trusted brands and counting",
+      "description": "Discover coffee selections from trusted roasters and producers",
+      "exploreAll": "Explore All Roasters",
+      "trusted": "trusted coffee partners",
       "whyChooseUs": "Why Choose Us?",
-      "experience": "We provide the best shopping experience with premium services",
+      "experience": "We provide a seamless coffee buying experience with fresh products and dependable service",
       "customerTrusted": "Trusted by thousands of customers worldwide",
       "freeDelivery": "Free Delivery",
       "freeDeliveryDesc": "Free shipping over $100",

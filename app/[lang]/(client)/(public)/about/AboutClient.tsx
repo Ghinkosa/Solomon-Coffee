@@ -22,8 +22,8 @@ import Link from "next/link";
 const AboutClient = () => {
   const stats = [
     { number: "10K+", label: "Happy Customers", icon: Users },
-    { number: "500+", label: "Products", icon: ShoppingBag },
-    { number: "50+", label: "Brands", icon: Award },
+    { number: "500+", label: "Coffee Products", icon: ShoppingBag },
+    { number: "50+", label: "Partner Producers", icon: Award },
     { number: "99%", label: "Satisfaction", icon: Heart },
   ];
 
@@ -31,48 +31,48 @@ const AboutClient = () => {
     {
       icon: Target,
       title: "Customer First",
-      description: "Every decision we make starts with our customers in mind.",
+      description: "Every decision we make starts with coffee lovers in mind.",
       color: "text-shop_light_green",
     },
     {
       icon: Shield,
-      title: "Quality Assurance",
-      description: "We ensure every product meets our high standards.",
+      title: "Coffee Quality",
+      description: "Every roast is selected and tested to meet our standards.",
       color: "text-shop_dark_green",
     },
     {
       icon: Zap,
-      title: "Innovation",
-      description: "Constantly evolving to bring you the latest and greatest.",
+      title: "Craft & Innovation",
+      description: "We blend tradition and modern brewing for better coffee.",
       color: "text-shop_orange",
     },
     {
       icon: Globe,
       title: "Sustainability",
       description:
-        "Committed to eco-friendly practices and responsible sourcing.",
+        "Committed to responsible sourcing and eco-friendly packaging.",
       color: "text-shop_light_green",
     },
   ];
 
   const team = [
     {
-      name: "Sarah Johnson",
-      role: "CEO & Founder",
+      name: "Roastery Team",
+      role: "Roast & Quality",
       image: "/images/team/ceo.jpg",
-      description: "Visionary leader with 15+ years in e-commerce",
+      description: "Crafting balanced roasts and consistent flavor profiles.",
     },
     {
-      name: "Michael Chen",
-      role: "CTO",
+      name: "Brew Education Team",
+      role: "Brew Guidance",
       image: "/images/team/cto.jpg",
-      description: "Tech innovator driving our digital transformation",
+      description: "Helping customers brew better coffee at home and work.",
     },
     {
-      name: "Emily Rodriguez",
-      role: "Head of Design",
+      name: "Customer Care Team",
+      role: "Customer Support",
       image: "/images/team/design.jpg",
-      description: "Creative force behind our user experience",
+      description: "Providing friendly support from order to first sip.",
     },
   ];
 
@@ -93,9 +93,8 @@ const AboutClient = () => {
               About Sheba&apos;s Coffee
             </h1>
             <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              We&apos;re revolutionizing online shopping with curated products,
-              exceptional service, and innovative technology that puts customers
-              first.
+              We source, roast, and deliver premium coffee with exceptional
+              service, practical brew education, and a deep focus on quality.
             </p>
           </motion.div>
         </Container>
@@ -140,19 +139,17 @@ const AboutClient = () => {
                 Our Story
               </Badge>
               <h2 className="text-4xl font-bold text-shop_dark_green mb-6">
-                Building the Future of E-commerce
+                Building a Better Coffee Experience
               </h2>
               <p className="text-lg text-dark-text mb-6 leading-relaxed">
-                Founded in 2020 with a simple mission: make online shopping more
-                personal, more accessible, and more enjoyable for everyone. What
-                started as a small team with big dreams has grown into a
-                platform trusted by thousands of customers worldwide.
+                Founded with a simple mission: make great coffee approachable,
+                consistent, and enjoyable for everyone. What started as a small
+                team has grown into a trusted destination for coffee lovers.
               </p>
               <p className="text-lg text-dark-text mb-8 leading-relaxed">
-                We believe shopping should be an experience, not just a
-                transaction. That&apos;s why we carefully curate every product,
-                partner with ethical brands, and continuously innovate to serve
-                you better.
+                We believe every cup should feel intentional, not routine.
+                That&apos;s why we carefully curate beans, partner with
+                responsible producers, and continuously improve how we serve you.
               </p>
               <Button
                 asChild
@@ -173,18 +170,18 @@ const AboutClient = () => {
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="bg-white/20 rounded-lg p-4 text-center">
                     <Star className="w-6 h-6 mx-auto mb-2" />
-                    <p className="font-semibold">Premium Quality</p>
+                    <p className="font-semibold">Freshly Roasted</p>
                   </div>
                   <div className="bg-white/20 rounded-lg p-4 text-center">
                     <Shield className="w-6 h-6 mx-auto mb-2" />
-                    <p className="font-semibold">Secure Shopping</p>
+                    <p className="font-semibold">Trusted Service</p>
                   </div>
                 </div>
                 <blockquote className="text-lg italic">
-                  &quot;Shopping should be delightful, not a chore. We&apos;re
-                  here to make every purchase feel special.&quot;
+                  &quot;Great coffee should be simple to discover, brew, and
+                  enjoy every day.&quot;
                 </blockquote>
-                <p className="mt-4 font-semibold">- Sarah Johnson, Founder</p>
+                <p className="mt-4 font-semibold">- Sheba&apos;s Coffee Team</p>
               </div>
             </motion.div>
           </div>
@@ -207,8 +204,8 @@ const AboutClient = () => {
               What We Stand For
             </h2>
             <p className="text-lg text-dark-text max-w-2xl mx-auto">
-              These core values guide everything we do, from product selection
-              to customer service.
+              These values guide how we source, roast, and serve coffee every
+              day.
             </p>
           </motion.div>
 
@@ -256,8 +253,8 @@ const AboutClient = () => {
               Meet the Minds Behind Sheba&apos;s Coffee
             </h2>
             <p className="text-lg text-dark-text max-w-2xl mx-auto">
-              Our passionate team of experts working tirelessly to create the
-              best shopping experience for you.
+              Our coffee-focused team works every day to deliver quality,
+              consistency, and excellent support.
             </p>
           </motion.div>
 

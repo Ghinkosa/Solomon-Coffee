@@ -214,7 +214,7 @@ const PrivacyPage = () => {
             </h2>
             <p className="text-lg text-dark-text max-w-3xl mx-auto">
               We collect different types of information to provide you with the
-              best shopping experience while respecting your privacy.
+              best coffee shopping experience while respecting your privacy.
             </p>
           </motion.div>
 

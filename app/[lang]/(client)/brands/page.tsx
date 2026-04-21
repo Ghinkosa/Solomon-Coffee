@@ -23,17 +23,17 @@ const BrandsPage = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Brands</BreadcrumbPage>
+                <BreadcrumbPage>Roasters</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
         <div className="text-center">
           <h1 className="text-4xl font-bold text-shop_dark_green mb-4">
-            Shop by Brands
+            Shop by Roasters
           </h1>
           <p className="text-lg text-dark-text">
-            Coming soon - Browse products by your favorite brands
+            Coming soon - Explore coffee from your favorite roasters
           </p>
         </div>
       </Container>

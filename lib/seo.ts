@@ -273,7 +273,7 @@ export function generateOrganizationSchema() {
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
     description:
-      "Your trusted online shopping destination for quality items and exceptional customer service.",
+      "Your trusted destination for premium coffee, brewing essentials, and exceptional customer service.",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+1-555-123-4567",
@@ -389,14 +389,14 @@ export function generateHomeMetadata(): Metadata {
     description:
       "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee with exceptional quality and service.",
     keywords: [
-      "online shopping",
-      "e-commerce",
-      "buy online",
-      "shop online",
-      "best deals",
-      "electronics",
-      "fashion",
-      "home goods",
+      "specialty coffee",
+      "single-origin coffee",
+      "coffee beans",
+      "coffee brewing",
+      "espresso",
+      "coffee accessories",
+      "fresh roast",
+      "coffee shop",
     ],
     openGraph: {
       type: "website",

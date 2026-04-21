@@ -2,16 +2,16 @@
 
 export const contactConfig = {
   company: {
-    name: process.env.NEXT_PUBLIC_COMPANY_NAME || "ShopCart",
-    email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || "support@shopcart.com",
+    name: process.env.NEXT_PUBLIC_COMPANY_NAME || "Sheba's Coffee",
+    email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || "support@shebascoffee.com",
     phone: process.env.NEXT_PUBLIC_COMPANY_PHONE || "+1 (555) 123-4567",
     address:
       process.env.NEXT_PUBLIC_COMPANY_ADDRESS ||
-      "123 Shopping Street, Commerce District",
+      "123 Roastery Lane, Coffee District",
     city: process.env.NEXT_PUBLIC_COMPANY_CITY || "New York, NY 10001, USA",
     description:
       process.env.NEXT_PUBLIC_COMPANY_DESCRIPTION ||
-      "Discover amazing products at ShopCart, your trusted online shopping destination for quality items and exceptional customer service.",
+      "Discover premium coffee at Sheba's Coffee, your trusted destination for quality beans, brews, and exceptional customer service.",
   },
   businessHours: {
     weekday:
@@ -22,8 +22,8 @@ export const contactConfig = {
       "Saturday - Sunday: 10AM - 4PM EST",
   },
   emails: {
-    support: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@shopcart.com",
-    sales: process.env.NEXT_PUBLIC_SALES_EMAIL || "sales@shopcart.com",
+    support: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@shebascoffee.com",
+    sales: process.env.NEXT_PUBLIC_SALES_EMAIL || "sales@shebascoffee.com",
   },
   responseTime: {
     standard:
@@ -42,7 +42,7 @@ export const contactConfig = {
   legal: {
     copyright:
       process.env.NEXT_PUBLIC_COPYRIGHT_TEXT ||
-      "© 2024 ShopCart. All rights reserved.",
+      "© 2024 Sheba's Coffee. All rights reserved.",
     privacyPolicy: process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL || "/privacy",
     terms: process.env.NEXT_PUBLIC_TERMS_URL || "/terms",
   },

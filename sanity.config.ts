@@ -15,6 +15,7 @@ import { structure } from "./sanity/structure";
 import { presentationTool } from "sanity/presentation";
 
 export default defineConfig({
+  title: "Sheba's Coffee",
   basePath: "/studio",
   projectId,
   dataset,

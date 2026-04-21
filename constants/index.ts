@@ -1,7 +1,7 @@
 export const headerData = [
   { title: "Home", href: "/" },
   { title: "Shop", href: "/shop" },
-  { title: "Hot Deal", href: "/deal" },
+  { title: "Featured Roasts", href: "/deal" },
   { title: "Blog", href: "/blog" },
   //{ title: "Education", href: "/education" },
   { title: "Contact", href: "/contact" },
@@ -24,15 +24,7 @@ export const quickLinksData = [
   { title: "Help", href: "/help" },
 ];
 
-export const categoriesData = [
-  { title: "Mobiles", href: "mobiles" },
-  { title: "Appliances", href: "appliances" },
-  { title: "Smartphones", href: "smartphones" },
-  { title: "Air Conditioners", href: "air-conditioners" },
-  { title: "Washing Machine", href: "washing-machine" },
-  { title: "Kitchen Appliances", href: "kitchen-appliances" },
-  { title: "Gadget Accessories", href: "gadget-accessories" },
-];
+export const categoriesData: { title: string; href: string }[] = [];
 
 // Enhanced user account menu items
 export const userAccountData = [
@@ -52,7 +44,7 @@ export const supportData = [
   { title: "Track Your Order", href: "/track-order" },
   { title: "Return Policy", href: "/returns" },
   { title: "Shipping Info", href: "/shipping" },
-  { title: "Size Guide", href: "/size-guide" },
+  { title: "Brewing Guide", href: "/education" },
 ];
 export const faqsData = [
   {

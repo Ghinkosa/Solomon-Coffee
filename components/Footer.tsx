@@ -46,21 +46,23 @@ const Footer = ({ lang, dictionary }: FooterProps) => {
             </ul>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
-            <ul className="space-y-3">
-              {categoriesData.map((item) => (
-                <li key={item?.title}>
-                  <Link
-                    href={`/${lang}/category/${item?.href}`}
-                    className="text-gray-600 hover:text-shop_dark_green text-sm font-medium hoverEffect capitalize"
-                  >
-                    {item?.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {categoriesData.length > 0 ? (
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
+              <ul className="space-y-3">
+                {categoriesData.map((item) => (
+                  <li key={item?.title}>
+                    <Link
+                      href={`/${lang}/category/${item?.href}`}
+                      className="text-gray-600 hover:text-shop_dark_green text-sm font-medium hoverEffect capitalize"
+                    >
+                      {item?.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           <div>
             <h3 className="font-semibold text-gray-900 mb-4">Newsletter</h3>
@@ -77,10 +79,7 @@ const Footer = ({ lang, dictionary }: FooterProps) => {
           <p>
             © {new Date().getFullYear()}{" "}
             <span className="text-dark-color font-black tracking-wider uppercase hover:text-shop_dark_green hoverEffect group font-sans">
-              Shpopcar
-              <span className="text-shop_dark_green group-hover:text-dark-color hoverEffect">
-                t
-              </span>
+              Sheba&apos;s Coffee
             </span>
             . All rights reserved.
           </p>

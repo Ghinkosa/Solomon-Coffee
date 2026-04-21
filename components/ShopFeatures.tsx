@@ -64,12 +64,12 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
       title: dictionary?.freeDelivery?.title || "Free Delivery",
       description:
         dictionary?.freeDelivery?.description ||
-        "Free shipping on orders over $50",
+        "Free shipping on coffee orders over $50",
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50",
       iconColor: "text-green-600",
       details: [
-        "Enjoy free standard shipping on all orders over $50 to anywhere in the country",
+        "Enjoy free standard shipping on all coffee orders over $50",
         "Track your package in real-time with our advanced tracking system",
         "Partner with reliable carriers for timely and safe delivery",
         "Eco-friendly packaging materials to reduce environmental impact",
@@ -98,7 +98,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Digital wallets like PayPal, Apple Pay, and Google Pay for faster checkout",
         "Buy now, pay later options available through trusted partners",
         "Secure one-click checkout for returning customers",
-        "International payment methods supported for global shopping",
+        "International payment methods supported for global coffee orders",
       ],
       benefits: [
         "Multiple payment options",
@@ -148,7 +148,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Simple online return process - just request a return in your account",
         "Free return shipping labels provided for your convenience",
         "Full refund processed within 5-7 business days after receiving the return",
-        "Exchange options available for different sizes or colors",
+        "Replacement options available for damaged or incorrect items",
       ],
       benefits: [
         "30-day return window",
@@ -164,14 +164,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
       title: dictionary?.qualityAssured?.title || "Quality Assured",
       description:
         dictionary?.qualityAssured?.description ||
-        "100% authentic products guaranteed",
+        "Fresh, authentic coffee products guaranteed",
       color: "from-yellow-500 to-yellow-600",
       bgColor: "bg-yellow-50",
       iconColor: "text-yellow-600",
       details: [
         "Every product is sourced directly from authorized manufacturers and distributors",
         "Rigorous quality checks performed before shipping to ensure product condition",
-        "Authenticity certificates available for luxury and high-value items",
+        "Roast quality checks performed before dispatch",
         "Zero-tolerance policy for counterfeit products",
         "Quality guarantee backed by our comprehensive warranty program",
       ],
@@ -259,7 +259,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         </div>
         <p className="text-light-color text-lg max-w-2xl mx-auto leading-relaxed">
           {dictionary?.description ||
-            "Experience the best online shopping with our commitment to quality, security, and exceptional service"}
+            "Experience better coffee shopping with our commitment to quality, freshness, and exceptional service"}
         </p>
       </div>
 

@@ -1,5 +1,5 @@
 "use client";
-import { BRANDS_QUERYResult, Category, Product } from "@/sanity.types";
+import { Category, Product } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import React, { useEffect, useState, useCallback } from "react";
 import Container from "../Container";
@@ -8,25 +8,17 @@ import CategoryList from "./CategoryList";
 import { Loader2, Filter, X } from "lucide-react";
 import ProductCard from "../ProductCard";
 import NoProductAvailable from "../product/NoProductAvailable";
-import BrandList from "./BrandList";
-import { useSearchParams } from "next/navigation";
 import PriceList from "./PriceList";
 
 interface Props {
   categories: Category[];
-  brands: BRANDS_QUERYResult;
   dictionary: any;
 }
 
-const Shop = ({ categories, brands, dictionary }: Props) => {
-  const searchParams = useSearchParams();
-  const brandParams = searchParams?.get("brand");
+const Shop = ({ categories, dictionary }: Props) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(
-    brandParams || null,
-  );
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
@@ -45,7 +37,6 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
       const query = `
       *[_type == 'product' 
         && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
-        && (!defined($selectedBrand) || references(*[_type == "brand" && slug.current == $selectedBrand]._id))
         && price >= $minPrice && price <= $maxPrice
       ] 
       | order(name asc) {
@@ -57,7 +48,6 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
         query,
         {
           selectedCategory,
-          selectedBrand,
           minPrice,
           maxPrice,
         },
@@ -69,10 +59,10 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, selectedBrand, selectedPrice]);
+  }, [selectedCategory, selectedPrice]);
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, selectedBrand, selectedPrice]);
+  }, [selectedCategory, selectedPrice]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -89,12 +79,10 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
               </p>
             </div>
             {(selectedCategory !== null ||
-              selectedBrand !== null ||
               selectedPrice !== null) && (
               <button
                 onClick={() => {
                   setSelectedCategory(null);
-                  setSelectedBrand(null);
                   setSelectedPrice(null);
                 }}
                 className="inline-flex items-center px-4 py-2 bg-red-50 text-red-700 border border-red-200 rounded-md hover:bg-red-100 transition-colors duration-200 text-sm font-medium"
@@ -105,7 +93,7 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
           </div>
 
           {/* Active Filters Display */}
-          {(selectedCategory || selectedBrand || selectedPrice) && (
+          {(selectedCategory || selectedPrice) && (
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex flex-wrap gap-2">
                 <span className="text-sm font-medium text-gray-700 mr-2">
@@ -117,16 +105,6 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
                     {
                       categories?.find(
                         (cat) => cat?.slug?.current === selectedCategory,
-                      )?.title
-                    }
-                  </span>
-                )}
-                {selectedBrand && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {dictionary.shop.brand}{" "}
-                    {
-                      brands?.find(
-                        (brand) => brand?.slug?.current === selectedBrand,
                       )?.title
                     }
                   </span>
@@ -152,12 +130,10 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
             {showMobileFilters
               ? dictionary.shop.hideFilters
               : dictionary.shop.showFilters}
-            {(selectedCategory || selectedBrand || selectedPrice) && (
+            {(selectedCategory || selectedPrice) && (
               <span className="ml-2 bg-shop_dark_green text-white text-xs px-2 py-1 rounded-full">
                 {
-                  [selectedCategory, selectedBrand, selectedPrice].filter(
-                    Boolean,
-                  ).length
+                  [selectedCategory, selectedPrice].filter(Boolean).length
                 }
               </span>
             )}
@@ -191,11 +167,6 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
                   />
-                  <BrandList
-                    brands={brands}
-                    setSelectedBrand={setSelectedBrand}
-                    selectedBrand={selectedBrand}
-                  />
                   <PriceList
                     setSelectedPrice={setSelectedPrice}
                     selectedPrice={selectedPrice}
@@ -227,11 +198,6 @@ const Shop = ({ categories, brands, dictionary }: Props) => {
                     categories={categories}
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
-                  />
-                  <BrandList
-                    brands={brands}
-                    setSelectedBrand={setSelectedBrand}
-                    selectedBrand={selectedBrand}
                   />
                   <PriceList
                     setSelectedPrice={setSelectedPrice}

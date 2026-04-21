@@ -61,19 +61,19 @@ const ShopByBrands = ({
         <div className="inline-flex items-center gap-3 mb-4">
           <div className="h-1 w-12 bg-linear-to-r from-shop_orange to-shop_light_orange rounded-full"></div>
           <Title className="text-3xl lg:text-4xl font-bold text-dark-color">
-            {dictionary?.title || "Shop By Brands"}
+            {dictionary?.title || "Shop by Roasters"}
           </Title>
           <div className="h-1 w-12 bg-linear-to-l from-shop_orange to-shop_light_orange rounded-full"></div>
         </div>
         <p className="text-light-color text-lg max-w-2xl mx-auto">
           {dictionary?.description ||
-            "Discover products from your favorite trusted brands"}
+            "Discover coffee selections from trusted roasters and producers"}
         </p>
         <Link
           href={"/shop"}
           className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-shop_light_pink text-shop_dark_green font-semibold rounded-full hover:bg-shop_orange hover:text-white border-2 border-shop_orange hoverEffect"
         >
-          {dictionary?.exploreAll || "Explore All Brands"}
+          {dictionary?.exploreAll || "Explore All Roasters"}
           <ArrowRight size={18} />
         </Link>
       </div>
@@ -114,14 +114,14 @@ const ShopByBrands = ({
           <div className="space-y-8">
             <div className="space-y-4">
               <Badge className="bg-shop_light_pink text-shop_dark_green border-none px-4 py-1">
-                100+ {dictionary?.trusted || "trusted brands and counting"}
+                100+ {dictionary?.trusted || "trusted coffee partners"}
               </Badge>
               <h3 className="text-3xl lg:text-4xl font-bold text-dark-color leading-tight">
                 {dictionary?.whyChooseUs || "Why Choose Us?"}
               </h3>
               <p className="text-light-color text-lg leading-relaxed">
                 {dictionary?.experience ||
-                  "We provide the best shopping experience with premium services and authentic products guaranteed."}
+                  "We provide a seamless coffee buying experience with fresh products and dependable service."}
               </p>
             </div>
 
@@ -153,8 +153,8 @@ const ShopByBrands = ({
             <div className="absolute -inset-4 bg-linear-to-r from-shop_light_pink to-shop_light_orange/20 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 hoverEffect"></div>
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border-8 border-white">
               <Image
-                src="https://img.freepik.com/free-photo/modern-office-space-with-desks-computers_23-2149151240.jpg"
-                alt="Our Office"
+                src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1600&auto=format&fit=crop"
+                alt="Sheba's Coffee roasting team"
                 fill
                 className="object-cover group-hover:scale-105 hoverEffect"
               />

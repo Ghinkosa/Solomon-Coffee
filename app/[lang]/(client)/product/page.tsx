@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import Container from "@/components/Container";
 import Title from "@/components/Title";
-import { getAllProducts, getCategories, getAllBrands } from "@/sanity/queries";
+import { getAllProducts, getCategories } from "@/sanity/queries";
 import ProductCatalog from "@/components/ProductCatalog";
 
 import { ArrowRight, Package, Filter, Search } from "lucide-react";
@@ -15,10 +15,9 @@ import {
 } from "@/components/ui/breadcrumb";
 
 const ProductPage = async () => {
-  const [products, categories, brands] = await Promise.all([
+  const [products, categories] = await Promise.all([
     getAllProducts(),
     getCategories(),
-    getAllBrands(),
   ]);
 
   return (
@@ -54,9 +53,9 @@ const ProductPage = async () => {
               </div>
 
               <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8">
-                Discover our complete collection of premium products. From
-                cutting-edge electronics to stylish accessories, find everything
-                you need in one place.
+                Discover our complete collection of premium coffee and brewing
+                essentials. From freshly roasted beans to everyday coffee tools,
+                find everything you need in one place.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -116,7 +115,6 @@ const ProductPage = async () => {
           <ProductCatalog
             initialProducts={products}
             categories={categories}
-            brands={brands}
           />
         </Suspense>
       </Container>

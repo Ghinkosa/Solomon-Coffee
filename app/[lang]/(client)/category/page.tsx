@@ -40,11 +40,11 @@ const CategoryPage = async () => {
 
         <div className="text-center mb-10">
           <Title className="text-3xl lg:text-4xl font-bold text-shop_dark_green mb-3">
-            Shop by Categories
+            Explore Coffee Categories
           </Title>
           <p className="text-base lg:text-lg text-dark-text max-w-2xl mx-auto mb-6">
-            Discover our wide range of products organized by categories. Find
-            exactly what you&apos;re looking for with ease.
+            Discover our coffee range organized by category, from roast levels
+            to brewing essentials.
           </p>
 
           {/* View All Products Button */}
@@ -138,11 +138,11 @@ const CategoryPage = async () => {
             <div className="mt-10 text-center">
               <div className="bg-gradient-to-r from-shop_light_green/10 via-shop_orange/5 to-shop_light_green/10 rounded-xl p-6 border border-shop_light_green/20">
                 <h3 className="text-lg lg:text-xl font-semibold text-shop_dark_green mb-2">
-                  Explore Our Complete Product Range
+                  Explore Our Complete Coffee Range
                 </h3>
                 <p className="text-dark-text text-sm mb-4">
-                  Don&apos;t see what you&apos;re looking for? Browse our entire
-                  collection of products.
+                  Don&apos;t see what you&apos;re looking for? Browse our full
+                  coffee and brewing collection.
                 </p>
                 <Link
                   href="/shop"
@@ -201,7 +201,7 @@ const CategoryPage = async () => {
                   className="inline-flex items-center justify-center gap-2 border-2 border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
                 >
                   <Tag className="w-4 h-4" />
-                  Shop by Brands
+                  Shop by Roasters
                 </Link>
               </div>
             </div>

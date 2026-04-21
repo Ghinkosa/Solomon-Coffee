@@ -39,19 +39,19 @@ interface FAQ {
 }
 
 const faqs: FAQ[] = [
-  // Shopping FAQs
+  // Ordering FAQs
   {
     id: "shopping-1",
     question: "How do I place an order?",
     answer:
-      "To place an order, browse our products, add items to your cart, and proceed to checkout. You'll need to create an account or sign in, then provide your shipping information and payment details to complete your purchase.",
+      "To place an order, browse our coffee collection, add items to your cart, and proceed to checkout. You can create an account or sign in, then add your delivery details and payment method to complete your purchase.",
     category: "shopping",
   },
   {
     id: "shopping-2",
     question: "Can I modify or cancel my order after placing it?",
     answer:
-      "You can modify or cancel your order within 30 minutes of placing it. After this time, if your order hasn&apos;t been processed yet, please contact our customer service team immediately. Once your order is being prepared or shipped, modifications may not be possible.",
+      "You can modify or cancel your order within 30 minutes of placing it. After that, contact support right away. Once roasting, packing, or shipping has started, changes may not be possible.",
     category: "shopping",
   },
   {
@@ -65,7 +65,7 @@ const faqs: FAQ[] = [
     id: "shopping-4",
     question: "What if an item I want is out of stock?",
     answer:
-      "If an item is out of stock, you can sign up for restock notifications on the product page. We'll email you as soon as the item is available again. You can also check our 'Coming Soon' section for upcoming restocks.",
+      "If an item is out of stock, you can sign up for restock notifications on the product page. We&apos;ll email you as soon as it becomes available again.",
     category: "shopping",
   },
 
@@ -95,7 +95,7 @@ const faqs: FAQ[] = [
     id: "payment-4",
     question: "Can I get a refund if I'm not satisfied?",
     answer:
-      "Yes, we offer a 30-day money-back guarantee. If you're not completely satisfied with your purchase, you can return it within 30 days for a full refund. The item must be in original condition with all packaging.",
+      "If your order arrives damaged, incorrect, or has a quality issue, contact us within 7 days of delivery and we&apos;ll make it right.",
     category: "payment",
   },
 
@@ -153,9 +153,9 @@ const faqs: FAQ[] = [
   },
   {
     id: "returns-4",
-    question: "Can I exchange an item instead of returning it?",
+    question: "Can I request a replacement instead of a return?",
     answer:
-      "Yes, you can exchange items for a different size or color if available. Select the exchange option when initiating your return, and we'll send you the new item as soon as we receive the original.",
+      "Yes. For damaged or incorrect coffee items, contact support with your order number and photos. We&apos;ll review and provide a replacement when eligible.",
     category: "returns",
   },
 
@@ -252,7 +252,7 @@ const FAQClient = () => {
               Frequently Asked Questions
             </h1>
             <p className="text-xl text-white/90 max-w-3xl mx-auto mb-6">
-              Find answers to common questions about shopping, payments,
+              Find answers to common questions about coffee orders, payments,
               shipping, and more. Can&apos;t find what you&apos;re looking for?
               Contact our support team.
             </p>

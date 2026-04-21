@@ -12,7 +12,7 @@ const Loading = ({ dictionary }: { dictionary?: any }) => {
 
   const defaultLoadingData: Record<string, any> = {
     en: {
-      step1: "Preparing your shopping experience...",
+      step1: "Preparing your coffee experience...",
       step2: "Loading products...",
       step3: "Setting up delivery options...",
       step4: "Almost ready!",
@@ -20,7 +20,7 @@ const Loading = ({ dictionary }: { dictionary?: any }) => {
       complete: "Complete",
     },
     it: {
-      step1: "Preparazione della tua esperienza di shopping...",
+      step1: "Preparazione della tua esperienza caffè...",
       step2: "Caricamento prodotti...",
       step3: "Configurazione delle opzioni di consegna...",
       step4: "Quasi pronto!",
@@ -28,7 +28,7 @@ const Loading = ({ dictionary }: { dictionary?: any }) => {
       complete: "Completato",
     },
     fr: {
-      step1: "Préparation de votre expérience d'achat...",
+      step1: "Préparation de votre expérience café...",
       step2: "Chargement des produits...",
       step3: "Configuration des options de livraison...",
       step4: "Presque prêt !",
@@ -37,7 +37,7 @@ const Loading = ({ dictionary }: { dictionary?: any }) => {
       complete: "Terminé",
     },
     hi: {
-      step1: "आपके खरीदारी अनुभव की तैयारी हो रही है...",
+      step1: "आपके कॉफी अनुभव की तैयारी हो रही है...",
       step2: "उत्पाद लोड हो रहे हैं...",
       step3: "डिलिवरी विकल्प सेट किए जा रहे हैं...",
       step4: "बस तैयार है!",
@@ -45,7 +45,7 @@ const Loading = ({ dictionary }: { dictionary?: any }) => {
       complete: "पूरा हुआ",
     },
     ar: {
-      step1: "جاري تجهيز تجربة التسوق الخاصة بك...",
+      step1: "جاري تجهيز تجربة القهوة الخاصة بك...",
       step2: "جاري تحميل المنتجات...",
       step3: "جاري إعداد خيارات التوصيل...",
       step4: "أوشكنا على الانتهاء!",

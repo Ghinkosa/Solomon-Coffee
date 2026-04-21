@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { BRANDS_QUERYResult, Category, Product } from "@/sanity.types";
+import { Category, Product } from "@/sanity.types";
 import ProductCard from "./ProductCard";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -35,7 +35,6 @@ import { Slider } from "./ui/slider";
 interface Props {
   initialProducts: Product[];
   categories: Category[];
-  brands: BRANDS_QUERYResult;
 }
 
 type SortOption =
@@ -46,19 +45,17 @@ type SortOption =
   | "newest"
   | "popular";
 
-const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
+const ProductCatalog = ({ initialProducts, categories }: Props) => {
   const [products] = useState<Product[]>(initialProducts);
   const [loading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [sortBy, setSortBy] = useState<SortOption>("name-asc");
   const [viewMode, setViewMode] = useState<"grid" | "large">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState({
     categories: true,
-    brands: true,
     price: true,
   });
 
@@ -86,13 +83,6 @@ const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
     if (selectedCategories.length > 0) {
       filtered = filtered.filter((product) =>
         product.categories?.some((cat) => selectedCategories.includes(cat._ref))
-      );
-    }
-
-    // Brand filter
-    if (selectedBrands.length > 0) {
-      filtered = filtered.filter((product) =>
-        selectedBrands.includes(product.brand?._ref || "")
       );
     }
 
@@ -128,7 +118,6 @@ const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
     products,
     searchQuery,
     selectedCategories,
-    selectedBrands,
     priceRange,
     sortBy,
   ]);
@@ -137,7 +126,6 @@ const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategories([]);
-    setSelectedBrands([]);
     setPriceRange([0, maxPrice]);
     setSortBy("name-asc");
   };
@@ -146,7 +134,6 @@ const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
   const activeFilterCount =
     (searchQuery ? 1 : 0) +
     selectedCategories.length +
-    selectedBrands.length +
     (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0);
 
   // Handle category toggle
@@ -155,15 +142,6 @@ const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
       prev.includes(categoryId)
         ? prev.filter((id) => id !== categoryId)
         : [...prev, categoryId]
-    );
-  };
-
-  // Handle brand toggle
-  const toggleBrand = (brandId: string) => {
-    setSelectedBrands((prev) =>
-      prev.includes(brandId)
-        ? prev.filter((id) => id !== brandId)
-        : [...prev, brandId]
     );
   };
 
@@ -268,18 +246,6 @@ const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
                 </Badge>
               ) : null;
             })}
-            {selectedBrands.map((brandId) => {
-              const brand = brands.find((b) => b._id === brandId);
-              return brand ? (
-                <Badge key={brandId} variant="secondary" className="gap-1">
-                  {brand.title}
-                  <X
-                    className="w-3 h-3 cursor-pointer"
-                    onClick={() => toggleBrand(brandId)}
-                  />
-                </Badge>
-              ) : null;
-            })}
             {(priceRange[0] > 0 || priceRange[1] < maxPrice) && (
               <Badge variant="secondary" className="gap-1">
                 ${priceRange[0]} - ${priceRange[1]}
@@ -354,45 +320,6 @@ const ProductCatalog = ({ initialProducts, categories, brands }: Props) => {
                           className="text-sm flex-1 cursor-pointer"
                         >
                           {category.title}
-                        </label>
-                      </div>
-                    ))}
-                  </CollapsibleContent>
-                </Collapsible>
-
-                <Separator />
-
-                {/* Brands */}
-                <Collapsible
-                  open={isFilterOpen.brands}
-                  onOpenChange={(open) =>
-                    setIsFilterOpen((prev) => ({ ...prev, brands: open }))
-                  }
-                >
-                  <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
-                    <span className="font-medium">Brands</span>
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform ${
-                        isFilterOpen.brands ? "rotate-180" : ""
-                      }`}
-                    />
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="mt-3 space-y-2">
-                    {brands.map((brand) => (
-                      <div
-                        key={brand._id}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox
-                          id={brand._id}
-                          checked={selectedBrands.includes(brand._id)}
-                          onCheckedChange={() => toggleBrand(brand._id)}
-                        />
-                        <label
-                          htmlFor={brand._id}
-                          className="text-sm flex-1 cursor-pointer"
-                        >
-                          {brand.title}
                         </label>
                       </div>
                     ))}

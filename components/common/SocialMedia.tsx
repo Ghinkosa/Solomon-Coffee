@@ -1,4 +1,4 @@
-import { Facebook, Github, Linkedin, Slack, Youtube } from "lucide-react";
+import { Facebook, Linkedin, Youtube } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -21,12 +21,6 @@ const socialLink = [
     color: "hover:text-red-600 hover:border-red-600",
   },
   {
-    title: "Github",
-    href: "https://github.com/shebascoffee",
-    icon: <Github className="w-5 h-5" />,
-    color: "hover:text-black hover:border-black",
-  },
-  {
     title: "Linkedin",
     href: "https://www.linkedin.com/company/shebas-coffee",
     icon: <Linkedin className="w-5 h-5" />,
@@ -37,12 +31,6 @@ const socialLink = [
     href: "https://www.facebook.com/shebascoffee",
     icon: <Facebook className="w-5 h-5" />,
     color: "hover:text-blue-600 hover:border-blue-600",
-  },
-  {
-    title: "Slack",
-    href: "https://shebascoffee.com",
-    icon: <Slack className="w-5 h-5" />,
-    color: "hover:text-purple-600 hover:border-purple-600",
   },
 ];
 
