@@ -94,7 +94,7 @@ const BlogPage = async ({ params }: Props) => {
                 {dictionary.blog.hero.description}
               </p>
 
-              {/* Blog Stats */}
+              {/* Blog Stats
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-md mx-auto">
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
                   <div className="flex items-center gap-2 text-white/80 mb-1">
@@ -127,7 +127,7 @@ const BlogPage = async ({ params }: Props) => {
                   </div>
                   <p className="text-xl sm:text-2xl font-bold">5+</p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>
