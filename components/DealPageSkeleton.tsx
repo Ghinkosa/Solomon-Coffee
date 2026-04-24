@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const DealPageSkeleton = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-b from-shop_light_bg via-white to-[#09332c]/[0.08]">
       {/* Breadcrumb Skeleton */}
       <Container className="pt-6">
         <div className="flex items-center space-x-2">
@@ -16,37 +16,42 @@ const DealPageSkeleton = () => {
 
       {/* Hero Section Skeleton */}
       <Container className="py-8 sm:py-12">
-        <Card className="bg-gradient-to-r from-gray-300 to-gray-400 border-0 shadow-xl">
-          <CardContent className="p-6 sm:p-8 lg:p-12">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
+        <div
+          className="overflow-hidden rounded-xl border border-[#a3802e]/40 p-6 shadow-xl sm:p-8 lg:p-12"
+          style={{
+            background:
+              "linear-gradient(145deg, #09332c 0%, #3a2417 48%, #1c2329 100%)",
+          }}
+        >
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
               <div className="flex-1 space-y-4 sm:space-y-6">
                 {/* Badges */}
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <Skeleton className="h-8 w-24 rounded-full" />
-                  <Skeleton className="h-6 w-20 rounded" />
+                  <Skeleton className="h-8 w-24 rounded-full bg-[#e4c290]/25" />
+                  <Skeleton className="h-6 w-20 rounded-md bg-[#e4c290]/25" />
                 </div>
 
                 {/* Title and Description */}
                 <div>
-                  <Skeleton className="h-8 sm:h-10 md:h-12 lg:h-14 w-full max-w-md mb-2 sm:mb-4" />
-                  <Skeleton className="h-4 w-full max-w-2xl mb-2" />
-                  <Skeleton className="h-4 w-3/4 max-w-xl" />
+                  <Skeleton className="mb-2 h-8 w-full max-w-md bg-[#fdf6e8]/25 sm:mb-4 sm:h-10 md:h-12 lg:h-14" />
+                  <Skeleton className="mb-2 h-4 w-full max-w-2xl bg-[#e4c290]/20" />
+                  <Skeleton className="h-4 w-3/4 max-w-xl bg-[#e4c290]/20" />
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
                   {[1, 2, 3].map((item, index) => (
                     <div
                       key={item}
-                      className={`bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 ${
+                      className={`rounded-lg border border-white/15 bg-white/10 p-3 backdrop-blur-sm sm:p-4 ${
                         index === 2 ? "col-span-2 sm:col-span-1" : ""
                       }`}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <Skeleton className="w-4 h-4" />
-                        <Skeleton className="h-3 w-16" />
+                      <div className="mb-1 flex items-center gap-2">
+                        <Skeleton className="h-4 w-4 bg-[#e4c290]/25" />
+                        <Skeleton className="h-3 w-16 bg-[#e4c290]/25" />
                       </div>
-                      <Skeleton className="h-6 sm:h-8 w-12" />
+                      <Skeleton className="h-6 w-12 bg-[#fdf6e8]/30 sm:h-8" />
                     </div>
                   ))}
                 </div>
@@ -54,20 +59,20 @@ const DealPageSkeleton = () => {
 
               {/* Countdown Timer Skeleton */}
               <div className="lg:flex-shrink-0">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/20">
+                <div className="rounded-xl border border-[#a3802e]/35 bg-black/20 p-4 backdrop-blur-sm sm:p-6">
                   <div className="flex items-center gap-2 sm:gap-4">
                     <div className="flex items-center gap-1 sm:gap-2">
-                      <Skeleton className="w-4 h-4 sm:w-5 sm:h-5" />
-                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-4 bg-[#e4c290]/25 sm:h-5 sm:w-5" />
+                      <Skeleton className="h-4 w-20 bg-[#e4c290]/25" />
                     </div>
                     <div className="grid grid-cols-4 gap-1 sm:gap-2">
                       {[1, 2, 3, 4].map((item) => (
                         <div
                           key={item}
-                          className="flex flex-col items-center bg-white rounded-lg p-2 sm:p-3 shadow-md border"
+                          className="flex flex-col items-center rounded-lg border border-[#a3802e]/35 bg-[#1c2329]/70 p-2 sm:p-3"
                         >
-                          <Skeleton className="h-6 sm:h-8 w-8 mb-1" />
-                          <Skeleton className="h-3 w-6" />
+                          <Skeleton className="mb-1 h-6 w-8 bg-[#e4c290]/30 sm:h-8" />
+                          <Skeleton className="h-3 w-6 bg-[#e4c290]/25" />
                         </div>
                       ))}
                     </div>
@@ -75,8 +80,7 @@ const DealPageSkeleton = () => {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+        </div>
       </Container>
 
       {/* Deal Features Skeleton */}
@@ -152,17 +156,21 @@ const DealPageSkeleton = () => {
 
       {/* Call to Action Skeleton */}
       <Container className="py-8 sm:py-12">
-        <Card className="bg-gradient-to-r from-gray-300 to-gray-400">
-          <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
-            <Skeleton className="h-8 sm:h-10 w-80 mx-auto mb-4" />
-            <Skeleton className="h-4 w-full max-w-2xl mx-auto mb-2" />
-            <Skeleton className="h-4 w-3/4 max-w-xl mx-auto mb-6" />
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Skeleton className="h-11 w-full sm:w-40" />
-              <Skeleton className="h-11 w-full sm:w-36" />
+        <div
+          className="rounded-xl p-6 text-center shadow-xl sm:p-8 lg:p-12"
+          style={{
+            background:
+              "linear-gradient(90deg, #09332c 0%, #3a2417 50%, #1c2329 100%)",
+          }}
+        >
+            <Skeleton className="mx-auto mb-4 h-8 w-80 bg-[#fdf6e8]/25 sm:h-10" />
+            <Skeleton className="mx-auto mb-2 h-4 w-full max-w-2xl bg-[#e4c290]/20" />
+            <Skeleton className="mx-auto mb-6 h-4 w-3/4 max-w-xl bg-[#e4c290]/20" />
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Skeleton className="h-11 w-full bg-[#e4c290]/35 sm:w-40" />
+              <Skeleton className="h-11 w-full bg-[#e4c290]/20 sm:w-36" />
             </div>
-          </CardContent>
-        </Card>
+        </div>
       </Container>
     </div>
   );

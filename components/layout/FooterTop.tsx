@@ -13,7 +13,7 @@ const data: ContactItemData[] = [
     title: "Visit Us",
     subtitle: `${contactConfig.company.address}, ${contactConfig.company.city}`,
     icon: (
-      <MapPin className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors" />
+      <MapPin className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
     ),
     href: `https://maps.google.com/?q=${encodeURIComponent(`${contactConfig.company.address}, ${contactConfig.company.city}`)}`,
   },
@@ -21,7 +21,7 @@ const data: ContactItemData[] = [
     title: "Call Us",
     subtitle: contactConfig.company.phone,
     icon: (
-      <Phone className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors" />
+      <Phone className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
     ),
     href: `tel:${contactConfig.company.phone.replace(/\D/g, "")}`,
   },
@@ -29,14 +29,14 @@ const data: ContactItemData[] = [
     title: "Working Hours",
     subtitle: contactConfig.businessHours.weekday,
     icon: (
-      <Clock className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors" />
+      <Clock className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
     ),
   },
   {
     title: "Email Us",
     subtitle: contactConfig.emails.support,
     icon: (
-      <Mail className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors" />
+      <Mail className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
     ),
     href: `mailto:${contactConfig.emails.support}`,
   },
@@ -44,7 +44,7 @@ const data: ContactItemData[] = [
 
 const FooterTop = () => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b border-shop_light_green/30">
       {data.map((item, index) => (
         <ContactItem
           key={index}
@@ -78,14 +78,14 @@ const ContactItem = ({ icon, title, content, href }: ContactItemProps) => {
   return (
     <Component
       {...props}
-      className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer"
+      className="flex items-center gap-3 group hover:bg-shop_btn_dark_green/60 p-4 transition-colors cursor-pointer rounded-lg"
     >
-      {icon}
+      <div className="text-shop_orange">{icon}</div>
       <div>
-        <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">
+        <h3 className="font-semibold text-shop_light_pink group-hover:text-shop_orange transition-colors">
           {title}
         </h3>
-        <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">
+        <p className="text-shop_light_pink/80 text-sm mt-1 group-hover:text-shop_light_pink transition-colors">
           {content}
         </p>
       </div>

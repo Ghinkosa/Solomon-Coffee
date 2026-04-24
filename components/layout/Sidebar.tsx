@@ -5,7 +5,7 @@ import {
   Home,
   ShoppingBag,
   BookOpen,
-  Flame,
+  Coffee,
   User,
   ShoppingCart,
   Heart,
@@ -20,6 +20,7 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { motion } from "motion/react";
@@ -43,9 +44,16 @@ interface SidebarProps {
   onClose: () => void;
   lang: string;
   logoText: { first: string; second: string };
+  dealNavLabel?: string;
 }
 
-const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
+const Sidebar: FC<SidebarProps> = ({
+  isOpen,
+  onClose,
+  lang,
+  logoText,
+  dealNavLabel,
+}) => {
   const pathname = usePathname();
   const { items, favoriteProduct, openAuthSidebar } = useStore();
   const { signOut } = useClerk();
@@ -85,7 +93,14 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
     open: { x: 0, opacity: 1 },
   };
 
-  const menuSections = [
+  interface SidebarNavItem {
+    title: string;
+    href: string;
+    icon: LucideIcon;
+    badge?: string;
+  }
+
+  const menuSections: { title: string; items: SidebarNavItem[] }[] = [
     {
       title: "Navigation",
       items: [
@@ -94,7 +109,11 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
         { title: "Categories", href: "/category", icon: Grid3X3 },
         { title: "Brands", href: "/brands", icon: Tag },
         { title: "Blog", href: "/blog", icon: BookOpen },
-        { title: "Hot Deals", href: "/deal", icon: Flame, badge: "Hot" },
+        {
+          title: dealNavLabel ?? "Limited Roasts",
+          href: "/deal",
+          icon: Coffee,
+        },
       ],
     },
     {

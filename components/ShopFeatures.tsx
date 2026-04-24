@@ -2,19 +2,24 @@
 
 import { useState } from "react";
 import Container from "./Container";
-import Title from "./Title";
 import FeatureModal from "./FeatureModal";
 import {
   ShieldCheck,
   Truck,
   CreditCard,
   Headphones,
-  RefreshCw,
   Award,
   Clock,
   Heart,
   LucideIcon,
 } from "lucide-react";
+
+/** Shared Sheba / shop palette for every card (icons, bars, icon wells) */
+const BRAND_CARD = {
+  color: "from-shop_light_green to-shop_dark_green",
+  bgColor: "bg-shop_light_bg",
+  iconColor: "text-shop_dark_green",
+} as const;
 
 interface FeatureType {
   icon: LucideIcon;
@@ -36,202 +41,157 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
   const features: FeatureType[] = [
     {
       icon: ShieldCheck,
-      title: dictionary?.secureShopping?.title || "Secure Shopping",
+      title:
+        dictionary?.secureShopping?.title || "Secure checkout for your orders",
       description:
         dictionary?.secureShopping?.description ||
-        "100% secure payment with SSL encryption",
-      color: "from-blue-500 to-blue-600",
-      bgColor: "bg-blue-50",
-      iconColor: "text-blue-600",
+        "Encrypted payments so your coffee order stays private and protected.",
+      ...BRAND_CARD,
       details: [
-        "Advanced SSL encryption protects all your transactions and personal data during checkout",
-        "PCI DSS compliant payment processing ensures industry-standard security measures",
-        "Secure payment gateways from trusted providers like Stripe and PayPal",
-        "Regular security audits and monitoring to detect and prevent fraud",
-        "Your financial information is never stored on our servers",
+        "Industry-standard encryption on every checkout step",
+        "Trusted processors (cards, wallets) with PCI-aligned handling",
+        "We never store full card numbers on our servers",
+        "Clear order confirmations and receipts for every coffee purchase",
+        "Fraud monitoring on high-value equipment and gift orders",
       ],
       benefits: [
-        "Shop with complete confidence",
-        "Protected personal information",
-        "Safe payment processing",
-        "Fraud prevention systems",
-        "Encrypted data transmission",
-        "Verified secure checkout",
+        "Shop with confidence",
+        "Private payment details",
+        "Recognized payment partners",
+        "Transparent receipts",
+        "Safer high-value orders",
       ],
     },
     {
       icon: Truck,
-      title: dictionary?.freeDelivery?.title || "Free Delivery",
+      title: dictionary?.freeDelivery?.title || "Coffee delivered to your door",
       description:
         dictionary?.freeDelivery?.description ||
-        "Free shipping on coffee orders over $50",
-      color: "from-green-500 to-green-600",
-      bgColor: "bg-green-50",
-      iconColor: "text-green-600",
+        "Reliable shipping on beans, gear, and gifts—free over our threshold.",
+      ...BRAND_CARD,
       details: [
-        "Enjoy free standard shipping on all coffee orders over $50",
-        "Track your package in real-time with our advanced tracking system",
-        "Partner with reliable carriers for timely and safe delivery",
-        "Eco-friendly packaging materials to reduce environmental impact",
-        "Delivery within 3-7 business days depending on your location",
+        "Whole-bean and ground coffee packed to preserve aroma in transit",
+        "Tracking on every shipment so you know when your roast arrives",
+        "Carriers chosen for careful handling of fragile brew gear",
+        "Eco-conscious packaging where we can without compromising freshness",
+        "Typical delivery windows shown at checkout before you pay",
       ],
       benefits: [
-        "Save money on shipping",
-        "Real-time order tracking",
-        "Reliable delivery partners",
-        "Eco-friendly packaging",
-        "Doorstep delivery",
-        "No hidden charges",
+        "Freshness-minded packing",
+        "Live shipment tracking",
+        "Careful handling",
+        "Lower-impact materials",
+        "Clear delivery expectations",
       ],
     },
     {
       icon: CreditCard,
-      title: dictionary?.easyPayments?.title || "Easy Payments",
+      title: dictionary?.easyPayments?.title || "Simple ways to pay",
       description:
         dictionary?.easyPayments?.description ||
-        "Multiple payment options available",
-      color: "from-purple-500 to-purple-600",
-      bgColor: "bg-purple-50",
-      iconColor: "text-purple-600",
+        "Cards, wallets, and familiar options so checking out is quick.",
+      ...BRAND_CARD,
       details: [
-        "Accept all major credit and debit cards including Visa, Mastercard, and Amex",
-        "Digital wallets like PayPal, Apple Pay, and Google Pay for faster checkout",
-        "Buy now, pay later options available through trusted partners",
-        "Secure one-click checkout for returning customers",
-        "International payment methods supported for global coffee orders",
+        "Major credit and debit cards supported at checkout",
+        "Digital wallets where available for one-tap payment",
+        "Order totals and shipping shown before you confirm",
+        "Saved addresses for faster repeat bean orders",
+        "Receipts suitable for cafés and small business buyers",
       ],
       benefits: [
-        "Multiple payment options",
-        "Quick one-click checkout",
-        "Flexible payment plans",
-        "Saved payment methods",
-        "International cards accepted",
-        "Instant payment confirmation",
+        "Flexible payment methods",
+        "Transparent totals",
+        "Faster repeat orders",
+        "Business-friendly receipts",
+        "Straightforward checkout",
       ],
     },
     {
       icon: Headphones,
-      title: dictionary?.support247?.title || "24/7 Support",
+      title: dictionary?.support247?.title || "Help with orders & brewing",
       description:
         dictionary?.support247?.description ||
-        "Dedicated customer support anytime",
-      color: "from-orange-500 to-orange-600",
-      bgColor: "bg-orange-50",
-      iconColor: "text-orange-600",
+        "Reach us when you need grind advice, order changes, or delivery help.",
+      ...BRAND_CARD,
       details: [
-        "Round-the-clock customer support via live chat, email, and phone",
-        "Knowledgeable support team ready to help with any questions or issues",
-        "Average response time of under 2 minutes for live chat inquiries",
-        "Multi-language support to assist customers worldwide",
-        "Comprehensive FAQ and help center for self-service solutions",
+        "Support for order status, address updates, and subscription questions",
+        "Guidance on grind size, brew ratio, and storage for your lot",
+        "Escalation to the roastery team for quality or freshness concerns",
+        "Self-serve FAQs for common brewing and account questions",
+        "Multiple channels so you can pick what works for you",
       ],
       benefits: [
-        "24/7 availability",
-        "Quick response times",
-        "Expert assistance",
-        "Multiple contact channels",
-        "Multi-language support",
-        "Helpful resources",
-      ],
-    },
-    {
-      icon: RefreshCw,
-      title: dictionary?.easyReturns?.title || "Easy Returns",
-      description:
-        dictionary?.easyReturns?.description ||
-        "30-day hassle-free return policy",
-      color: "from-pink-500 to-pink-600",
-      bgColor: "bg-pink-50",
-      iconColor: "text-pink-600",
-      details: [
-        "Return any product within 30 days of delivery with no questions asked",
-        "Simple online return process - just request a return in your account",
-        "Free return shipping labels provided for your convenience",
-        "Full refund processed within 5-7 business days after receiving the return",
-        "Replacement options available for damaged or incorrect items",
-      ],
-      benefits: [
-        "30-day return window",
-        "No-hassle process",
-        "Free return shipping",
-        "Quick refund processing",
-        "Easy exchanges",
-        "Full money-back guarantee",
+        "Real humans who know coffee",
+        "Brewing and storage tips",
+        "Roastery-backed answers",
+        "Helpful help center",
+        "Your choice of channel",
       ],
     },
     {
       icon: Award,
-      title: dictionary?.qualityAssured?.title || "Quality Assured",
+      title: dictionary?.qualityAssured?.title || "Quality you can taste",
       description:
         dictionary?.qualityAssured?.description ||
-        "Fresh, authentic coffee products guaranteed",
-      color: "from-yellow-500 to-yellow-600",
-      bgColor: "bg-yellow-50",
-      iconColor: "text-yellow-600",
+        "Carefully sourced lots, roast-date discipline, and honest labeling.",
+      ...BRAND_CARD,
       details: [
-        "Every product is sourced directly from authorized manufacturers and distributors",
-        "Rigorous quality checks performed before shipping to ensure product condition",
-        "Roast quality checks performed before dispatch",
-        "Zero-tolerance policy for counterfeit products",
-        "Quality guarantee backed by our comprehensive warranty program",
+        "Relationships with growers and importers we trust",
+        "Roast profiles dialed for sweetness, clarity, and balance",
+        "Batch checks before bags leave the roastery",
+        "Clear labels for origin, process, and roast date when applicable",
+        "We stand behind what we sell—tell us if something misses the mark",
       ],
       benefits: [
-        "100% authentic products",
-        "Quality inspections",
-        "Authorized sellers only",
-        "Warranty coverage",
-        "Authenticity certificates",
-        "Premium product standards",
+        "Traceable, ethical sourcing",
+        "Consistent roast quality",
+        "Transparent labeling",
+        "Freshness-minded release cadence",
+        "Accountability to you",
       ],
     },
     {
       icon: Clock,
-      title: dictionary?.fastProcessing?.title || "Fast Processing",
+      title: dictionary?.fastProcessing?.title || "Roast-to-ship without delay",
       description:
         dictionary?.fastProcessing?.description ||
-        "Orders processed within 24 hours",
-      color: "from-indigo-500 to-indigo-600",
-      bgColor: "bg-indigo-50",
-      iconColor: "text-indigo-600",
+        "Orders picked and dispatched quickly so coffee spends less time waiting.",
+      ...BRAND_CARD,
       details: [
-        "All orders placed before 3 PM are processed and shipped the same day",
-        "Automated order confirmation sent immediately after purchase",
-        "Express shipping options available for urgent deliveries",
-        "Real-time inventory system prevents overselling and delays",
-        "Priority processing for members and repeat customers",
+        "Cut-off times posted so you know when same-day packing applies",
+        "Inventory synced to avoid selling beans we cannot ship immediately",
+        "Priority handling for time-sensitive gifts and subscriptions",
+        "Email updates when your order moves from roasted to shipped",
+        "Team training on careful packing for glass and brewers",
       ],
       benefits: [
-        "Same-day processing",
-        "Immediate confirmation",
-        "Express shipping options",
-        "Real-time updates",
-        "Priority handling",
-        "No processing delays",
+        "Predictable handling times",
+        "Fewer oversell surprises",
+        "Gift-friendly speed",
+        "Status you can trust",
+        "Careful packing standards",
       ],
     },
     {
       icon: Heart,
-      title: dictionary?.bestPrices?.title || "Best Prices",
+      title: dictionary?.bestPrices?.title || "Fair value on every bag",
       description:
         dictionary?.bestPrices?.description ||
-        "Competitive pricing with great deals",
-      color: "from-red-500 to-red-600",
-      bgColor: "bg-red-50",
-      iconColor: "text-red-600",
+        "Direct-style pricing on specialty lots, bundles, and limited releases.",
+      ...BRAND_CARD,
       details: [
-        "Price match guarantee - we'll match any lower price you find elsewhere",
-        "Exclusive member discounts and early access to sales",
-        "Daily deals and flash sales on popular products",
-        "Seasonal promotions and special holiday offers",
-        "Loyalty rewards program - earn points with every purchase",
+        "Competitive pricing on single-origin and signature blends",
+        "Bundle savings when you stock up on household or office coffee",
+        "Early access pricing on limited micro-lots for subscribers",
+        "No fake “compare at” inflation—what you see matches the cup",
+        "Loyalty-friendly perks for regular home brewers and wholesale partners",
       ],
       benefits: [
-        "Competitive pricing",
-        "Price match guarantee",
-        "Exclusive member deals",
-        "Regular promotions",
-        "Loyalty rewards",
-        "Best value for money",
+        "Honest shelf pricing",
+        "Stock-up savings",
+        "Member-friendly drops",
+        "Straightforward value",
+        "Rewards for loyal drinkers",
       ],
     },
   ];
@@ -248,62 +208,58 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
 
   return (
     <Container className="my-16 lg:my-24">
-      {/* Header Section */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-3 mb-4">
-          <div className="h-1 w-12 bg-linear-to-r from-shop_light_green to-shop_dark_green rounded-full"></div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-dark-color uppercase tracking-tight">
-            {dictionary?.title || "Why Shop With Us"}
+      <div className="mb-12 text-center">
+        <div className="mb-4 inline-flex items-center gap-3">
+          <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_light_green to-shop_dark_green"></div>
+          <h2 className="text-3xl font-bold uppercase tracking-tight text-dark-color lg:text-4xl">
+            {dictionary?.title || "Why choose Sheba's Coffee"}
           </h2>
-          <div className="h-1 w-12 bg-linear-to-l from-shop_light_green to-shop_dark_green rounded-full"></div>
+          <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_light_green to-shop_dark_green"></div>
         </div>
-        <p className="text-light-color text-lg max-w-2xl mx-auto leading-relaxed">
+        <p className="mx-auto max-w-2xl text-lg leading-relaxed text-light-color">
           {dictionary?.description ||
-            "Experience better coffee shopping with our commitment to quality, freshness, and exceptional service"}
+            "Fresh roasting, ethical sourcing, and service built for people who live by their morning cup."}
         </p>
       </div>
 
-      {/* Features Grid */}
-      <div className="bg-linear-to-br from-white via-shop_light_bg to-shop_light_pink p-8 lg:p-12 rounded-3xl shadow-xl border border-shop_light_green/20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="rounded-3xl border border-shop_light_green/20 bg-linear-to-br from-white via-shop_light_bg to-shop_light_pink p-8 shadow-xl lg:p-12">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             return (
               <button
-                key={index}
+                key={feature.title}
+                type="button"
                 onClick={() => handleFeatureClick(feature)}
-                className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl border border-gray-100 hover:border-shop_light_green hoverEffect transform hover:-translate-y-2 cursor-pointer text-left w-full"
+                className="group w-full cursor-pointer rounded-2xl border border-gray-100 bg-white p-6 text-left shadow-lg hoverEffect transform hover:-translate-y-2 hover:border-shop_light_green hover:shadow-2xl"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                {/* Icon Container */}
-                <div className="flex justify-center mb-5">
+                <div className="mb-5 flex justify-center">
                   <div
-                    className={`relative w-16 h-16 rounded-2xl ${feature.bgColor} flex items-center justify-center group-hover:shadow-lg hoverEffect`}
+                    className={`relative flex h-16 w-16 items-center justify-center rounded-2xl ${feature.bgColor} group-hover:shadow-lg hoverEffect`}
                   >
                     <IconComponent
-                      className={`w-8 h-8 ${feature.iconColor} group-hover:scale-110 hoverEffect`}
+                      className={`h-8 w-8 ${feature.iconColor} group-hover:scale-110 hoverEffect`}
                     />
-                    <div className="absolute inset-0 bg-linear-to-t from-shop_light_green/10 to-transparent opacity-0 group-hover:opacity-100 hoverEffect rounded-2xl"></div>
+                    <div className="absolute inset-0 rounded-2xl bg-linear-to-t from-shop_light_green/15 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="text-center space-y-2">
+                <div className="space-y-2 text-center">
                   <h3 className="text-lg font-bold text-dark-color group-hover:text-shop_dark_green hoverEffect">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-light-color leading-relaxed">
+                  <p className="text-sm leading-relaxed text-light-color">
                     {feature.description}
                   </p>
-                  <div className="text-xs text-shop_dark_green font-medium pt-2 opacity-0 group-hover:opacity-100 hoverEffect">
+                  <div className="pt-2 text-xs font-medium text-shop_dark_green opacity-0 transition-opacity group-hover:opacity-100">
                     {dictionary?.learnMore || "Click to learn more →"}
                   </div>
                 </div>
 
-                {/* Decorative Bottom Bar */}
-                <div className="mt-4 w-full bg-gray-100 rounded-full h-1.5">
+                <div className="mt-4 h-1.5 w-full rounded-full bg-shop_light_green/15">
                   <div
-                    className={`bg-linear-to-r ${feature.color} h-1.5 rounded-full hoverEffect group-hover:w-full transition-all duration-500`}
+                    className={`h-1.5 rounded-full bg-linear-to-r ${feature.color} transition-all duration-500 group-hover:w-full hoverEffect`}
                     style={{ width: "40%" }}
                   ></div>
                 </div>
@@ -312,57 +268,57 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           })}
         </div>
 
-        {/* Bottom Stats Section */}
-        <div className="mt-12 pt-8 border-t border-shop_light_green/20">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-shop_light_green/10">
-              <div className="text-4xl font-bold text-shop_dark_green mb-2">
+        <div className="mt-12 border-t border-shop_light_green/20 pt-8">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
+              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
                 50K+
               </div>
-              <p className="text-shop_dark_green/70 font-medium">
-                {dictionary?.stats?.happyCustomers || "Happy Customers"}
+              <p className="font-medium text-shop_dark_green/70">
+                {dictionary?.stats?.happyCustomers || "Happy coffee drinkers"}
               </p>
             </div>
-            <div className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-shop_light_green/10">
-              <div className="text-4xl font-bold text-shop_dark_green mb-2">
+            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
+              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
                 100K+
               </div>
-              <p className="text-shop_dark_green/70 font-medium">
-                {dictionary?.stats?.productsSold || "Products Sold"}
+              <p className="font-medium text-shop_dark_green/70">
+                {dictionary?.stats?.productsSold || "Bags shipped"}
               </p>
             </div>
-            <div className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-shop_light_green/10">
-              <div className="text-4xl font-bold text-shop_dark_green mb-2">
+            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
+              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
                 99%
               </div>
-              <p className="text-shop_dark_green/70 font-medium">
-                {dictionary?.stats?.satisfactionRate || "Satisfaction Rate"}
+              <p className="font-medium text-shop_dark_green/70">
+                {dictionary?.stats?.satisfactionRate || "Would recommend us"}
               </p>
             </div>
-            <div className="text-center p-6 bg-white/50 backdrop-blur-sm rounded-2xl border border-shop_light_green/10">
-              <div className="text-4xl font-bold text-shop_dark_green mb-2">
+            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
+              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
                 24/7
               </div>
-              <p className="text-shop_dark_green/70 font-medium">
-                {dictionary?.stats?.customerSupport || "Customer Support"}
+              <p className="font-medium text-shop_dark_green/70">
+                {dictionary?.stats?.customerSupport || "Order & brew support"}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Trust Badge */}
-        <div className="text-center mt-8">
-          <div className="inline-flex items-center gap-4 px-8 py-4 bg-linear-to-r from-shop_light_pink to-shop_light_bg rounded-2xl border border-shop_light_green/20 shadow-md">
-            <ShieldCheck className="w-6 h-6 text-shop_dark_green" />
-            <span className="text-dark-text font-semibold">
-              Trusted by thousands of satisfied customers worldwide
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-4 rounded-2xl border border-shop_light_green/20 bg-linear-to-r from-shop_light_pink to-shop_light_bg px-8 py-4 shadow-md">
+            <ShieldCheck className="h-6 w-6 shrink-0 text-shop_dark_green" />
+            <span className="font-semibold text-dark-text">
+              {dictionary?.trustLine ||
+                "Trusted by home brewers and cafés who care about the cup."}
             </span>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <svg
                   key={star}
-                  className="w-5 h-5 text-yellow-400 fill-current"
+                  className="h-5 w-5 fill-current text-shop_light_green"
                   viewBox="0 0 20 20"
+                  aria-hidden
                 >
                   <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                 </svg>
@@ -372,7 +328,6 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         </div>
       </div>
 
-      {/* Feature Modal */}
       <FeatureModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

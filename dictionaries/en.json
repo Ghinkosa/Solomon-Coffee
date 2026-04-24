@@ -15,7 +15,7 @@
     "menu": {
       "home": "Home",
       "shop": "Shop",
-      "deals": "Selection",
+      "deals": "Limited Roasts",
       "orders": "Orders",
       "contact": "Contact",
       "blog": "Blog"
@@ -86,46 +86,43 @@
       }
     },
     "shopFeatures": {
-      "title": "Why Shop With Us",
-      "description": "Experience better coffee shopping with our commitment to quality, freshness, and exceptional service",
+      "title": "Why choose Sheba's Coffee",
+      "description": "Fresh roasting, ethical sourcing, and service built for people who care about every cup.",
       "learnMore": "Click to learn more",
+      "trustLine": "Trusted by home brewers and cafés who care about the cup.",
       "stats": {
-        "happyCustomers": "Happy Customers",
-        "productsSold": "Products Sold",
-        "satisfactionRate": "Satisfaction Rate",
-        "customerSupport": "Customer Support"
+        "happyCustomers": "Happy coffee drinkers",
+        "productsSold": "Bags shipped",
+        "satisfactionRate": "Would recommend us",
+        "customerSupport": "Order & brew support"
       },
       "secureShopping": {
-        "title": "Secure Shopping",
-        "description": "100% secure payment with SSL encryption"
+        "title": "Secure checkout for your orders",
+        "description": "Encrypted payments so your coffee order stays private and protected."
       },
       "freeDelivery": {
-        "title": "Free Delivery",
-        "description": "Free shipping on orders over $50"
+        "title": "Coffee delivered to your door",
+        "description": "Reliable shipping on beans, gear, and gifts—free over our threshold."
       },
       "easyPayments": {
-        "title": "Easy Payments",
-        "description": "Multiple payment options available"
+        "title": "Simple ways to pay",
+        "description": "Cards, wallets, and familiar options so checking out is quick."
       },
       "support247": {
-        "title": "24/7 Support",
-        "description": "Dedicated customer support anytime"
-      },
-      "easyReturns": {
-        "title": "Easy Returns",
-        "description": "30-day hassle-free return policy"
+        "title": "Help with orders & brewing",
+        "description": "Reach us for grind advice, order changes, or delivery help."
       },
       "qualityAssured": {
-        "title": "Quality Assured",
-        "description": "100% authentic products guaranteed"
+        "title": "Quality you can taste",
+        "description": "Carefully sourced lots, roast-date discipline, and honest labeling."
       },
       "fastProcessing": {
-        "title": "Fast Processing",
-        "description": "Orders processed within 24 hours"
+        "title": "Roast-to-ship without delay",
+        "description": "Orders picked and packed quickly so your beans spend less time waiting."
       },
       "bestPrices": {
-        "title": "Best Prices",
-        "description": "Competitive pricing with great deals"
+        "title": "Fair value on every bag",
+        "description": "Straightforward pricing on specialty lots, bundles, and limited releases."
       }
     },
     "latestBlog": {
@@ -282,49 +279,56 @@
     "showingAll": "Showing all available products"
   },
   "deals": {
+    "countdown": {
+      "endsIn": "Offer ends in:",
+      "days": "Days",
+      "hours": "Hours",
+      "mins": "Mins",
+      "secs": "Secs"
+    },
     "hero": {
-      "badge": "HOT DEALS",
-      "upToOff": "Up to {maxDiscount}% OFF",
-      "title": "Weekly Hot Deals",
-      "description": "Don't miss out on these incredible limited-time offers! Save big on your favorite products with discounts up to {maxDiscount}% off. Limited stock available.",
+      "badge": "LIMITED ROASTS",
+      "upToOff": "Up to {maxDiscount}% off",
+      "title": "Roaster's limited selection",
+      "description": "Hand-picked lots from our roastery and partner farms—special pricing on small batches while supplies last. Save up to {maxDiscount}% on these coffees.",
       "stats": {
-        "products": "Products",
-        "avgDiscount": "Avg. Discount",
-        "happyCustomers": "Happy Customers"
+        "products": "Lots available",
+        "avgDiscount": "Avg. savings",
+        "happyCustomers": "Coffee lovers served"
       }
     },
     "features": {
       "lightning": {
-        "title": "Lightning Deals",
-        "description": "Flash sales with limited time offers"
+        "title": "Fresh-roasted picks",
+        "description": "Curated coffees rotated on a short window so every cup stays vibrant."
       },
       "premium": {
-        "title": "Premium Quality",
-        "description": "Top-rated products with best reviews"
+        "title": "Farm & roast quality",
+        "description": "Traceable origins and careful roasting you can taste in the cup."
       },
       "favorites": {
-        "title": "Customer Favorites",
-        "description": "Most loved items by our customers"
+        "title": "Crowd pleasers",
+        "description": "Blends and single origins our guests reorder most often."
       },
       "limited": {
-        "title": "Limited Time",
-        "description": "Hurry! These deals won't last long"
+        "title": "Small batches",
+        "description": "When a lot is gone, it’s gone—grab yours before the next harvest."
       }
     },
     "collection": {
-      "title": "Hot Deals Collection",
-      "description": "Discover amazing deals on premium products. Limited quantities available at these special prices.",
+      "title": "Limited roasts on the shelf",
+      "description": "Explore this week’s featured coffees at special prices. Quantities are limited to keep quality high.",
       "noDeals": {
-        "title": "No Deals Available Right Now",
-        "description": "Check back soon for amazing deals and discounts!",
-        "button": "Browse All Products"
+        "title": "No limited roasts right now",
+        "description": "We’re lining up the next micro-lot drop. Check back soon or browse the full shop.",
+        "button": "Browse all coffees"
       }
     },
     "cta": {
-      "title": "Don't Miss Out on These Amazing Deals!",
-      "description": "Subscribe to our newsletter to get notified about flash sales, exclusive deals, and new arrivals.",
-      "explore": "Explore All Products",
-      "subscribe": "Subscribe for Deals"
+      "title": "Never miss a micro-lot drop",
+      "description": "Subscribe for roast dates, harvest arrivals, and first access to limited releases.",
+      "explore": "Shop all coffees",
+      "subscribe": "Get release updates"
     }
   },
   "blog": {

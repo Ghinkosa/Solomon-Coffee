@@ -15,7 +15,7 @@
     "menu": {
       "home": "Home",
       "shop": "Negozio",
-      "deals": "Selezione",
+      "deals": "Tostature limitate",
       "orders": "Ordini",
       "contact": "Contatti",
       "blog": "Il Blog"
@@ -86,46 +86,43 @@
       }
     },
     "shopFeatures": {
-      "title": "Perché Acquistare da Noi",
-      "description": "Sperimenta il miglior shopping online con il nostro impegno per la qualità, la sicurezza e un servizio eccezionale",
+      "title": "Perché scegliere Sheba's Coffee",
+      "description": "Tostatura fresca, filiera curata e assistenza per chi vive di caffè.",
       "learnMore": "Clicca per saperne di più",
+      "trustLine": "Scelto da home barista e caffè che vogliono la tazza giusta.",
       "stats": {
-        "happyCustomers": "Clienti Felici",
-        "productsSold": "Prodotti Venduti",
-        "satisfactionRate": "Tasso di Soddisfazione",
-        "customerSupport": "Supporto Clienti"
+        "happyCustomers": "Bevitori di caffè",
+        "productsSold": "Sacchetti spediti",
+        "satisfactionRate": "Ci consiglierebbero",
+        "customerSupport": "Aiuto ordini ed estrazione"
       },
       "secureShopping": {
-        "title": "Acquisti Sicuri",
-        "description": "Pagamento sicuro al 100% con crittografia SSL"
+        "title": "Checkout sicuro",
+        "description": "Pagamenti crittografati per proteggere il tuo ordine di caffè."
       },
       "freeDelivery": {
-        "title": "Consegna Gratuita",
-        "description": "Spedizione gratuita per ordini superiori a €50"
+        "title": "Caffè a casa tua",
+        "description": "Spedizione affidabile di chicchi, attrezzature e regali—gratis sopra soglia."
       },
       "easyPayments": {
-        "title": "Pagamenti Facili",
-        "description": "Molteplici opzioni di pagamento disponibili"
+        "title": "Pagamenti semplici",
+        "description": "Carte, wallet e opzioni familiari in cassa."
       },
       "support247": {
-        "title": "Supporto 24/7",
-        "description": "Supporto clienti dedicato in qualsiasi momento"
-      },
-      "easyReturns": {
-        "title": "Resi Facili",
-        "description": "Politica di reso senza problemi di 30 giorni"
+        "title": "Aiuto su ordini e estrazione",
+        "description": "Macinatura, modifiche ordine e consegna: siamo qui."
       },
       "qualityAssured": {
-        "title": "Qualità Garantita",
-        "description": "Prodotti autentici al 100% garantiti"
+        "title": "Qualità in tazza",
+        "description": "Lotti selezionati, data di tostatura ed etichette chiare."
       },
       "fastProcessing": {
-        "title": "Elaborazione Rapida",
-        "description": "Ordini elaborati entro 24 ore"
+        "title": "Dalla tostatura alla spedizione",
+        "description": "Preparazione rapida così i chicchi aspettano meno."
       },
       "bestPrices": {
-        "title": "Migliori Prezzi",
-        "description": "Prezzi competitivi con ottime offerte"
+        "title": "Prezzo giusto per ogni sacco",
+        "description": "Listini chiari su origini, bundle e micro-lot."
       }
     },
     "latestBlog": {
@@ -228,49 +225,56 @@
     "showingAll": "Visualizzazione di tutti i prodotti disponibili"
   },
   "deals": {
+    "countdown": {
+      "endsIn": "L'offerta termina tra:",
+      "days": "Giorni",
+      "hours": "Ore",
+      "mins": "Min",
+      "secs": "Sec"
+    },
     "hero": {
-      "badge": "OFFERTE IMPERDIBILI",
-      "upToOff": "Fino al {maxDiscount}% di SCONTO",
-      "title": "Offerte Imperdibili della Settimana",
-      "description": "Non perdere queste incredibili offerte a tempo limitato! Risparmia alla grande sui tuoi prodotti preferiti con sconti fino al {maxDiscount}%. Scorte limitate.",
+      "badge": "TOSTATURE LIMITATE",
+      "upToOff": "Fino al {maxDiscount}% di sconto",
+      "title": "Selezione limitata del torrefattore",
+      "description": "Lotti scelti a mano nella nostra torrefazione e dalle fattorie partner—prezzi speciali su piccole quantità. Fino al {maxDiscount}% di sconto fino a esaurimento.",
       "stats": {
-        "products": "Prodotti",
-        "avgDiscount": "Sconto Medio",
-        "happyCustomers": "Clienti Felici"
+        "products": "Lotti disponibili",
+        "avgDiscount": "Risparmio medio",
+        "happyCustomers": "Appassionati di caffè"
       }
     },
     "features": {
       "lightning": {
-        "title": "Offerte Lampo",
-        "description": "Vendite flash con offerte a tempo limitato"
+        "title": "Selezione appena tostata",
+        "description": "Caffè ruotati spesso per mantenere aroma e freschezza in tazza."
       },
       "premium": {
-        "title": "Qualità Premium",
-        "description": "Prodotti più votati con le migliori recensioni"
+        "title": "Qualità in fattoria e in tostatura",
+        "description": "Origini tracciabili e tostatura curata che si sente al sorso."
       },
       "favorites": {
-        "title": "Preferiti dai Clienti",
-        "description": "Articoli più amati dai nostri clienti"
+        "title": "Preferiti della community",
+        "description": "Miscele e origini che i nostri clienti riordinano più spesso."
       },
       "limited": {
-        "title": "Tempo Limitato",
-        "description": "Affrettati! Queste offerte non dureranno a lungo"
+        "title": "Piccoli lotti",
+        "description": "Quando un lotto finisce, è finito—prima del prossimo raccolto."
       }
     },
     "collection": {
-      "title": "Collezione Offerte Imperdibili",
-      "description": "Scopri offerte incredibili su prodotti premium. Quantità limitate disponibili a questi prezzi speciali.",
+      "title": "Tostature limitate in negozio",
+      "description": "I caffè in evidenza di questa settimana a prezzo speciale. Quantità limitate per la massima qualità.",
       "noDeals": {
-        "title": "Nessuna Offerta Disponibile Al Momento",
-        "description": "Torna presto per offerte e sconti incredibili!",
-        "button": "Sfoglia Tutti i Prodotti"
+        "title": "Nessuna tostatura limitata al momento",
+        "description": "Stiamo preparando il prossimo micro-lot. Torna presto o sfoglia tutto il negozio.",
+        "button": "Vedi tutti i caffè"
       }
     },
     "cta": {
-      "title": "Non Perdere Queste Incredibili Offerte!",
-      "description": "Iscriviti alla nostra newsletter per ricevere notifiche su vendite flash, offerte esclusive e nuovi arrivi.",
-      "explore": "Esplora Tutti i Prodotti",
-      "subscribe": "Iscriviti per le Offerte"
+      "title": "Non perdere nessun micro-lot",
+      "description": "Iscriviti per date di tostatura, arrivi di raccolta e accesso anticipato alle uscite limitate.",
+      "explore": "Tutti i caffè",
+      "subscribe": "Aggiornamenti sulle uscite"
     }
   },
   "blog": {

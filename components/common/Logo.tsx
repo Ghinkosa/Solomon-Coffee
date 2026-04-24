@@ -1,11 +1,13 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Coffee } from "lucide-react";
+import Image from "next/image";
+import logoImage from "@/images/logo.png";
 
 interface LogoProps {
   className?: string;
   variant?: "default" | "sm";
   lang?: string;
+  theme?: "light" | "dark";
   logoText?: {
     first: string;
     second: string;
@@ -16,8 +18,18 @@ const Logo = ({
   className,
   variant = "default",
   lang = "en",
+  theme = "light",
   logoText = { first: "Sheba's", second: "Coffee" },
 }: LogoProps) => {
+  const primaryTextClass =
+    theme === "dark"
+      ? "text-shop_light_pink group-hover:text-shop_orange"
+      : "text-shop_dark_green group-hover:text-shop_light_green";
+  const secondaryTextClass =
+    theme === "dark"
+      ? "text-shop_orange group-hover:text-shop_light_pink"
+      : "text-shop_orange group-hover:text-shop_dark_green";
+
   // Small variant for footer
   if (variant === "sm") {
     return (
@@ -25,31 +37,20 @@ const Logo = ({
         href={`/${lang}`}
         aria-label={`${logoText.first} ${logoText.second} — Home`}
       >
-        <div
-          className={cn(
-            "flex items-center gap-1.5 group hoverEffect",
-            className,
-          )}
-        >
-          {/* Coffee mark (smaller) */}
-          <div className="relative">
-            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-shop_orange rounded-full animate-pulse group-hover:bg-shop_light_green hoverEffect"></div>
-            <Coffee
-              className="w-5 h-5 text-shop_dark_green group-hover:text-shop_light_green hoverEffect transform group-hover:scale-110"
-              strokeWidth={2.5}
-            />
-          </div>
-
-          {/* Text Logo (smaller) */}
-          <div className="flex items-center">
-            <h1 className="text-sm font-black tracking-wider uppercase font-sans">
-              <span className="text-shop_dark_green group-hover:text-shop_light_green hoverEffect">
-                {logoText.first}
-              </span>
-              <span className="bg-linear-to-r from-shop_light_green to-shop_orange bg-clip-text text-transparent group-hover:from-shop_dark_green group-hover:to-shop_light_green hoverEffect">
-                {logoText.second}
-              </span>
-            </h1>
+        <div className={cn("flex items-center gap-2 group hoverEffect", className)}>
+          <Image
+            src={logoImage}
+            alt={`${logoText.first} ${logoText.second}`}
+            className="h-8 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90"
+            priority
+          />
+          <div className="leading-none">
+            <p className={`text-sm font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}>
+              Sheba&apos;s
+            </p>
+            <p className={`text-xs font-bold tracking-widest uppercase hoverEffect ${secondaryTextClass}`}>
+              Cup Coffee
+            </p>
           </div>
         </div>
       </Link>
@@ -62,28 +63,20 @@ const Logo = ({
       href={`/${lang}`}
       aria-label={`${logoText.first} ${logoText.second} — Home`}
     >
-      <div
-        className={cn("flex items-center gap-2 group hoverEffect", className)}
-      >
-        {/* Coffee mark */}
-        <div className="relative">
-          <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-shop_orange rounded-full animate-pulse group-hover:bg-shop_light_green hoverEffect"></div>
-          <Coffee
-            className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-shop_dark_green group-hover:text-shop_light_green hoverEffect transform group-hover:scale-110"
-            strokeWidth={2.5}
-          />
-        </div>
-
-        {/* Text Logo */}
-        <div className="flex items-center">
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-black tracking-wider uppercase font-sans">
-            <span className="text-shop_dark_green group-hover:text-shop_light_green hoverEffect">
-              {logoText.first}
-            </span>
-            <span className="bg-linear-to-r from-shop_light_green to-shop_orange bg-clip-text text-transparent group-hover:from-shop_dark_green group-hover:to-shop_light_green hoverEffect">
-              {logoText.second}
-            </span>
-          </h1>
+      <div className={cn("flex items-center gap-2 sm:gap-3 group hoverEffect", className)}>
+        <Image
+          src={logoImage}
+          alt={`${logoText.first} ${logoText.second}`}
+          className="h-9 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90 sm:h-10 lg:h-11"
+          priority
+        />
+        <div className="leading-none">
+          <p className={`text-sm sm:text-base lg:text-lg font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}>
+            Sheba&apos;s
+          </p>
+          <p className={`text-[11px] sm:text-xs lg:text-sm font-bold tracking-widest uppercase hoverEffect ${secondaryTextClass}`}>
+            Cup Coffee
+          </p>
         </div>
       </div>
     </Link>

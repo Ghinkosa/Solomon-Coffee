@@ -7,7 +7,7 @@ import { client } from "@/sanity/lib/client";
 import HomeTabbar from "./HomeTabbar";
 import { productType } from "@/constants";
 import NoProductAvailable from "./product/NoProductAvailable";
-import { Grid3X3, LayoutGrid, List, Filter, SortAsc, Eye } from "lucide-react";
+import { Filter } from "lucide-react";
 import Container from "./Container";
 import { ALL_PRODUCTS_QUERYResult } from "@/sanity.types";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,6 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 
-type ViewMode = "grid-2" | "grid-3" | "grid-4" | "grid-5" | "list";
 type SortOption =
   | "name-asc"
   | "name-desc"
@@ -53,7 +52,6 @@ const ProductGrid = ({
    */
   const [selectedTab, setSelectedTab] = useState(productType[0]?.value || "Light Roast");
   
-  const [viewMode, setViewMode] = useState<ViewMode>("grid-5");
   const [sortBy, setSortBy] = useState<SortOption>("name-asc");
   const [showFilters, setShowFilters] = useState(false);
   const [productsPerPage] = useState(20);
@@ -139,36 +137,16 @@ const ProductGrid = ({
     applyFilters();
   }, [applyFilters]);
 
-  const getGridClasses = () => {
-    switch (viewMode) {
-      case "grid-2": return "grid-cols-1 sm:grid-cols-2 gap-6";
-      case "grid-3": return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5";
-      case "grid-4": return "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
-      case "grid-5": return "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3";
-      case "list": return "grid-cols-1 gap-4";
-      default: return "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
-    }
-  };
-
-  const ViewModeButton = ({ mode, icon, label }: { mode: ViewMode; icon: React.ReactNode; label: string; }) => (
-    <Button
-      variant={viewMode === mode ? "default" : "outline"}
-      size="sm"
-      onClick={() => setViewMode(mode)}
-      className={`p-2 ${viewMode === mode ? "bg-shop_light_green text-white" : ""}`}
-    >
-      {icon}
-    </Button>
-  );
+  const gridClasses = "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3";
 
   return (
     <Container className="flex flex-col lg:px-0 mt-16 lg:mt-24">
       <div className="text-center mb-8">
         <h2 className="text-3xl lg:text-4xl font-bold text-dark-color mb-2">
-          {dictionary?.home?.featuredProducts?.title || "Featured Products"}
+          Featured Coffee Selection
         </h2>
         <p className="text-light-color text-lg max-w-2xl mx-auto">
-          {dictionary?.home?.featuredProducts?.description}
+          Freshly roasted picks and customer favorites from Sheba&apos;s Coffee
         </p>
       </div>
 
@@ -181,13 +159,6 @@ const ProductGrid = ({
 
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mt-6 pt-6 border-t border-gray-100">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <ViewModeButton mode="grid-2" icon={<Grid3X3 size={16} />} label="2 Cols" />
-              <ViewModeButton mode="grid-3" icon={<LayoutGrid size={16} />} label="3 Cols" />
-              <ViewModeButton mode="grid-5" icon={<LayoutGrid size={16} />} label="5 Cols" />
-              <ViewModeButton mode="list" icon={<List size={16} />} label="List" />
-            </div>
-
             <Button
               variant={showFilters ? "default" : "outline"}
               size="sm"
@@ -242,7 +213,7 @@ const ProductGrid = ({
       {loading ? (
         <ProductGridSkeleton />
       ) : filteredProducts?.length > 0 ? (
-        <div className={`grid ${getGridClasses()}`}>
+        <div className={`grid ${gridClasses}`}>
           <AnimatePresence mode="popLayout">
             {filteredProducts.slice(0, productsPerPage).map((product) => (
               <motion.div

@@ -29,6 +29,7 @@ const MobileMenu = ({ lang, dictionary }: MobileMenuProps) => {
               onClose={() => setIsSidebarOpen(false)}
               lang={lang}
               logoText={dictionary.logo}
+              dealNavLabel={dictionary.header.menu.deals}
             />
           )}
         </AnimatePresence>

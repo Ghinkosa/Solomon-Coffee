@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface FormData {
   name: string;
@@ -134,25 +135,27 @@ const ContactClient = ({ dictionary }: ContactClientProps) => {
   return (
     <div className="bg-linear-to-b from-shop_light_bg to-white min-h-screen">
       {/* Hero Banner Section */}
-      <section className="py-20 bg-linear-to-r from-shop_dark_green to-shop_light_green text-white">
-        <Container className="max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
-              {dictionary.contact.hero.badge}
-            </Badge>
-            <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-              {dictionary.contact.hero.title}
-            </h1>
-            <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              {dictionary.contact.hero.description}
-            </p>
-          </motion.div>
-        </Container>
-      </section>
+      <Container className="py-8 sm:py-12">
+        <Card className="bg-gradient-to-r from-shop_dark_green to-shop_light_green text-white border-0 shadow-xl overflow-hidden">
+          <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-3xl mx-auto"
+            >
+              <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
+                {dictionary.contact.hero.badge}
+              </Badge>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
+                {dictionary.contact.hero.title}
+              </h1>
+              <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+                {dictionary.contact.hero.description}
+              </p>
+            </motion.div>
+          </CardContent>
+        </Card>
+      </Container>
 
       <Container className="px-4 sm:px-6 lg:px-8 py-6 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">

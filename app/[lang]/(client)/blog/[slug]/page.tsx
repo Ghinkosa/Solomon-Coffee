@@ -18,7 +18,6 @@ import dayjs from "dayjs";
 import {
   Calendar,
   ChevronLeft,
-  User,
   Clock,
   Eye,
   Share2,
@@ -146,29 +145,6 @@ const SingleBlogPage = async ({
 
                 {/* Meta Information */}
                 <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-                  {blog?.author?.name && (
-                    <div className="flex items-center gap-2">
-                      {blog?.author?.image && (
-                        <Image
-                          src={urlFor(blog.author.image)
-                            .width(32)
-                            .height(32)
-                            .url()}
-                          alt={blog.author.name}
-                          width={32}
-                          height={32}
-                          className="rounded-full"
-                        />
-                      )}
-                      <div className="flex items-center gap-1">
-                        <User size={16} />
-                        <span className="font-medium text-shop_dark_green">
-                          {blog.author.name}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
                   <div className="flex items-center gap-1">
                     <Calendar size={16} />
                     <time>

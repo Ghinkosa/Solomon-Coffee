@@ -14,6 +14,12 @@
   --color-shop_light_bg: #faf7f2;       /* Latte Background */
   --color-shop_light_green: #bc6c25;    /* Rich Caramel */
   --color-shop_orange: #dda15e;         /* Cinnamon/Almond */
+  /* Sheba Cup Coffee brand palette */
+  --color-brand-forest: #09332c;
+  --color-brand-brown: #3a2417;
+  --color-brand-charcoal: #1c2329;
+  --color-brand-gold: #a3802e;
+  --color-brand-gold-light: #e4c290;
   --color-dark-color: #1c1917;          /* Dark Stone */
   --color-light-color: #78716c;          /* Muted Bean */
   --color-light-orange: #f5d5ae;        /* Frothy Milk */

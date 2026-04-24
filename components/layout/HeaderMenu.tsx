@@ -15,16 +15,11 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
     <div className="hidden md:inline-flex w-full items-center justify-center gap-7 text-sm capitalize font-semibold text-light-color">
       {headerData?.map((item) => {
         const titleKey = item?.title?.toLowerCase();
-        // Fallback to title if key not found (handle "Hot Deal" vs "deals" mismatch if any)
-        // en.json has "deals", const has "Hot Deal". "deals" key.
-        // I might need a mapping or update constants to match keys.
-        // For now, I'll rely on a manual mapping or just use the lowerCase one if it exists.
-
-        // Manual Mapping based on en.json keys
         let label = item?.title;
         if (item.title === "Home") label = dictionary.header.menu.home;
         if (item.title === "Shop") label = dictionary.header.menu.shop;
-        if (item.title === "Hot Deal") label = dictionary.header.menu.deals;
+        if (item.title === "Limited Roasts" || item.title === "Hot Deal")
+          label = dictionary.header.menu.deals;
         if (item.title === "Contact") label = dictionary.header.menu.contact;
         if (item.title === "Blog") label = dictionary.header.menu.blog;
         // "Deals" is "deals", "Orders" is "orders".

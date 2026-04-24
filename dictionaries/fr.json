@@ -15,7 +15,7 @@
     "menu": {
       "home": "Accueil",
       "shop": "Boutique",
-      "deals": "Sélection",
+      "deals": "Torréfactions limitées",
       "orders": "Commandes",
       "contact": "Contact",
       "blog": "Le Blog"
@@ -86,46 +86,43 @@
       }
     },
     "shopFeatures": {
-      "title": "Pourquoi Acheter Chez Nous",
-      "description": "Découvrez le meilleur du shopping en ligne avec notre engagement envers la qualité, la sécurité et un service exceptionnel",
+      "title": "Pourquoi choisir Sheba's Coffee",
+      "description": "Torréfaction fraîche, sourcing responsable et un service pensé pour les amateurs de café.",
       "learnMore": "Cliquez pour en savoir plus",
+      "trustLine": "La confiance des baristas à domicile et des cafés qui comptent sur la tasse.",
       "stats": {
-        "happyCustomers": "Clients Heureux",
-        "productsSold": "Produits Vendus",
-        "satisfactionRate": "Taux de Satisfaction",
-        "customerSupport": "Support Client"
+        "happyCustomers": "Amateurs de café",
+        "productsSold": "Sacs expédiés",
+        "satisfactionRate": "Nous recommandent",
+        "customerSupport": "Aide commande & extraction"
       },
       "secureShopping": {
-        "title": "Achats Sécurisés",
-        "description": "Paiement 100% sécurisé avec cryptage SSL"
+        "title": "Paiement sécurisé",
+        "description": "Chiffrement et traitement fiables pour vos commandes de café."
       },
       "freeDelivery": {
-        "title": "Livraison Gratuite",
-        "description": "Livraison gratuite pour les commandes de plus de 50€"
+        "title": "Café livré chez vous",
+        "description": "Livraison soignée des grains, accessoires et cadeaux—gratuit au-dessus du seuil."
       },
       "easyPayments": {
-        "title": "Paiements Faciles",
-        "description": "Plusieurs options de paiement disponibles"
+        "title": "Paiement simple",
+        "description": "Cartes, portefeuilles numériques et options familières au checkout."
       },
       "support247": {
-        "title": "Support 24/7",
-        "description": "Un support client dédié à tout moment"
-      },
-      "easyReturns": {
-        "title": "Retours Faciles",
-        "description": "Politique de retour sans tracas de 30 jours"
+        "title": "Aide commande & torréfaction",
+        "description": "Conseils de mouture, suivi de commande et assistance livraison."
       },
       "qualityAssured": {
-        "title": "Qualité Assurée",
-        "description": "Produits 100% authentiques garantis"
+        "title": "Une qualité dans la tasse",
+        "description": "Lots sélectionnés, dates de torréfaction et étiquetage transparent."
       },
       "fastProcessing": {
-        "title": "Traitement Rapide",
-        "description": "Commandes traitées sous 24 heures"
+        "title": "De la torréfaction à l'envoi",
+        "description": "Préparation et expédition rapides pour limiter l'attente de vos grains."
       },
       "bestPrices": {
-        "title": "Meilleurs Prix",
-        "description": "Des prix compétitifs avec de superbes offres"
+        "title": "Un prix juste par sac",
+        "description": "Tarifs clairs sur origines, lots limités et assortiments."
       }
     },
     "latestBlog": {
@@ -228,49 +225,56 @@
     "showingAll": "Affichage de tous les produits disponibles"
   },
   "deals": {
+    "countdown": {
+      "endsIn": "L'offre se termine dans :",
+      "days": "Jours",
+      "hours": "Heures",
+      "mins": "Min",
+      "secs": "Sec"
+    },
     "hero": {
-      "badge": "OFFRES CHAUDES",
-      "upToOff": "Jusqu'à {maxDiscount}% de RÉDUCTION",
-      "title": "Offres Chaudes de la Semaine",
-      "description": "Ne manquez pas ces offres incroyables à durée limitée ! Économisez gros sur vos produits préférés avec des réductions allant jusqu'à {maxDiscount}%. Stock limité.",
+      "badge": "TORRÉFACTIONS LIMITÉES",
+      "upToOff": "Jusqu'à {maxDiscount}% de réduction",
+      "title": "Sélection limitée du torréfacteur",
+      "description": "Lots choisis à la main dans notre torréfaction et chez nos partenaires—tarifs préférentiels sur de petites quantités. Jusqu'à {maxDiscount}% de réduction tant qu'il en reste.",
       "stats": {
-        "products": "Produits",
-        "avgDiscount": "Réduction Moyenne",
-        "happyCustomers": "Clients Heureux"
+        "products": "Lots disponibles",
+        "avgDiscount": "Économie moyenne",
+        "happyCustomers": "Amateurs de café"
       }
     },
     "features": {
       "lightning": {
-        "title": "Ventes Flash",
-        "description": "Ventes flash avec offres à durée limitée"
+        "title": "Picks fraîchement torréfiés",
+        "description": "Des cafés renouvelés souvent pour garder toute la fraîcheur en tasse."
       },
       "premium": {
-        "title": "Qualité Premium",
-        "description": "Produits les mieux notés avec les meilleures critiques"
+        "title": "Qualité ferme et torréfaction",
+        "description": "Origines traçables et torréfaction soignée, goûtées dans la tasse."
       },
       "favorites": {
-        "title": "Favoris des Clients",
-        "description": "Articles les plus aimés par nos clients"
+        "title": "Coups de cœur",
+        "description": "Mélanges et origines que nos clients recommandent le plus."
       },
       "limited": {
-        "title": "Temps Limité",
-        "description": "Dépêchez-vous ! Ces offres ne dureront pas longtemps"
+        "title": "Petits lots",
+        "description": "Quand un lot est parti, il est parti—avant la prochaine récolte."
       }
     },
     "collection": {
-      "title": "Collection Offres Chaudes",
-      "description": "Découvrez des offres incroyables sur des produits premium. Quantités limitées disponibles à ces prix spéciaux.",
+      "title": "Torréfactions limitées en boutique",
+      "description": "Cette semaine, cafés vedettes à prix spécial. Quantités limitées pour préserver la qualité.",
       "noDeals": {
-        "title": "Aucune Offre Disponible Pour le Moment",
-        "description": "Revenez bientôt pour des offres et des réductions incroyables !",
-        "button": "Parcourir Tous les Produits"
+        "title": "Pas de torréfaction limitée pour l'instant",
+        "description": "Nous préparons le prochain micro-lot. Revenez bientôt ou parcourez toute la boutique.",
+        "button": "Voir tous les cafés"
       }
     },
     "cta": {
-      "title": "Ne Manquez Pas Ces Offres Incroyables !",
-      "description": "Abonnez-vous à notre newsletter pour être informé des ventes flash, des offres exclusives et des nouveaux arrivages.",
-      "explore": "Explorer Tous les Produits",
-      "subscribe": "S'abonner aux Offres"
+      "title": "Ne manquez aucun micro-lot",
+      "description": "Inscrivez-vous pour les dates de torréfaction, les arrivages de récolte et l'accès prioritaire aux éditions limitées.",
+      "explore": "Tous les cafés",
+      "subscribe": "Recevoir les nouveautés"
     }
   },
   "blog": {

@@ -10,7 +10,9 @@ import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
 import Script from "next/script";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Play, Leaf, Award } from "lucide-react";
+import productMockup from "@/images/product-mockup.png";
 
 export default async function Home({
   params,
@@ -123,10 +125,13 @@ export default async function Home({
             </Link>
           </div>
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-            <img
-              src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&q=80&w=1000"
-              alt="Coffee Farm"
+            <Image
+              src={productMockup}
+              alt="Sheba's Coffee product mockup"
               className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority={false}
             />
             <div className="absolute bottom-8 left-8 right-8 bg-stone-100/90 backdrop-blur p-6 rounded-xl">
               <p className="font-serif italic text-xl text-stone-900">
@@ -145,6 +150,23 @@ export default async function Home({
           categories={categories}
           dictionary={dictionary.home.popularCategories}
         />
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+          <div className="rounded-3xl bg-gradient-to-r from-shop_dark_green via-shop_btn_dark_green to-shop_dark_green p-8 sm:p-10 text-center border border-shop_light_green/25 shadow-xl">
+            <h3 className="text-2xl sm:text-3xl font-bold text-shop_light_pink mb-3">
+              Brew Better at Home with Sheba&apos;s Coffee
+            </h3>
+            <p className="text-shop_light_pink/90 max-w-2xl mx-auto mb-6">
+              Explore fresh roasts, brewing essentials, and limited selections crafted for your daily ritual.
+            </p>
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 rounded-full border border-shop_orange bg-shop_orange px-6 py-3 font-semibold text-shop_dark_green hover:bg-shop_light_pink hover:border-shop_light_pink hoverEffect"
+            >
+              Shop Coffee
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
         <ShopFeatures dictionary={dictionary.home.shopFeatures} />
         {/* <ShopByBrands
           brands={brands}

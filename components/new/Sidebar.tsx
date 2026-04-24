@@ -3,7 +3,7 @@ import {
   Home,
   ShoppingBag,
   BookOpen,
-  Flame,
+  Coffee,
   User,
   ShoppingCart,
   Heart,
@@ -52,7 +52,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
     { title: "Categories", href: "/category", icon: Grid3X3 },
     { title: "Brands", href: "/brands", icon: Tag },
     { title: "Blog", href: "/blog", icon: BookOpen },
-    { title: "Hot Deal", href: "/deal", icon: Flame },
+    { title: "Limited Roasts", href: "/deal", icon: Coffee },
   ];
 
   const supportMenuItems = [
@@ -232,9 +232,9 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
               href="/deal"
               className="flex flex-col items-center gap-1 p-3 rounded-lg bg-shop_dark_green/30 hover:bg-shop_dark_green/50 transition-colors duration-200 text-center"
             >
-              <Flame size={20} className="text-shop_orange" />
+              <Coffee size={20} className="text-shop_orange" />
               <span className="text-xs font-medium text-zinc-300">
-                Hot Deals
+                Limited Roasts
               </span>
             </Link>
             <Link

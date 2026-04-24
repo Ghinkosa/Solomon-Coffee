@@ -148,7 +148,7 @@ export function generateBlogMetadata(blog: any): Metadata {
       ],
       siteName: "Sheba's Coffee",
       publishedTime: blog.publishedAt,
-      authors: [blog.author?.name || "Sheba's Coffee"],
+      authors: ["Sheba's Coffee"],
     },
     twitter: {
       card: "summary_large_image",
@@ -226,8 +226,8 @@ export function generateBlogSchema(blog: any) {
     datePublished: blog.publishedAt,
     dateModified: blog._updatedAt || blog.publishedAt,
     author: {
-      "@type": "Person",
-      name: blog.author?.name || "Sheba's Coffee",
+      "@type": "Organization",
+      name: "Sheba's Coffee",
     },
     publisher: {
       "@type": "Organization",
