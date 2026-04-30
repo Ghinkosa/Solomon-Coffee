@@ -1,13 +1,11 @@
 "use client";
 
 import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
-import { Button } from "./ui/button";
 import { useCallback, useEffect, useState } from "react";
 import Container from "./Container";
 
@@ -16,32 +14,24 @@ interface Banner {
   _type: "banner";
   title?: {
     en?: string;
-    it?: string;
-    fr?: string;
-    hi?: string;
+    es?: string;
     ar?: string;
   };
   subtitle?: {
     en?: string;
-    it?: string;
-    fr?: string;
-    hi?: string;
+    es?: string;
     ar?: string;
   };
   priceTitle?: {
     en?: string;
-    it?: string;
-    fr?: string;
-    hi?: string;
+    es?: string;
     ar?: string;
   };
   price?: number;
   weight?: number;
   description?: {
     en?: string;
-    it?: string;
-    fr?: string;
-    hi?: string;
+    es?: string;
     ar?: string;
   };
   image?: {
@@ -50,12 +40,17 @@ interface Banner {
       _type: "reference";
     };
   };
+  backgroundVideo?: {
+    asset?: {
+      url?: string;
+    };
+  };
+  backgroundVideoUrl?: string;
+  disableVideoOnMobile?: boolean;
   link?: string;
   buttonText?: {
     en?: string;
-    it?: string;
-    fr?: string;
-    hi?: string;
+    es?: string;
     ar?: string;
   };
 }
@@ -67,13 +62,15 @@ interface BannerCarouselProps {
 }
 
 const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
-    Autoplay({ delay: 5000 }),
-    Fade(),
-  ]);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Fade()]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [disableVideoForUser, setDisableVideoForUser] = useState(false);
+  const [videoDurations, setVideoDurations] = useState<Record<string, number>>(
+    {},
+  );
 
   const onInit = useCallback((emblaApi: any) => {
     setScrollSnaps(emblaApi.scrollSnapList());
@@ -92,6 +89,21 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
     emblaApi.on("reInit", onSelect);
     emblaApi.on("select", onSelect);
   }, [emblaApi, onInit, onSelect]);
+
+  useEffect(() => {
+    const updateViewport = () => setIsMobile(window.innerWidth < 768);
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+
+    const saveData = (
+      navigator as Navigator & { connection?: { saveData?: boolean } }
+    ).connection?.saveData;
+
+    // Keep gating narrow for predictable CMS testing: only disable when user enables data saver.
+    setDisableVideoForUser(Boolean(saveData));
+
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
 
   const scrollTo = useCallback(
     (index: number) => emblaApi && emblaApi.scrollTo(index),
@@ -115,6 +127,44 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
     return null;
   }
 
+  const heroShopLink = `/${lang || "en"}/shop`;
+
+  const getSlideDelay = (banner: Banner) => {
+    const videoUrl =
+      banner.backgroundVideoUrl || banner.backgroundVideo?.asset?.url;
+    const canPlayVideoForSlide =
+      Boolean(videoUrl) &&
+      !disableVideoForUser &&
+      !(isMobile && banner.disableVideoOnMobile);
+
+    if (!canPlayVideoForSlide) return 5000;
+
+    const videoDuration = videoDurations[banner._id];
+    if (!videoDuration || !Number.isFinite(videoDuration)) return 5000;
+
+    // Small buffer so CTA/content is visible briefly after the video loop.
+    return Math.round(videoDuration * 1000) + 600;
+  };
+
+  useEffect(() => {
+    if (!emblaApi || banners.length === 0) return;
+    const currentBanner = banners[selectedIndex];
+    if (!currentBanner) return;
+
+    const timeoutId = setTimeout(() => {
+      emblaApi.scrollNext();
+    }, getSlideDelay(currentBanner));
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    emblaApi,
+    selectedIndex,
+    banners,
+    isMobile,
+    disableVideoForUser,
+    videoDurations,
+  ]);
+
   return (
     <div className="relative group">
       <div className="overflow-hidden" ref={emblaRef}>
@@ -133,14 +183,7 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
             const formatPrice = (value: number) => {
               return new Intl.NumberFormat(lang === "ar" ? "ar-AE" : lang, {
                 style: "currency",
-                currency:
-                  lang === "it" || lang === "fr"
-                    ? "EUR"
-                    : lang === "hi"
-                      ? "INR"
-                      : lang === "ar"
-                        ? "AED"
-                        : "USD",
+                currency: lang === "ar" ? "AED" : "USD",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
               }).format(value);
@@ -150,14 +193,21 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
 
             const defaultPriceLabels: Record<string, string> = {
               en: "Starting at",
-              it: "A partire da",
-              fr: "À partir de",
-              hi: "शुरुआत",
+              es: "Desde",
               ar: "تبدأ من",
             };
 
             const finalPriceTitle =
               priceTitle || defaultPriceLabels[lang] || defaultPriceLabels.en;
+
+            const videoUrl =
+              banner.backgroundVideoUrl || banner.backgroundVideo?.asset?.url;
+            const hasVideo = Boolean(videoUrl);
+            const canPlayVideo =
+              hasVideo &&
+              isActive &&
+              !disableVideoForUser &&
+              !(isMobile && banner.disableVideoOnMobile);
 
   // Inside the banners.map loop...
 return (
@@ -165,18 +215,52 @@ return (
     key={banner._id}
     className="flex-[0_0_100%] min-w-0 relative h-[80vh] md:h-[90vh] flex items-center overflow-hidden bg-stone-900 text-stone-100"
   >
-    {/* Background Image with Overlay */}
-    {banner.image && (
+    {/* Background media: video (when allowed) with image fallback */}
+    {canPlayVideo && videoUrl ? (
+      <div className="absolute inset-0 opacity-45">
+        <video
+          src={videoUrl}
+          className="h-full w-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          onLoadedMetadata={(event) => {
+            const duration = event.currentTarget.duration;
+            if (!duration || !Number.isFinite(duration)) return;
+
+            setVideoDurations((prev) => {
+              if (prev[banner._id] === duration) return prev;
+              return { ...prev, [banner._id]: duration };
+            });
+          }}
+          poster={
+            banner.image
+              ? urlFor(banner.image).width(1600).quality(70).url()
+              : undefined
+          }
+        />
+      </div>
+    ) : banner.image ? (
       <div className="absolute inset-0 opacity-40">
         <Image
-          src={urlFor(banner.image).width(2000).quality(90).url()}
+          src={urlFor(banner.image).width(2000).quality(85).url()}
           alt={title || "Banner Image"}
           fill
-          priority
+          priority={index === 0}
           className="w-full h-full object-cover"
         />
       </div>
-    )}
+    ) : null}
+
+    {/* Brand overlay for consistent text contrast */}
+    <div
+      className="absolute inset-0"
+      style={{
+        background: "rgba(9,51,44,0.48)",
+      }}
+    />
 
     {/* Content Container */}
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -234,14 +318,14 @@ return (
           )}
 
           {/* Optional Secondary Action (The "Watch" button style from your ref) */}
-          <button className="flex items-center space-x-3 group">
+          <Link href={heroShopLink} className="flex items-center space-x-3 group">
             <div className="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center group-hover:bg-stone-100 group-hover:text-stone-900 transition-all">
               <ChevronRight size={16} fill="currentColor" />
             </div>
             <span className="text-sm uppercase tracking-widest font-medium text-stone-100">
               Explore More
             </span>
-          </button>
+          </Link>
         </div>
       </div>
     </div>

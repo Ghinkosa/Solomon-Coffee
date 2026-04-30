@@ -4,12 +4,8 @@ import { type Locale } from "@/i18n-config";
 // We enumerate all dictionaries here for better type safety and static analysis
 const dictionaries = {
   en: () => import("@/dictionaries/en.json").then((module) => module.default),
-  it: () => import("@/dictionaries/it.json").then((module) => module.default),
-  fr: () => import("@/dictionaries/fr.json").then((module) => module.default),
-  hi: () => import("@/dictionaries/hi.json").then((module) => module.default),
+  es: () => import("@/dictionaries/es.json").then((module) => module.default),
   ar: () => import("@/dictionaries/ar.json").then((module) => module.default),
-  am: () => import("@/dictionaries/am.json").then((module) => module.default),
-
 };
 
 function deepMerge(base: any, update: any) {

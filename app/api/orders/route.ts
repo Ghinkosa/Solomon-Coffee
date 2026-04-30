@@ -140,10 +140,6 @@ export const POST = async (request: NextRequest) => {
         stripePaymentIntentId: "", // Will be populated for Stripe payments
         stripeCheckoutSessionId: "", // Will be populated for Stripe payments
       }),
-      ...(paymentMethod === PAYMENT_METHODS.CLERK && {
-        clerkPaymentId: "", // Will be populated for Clerk payments
-        clerkPaymentStatus: "pending", // Initial status
-      }),
       ...(paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY && {
         stripePaymentIntentId: `cod_${orderNumber}`,
       }),

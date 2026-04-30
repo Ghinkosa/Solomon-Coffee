@@ -12,7 +12,7 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
   const pathname = usePathname();
 
   return (
-    <div className="hidden md:inline-flex w-full items-center justify-center gap-7 text-sm capitalize font-semibold text-light-color">
+    <div className="hidden md:inline-flex w-full items-center justify-center gap-7 text-sm capitalize font-bold text-shop_dark_green">
       {headerData?.map((item) => {
         const titleKey = item?.title?.toLowerCase();
         let label = item?.title;
@@ -36,16 +36,18 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
           <Link
             key={item?.title}
             href={href}
-            className={`hover:text-shop_light_green hoverEffect relative group ${isActive && "text-shop_light_green"}`}
+            className={`hover:text-shop_orange hoverEffect relative group ${
+              isActive ? "text-shop_orange" : "text-shop_dark_green"
+            }`}
           >
             {label}
             <span
-              className={`absolute -bottom-0.5 left-1/2 w-0 h-0.5 bg-shop_light_green transition-all duration-300 group-hover:w-1/2 group-hover:left-0 ${
+              className={`absolute -bottom-0.5 left-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:left-0 ${
                 isActive && "w-1/2"
               }`}
             />
             <span
-              className={`absolute -bottom-0.5 right-1/2 w-0 h-0.5 bg-shop_light_green transition-all duration-300 group-hover:w-1/2 group-hover:right-0 ${
+              className={`absolute -bottom-0.5 right-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:right-0 ${
                 isActive && "w-1/2"
               }`}
             />

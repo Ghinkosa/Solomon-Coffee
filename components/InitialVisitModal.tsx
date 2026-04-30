@@ -134,7 +134,7 @@ const InitialVisitModal = () => {
                     className="w-full py-4 px-6 bg-linear-to-r from-shop_dark_green to-shop_light_green hover:from-shop_btn_dark_green hover:to-shop_dark_green text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transform transition-all duration-300 flex items-center justify-center gap-2 group"
                   >
                     <Coffee className="w-5 h-5" />
-                    <span>Shop Sheba&apos;s Coffee</span>
+                    <span>Shop Sheba Cup Coffee</span>
                     <ExternalLink className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
                 </Link>
@@ -189,7 +189,7 @@ const InitialVisitModal = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-dark-color text-sm">
-                    Visit Sheba&apos;s Coffee
+                    Visit Sheba Cup Coffee
                   </h3>
                   <p className="text-xs text-light-color mt-0.5">
                     Explore our curated coffee collection

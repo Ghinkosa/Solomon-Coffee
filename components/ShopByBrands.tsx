@@ -154,7 +154,7 @@ const ShopByBrands = ({
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border-8 border-white">
               <Image
                 src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1600&auto=format&fit=crop"
-                alt="Sheba's Coffee roasting team"
+                alt="Sheba Cup Coffee roasting team"
                 fill
                 className="object-cover group-hover:scale-105 hoverEffect"
               />

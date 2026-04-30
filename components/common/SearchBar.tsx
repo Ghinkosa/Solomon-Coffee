@@ -1,5 +1,5 @@
 "use client";
-import { Loader2, Search, X, TrendingUp, Clock, Star } from "lucide-react";
+import { Loader2, Search, X, TrendingUp, Clock } from "lucide-react";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { client } from "@/sanity/lib/client";
 import { Input } from "../ui/input";
@@ -17,18 +17,11 @@ const SearchBar = ({ dictionary }: { dictionary?: any }) => {
   const [loading, setLoading] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [featuredProduct, setFeaturedProduct] = useState([]);
-  const [isMac, setIsMac] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useOutsideClick<HTMLDivElement>(() => setShowSearch(false));
 
-  const placeholder =
-    dictionary?.header?.search?.placeholder || "Search products...";
+  const placeholder = "Search";
   const isRtl = dictionary?.header?.search?.direction === "rtl";
-
-  // Detect if user is on Mac
-  useEffect(() => {
-    setIsMac(navigator.platform.toUpperCase().indexOf("MAC") >= 0);
-  }, []);
 
   const fetchFeaturedProducts = useCallback(async () => {
     try {
@@ -120,8 +113,8 @@ const SearchBar = ({ dictionary }: { dictionary?: any }) => {
         {/* Desktop Version - Full Input Style */}
         <button
           onClick={() => setShowSearch(true)}
-          className="group hidden sm:flex items-center gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-shop_light_green rounded-lg px-3 h-[38px] transition-all duration-200 min-w-[200px] md:min-w-[240px]"
-          aria-label={`Open search (${isMac ? "Cmd" : "Ctrl"}+K)`}
+          className="group hidden sm:flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-shop_light_green rounded-lg px-3 h-[38px] w-[150px] md:w-[170px] transition-all duration-200"
+          aria-label="Open search"
         >
           {/* Search Icon */}
           <Search className="w-4 h-4 text-gray-400 group-hover:text-shop_dark_green transition-colors duration-200 shrink-0" />
@@ -132,12 +125,6 @@ const SearchBar = ({ dictionary }: { dictionary?: any }) => {
           >
             {placeholder}
           </span>
-
-          {/* Keyboard Shortcut Badge */}
-          <div className="flex items-center gap-1 bg-white border border-gray-200 group-hover:border-gray-300 px-2 py-1 rounded text-xs text-gray-500 font-mono shrink-0 transition-colors duration-200">
-            <span>{isMac ? "⌘" : "Ctrl"}</span>
-            <span>K</span>
-          </div>
         </button>
 
         {/* Mobile Version - Icon Only */}
@@ -174,16 +161,7 @@ const SearchBar = ({ dictionary }: { dictionary?: any }) => {
                   <div className="bg-white/20 p-2 rounded-full">
                     <Search className="w-5 h-5" />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-bold">Search Products</h2>
-                    <div className="hidden sm:flex items-center gap-1 bg-white/10 px-2 py-1 rounded-md border border-white/20">
-                      <span className="text-xs font-mono">
-                        {isMac ? "Cmd" : "Ctrl"}
-                      </span>
-                      <span className="text-xs">+</span>
-                      <span className="text-xs font-mono">K</span>
-                    </div>
-                  </div>
+                  <h2 className="text-xl font-bold">Search Products</h2>
                 </div>
                 <button
                   onClick={() => setShowSearch(false)}

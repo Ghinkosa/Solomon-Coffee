@@ -137,7 +137,7 @@ export const userType = defineType({
     }),
     defineField({
       name: "cart",
-      title: "Shopping Cart",
+      title: "Cart",
       type: "array",
       of: [
         defineArrayMember({

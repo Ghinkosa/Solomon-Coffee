@@ -88,7 +88,7 @@ const Footer = ({ lang, dictionary }: FooterProps) => {
           <p>
             © {new Date().getFullYear()}{" "}
             <span className="text-shop_orange font-black tracking-wider uppercase hover:text-shop_light_pink hoverEffect group font-sans">
-              Sheba&apos;s Coffee
+              Sheba Cup Coffee
             </span>
             . All rights reserved.
           </p>

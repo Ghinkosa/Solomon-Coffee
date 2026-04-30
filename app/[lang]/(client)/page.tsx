@@ -85,7 +85,7 @@ export default async function Home({
       <HomeBanner lang={lang} dictionary={dictionary} />
 
       {/* Educational / Philosophy Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
             <div className="inline-block px-4 py-1 bg-stone-900 text-stone-100 text-xs uppercase tracking-widest rounded-full">
@@ -96,7 +96,7 @@ export default async function Home({
               <span className="italic text-stone-600">An Educational Journey</span>
             </h2>
             <p className="text-lg text-stone-800/70 leading-relaxed">
-              At Sheba's Coffee, we believe that understanding the origin is as important as the taste.
+              At Sheba Cup Coffee, we believe that understanding the origin is as important as the taste.
               Our roasting process is a delicate balance of tradition and science, designed to highlight
               the unique terroir of Ethiopia's finest high-altitude farms.
             </p>
@@ -127,7 +127,7 @@ export default async function Home({
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
             <Image
               src={productMockup}
-              alt="Sheba's Coffee product mockup"
+              alt="Sheba Cup Coffee product mockup"
               className="w-full h-full object-cover"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -144,16 +144,20 @@ export default async function Home({
 
     
 
-      <div className="py-10">
-        <ProductGrid dictionary={dictionary} lang={lang} />
-        <HomeCategories
-          categories={categories}
-          dictionary={dictionary.home.popularCategories}
-        />
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+      <div className="pt-8 pb-10 lg:pt-10 lg:pb-12">
+        <section className="mt-16 lg:mt-20 bg-shop_light_bg py-8 lg:py-10">
+          <ProductGrid dictionary={dictionary} lang={lang} />
+        </section>
+        <section className="bg-[#09332C] pt-16 lg:pt-20 pb-8 lg:pb-10">
+          <HomeCategories
+            categories={categories}
+            dictionary={dictionary.home.popularCategories}
+          />
+        </section>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 lg:mt-20">
           <div className="rounded-3xl bg-gradient-to-r from-shop_dark_green via-shop_btn_dark_green to-shop_dark_green p-8 sm:p-10 text-center border border-shop_light_green/25 shadow-xl">
             <h3 className="text-2xl sm:text-3xl font-bold text-shop_light_pink mb-3">
-              Brew Better at Home with Sheba&apos;s Coffee
+              Brew Better at Home with Sheba Cup Coffee
             </h3>
             <p className="text-shop_light_pink/90 max-w-2xl mx-auto mb-6">
               Explore fresh roasts, brewing essentials, and limited selections crafted for your daily ritual.
@@ -168,11 +172,11 @@ export default async function Home({
           </div>
         </section>
         <ShopFeatures dictionary={dictionary.home.shopFeatures} />
+        <LatestBlog dictionary={dictionary.home.latestBlog} />
         {/* <ShopByBrands
           brands={brands}
           dictionary={dictionary.home.shopByBrands}
         /> */}
-        <LatestBlog dictionary={dictionary.home.latestBlog} />
       </div>
     </div>
   );

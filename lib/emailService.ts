@@ -469,7 +469,7 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
         <!-- Header -->
         <div class="header">
             <h1>Order Confirmed!</h1>
-            <p>Thank you for shopping with Sheba's Coffee</p>
+            <p>Thank you for shopping with Sheba Cup Coffee</p>
         </div>
         
         <!-- Main Content -->
@@ -608,10 +608,10 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
         
         <!-- Footer -->
         <div class="footer">
-            <p><strong>Sheba's Coffee</strong></p>
+            <p><strong>Sheba Cup Coffee</strong></p>
             <p>123 Shopping Street, Commerce District<br>
                New York, NY 10001, USA</p>
-            <p>Thank you for choosing Sheba's Coffee!</p>
+            <p>Thank you for choosing Sheba Cup Coffee!</p>
             
             <div class="social-links">
                 <a href="https://www.facebook.com/shebascoffee">Facebook</a> |
@@ -632,7 +632,7 @@ const sendOrderConfirmationEmail = async (
     const htmlContent = generateOrderConfirmationHTML(data);
 
     const mailOptions = {
-      from: `"Sheba's Coffee" <${
+      from: `"Sheba Cup Coffee" <${
         process.env.SENDER_EMAIL_ADDRESS || "your-email@gmail.com"
       }>`,
       to: data.customerEmail,
@@ -672,7 +672,7 @@ We'll send you another email with tracking information once your order ships.
 
 If you have any questions, please contact us at support@shebascoffee.com or +1 (555) 123-4567.
 
-Thank you for choosing Sheba's Coffee!
+Thank you for choosing Sheba Cup Coffee!
       `,
     };
 
@@ -697,7 +697,7 @@ const sendMail = async ({
 }: SendMailParams): Promise<EmailResponse> => {
   try {
     const mailOptions = {
-      from: `"Sheba's Coffee" <${
+      from: `"Sheba Cup Coffee" <${
         process.env.SENDER_EMAIL_ADDRESS || "your-email@gmail.com"
       }>`,
       to: email,

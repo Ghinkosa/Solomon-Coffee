@@ -6,7 +6,7 @@ import { Locale } from "@/i18n-config";
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Get in touch with Sheba's Coffee. We're here to help with your questions and inquiries.",
+    "Get in touch with Sheba Cup Coffee. We're here to help with your questions and inquiries.",
 };
 
 interface Props {

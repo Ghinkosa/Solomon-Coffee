@@ -2,7 +2,7 @@
 
 export const contactConfig = {
   company: {
-    name: process.env.NEXT_PUBLIC_COMPANY_NAME || "Sheba's Coffee",
+    name: process.env.NEXT_PUBLIC_COMPANY_NAME || "Sheba Cup Coffee",
     email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || "support@shebascoffee.com",
     phone: process.env.NEXT_PUBLIC_COMPANY_PHONE || "+1 (555) 123-4567",
     address:
@@ -11,7 +11,7 @@ export const contactConfig = {
     city: process.env.NEXT_PUBLIC_COMPANY_CITY || "New York, NY 10001, USA",
     description:
       process.env.NEXT_PUBLIC_COMPANY_DESCRIPTION ||
-      "Discover premium coffee at Sheba's Coffee, your trusted destination for quality beans, brews, and exceptional customer service.",
+      "Discover premium coffee at Sheba Cup Coffee, your trusted destination for quality beans, brews, and exceptional customer service.",
   },
   businessHours: {
     weekday:
@@ -42,7 +42,7 @@ export const contactConfig = {
   legal: {
     copyright:
       process.env.NEXT_PUBLIC_COPYRIGHT_TEXT ||
-      "© 2024 Sheba's Coffee. All rights reserved.",
+      "© 2024 Sheba Cup Coffee. All rights reserved.",
     privacyPolicy: process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL || "/privacy",
     terms: process.env.NEXT_PUBLIC_TERMS_URL || "/terms",
   },

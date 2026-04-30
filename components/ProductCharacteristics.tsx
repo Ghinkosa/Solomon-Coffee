@@ -11,10 +11,45 @@ interface ProductCharacteristicsProps {
   brand: BRAND_QUERYResult | null;
 }
 
+interface CoffeeDetails {
+  originCountry?: string;
+  originRegion?: string;
+  producer?: string;
+  altitudeMeters?: number;
+  processingMethod?: string;
+  flavorNotes?: string[];
+  recommendedBrewMethods?: string[];
+  grindRecommendation?: string;
+  brewRatio?: string;
+  roastDate?: string;
+  harvestYear?: number;
+  lotType?: string;
+  packageSizeGrams?: number;
+  beanFormat?: string;
+  caffeineLevel?: string;
+}
+
+interface ProductWithCoffeeDetails extends Product {
+  coffeeDetails?: CoffeeDetails;
+}
+
+function toTitleCase(value?: string) {
+  if (!value) return "—";
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 const ProductCharacteristics = ({
   product,
   brand,
 }: ProductCharacteristicsProps) => {
+  const coffeeDetails = (product as ProductWithCoffeeDetails).coffeeDetails;
+  const origin = [coffeeDetails?.originCountry, coffeeDetails?.originRegion]
+    .filter(Boolean)
+    .join(", ");
+
   return (
     <Accordion type="single" collapsible>
       <AccordionItem value="item-1">
@@ -32,7 +67,9 @@ const ProductCharacteristics = ({
           </p>
           <p className="flex items-center justify-between">
             Collection:{" "}
-            <span className="font-semibold tracking-wide">2025</span>
+            <span className="font-semibold tracking-wide">
+              {coffeeDetails?.harvestYear || "Current Harvest"}
+            </span>
           </p>
           <p className="flex items-center justify-between">
             Type:{" "}
@@ -41,9 +78,33 @@ const ProductCharacteristics = ({
             </span>
           </p>
           <p className="flex items-center justify-between">
-            Stock:{" "}
+            Origin:{" "}
             <span className="font-semibold tracking-wide">
-              {product?.stock ? "Available" : "Out of Stock"}
+              {origin || "—"}
+            </span>
+          </p>
+          <p className="flex items-center justify-between">
+            Process:{" "}
+            <span className="font-semibold tracking-wide">
+              {toTitleCase(coffeeDetails?.processingMethod)}
+            </span>
+          </p>
+          <p className="flex items-center justify-between">
+            Lot Type:{" "}
+            <span className="font-semibold tracking-wide">
+              {toTitleCase(coffeeDetails?.lotType)}
+            </span>
+          </p>
+          <p className="flex items-center justify-between">
+            Bean Format:{" "}
+            <span className="font-semibold tracking-wide">
+              {toTitleCase(coffeeDetails?.beanFormat)}
+            </span>
+          </p>
+          <p className="flex items-center justify-between">
+            Caffeine:{" "}
+            <span className="font-semibold tracking-wide">
+              {toTitleCase(coffeeDetails?.caffeineLevel)}
             </span>
           </p>
         </AccordionContent>

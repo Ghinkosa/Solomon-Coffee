@@ -1,7 +1,10 @@
 import { defineQuery } from "next-sanity";
 
 const BANNER_QUERY = defineQuery(
-  `*[_type == 'banner'] | order(publishedAt desc)`
+  `*[_type == 'banner'] | order(publishedAt desc){
+    ...,
+    "backgroundVideoUrl": backgroundVideo.asset->url
+  }`
 );
 const FEATURED_CATEGORY_QUERY = defineQuery(
   `*[_type == 'category' && featured == true] | order(name desc)`

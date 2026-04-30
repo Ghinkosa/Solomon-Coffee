@@ -30,11 +30,11 @@ import { BASE_URL } from "@/lib/seo";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    template: "%s | Sheba's Coffee",
-    default: "Sheba's Coffee - Premium Coffee & Essentials",
+    template: "%s | Sheba Cup Coffee",
+    default: "Sheba Cup Coffee - Premium Coffee & Essentials",
   },
   description:
-    "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee with exceptional quality and service.",
+    "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee with exceptional quality and service.",
   keywords: [
     "specialty coffee",
     "single-origin coffee",
@@ -44,11 +44,11 @@ export const metadata: Metadata = {
     "coffee accessories",
     "fresh roast",
     "coffee shop",
-    "Sheba's Coffee",
+    "Sheba Cup Coffee",
   ],
-  authors: [{ name: "Sheba's Coffee" }],
-  creator: "Sheba's Coffee",
-  publisher: "Sheba's Coffee",
+  authors: [{ name: "Sheba Cup Coffee" }],
+  creator: "Sheba Cup Coffee",
+  publisher: "Sheba Cup Coffee",
   formatDetection: {
     email: false,
     address: false,
@@ -58,24 +58,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: BASE_URL,
-    siteName: "Sheba's Coffee",
-    title: "Sheba's Coffee - Premium Coffee & Essentials",
+    siteName: "Sheba Cup Coffee",
+    title: "Sheba Cup Coffee - Premium Coffee & Essentials",
     description:
-      "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
+      "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Sheba's Coffee Online Store",
+        alt: "Sheba Cup Coffee Online Store",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sheba's Coffee - Premium Coffee & Essentials",
+    title: "Sheba Cup Coffee - Premium Coffee & Essentials",
     description:
-      "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
+      "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
     images: ["/og-image.jpg"],
     creator: "@shebascoffee",
   },

@@ -43,7 +43,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
     { title: "My Account", href: "/account", icon: User },
     { title: "My Orders", href: "/orders", icon: Package },
     { title: "Wishlist", href: "/wishlist", icon: Heart },
-    { title: "Shopping Cart", href: "/cart", icon: ShoppingCart },
+    { title: "Cart", href: "/cart", icon: ShoppingCart },
   ];
 
   const mainMenuItems = [

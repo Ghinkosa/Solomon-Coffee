@@ -272,10 +272,10 @@ const ProductContent = ({
             <Card className="border-2 border-gray-100 text-center p-4">
               <RefreshCw className="h-8 w-8 text-shop_orange mx-auto mb-2" />
               <h3 className="font-semibold text-shop_dark_green mb-1">
-                Easy Returns
+                Quality Promise
               </h3>
               <p className="text-sm text-gray-600">
-                30-day hassle-free returns
+                Fast help for damaged, incorrect, or quality-related issues
               </p>
             </Card>
           </div>

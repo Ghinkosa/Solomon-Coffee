@@ -292,63 +292,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             };
           }
         }
-      } else if (selectedPaymentMethod === PAYMENT_METHODS.CLERK) {
-        // Handle Clerk payment
-        const clerkResponse = await fetch("/api/checkout/clerk", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId,
-            orderNumber,
-            items: cartSnapshot,
-            email: user?.emailAddresses[0]?.emailAddress,
-            shippingAddress: selectedAddress,
-            orderAmount: total,
-            clerkUserId: user?.id,
-          }),
-        });
-
-        if (!clerkResponse.ok) {
-          toast.error(
-            "Order created but payment setup failed. Check your orders."
-          );
-          return {
-            success: true,
-            orderId,
-            orderNumber,
-            redirectTo: `/user/orders`,
-            paymentSetupFailed: true,
-          };
-        }
-
-        const clerkResult = await clerkResponse.json();
-
-        if (clerkResult.url) {
-          toast.success("Processing Clerk Payment 💳", {
-            description: "Processing your payment...",
-            duration: 3000,
-          });
-          return {
-            success: true,
-            orderId,
-            orderNumber,
-            redirectTo: clerkResult.url,
-            isClerkRedirect: true,
-          };
-        } else {
-          toast.error("Payment Setup Failed", {
-            description:
-              "Order created but payment setup failed. Check your orders.",
-            duration: 5000,
-          });
-          return {
-            success: true,
-            orderId,
-            orderNumber,
-            redirectTo: `/user/orders`,
-            paymentSetupFailed: true,
-          };
-        }
       } else {
         if (redirectToCheckout) {
           // For "Proceed to Checkout" with COD - redirect to checkout page

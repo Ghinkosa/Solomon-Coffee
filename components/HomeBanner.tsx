@@ -18,6 +18,13 @@ export interface Banner {
       _type: "reference";
     };
   };
+  backgroundVideo?: {
+    asset?: {
+      url?: string;
+    };
+  };
+  backgroundVideoUrl?: string;
+  disableVideoOnMobile?: boolean;
   title?: {
     en?: string;
     it?: string;

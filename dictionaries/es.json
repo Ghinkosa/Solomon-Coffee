@@ -1,0 +1,93 @@
+{
+  "logo": {
+    "first": "Sheba",
+    "second": "Cup Coffee"
+  },
+  "header": {
+    "menu": {
+      "home": "Inicio",
+      "shop": "Tienda",
+      "deals": "Tostados Limitados",
+      "orders": "Pedidos",
+      "contact": "Contacto",
+      "blog": "Blog"
+    },
+    "auth": {
+      "welcome": "Bienvenido",
+      "signIn": "Iniciar sesión",
+      "signUp": "Crear cuenta"
+    },
+    "search": {
+      "placeholder": "Buscar cafés y accesorios..."
+    },
+    "language": {
+      "select": "Seleccionar idioma",
+      "en": "Inglés",
+      "es": "Español",
+      "ar": "Árabe"
+    }
+  },
+  "home": {
+    "featuredProducts": {
+      "title": "Selección Destacada de Café",
+      "description": "Tostados frescos y favoritos de clientes de Sheba Cup Coffee",
+      "loadMore": "Ver más cafés"
+    },
+    "popularCategories": {
+      "title": "Categorías Populares",
+      "description": "Explora nuestras categorías de café más populares y encuentra tu taza ideal",
+      "browseAll": "Ver todas las categorías",
+      "shopNow": "Comprar ahora",
+      "stats": {
+        "categories": "Categorías",
+        "products": "Lotes de café",
+        "support": "Soporte de preparación"
+      }
+    },
+    "shopFeatures": {
+      "title": "Por qué elegir Sheba Cup Coffee",
+      "description": "Tostado fresco, origen ético y servicio pensado para quienes cuidan cada taza.",
+      "learnMore": "Haz clic para saber más",
+      "trustLine": "Con la confianza de hogares y cafeterías.",
+      "stats": {
+        "happyCustomers": "Amantes del café satisfechos",
+        "productsSold": "Bolsas enviadas",
+        "satisfactionRate": "Nos recomendarían",
+        "customerSupport": "Soporte de pedidos y preparación"
+      }
+    }
+  },
+  "deals": {
+    "countdown": {
+      "endsIn": "La oferta termina en:",
+      "days": "Días",
+      "hours": "Horas",
+      "mins": "Min",
+      "secs": "Seg"
+    },
+    "hero": {
+      "badge": "TOSTADOS LIMITADOS",
+      "title": "Selección limitada de la tostadora",
+      "description": "Lotes seleccionados a mano de nuestra tostadora y fincas asociadas."
+    },
+    "collection": {
+      "title": "Tostados limitados disponibles",
+      "description": "Explora los cafés destacados de esta semana con precios especiales."
+    },
+    "cta": {
+      "title": "No te pierdas un micro-lote",
+      "explore": "Comprar todos los cafés",
+      "subscribe": "Recibir novedades"
+    }
+  },
+  "contact": {
+    "hero": {
+      "badge": "Estamos para ayudarte",
+      "title": "Contáctanos",
+      "description": "¿Tienes dudas sobre nuestro café o tu pedido? Estamos aquí para ayudarte."
+    }
+  },
+  "cart": {
+    "title": "Carrito"
+  }
+}

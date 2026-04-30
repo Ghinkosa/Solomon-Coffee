@@ -1,6 +1,6 @@
-# 🚀 Sheba's Coffee - Installation & Setup Guide
+# 🚀 Sheba Cup Coffee - Installation & Setup Guide
 
-Welcome to Sheba's Coffee! This guide will walk you through setting up your new e-commerce platform. We've made the process as straightforward as possible.
+Welcome to Sheba Cup Coffee! This guide will walk you through setting up your new e-commerce platform. We've made the process as straightforward as possible.
 
 ---
 
@@ -76,7 +76,7 @@ Clerk handles user accounts, sign-ups, and logins.
 
 1.  **Create Application**:
     - Go to [https://dashboard.clerk.com/](https://dashboard.clerk.com/) and create a new application.
-    - Name it "Sheba's Coffee".
+    - Name it "Sheba Cup Coffee".
     - Select "Email" and "Google" (or other providers) as authentication methods.
 
 2.  **Get API Keys**:

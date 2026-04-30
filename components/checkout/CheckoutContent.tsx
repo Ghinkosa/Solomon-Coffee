@@ -16,7 +16,6 @@ import {
   Package,
   Loader2,
   X,
-  Wallet,
 } from "lucide-react";
 import useCartStore, { CartItem } from "@/store";
 import PriceFormatter from "@/components/PriceFormatter";
@@ -214,21 +213,14 @@ export function CheckoutContent() {
     setShowPaymentModal(true);
   };
 
-  const handlePaymentMethodSelect = async (method: "stripe" | "clerk") => {
+  const handlePaymentMethodSelect = async (method: "stripe") => {
     setShowPaymentModal(false);
-
-    if (method === "clerk") {
-      // Process Clerk payment
-      await handlePlaceOrder("pay", "clerk");
-    } else {
-      // Process Stripe payment
-      await handlePlaceOrder("pay", "stripe");
-    }
+    await handlePlaceOrder("pay", method);
   };
 
   const handlePlaceOrder = async (
     action: "pay" | "order",
-    paymentGateway?: "stripe" | "clerk"
+    paymentGateway?: "stripe"
   ) => {
     if (!selectedAddress) {
       toast.error("Please select a shipping address");
@@ -239,9 +231,7 @@ export function CheckoutContent() {
 
     // Determine payment method based on action and gateway
     let paymentMethodToUse = selectedPaymentMethod;
-    if (action === "pay" && paymentGateway === "clerk") {
-      paymentMethodToUse = PAYMENT_METHODS.CLERK;
-    } else if (action === "pay" && paymentGateway === "stripe") {
+    if (action === "pay" && paymentGateway === "stripe") {
       paymentMethodToUse = PAYMENT_METHODS.STRIPE;
     }
 
@@ -642,14 +632,6 @@ export function CheckoutContent() {
               >
                 <CreditCard className="w-5 h-5 mr-2" />
                 Pay with Stripe
-              </Button>
-              <Button
-                onClick={() => handlePaymentMethodSelect("clerk")}
-                className="w-full h-12 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 font-semibold shadow-lg hover:shadow-purple-200"
-                disabled={isPlacingOrder}
-              >
-                <Wallet className="w-5 h-5 mr-2" />
-                Pay using Clerk
               </Button>
             </div>
             <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">

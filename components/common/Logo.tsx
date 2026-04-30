@@ -19,7 +19,7 @@ const Logo = ({
   variant = "default",
   lang = "en",
   theme = "light",
-  logoText = { first: "Sheba's", second: "Coffee" },
+  logoText = { first: "Sheba", second: "Cup Coffee" },
 }: LogoProps) => {
   const primaryTextClass =
     theme === "dark"
@@ -44,14 +44,12 @@ const Logo = ({
             className="h-8 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90"
             priority
           />
-          <div className="leading-none">
-            <p className={`text-sm font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}>
-              Sheba&apos;s
-            </p>
-            <p className={`text-xs font-bold tracking-widest uppercase hoverEffect ${secondaryTextClass}`}>
-              Cup Coffee
-            </p>
-          </div>
+          <p
+            className={`whitespace-nowrap text-sm font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}
+          >
+            {logoText.first}{" "}
+            <span className={secondaryTextClass}>{logoText.second}</span>
+          </p>
         </div>
       </Link>
     );
@@ -70,14 +68,12 @@ const Logo = ({
           className="h-9 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90 sm:h-10 lg:h-11"
           priority
         />
-        <div className="leading-none">
-          <p className={`text-sm sm:text-base lg:text-lg font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}>
-            Sheba&apos;s
-          </p>
-          <p className={`text-[11px] sm:text-xs lg:text-sm font-bold tracking-widest uppercase hoverEffect ${secondaryTextClass}`}>
-            Cup Coffee
-          </p>
-        </div>
+        <p
+          className={`whitespace-nowrap text-sm sm:text-base lg:text-lg font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}
+        >
+          {logoText.first}{" "}
+          <span className={secondaryTextClass}>{logoText.second}</span>
+        </p>
       </div>
     </Link>
   );

@@ -12,23 +12,23 @@ interface Props {
 
 const HomeCategories = ({ categories, dictionary }: Props) => {
   return (
-    <Container className="mt-16 lg:mt-24">
+    <Container>
       {/* Header Section */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-3 mb-4">
-          <div className="h-1 w-12 bg-linear-to-r from-shop_light_green to-shop_dark_green rounded-full"></div>
-          <Title className="text-3xl lg:text-4xl font-bold text-dark-color">
+          <div className="h-1 w-12 bg-linear-to-r from-shop_orange to-shop_light_pink rounded-full"></div>
+          <Title className="text-3xl lg:text-4xl font-bold text-shop_light_pink">
             {dictionary?.title || "Popular Categories"}
           </Title>
-          <div className="h-1 w-12 bg-linear-to-l from-shop_light_green to-shop_dark_green rounded-full"></div>
+          <div className="h-1 w-12 bg-linear-to-l from-shop_orange to-shop_light_pink rounded-full"></div>
         </div>
-        <p className="text-light-color text-lg max-w-2xl mx-auto">
+        <p className="text-shop_light_pink/85 text-lg max-w-2xl mx-auto">
           {dictionary?.description ||
             "Explore our most popular product categories and find what you need"}
         </p>
         <Link
           href={"/category"}
-          className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-shop_light_pink text-shop_dark_green/80 font-semibold rounded-full hover:bg-shop_light_green hover:text-shop_light_bg border-2 border-shop_light_green hoverEffect"
+          className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-shop_orange text-shop_dark_green font-semibold rounded-full hover:bg-shop_light_pink hover:text-shop_dark_green border-2 border-shop_orange hoverEffect"
         >
           {dictionary?.browseAll || "Browse All Categories"}
           <svg
@@ -48,7 +48,7 @@ const HomeCategories = ({ categories, dictionary }: Props) => {
       </div>
 
       {/* Categories Grid */}
-      <div className="bg-linear-to-br from-white via-shop_light_bg to-shop_light_pink p-8 lg:p-12 rounded-3xl shadow-xl border border-shop_light_green/20">
+      <div className="bg-[#09332C] p-8 lg:p-12 rounded-3xl shadow-xl border border-shop_light_green/25">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {categories?.map((category, index) => (
             <Link
@@ -122,24 +122,24 @@ const HomeCategories = ({ categories, dictionary }: Props) => {
         </div>
 
         {/* Categories Stats */}
-        <div className="flex flex-wrap items-center justify-center gap-8 mt-12 pt-8 border-t border-shop_light_green/20">
+        <div className="flex flex-wrap items-center justify-center gap-8 mt-12 pt-8 border-t border-shop_light_pink/25">
           <div className="text-center">
-            <div className="text-2xl font-bold text-shop_dark_green">
+            <div className="text-2xl font-bold text-shop_light_pink">
               {categories?.length}+
             </div>
-            <div className="text-sm text-light-color">
+            <div className="text-sm text-shop_light_pink/80">
               {dictionary?.stats?.categories || "Categories"}
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-shop_dark_green">1000+</div>
-            <div className="text-sm text-light-color">
+            <div className="text-2xl font-bold text-shop_light_pink">1000+</div>
+            <div className="text-sm text-shop_light_pink/80">
               {dictionary?.stats?.products || "Products"}
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-shop_dark_green">24/7</div>
-            <div className="text-sm text-light-color">
+            <div className="text-2xl font-bold text-shop_light_pink">24/7</div>
+            <div className="text-sm text-shop_light_pink/80">
               {dictionary?.stats?.support || "Support"}
             </div>
           </div>
@@ -147,13 +147,13 @@ const HomeCategories = ({ categories, dictionary }: Props) => {
 
         {/* Bottom CTA */}
         <div className="text-center mt-8">
-          <div className="inline-flex items-center gap-4 px-8 py-4 bg-linear-to-r from-shop_light_pink to-shop_light_bg rounded-2xl border border-shop_light_green/20">
-            <div className="w-2 h-2 bg-shop_light_green rounded-full animate-pulse"></div>
-            <span className="text-dark-text font-medium">
+          <div className="inline-flex items-center gap-4 px-8 py-4 bg-white/10 rounded-2xl border border-shop_light_pink/30">
+            <div className="w-2 h-2 bg-shop_orange rounded-full animate-pulse"></div>
+            <span className="text-shop_light_pink font-medium">
               {dictionary?.discoverAmazing ||
                 "Discover amazing products in every category"}
             </span>
-            <div className="w-2 h-2 bg-shop_light_green rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-shop_orange rounded-full animate-pulse"></div>
           </div>
         </div>
       </div>

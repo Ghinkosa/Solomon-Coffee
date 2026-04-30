@@ -214,7 +214,7 @@ export const sendOrderStatusNotification = async (
       type: "order",
       priority,
       actionUrl,
-      sentBy: "Sheba's Coffee System",
+      sentBy: "Sheba Cup Coffee System",
     });
 
     return result;

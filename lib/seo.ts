@@ -11,7 +11,7 @@ export function generateProductMetadata(product: any): Metadata {
   const title = product.name || "Product";
   const description =
     product.description ||
-    `Buy ${title} online at Sheba's Coffee. ${
+    `Buy ${title} online at Sheba Cup Coffee. ${
       product.price ? `Price: $${product.price}` : ""
     }`;
   const imageUrl = product.images?.[0]
@@ -46,7 +46,7 @@ export function generateProductMetadata(product: any): Metadata {
           alt: title,
         },
       ],
-      siteName: "Sheba's Coffee",
+      siteName: "Sheba Cup Coffee",
     },
     twitter: {
       card: "summary_large_image",
@@ -70,7 +70,7 @@ export function generateCategoryMetadata(
   const title = category.title || "Category";
   const description =
     category.description ||
-    `Browse ${productCount} products in ${title} category at Sheba's Coffee. Find the best deals and quality items.`;
+    `Browse ${productCount} products in ${title} category at Sheba Cup Coffee. Find the best deals and quality items.`;
   const imageUrl = category.image
     ? urlFor(category.image).url()
     : "/og-image.jpg";
@@ -100,7 +100,7 @@ export function generateCategoryMetadata(
           alt: title,
         },
       ],
-      siteName: "Sheba's Coffee",
+      siteName: "Sheba Cup Coffee",
     },
     twitter: {
       card: "summary_large_image",
@@ -121,7 +121,7 @@ export function generateBlogMetadata(blog: any): Metadata {
   const title = blog.title || "Blog Post";
   const description =
     blog.description ||
-    `Read ${title} on Sheba's Coffee. Stay updated with the latest news and articles.`;
+    `Read ${title} on Sheba Cup Coffee. Stay updated with the latest news and articles.`;
   const imageUrl = blog.mainImage
     ? urlFor(blog.mainImage).url()
     : "/og-image.jpg";
@@ -130,7 +130,7 @@ export function generateBlogMetadata(blog: any): Metadata {
   return {
     title,
     description,
-    keywords: [title, "blog", "article", "news", "Sheba's Coffee"].filter(
+    keywords: [title, "blog", "article", "news", "Sheba Cup Coffee"].filter(
       Boolean,
     ),
     openGraph: {
@@ -146,9 +146,9 @@ export function generateBlogMetadata(blog: any): Metadata {
           alt: title,
         },
       ],
-      siteName: "Sheba's Coffee",
+      siteName: "Sheba Cup Coffee",
       publishedTime: blog.publishedAt,
-      authors: ["Sheba's Coffee"],
+      authors: ["Sheba Cup Coffee"],
     },
     twitter: {
       card: "summary_large_image",
@@ -170,7 +170,7 @@ export function generateProductSchema(product: any) {
 
   // Extract brand name if it's populated
   const brandName =
-    typeof product.brand === "object" ? product.brand?.name : "Sheba's Coffee";
+    typeof product.brand === "object" ? product.brand?.name : "Sheba Cup Coffee";
 
   return {
     "@context": "https://schema.org",
@@ -227,11 +227,11 @@ export function generateBlogSchema(blog: any) {
     dateModified: blog._updatedAt || blog.publishedAt,
     author: {
       "@type": "Organization",
-      name: "Sheba's Coffee",
+      name: "Sheba Cup Coffee",
     },
     publisher: {
       "@type": "Organization",
-      name: "Sheba's Coffee",
+      name: "Sheba Cup Coffee",
       logo: {
         "@type": "ImageObject",
         url: `${BASE_URL}/logo.png`,
@@ -269,7 +269,7 @@ export function generateOrganizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Sheba's Coffee",
+    name: "Sheba Cup Coffee",
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
     description:
@@ -297,7 +297,7 @@ export function generateWebsiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Sheba's Coffee",
+    name: "Sheba Cup Coffee",
     url: BASE_URL,
     potentialAction: {
       "@type": "SearchAction",
@@ -385,9 +385,9 @@ export function getCanonicalUrl(path: string): string {
  */
 export function generateHomeMetadata(): Metadata {
   return {
-    title: "Sheba's Coffee - Premium Coffee & Essentials",
+    title: "Sheba Cup Coffee - Premium Coffee & Essentials",
     description:
-      "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee with exceptional quality and service.",
+      "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee with exceptional quality and service.",
     keywords: [
       "specialty coffee",
       "single-origin coffee",
@@ -401,23 +401,23 @@ export function generateHomeMetadata(): Metadata {
     openGraph: {
       type: "website",
       url: BASE_URL,
-      title: "Sheba's Coffee - Premium Coffee & Essentials",
+      title: "Sheba Cup Coffee - Premium Coffee & Essentials",
       description:
-        "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
+        "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
       images: [
         {
           url: "/og-image.jpg",
           width: 1200,
           height: 630,
-          alt: "Sheba's Coffee Online Store",
+          alt: "Sheba Cup Coffee Online Store",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Sheba's Coffee - Premium Coffee & Essentials",
+      title: "Sheba Cup Coffee - Premium Coffee & Essentials",
       description:
-        "Discover premium coffee, accessories, and curated essentials from Sheba's Coffee.",
+        "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
       images: ["/og-image.jpg"],
     },
     alternates: {

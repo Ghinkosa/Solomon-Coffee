@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     // Send welcome email
     const emailResult = await sendMail({
       email,
-      subject: "Welcome to Sheba's Coffee Newsletter! 🎉",
+      subject: "Welcome to Sheba Cup Coffee Newsletter! 🎉",
       text: `Thank you for subscribing to our newsletter! You're now part of our exclusive community.`,
       html: generateWelcomeEmailHTML(email),
     });
@@ -75,7 +75,7 @@ function generateWelcomeEmailHTML(email: string): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Sheba's Coffee Newsletter</title>
+    <title>Welcome to Sheba Cup Coffee Newsletter</title>
     <style>
         * {
             margin: 0;
@@ -288,7 +288,7 @@ function generateWelcomeEmailHTML(email: string): string {
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🎉 Welcome to Sheba's Coffee!</h1>
+            <h1>🎉 Welcome to Sheba Cup Coffee!</h1>
             <p>Thank you for joining our newsletter community</p>
         </div>
         
@@ -298,7 +298,7 @@ function generateWelcomeEmailHTML(email: string): string {
             <div class="welcome-message">
                 <h2>You're All Set! 🌟</h2>
                 <p>
-                    Thank you for subscribing to the Sheba's Coffee newsletter! We're thrilled to have you as part of our community. 
+                    Thank you for subscribing to the Sheba Cup Coffee newsletter! We're thrilled to have you as part of our community.
                     Get ready to receive exclusive deals, new product announcements, and helpful shopping tips directly to your inbox.
                 </p>
             </div>
@@ -368,7 +368,7 @@ function generateWelcomeEmailHTML(email: string): string {
         
         <!-- Footer -->
         <div class="footer">
-            <p><strong>Sheba's Coffee</strong></p>
+            <p><strong>Sheba Cup Coffee</strong></p>
             <p>123 Shopping Street, Commerce District<br>
                New York, NY 10001, USA</p>
             <p>
@@ -386,7 +386,7 @@ function generateWelcomeEmailHTML(email: string): string {
             
             <div class="unsubscribe">
                 <p>
-                    You received this email because you subscribed to Sheba's Coffee Newsletter with ${email}.<br>
+                    You received this email because you subscribed to Sheba Cup Coffee Newsletter with ${email}.<br>
                     <a href="${
                       process.env.NEXT_PUBLIC_BASE_URL ||
                       "https://shebascoffee.com"

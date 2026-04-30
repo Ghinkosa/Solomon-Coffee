@@ -22,7 +22,15 @@ export const getProductsByCategory = async (categorySlug: string) => {
 
 export const getBanners = async () => {
   const BANNER_QUERY = defineQuery(
-    `*[_type == 'banner'] | order(weight asc, title asc)`,
+    `*[_type == 'banner'] | order(weight asc, title asc){
+      ...,
+      backgroundVideo{
+        asset->{
+          url
+        }
+      },
+      "backgroundVideoUrl": backgroundVideo.asset->url
+    }`,
   );
   try {
     const banners = await sanityFetch({

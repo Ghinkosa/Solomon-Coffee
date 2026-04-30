@@ -129,33 +129,33 @@ const faqs: FAQ[] = [
     category: "shipping",
   },
 
-  // Returns FAQs
+  // Quality & issue resolution FAQs
   {
     id: "returns-1",
-    question: "What is your return policy?",
+    question: "Do you accept returns?",
     answer:
-      "We offer a 30-day return policy from the date of delivery. Items must be unused, in original condition, and include all original packaging and accessories. Some items like personalized products may not be returnable.",
+      "We do not offer general returns. If your coffee arrives damaged, incorrect, or has a quality issue, contact us and we’ll review and resolve it quickly.",
     category: "returns",
   },
   {
     id: "returns-2",
-    question: "How do I return an item?",
+    question: "How do I report an order issue?",
     answer:
-      "To return an item, log into your account and request a return from your order history. We'll provide you with a prepaid return label and instructions. Package the item securely and drop it off at any authorized shipping location.",
+      "Log into your account, open the order, and submit an issue with photos and details. Our team will assess and guide you through the next step.",
     category: "returns",
   },
   {
     id: "returns-3",
-    question: "When will I receive my refund?",
+    question: "How long does issue resolution take?",
     answer:
-      "Refunds are processed within 2-3 business days after we receive your returned item. The refund will appear on your original payment method within 5-10 business days, depending on your bank or card issuer.",
+      "Most cases are reviewed within 1-2 business days. If approved, replacement or refund timelines depend on payment provider and shipping location.",
     category: "returns",
   },
   {
     id: "returns-4",
-    question: "Can I request a replacement instead of a return?",
+    question: "Can I request a replacement?",
     answer:
-      "Yes. For damaged or incorrect coffee items, contact support with your order number and photos. We&apos;ll review and provide a replacement when eligible.",
+      "Yes. For damaged, incorrect, or confirmed quality issues, share your order details and photos. We’ll provide a replacement when eligible.",
     category: "returns",
   },
 
@@ -212,7 +212,7 @@ const categories = [
   },
   {
     id: "returns",
-    label: "Returns",
+    label: "Quality Issues",
     icon: RotateCcw,
     count: faqs.filter((faq) => faq.category === "returns").length,
   },

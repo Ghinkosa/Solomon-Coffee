@@ -35,11 +35,8 @@ interface UserDropdownProps {
 
 const localeNames: Record<Locale, string> = {
   en: "English",
-  it: "Italian",
-  fr: "French",
-  hi: "Hindi",
+  es: "Spanish",
   ar: "Arabic",
-  am: "Amharic",
 };
 
 const UserDropdown = ({ dictionary, lang }: UserDropdownProps) => {

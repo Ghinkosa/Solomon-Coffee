@@ -90,7 +90,7 @@ const AboutClient = () => {
               Est. 2025
             </Badge>
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-              About Sheba&apos;s Coffee
+              About Sheba Cup Coffee
             </h1>
             <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
               We source, roast, and deliver premium coffee with exceptional
@@ -181,7 +181,7 @@ const AboutClient = () => {
                   &quot;Great coffee should be simple to discover, brew, and
                   enjoy every day.&quot;
                 </blockquote>
-                <p className="mt-4 font-semibold">- Sheba&apos;s Coffee Team</p>
+                <p className="mt-4 font-semibold">- Sheba Cup Coffee Team</p>
               </div>
             </motion.div>
           </div>
@@ -250,7 +250,7 @@ const AboutClient = () => {
               Leadership Team
             </Badge>
             <h2 className="text-4xl font-bold text-shop_dark_green mb-4">
-              Meet the Minds Behind Sheba&apos;s Coffee
+              Meet the Minds Behind Sheba Cup Coffee
             </h2>
             <p className="text-lg text-dark-text max-w-2xl mx-auto">
               Our coffee-focused team works every day to deliver quality,

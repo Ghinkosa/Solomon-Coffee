@@ -1,6 +1,9 @@
 import { TagIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
+const MAX_VIDEO_BYTES = 8 * 1024 * 1024; // 8MB
+const MAX_VIDEO_DURATION_SECONDS = 15;
+
 export const bannerType = defineType({
   name: "banner",
   title: "Banner",
@@ -93,9 +96,59 @@ export const bannerType = defineType({
       name: "image",
       title: "Banner Image",
       type: "image",
+      description: "Fallback background image and poster for slower connections.",
       options: {
         hotspot: true,
       },
+    }),
+    defineField({
+      name: "backgroundVideo",
+      title: "Background Video",
+      type: "file",
+      description:
+        "Optional hero background video. Keep it short (6-12s), muted, and compressed for fast loading.",
+      options: {
+        accept: "video/mp4,video/webm",
+      },
+      validation: (Rule) =>
+        Rule.custom(async (value, context) => {
+          if (!value || typeof value !== "object" || !("asset" in value))
+            return true;
+
+          const assetRef = (value as { asset?: { _ref?: string } }).asset?._ref;
+          if (!assetRef) return true;
+
+          const client = context.getClient({ apiVersion: "2026-03-22" });
+          const asset = await client.fetch(
+            `*[_id == $id][0]{
+              size,
+              mimeType,
+              "duration": metadata.duration
+            }`,
+            { id: assetRef },
+          );
+
+          if (!asset) return "Unable to validate video asset. Please re-upload.";
+          if (!asset.mimeType?.startsWith("video/"))
+            return "Only video files are allowed for Background Video.";
+          if (asset.size && asset.size > MAX_VIDEO_BYTES)
+            return "Video must be 8MB or smaller for fast loading.";
+          if (
+            typeof asset.duration === "number" &&
+            asset.duration > MAX_VIDEO_DURATION_SECONDS
+          )
+            return "Video must be 15 seconds or shorter.";
+
+          return true;
+        }),
+    }),
+    defineField({
+      name: "disableVideoOnMobile",
+      title: "Disable Video On Mobile",
+      type: "boolean",
+      description:
+        "Recommended for performance. Uses the banner image for mobile devices.",
+      initialValue: true,
     }),
     defineField({
       name: "weight",

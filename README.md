@@ -1,4 +1,4 @@
-# 🛒 Sheba's Coffee - E-Commerce Platform
+# 🛒 Sheba Cup Coffee - E-Commerce Platform
 
 <div align="center">
 
@@ -17,11 +17,11 @@
 
 ## 📸 Platform Overview
 
-[![Sheba's Coffee Preview](./public/preview.png)](https://shebascoffee.com)
+[![Sheba Cup Coffee Preview](./public/preview.png)](https://shebascoffee.com)
 
-Sheba's Coffee is a comprehensive e-commerce solution engineered for performance, scalability, and conversion. Built with the latest Next.js 16, React 19, and TypeScript stack, it offers an enterprise-grade shopping experience right out of the box.
+Sheba Cup Coffee is a comprehensive e-commerce solution engineered for performance, scalability, and conversion. Built with the latest Next.js 16, React 19, and TypeScript stack, it offers an enterprise-grade shopping experience right out of the box.
 
-Whether you're launching a coffee brand or specialty retail store, Sheba's Coffee provides the robust foundation you need to succeed.
+Whether you're launching a coffee brand or specialty retail store, Sheba Cup Coffee provides the robust foundation you need to succeed.
 
 ---
 
@@ -147,7 +147,7 @@ Getting your store up and running is simple.
 
 ## 🌍 Internationalization (i18n) - 5 Languages Supported
 
-Sheba's Coffee comes pre-configured with support for **5 languages** out of the box, making it easy to launch your store globally.
+Sheba Cup Coffee comes pre-configured with support for **5 languages** out of the box, making it easy to launch your store globally.
 
 ### Supported Languages
 
@@ -225,6 +225,6 @@ If you encounter any issues or have questions about the setup:
 - **Email Support**: Contact us at [support@shebascoffee.com](mailto:support@shebascoffee.com).
 
 <div align="center">
-  <p>Thank you for choosing Sheba's Coffee!</p>
+  <p>Thank you for choosing Sheba Cup Coffee!</p>
   <p>© 2026 shebascoffee.com. All rights reserved.</p>
 </div>

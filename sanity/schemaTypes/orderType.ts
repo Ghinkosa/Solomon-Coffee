@@ -41,20 +41,6 @@ export const orderType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "clerkPaymentId",
-      title: "Clerk Payment ID",
-      type: "string",
-      description: "Clerk payment session or transaction ID",
-      hidden: ({ document }) => document?.paymentMethod !== "clerk",
-    }),
-    defineField({
-      name: "clerkPaymentStatus",
-      title: "Clerk Payment Status",
-      type: "string",
-      description: "Status of Clerk payment",
-      hidden: ({ document }) => document?.paymentMethod !== "clerk",
-    }),
-    defineField({
       name: "customerName",
       title: "Customer Name",
       type: "string",
@@ -208,7 +194,6 @@ export const orderType = defineType({
         list: [
           { title: "Cash on Delivery", value: "cash_on_delivery" },
           { title: "Stripe", value: "stripe" },
-          { title: "Clerk", value: "clerk" },
           { title: "Card", value: "card" },
         ],
       },

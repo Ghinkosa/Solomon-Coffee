@@ -21,7 +21,6 @@ export const PAYMENT_STATUSES = {
 export const PAYMENT_METHODS = {
   CASH_ON_DELIVERY: "cash_on_delivery",
   STRIPE: "stripe",
-  CLERK: "clerk",
   CARD: "card",
 } as const;
 

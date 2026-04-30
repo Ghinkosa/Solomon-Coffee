@@ -210,11 +210,11 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
     <Container className="my-16 lg:my-24">
       <div className="mb-12 text-center">
         <div className="mb-4 inline-flex items-center gap-3">
-          <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_light_green to-shop_dark_green"></div>
+          <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_dark_green/70 to-shop_dark_green"></div>
           <h2 className="text-3xl font-bold uppercase tracking-tight text-dark-color lg:text-4xl">
-            {dictionary?.title || "Why choose Sheba's Coffee"}
+            {dictionary?.title || "Why choose Sheba Cup Coffee"}
           </h2>
-          <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_light_green to-shop_dark_green"></div>
+          <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_dark_green/70 to-shop_dark_green"></div>
         </div>
         <p className="mx-auto max-w-2xl text-lg leading-relaxed text-light-color">
           {dictionary?.description ||
@@ -222,7 +222,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         </p>
       </div>
 
-      <div className="rounded-3xl border border-shop_light_green/20 bg-linear-to-br from-white via-shop_light_bg to-shop_light_pink p-8 shadow-xl lg:p-12">
+      <div className="rounded-3xl border border-[#E4C290]/30 bg-[#1C2329] p-8 shadow-xl lg:p-12">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
@@ -231,35 +231,35 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
                 key={feature.title}
                 type="button"
                 onClick={() => handleFeatureClick(feature)}
-                className="group w-full cursor-pointer rounded-2xl border border-gray-100 bg-white p-6 text-left shadow-lg hoverEffect transform hover:-translate-y-2 hover:border-shop_light_green hover:shadow-2xl"
+                className="group w-full cursor-pointer rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-left shadow-lg hoverEffect transform hover:-translate-y-2 hover:border-[#E4C290]/45 hover:shadow-2xl"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <div className="mb-5 flex justify-center">
                   <div
-                    className={`relative flex h-16 w-16 items-center justify-center rounded-2xl ${feature.bgColor} group-hover:shadow-lg hoverEffect`}
+                    className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E4C290]/15 group-hover:shadow-lg hoverEffect"
                   >
                     <IconComponent
-                      className={`h-8 w-8 ${feature.iconColor} group-hover:scale-110 hoverEffect`}
+                      className="h-8 w-8 text-[#E4C290] group-hover:scale-110 hoverEffect"
                     />
-                    <div className="absolute inset-0 rounded-2xl bg-linear-to-t from-shop_light_green/15 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                    <div className="absolute inset-0 rounded-2xl bg-linear-to-t from-[#E4C290]/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                   </div>
                 </div>
 
                 <div className="space-y-2 text-center">
-                  <h3 className="text-lg font-bold text-dark-color group-hover:text-shop_dark_green hoverEffect">
+                  <h3 className="text-lg font-bold text-[#E4C290] group-hover:text-[#E4C290] hoverEffect">
                     {feature.title}
                   </h3>
-                  <p className="text-sm leading-relaxed text-light-color">
+                  <p className="text-sm leading-relaxed text-[#E4C290]/80">
                     {feature.description}
                   </p>
-                  <div className="pt-2 text-xs font-medium text-shop_dark_green opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="pt-2 text-xs font-medium text-[#E4C290] opacity-0 transition-opacity group-hover:opacity-100">
                     {dictionary?.learnMore || "Click to learn more →"}
                   </div>
                 </div>
 
-                <div className="mt-4 h-1.5 w-full rounded-full bg-shop_light_green/15">
+                <div className="mt-4 h-1.5 w-full rounded-full bg-[#E4C290]/20">
                   <div
-                    className={`h-1.5 rounded-full bg-linear-to-r ${feature.color} transition-all duration-500 group-hover:w-full hoverEffect`}
+                    className="h-1.5 rounded-full bg-[#E4C290] transition-all duration-500 group-hover:w-full hoverEffect"
                     style={{ width: "40%" }}
                   ></div>
                 </div>
@@ -268,37 +268,37 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           })}
         </div>
 
-        <div className="mt-12 border-t border-shop_light_green/20 pt-8">
+        <div className="mt-12 border-t border-[#E4C290]/25 pt-8">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
-              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
+            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
                 50K+
               </div>
-              <p className="font-medium text-shop_dark_green/70">
+              <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.happyCustomers || "Happy coffee drinkers"}
               </p>
             </div>
-            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
-              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
+            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
                 100K+
               </div>
-              <p className="font-medium text-shop_dark_green/70">
+              <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.productsSold || "Bags shipped"}
               </p>
             </div>
-            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
-              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
+            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
                 99%
               </div>
-              <p className="font-medium text-shop_dark_green/70">
+              <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.satisfactionRate || "Would recommend us"}
               </p>
             </div>
-            <div className="rounded-2xl border border-shop_light_green/10 bg-white/50 p-6 text-center backdrop-blur-sm">
-              <div className="mb-2 text-4xl font-bold text-shop_dark_green">
+            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
                 24/7
               </div>
-              <p className="font-medium text-shop_dark_green/70">
+              <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.customerSupport || "Order & brew support"}
               </p>
             </div>
@@ -306,9 +306,9 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         </div>
 
         <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-4 rounded-2xl border border-shop_light_green/20 bg-linear-to-r from-shop_light_pink to-shop_light_bg px-8 py-4 shadow-md">
-            <ShieldCheck className="h-6 w-6 shrink-0 text-shop_dark_green" />
-            <span className="font-semibold text-dark-text">
+          <div className="inline-flex items-center gap-4 rounded-2xl border border-[#E4C290]/30 bg-[#252D34] px-8 py-4 shadow-md">
+            <ShieldCheck className="h-6 w-6 shrink-0 text-[#E4C290]" />
+            <span className="font-semibold text-[#E4C290]">
               {dictionary?.trustLine ||
                 "Trusted by home brewers and cafés who care about the cup."}
             </span>
@@ -316,7 +316,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
               {[1, 2, 3, 4, 5].map((star) => (
                 <svg
                   key={star}
-                  className="h-5 w-5 fill-current text-shop_light_green"
+                  className="h-5 w-5 fill-current text-[#E4C290]"
                   viewBox="0 0 20 20"
                   aria-hidden
                 >
