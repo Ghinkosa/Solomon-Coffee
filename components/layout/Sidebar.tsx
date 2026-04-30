@@ -10,7 +10,6 @@ import {
   ShoppingCart,
   Heart,
   Package,
-  Tag,
   Phone,
   HelpCircle,
   Info,
@@ -107,7 +106,6 @@ const Sidebar: FC<SidebarProps> = ({
         { title: "Home", href: "/", icon: Home },
         { title: "Shop", href: "/shop", icon: ShoppingBag },
         { title: "Categories", href: "/category", icon: Grid3X3 },
-        { title: "Brands", href: "/brands", icon: Tag },
         { title: "Blog", href: "/blog", icon: BookOpen },
         {
           title: dealNavLabel ?? "Limited Roasts",
