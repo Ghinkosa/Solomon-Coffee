@@ -34,12 +34,13 @@ import {
   ProductSectionWrapper,
 } from "@/components/ProductClientWrapper";
 import RelatedProducts from "./RelatedProducts";
-import { BRAND_QUERYResult } from "@/sanity.types";
+/** Rows from BRAND_QUERY (`"brandName": brand->title`) */
+type ProductBrandRows = Array<{ brandName?: string | null }> | null;
 
 interface ProductContentProps {
   product: Product;
   relatedProducts: Product[];
-  brand: BRAND_QUERYResult | null;
+  brand: ProductBrandRows;
 }
 
 const ProductContent = ({

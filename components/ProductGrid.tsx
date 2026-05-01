@@ -7,7 +7,7 @@ import { client } from "@/sanity/lib/client";
 import HomeTabbar from "./HomeTabbar";
 import NoProductAvailable from "./product/NoProductAvailable";
 import Container from "./Container";
-import { ALL_PRODUCTS_QUERYResult, Product } from "@/sanity.types";
+import type { Product } from "@/sanity.types";
 import { ProductGridSkeleton } from "./ProductSkeletons";
 import PriceView from "./PriceView";
 import AddToCartButton from "./AddToCartButton";
@@ -36,9 +36,8 @@ const ProductGrid = ({
   dictionary: any;
   lang: string;
 }) => {
-  const [products, setProducts] = useState<ALL_PRODUCTS_QUERYResult>([]);
-  const [filteredProducts, setFilteredProducts] =
-    useState<ALL_PRODUCTS_QUERYResult>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   
   const [selectedTab, setSelectedTab] = useState<string | null>(null);

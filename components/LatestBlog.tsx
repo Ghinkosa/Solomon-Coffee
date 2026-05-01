@@ -1,6 +1,12 @@
 import Container from "./Container";
 import Title from "./Title";
 import { getLatestBlogs } from "@/sanity/queries";
+import type { Blog } from "@/sanity.types";
+
+/** Matches LATEST_BLOG_QUERY `blogcategories[]->{ title }` */
+type LatestBlogItem = Omit<Blog, "blogcategories"> & {
+  blogcategories?: Array<{ title?: string }>;
+};
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import dayjs from "dayjs";
@@ -8,7 +14,7 @@ import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
-  const blogs = await getLatestBlogs();
+  const blogs = (await getLatestBlogs()) as LatestBlogItem[];
 
   return (
     <Container className="mt-16 lg:mt-24">

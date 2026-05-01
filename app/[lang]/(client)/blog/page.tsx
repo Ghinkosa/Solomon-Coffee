@@ -4,7 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { GET_ALL_BLOGResult } from "@/sanity.types";
+import type { Blog } from "@/sanity.types";
+
+/** Matches GET_ALL_BLOG `blogcategories[]->{ title }` */
+type BlogListItem = Omit<Blog, "blogcategories"> & {
+  blogcategories?: Array<{ title?: string }>;
+};
 import { urlFor } from "@/sanity/lib/image";
 import { getAllBlogs } from "@/sanity/queries";
 import dayjs from "dayjs";
@@ -27,7 +32,7 @@ interface Props {
 const BlogPage = async ({ params }: Props) => {
   const { lang } = await params;
   const [blogs, dictionary] = await Promise.all([
-    getAllBlogs(12),
+    getAllBlogs(12) as Promise<BlogListItem[]>,
     getDictionary(lang),
   ]);
 
@@ -40,7 +45,7 @@ const BlogPage = async ({ params }: Props) => {
 
   // Extract description from blog body
   const extractDescription = (
-    body: GET_ALL_BLOGResult[0]["body"],
+    body: Blog["body"],
     maxLength: number = 150,
   ) => {
     if (!body || !Array.isArray(body))

@@ -3,7 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import Title from "@/components/Title";
 import DealCountdown from "@/components/DealCountdown";
 import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
-import { DEAL_PRODUCTSResult, Product } from "@/sanity.types";
+import type { Product } from "@/sanity.types";
 import { getDealProducts } from "@/sanity/queries";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ interface Props {
 const DealPage = async ({ params }: Props) => {
   const { lang } = await params;
   const [products, dictionary] = await Promise.all([
-    getDealProducts(),
+    getDealProducts() as Promise<Product[]>,
     getDictionary(lang),
   ]);
 
@@ -220,7 +220,7 @@ const DealPage = async ({ params }: Props) => {
 
         {products && products.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {products.map((product: DEAL_PRODUCTSResult[0]) => (
+            {products.map((product: Product) => (
               <div
                 key={product?._id}
                 className="transform transition-transform duration-300 hover:scale-105"

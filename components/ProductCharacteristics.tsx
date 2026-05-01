@@ -1,4 +1,7 @@
-import { Product, BRAND_QUERYResult } from "@/sanity.types";
+import type { Product } from "@/sanity.types";
+
+/** Rows from BRAND_QUERY (`"brandName": brand->title`) */
+type ProductBrandRows = Array<{ brandName?: string | null }> | null;
 import {
   Accordion,
   AccordionContent,
@@ -8,7 +11,7 @@ import {
 
 interface ProductCharacteristicsProps {
   product: Product;
-  brand: BRAND_QUERYResult | null;
+  brand: ProductBrandRows;
 }
 
 interface CoffeeDetails {

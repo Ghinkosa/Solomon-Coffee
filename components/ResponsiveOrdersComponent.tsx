@@ -11,13 +11,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import PriceFormatter from "./PriceFormatter";
-import { MY_ORDERS_QUERYResult } from "@/sanity.types";
+import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import DirectPaymentModal from "./DirectPaymentModal";
 
 const ResponsiveOrdersComponent = ({
   orders,
 }: {
-  orders: MY_ORDERS_QUERYResult;
+  orders: MY_ORDERS_QUERY_RESULT;
 }) => {
   const [payingOrderId] = useState<string | null>(null);
   const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(
@@ -25,7 +25,7 @@ const ResponsiveOrdersComponent = ({
   );
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<
-    MY_ORDERS_QUERYResult[0] | null
+    MY_ORDERS_QUERY_RESULT[0] | null
   >(null);
 
   // Helper function to render product images with stacked layout
@@ -128,13 +128,13 @@ const ResponsiveOrdersComponent = ({
     }
   };
 
-  const isOrderPayable = (order: MY_ORDERS_QUERYResult[number]) => {
+  const isOrderPayable = (order: MY_ORDERS_QUERY_RESULT[number]) => {
     const isPaid = order.paymentStatus === PAYMENT_STATUSES.PAID;
     const isCancelled = order.status === ORDER_STATUSES.CANCELLED;
     return !isPaid && !isCancelled;
   };
 
-  const getStatusBadgeVariant = (order: MY_ORDERS_QUERYResult[number]) => {
+  const getStatusBadgeVariant = (order: MY_ORDERS_QUERY_RESULT[number]) => {
     if (
       order.paymentStatus === "paid" ||
       order.status === "completed" ||
@@ -148,7 +148,7 @@ const ResponsiveOrdersComponent = ({
     }
   };
 
-  const renderInvoiceSection = (order: MY_ORDERS_QUERYResult[number]) => {
+  const renderInvoiceSection = (order: MY_ORDERS_QUERY_RESULT[number]) => {
     if (order?.invoice?.hosted_invoice_url) {
       return (
         <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ const ResponsiveOrdersComponent = ({
   };
 
   // Mobile Card View Component
-  const OrderCard = ({ order }: { order: MY_ORDERS_QUERYResult[0] }) => (
+  const OrderCard = ({ order }: { order: MY_ORDERS_QUERY_RESULT[0] }) => (
     <Card className="w-full shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">

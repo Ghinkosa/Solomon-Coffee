@@ -15,10 +15,10 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MY_ORDERS_QUERYResult } from "@/sanity.types";
+import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 
 interface OrdersClientProps {
-  initialOrders: MY_ORDERS_QUERYResult;
+  initialOrders: MY_ORDERS_QUERY_RESULT;
   totalPages: number;
   currentPage: number;
   hasNextPage: boolean;

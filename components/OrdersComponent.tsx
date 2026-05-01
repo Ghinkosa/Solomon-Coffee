@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { TableBody, TableCell, TableRow } from "./ui/table";
 import PriceFormatter from "./PriceFormatter";
-import { MY_ORDERS_QUERYResult } from "@/sanity.types";
+import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import {
   Tooltip,
   TooltipContent,
@@ -18,7 +18,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 
-const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERYResult }) => {
+const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) => {
   const [payingOrderId] = useState<string | null>(null);
   const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(
     null
@@ -109,7 +109,7 @@ const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERYResult }) => {
     }
   };
 
-  const isOrderPayable = (order: MY_ORDERS_QUERYResult[number]) => {
+  const isOrderPayable = (order: MY_ORDERS_QUERY_RESULT[number]) => {
     // Order is payable if payment is not completed and order is not cancelled
     const isPaid = order.paymentStatus === PAYMENT_STATUSES.PAID;
     const isCancelled = order.status === ORDER_STATUSES.CANCELLED;

@@ -4,10 +4,17 @@ import SocialShare from "@/components/SocialShare";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  SINGLE_BLOG_QUERYResult,
-  OTHERS_BLOG_QUERYResult,
-} from "@/sanity.types";
+import type { Blog } from "@/sanity.types";
+
+/** Matches SINGLE_BLOG_QUERY `blogcategories[]->{ title, "slug": slug.current }` */
+type SingleBlogFetched = Omit<Blog, "blogcategories"> & {
+  blogcategories?: Array<{ title?: string; slug?: string | null }>;
+};
+
+/** Row from BLOG_CATEGORIES (`*[_type == 'blog'] { blogcategories[]->{ ... } }`) */
+interface BlogCategorySidebarRow {
+  blogcategories?: Array<{ title?: string }>;
+}
 import { urlFor } from "@/sanity/lib/image";
 import {
   getBlogCategories,
@@ -58,7 +65,7 @@ const SingleBlogPage = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
-  const blog = (await getSingleBlog(slug)) as SINGLE_BLOG_QUERYResult | null;
+  const blog = (await getSingleBlog(slug)) as SingleBlogFetched | null;
   if (!blog) return notFound();
 
   // Generate structured data
@@ -122,19 +129,14 @@ const SingleBlogPage = async ({
                 {/* Categories */}
                 {blog?.blogcategories && blog.blogcategories.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {blog.blogcategories.map(
-                      (
-                        category: { title: string | null; slug: string | null },
-                        index: number,
-                      ) => (
-                        <Badge
-                          key={index}
-                          className="bg-shop_dark_green hover:bg-shop_light_green"
-                        >
-                          {category.title}
-                        </Badge>
-                      ),
-                    )}
+                    {blog.blogcategories.map((category, index) => (
+                      <Badge
+                        key={index}
+                        className="bg-shop_dark_green hover:bg-shop_light_green"
+                      >
+                        {category.title}
+                      </Badge>
+                    ))}
                   </div>
                 )}
 
@@ -340,7 +342,7 @@ const SingleBlogPage = async ({
 };
 
 const BlogSidebar = async ({ slug }: { slug: string }) => {
-  const categories = await getBlogCategories();
+  const categories = (await getBlogCategories()) as BlogCategorySidebarRow[];
   const blogs = await getOthersBlog(slug, 5);
 
   return (
@@ -381,7 +383,7 @@ const BlogSidebar = async ({ slug }: { slug: string }) => {
         <CardContent className="space-y-4">
           {blogs?.map(
             (
-              blogItem: OTHERS_BLOG_QUERYResult[0] & { publishedAt?: string },
+              blogItem: Blog & { publishedAt?: string },
               index: number,
             ) => (
               <Link

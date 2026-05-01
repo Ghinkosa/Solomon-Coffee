@@ -246,10 +246,7 @@ export function CheckoutContent() {
 
     if (result?.success && result.redirectTo) {
       setIsRedirecting(true);
-      if (
-        action === "pay" &&
-        (result.isStripeRedirect || result.isClerkRedirect)
-      ) {
+      if (action === "pay" && result.isStripeRedirect) {
         // Direct payment - clear cart and redirect
         resetCart();
         window.location.href = result.redirectTo;

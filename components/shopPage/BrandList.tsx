@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 import Title from "../Title";
-import { BRANDS_QUERYResult } from "@/sanity.types";
+import type { Brand } from "@/sanity.types";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 interface Props {
-  brands: BRANDS_QUERYResult;
+  brands: Brand[];
   selectedBrand?: string | null;
   setSelectedBrand: Dispatch<SetStateAction<string | null>>;
 }
