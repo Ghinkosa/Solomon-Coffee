@@ -49,18 +49,13 @@ export function CheckoutButton({
       return;
     }
 
-    const outOfStockItems = cart.filter((item) => item.product.stock === 0);
-    if (outOfStockItems.length > 0) {
-      toast.error("Some items are out of stock. Please remove them to continue.");
+    if (cart.some(item => item.product.stock === 0)) {
+      toast.error("Some items are out of stock.");
       return;
     }
 
     setActionType("checkout");
-
-    const cartValue = cart.reduce(
-      (sum, item) => sum + (item.product.price || 0) * item.quantity,
-      0
-    );
+    const cartValue = cart.reduce((sum, item) => sum + (item.product.price || 0) * item.quantity, 0);
     
     trackCheckoutStarted({
       userId: user?.id,
@@ -69,12 +64,9 @@ export function CheckoutButton({
     });
 
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
-    
-    // FIXED: Construct URL including packagingPrice
-    let checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPrice}`;
-    if (packagingId) {
-      checkoutUrl += `&packagingId=${packagingId}`;
-    }
+    let checkoutUrl = `/checkout?address=${addressParam}`;
+    if (packagingId) checkoutUrl += `&packagingId=${packagingId}`;
+    if (packagingPrice) checkoutUrl += `&packagingPrice=${packagingPrice}`;
     
     window.location.href = checkoutUrl;
   };
@@ -85,36 +77,18 @@ export function CheckoutButton({
       return;
     }
 
-    const outOfStockItems = cart.filter((item) => item.product.stock === 0);
-    if (outOfStockItems.length > 0) {
-      toast.error("Some items are out of stock.");
-      return;
-    }
-
     setActionType("order");
-
-    const grossSubtotal = cart.reduce((sum, item) => {
-      const currentPrice = item.product.price || 0;
-      const discount = item.product.discount || 0;
-      const discountAmount = (discount * currentPrice) / 100;
-      return sum + (currentPrice + discountAmount) * item.quantity;
-    }, 0);
-
-    const totalDiscount = cart.reduce((sum, item) => {
-      const currentPrice = item.product.price || 0;
-      const discount = item.product.discount || 0;
-      return sum + ((discount * currentPrice) / 100) * item.quantity;
-    }, 0);
-
-    const currentSubtotal = grossSubtotal - totalDiscount;
+    
+    // Summary calculation for immediate "Pay Later" placement
+    const currentSubtotal = cart.reduce((sum, item) => sum + (item.product.price || 0) * item.quantity, 0);
     const shipping = currentSubtotal > 100 ? 0 : 10;
     const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
     const orderTotal = currentSubtotal + shipping + tax + packagingPrice;
 
     const result = await placeOrder(
-      selectedAddress,
+      selectedAddress as any,
       PAYMENT_METHODS.CASH_ON_DELIVERY,
-      grossSubtotal,
+      currentSubtotal,
       shipping,
       tax,
       orderTotal,
@@ -125,49 +99,30 @@ export function CheckoutButton({
     if (result?.success && result.redirectTo) {
       setTimeout(() => {
         resetCart();
-        setOrderPlacementState(false, "validating");
         window.location.href = result.redirectTo;
       }, 1500);
-    } else {
-      setOrderPlacementState(false, "validating");
-      setActionType(null);
     }
+    setActionType(null);
   };
 
-  const hasOutOfStockItems = cart.some((item) => item.product.stock === 0);
-
   return (
-    <>
-      {isPlacingOrder && actionType === "order" && (
-        <OrderPlacementOverlay step={orderStep} isCheckoutRedirect={false} />
-      )}
-
-      <div className="space-y-4">
-        {hasOutOfStockItems && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-700">Remove out of stock items</p>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          <Button
-            onClick={handleCheckout}
-            disabled={isPlacingOrder || actionType === "checkout" || hasOutOfStockItems || !selectedAddress || cart.length === 0}
-            className="w-full h-12 text-lg font-semibold"
-          >
-            {actionType === "checkout" ? "Redirecting..." : "Proceed to Checkout"}
-          </Button>
-
-          <Button
-            onClick={handlePlaceOrder}
-            disabled={isPlacingOrder || hasOutOfStockItems || !selectedAddress || cart.length === 0}
-            variant="outline"
-            className="w-full h-12 text-lg font-semibold"
-          >
-            Place Order (Pay Later)
-          </Button>
-        </div>
-      </div>
-    </>
+    <div className="space-y-3">
+      <Button 
+        onClick={handleCheckout} 
+        disabled={isPlacingOrder || !selectedAddress || cart.length === 0} 
+        className="w-full h-12"
+      >
+        {actionType === "checkout" ? "Redirecting..." : "Proceed to Checkout"}
+      </Button>
+      <Button 
+        onClick={handlePlaceOrder} 
+        variant="outline" 
+        disabled={isPlacingOrder || !selectedAddress || cart.length === 0} 
+        className="w-full h-12"
+      >
+        {isPlacingOrder && actionType === "order" ? "Placing Order..." : "Place Order (Pay Later)"}
+      </Button>
+      {isPlacingOrder && actionType === "order" && <OrderPlacementOverlay step={orderStep} isCheckoutRedirect={false} />}
+    </div>
   );
 }
