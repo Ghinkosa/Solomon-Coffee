@@ -27,9 +27,16 @@ interface Address {
 interface CheckoutButtonProps {
   cart: CartItem[];
   selectedAddress: Address | null;
+  packagingId?: string;    // Added packaging ID
+  packagingPrice?: number; // Added packaging price
 }
 
-export function CheckoutButton({ cart, selectedAddress }: CheckoutButtonProps) {
+export function CheckoutButton({ 
+  cart, 
+  selectedAddress, 
+  packagingId, 
+  packagingPrice = 0 
+}: CheckoutButtonProps) {
   const { user } = useUser();
   const { resetCart, setOrderPlacementState } = useCartStore();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
@@ -45,32 +52,34 @@ export function CheckoutButton({ cart, selectedAddress }: CheckoutButtonProps) {
       return;
     }
 
-    // Check stock status
     const outOfStockItems = cart.filter((item) => item.product.stock === 0);
     if (outOfStockItems.length > 0) {
-      toast.error(
-        "Some items are out of stock. Please remove them to continue."
-      );
+      toast.error("Some items are out of stock. Please remove them to continue.");
       return;
     }
 
-    // Set loading state for checkout button
     setActionType("checkout");
 
-    // Track checkout started
     const cartValue = cart.reduce(
       (sum, item) => sum + (item.product.price || 0) * item.quantity,
       0
     );
+    
     trackCheckoutStarted({
       userId: user?.id,
-      cartValue,
+      cartValue: cartValue + packagingPrice, // Include packaging in tracking
       itemCount: cart.length,
     });
 
-    // Redirect with loading effect
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
-    window.location.href = `/checkout?address=${addressParam}`;
+    
+    // Construct URL with packaging info if available
+    let checkoutUrl = `/checkout?address=${addressParam}`;
+    if (packagingId) {
+      checkoutUrl += `&packagingId=${packagingId}`;
+    }
+    
+    window.location.href = checkoutUrl;
   };
 
   const handlePlaceOrder = async () => {
@@ -79,19 +88,14 @@ export function CheckoutButton({ cart, selectedAddress }: CheckoutButtonProps) {
       return;
     }
 
-    // Check stock status
     const outOfStockItems = cart.filter((item) => item.product.stock === 0);
     if (outOfStockItems.length > 0) {
-      toast.error(
-        "Some items are out of stock. Please remove them to continue."
-      );
+      toast.error("Some items are out of stock. Please remove them to continue.");
       return;
     }
 
     setActionType("order");
 
-    // Calculate pricing using new structure
-    // Get gross subtotal and discount from store functions
     const grossSubtotal = cart.reduce((sum, item) => {
       const currentPrice = item.product.price || 0;
       const discount = item.product.discount || 0;
@@ -109,29 +113,29 @@ export function CheckoutButton({ cart, selectedAddress }: CheckoutButtonProps) {
 
     const currentSubtotal = grossSubtotal - totalDiscount;
     const shipping = currentSubtotal > 100 ? 0 : 10;
-    const tax =
-      currentSubtotal * (parseFloat(process.env.TAX_AMOUNT || "0") || 0);
-    const orderTotal = currentSubtotal + shipping + tax;
+    const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
+    
+    // Final total including packaging
+    const orderTotal = currentSubtotal + shipping + tax + packagingPrice;
 
     const result = await placeOrder(
       selectedAddress,
       PAYMENT_METHODS.CASH_ON_DELIVERY,
-      grossSubtotal, // Pass gross subtotal
+      grossSubtotal,
       shipping,
       tax,
       orderTotal,
-      false // redirectToCheckout = false
+      false,
+      packagingId // Ensure your placeOrder hook is updated to accept this if needed
     );
 
     if (result?.success && result.redirectTo) {
       setTimeout(() => {
-        // Clear cart and reset order placement state just before redirect
         resetCart();
         setOrderPlacementState(false, "validating");
         window.location.href = result.redirectTo;
       }, 1500);
     } else {
-      // Reset state if no redirect
       setOrderPlacementState(false, "validating");
     }
 
@@ -142,7 +146,6 @@ export function CheckoutButton({ cart, selectedAddress }: CheckoutButtonProps) {
 
   return (
     <>
-      {/* Show overlay skeleton only for place order action */}
       {isPlacingOrder && actionType === "order" && (
         <OrderPlacementOverlay step={orderStep} isCheckoutRedirect={false} />
       )}

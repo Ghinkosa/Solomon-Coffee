@@ -6,6 +6,7 @@ import { ServerCartContent } from "./ServerCartContent";
 import { CartSkeleton } from "./CartSkeleton";
 import { trackCartView } from "@/lib/analytics";
 
+// Interface for Address
 interface Address {
   _id: string;
   name: string;
@@ -18,6 +19,7 @@ interface Address {
   createdAt: string;
 }
 
+// Interface for UserOrder
 interface UserOrder {
   _id: string;
   orderNumber: string;
@@ -29,9 +31,22 @@ interface UserOrder {
   email: string;
 }
 
+// Fixed: Interface matching your Sanity "packaging" schema
+interface PackagingOption {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  description?: string;
+  price: number;
+  default: boolean; // This is the field we will use for initial state
+  image?: any;
+}
+
 interface UserData {
   addresses: Address[];
   orders: UserOrder[];
+  // Fixed: Expecting the full documents from Sanity
+  packagingOptions: PackagingOption[]; 
 }
 
 export function ClientCartContent() {
@@ -52,8 +67,7 @@ export function ClientCartContent() {
 
     try {
       setLoading(true);
-
-      // Fetch user data from API endpoint
+      // Ensure your API route returns the "packaging" documents from Sanity
       const response = await fetch(
         `/api/user-data?email=${encodeURIComponent(userEmail)}`
       );
@@ -73,41 +87,31 @@ export function ClientCartContent() {
 
   const refreshAddresses = async () => {
     if (!user) return;
-
     const userEmail = user.emailAddresses[0]?.emailAddress;
     if (!userEmail) return;
 
     try {
-      // Only fetch addresses to refresh them
       const response = await fetch(
         `/api/user-data?email=${encodeURIComponent(userEmail)}`
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to refresh addresses");
-      }
-
+      if (!response.ok) throw new Error("Failed to refresh addresses");
       const data = await response.json();
       setUserData((prev) =>
         prev ? { ...prev, addresses: data.addresses } : data
       );
     } catch (err) {
       console.error("Failed to refresh addresses:", err);
-      // Don't show error toast for refresh failures
     }
   };
 
   useEffect(() => {
     fetchUserData();
-    // Track cart view
     if (user) {
       trackCartView(user.id);
     }
   }, [user, fetchUserData]);
 
-  if (!isLoaded || loading) {
-    return <CartSkeleton />;
-  }
+  if (!isLoaded || loading) return <CartSkeleton />;
 
   if (error) {
     return (
@@ -120,9 +124,7 @@ export function ClientCartContent() {
   if (!user) {
     return (
       <div className="text-center py-10">
-        <p className="text-muted-foreground">
-          Please sign in to view your cart.
-        </p>
+        <p className="text-muted-foreground">Please sign in to view your cart.</p>
       </div>
     );
   }
@@ -135,6 +137,8 @@ export function ClientCartContent() {
       userId={user.id}
       userAddresses={userData?.addresses || []}
       userOrders={userData?.orders || []}
+      // Fixed: Pass the whole array so ServerCartContent can find the "default"[cite: 3]
+      packagingOptions={userData?.packagingOptions || []}
       onAddressesRefresh={refreshAddresses}
     />
   );
