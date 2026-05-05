@@ -233,6 +233,15 @@ export function CheckoutContent() {
   }
 }, [searchParams]);
 
+// Add this right after your existing useEffects in CheckoutContent
+useEffect(() => {
+  console.log("🔍 All URL params:", {
+    packagingPrice: searchParams.get("packagingPrice"),
+    address: searchParams.get("address"),
+    allParams: Object.fromEntries(searchParams.entries())
+  });
+}, [searchParams]);
+
 // In ServerCartContent, after calculating totalPackagingFee
 const totalPackagingFee = cart.reduce((total, item) => {
   const itemPkgPrice = item.selectedPackaging?.price || 0;

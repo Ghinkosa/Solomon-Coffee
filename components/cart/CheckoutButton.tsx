@@ -26,7 +26,7 @@ interface Address {
 interface CheckoutButtonProps {
   cart: CartItem[];
   selectedAddress: Address | null;
-  packagingPrice?: number; // Total packaging price from all items
+  packagingPrice?: number;
 }
 
 export function CheckoutButton({ 
@@ -60,13 +60,10 @@ export function CheckoutButton({
   const currentSubtotal = grossSubtotal - totalDiscount;
   const shipping = currentSubtotal > 100 ? 0 : 10;
   const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
-  
-  // Include packaging price in final total
   const finalTotal = currentSubtotal + shipping + tax + packagingPrice;
 
-  // Debug logging
-  console.log("CheckoutButton - packagingPrice:", packagingPrice);
-  console.log("CheckoutButton - finalTotal:", finalTotal);
+  console.log("🔵 CheckoutButton - packagingPrice received:", packagingPrice);
+  console.log("🔵 CheckoutButton - finalTotal:", finalTotal);
 
   const handleCheckout = async () => {
     if (!selectedAddress) {
@@ -95,13 +92,19 @@ export function CheckoutButton({
 
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
     
-    // IMPORTANT: Pass packaging price to checkout page
-    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPrice}`;
+    // Build URL with packaging price - ensure it's always included even if 0
+    let checkoutUrl = `/checkout?address=${addressParam}`;
     
-    console.log("Redirecting to checkout with URL:", checkoutUrl);
-    console.log("Packaging price being sent:", packagingPrice);
+    // Always include packagingPrice parameter (even if 0, but we want to show when >0)
+    if (packagingPrice > 0) {
+      checkoutUrl += `&packagingPrice=${packagingPrice}`;
+    }
     
-    window.location.href = checkoutUrl;
+    console.log("🟢 Redirecting to checkout with URL:", checkoutUrl);
+    console.log("🟢 Packaging price being sent:", packagingPrice);
+    
+    // Use window.location.assign for better debugging
+    window.location.assign(checkoutUrl);
   };
 
   const handlePlaceOrder = async () => {
@@ -124,7 +127,7 @@ export function CheckoutButton({
       currentSubtotal,
       shipping,
       tax,
-      finalTotal, // Pass final total with packaging included
+      finalTotal,
       false,
       undefined
     );
@@ -153,18 +156,18 @@ export function CheckoutButton({
       <div className="space-y-4">
         {/* Packaging Summary Display */}
         {packagingPrice > 0 && (
-          <div className="p-3 bg-gray-50 border rounded-md">
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Box className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Packaging Total</span>
+                <Box className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">Packaging Total</span>
               </div>
-              <span className="text-sm font-semibold">
+              <span className="text-sm font-semibold text-blue-700">
                 ${packagingPrice.toFixed(2)}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Packaging cost added to your order total
+            <p className="text-xs text-blue-600 mt-1">
+              Special packaging selected for your items
             </p>
           </div>
         )}
