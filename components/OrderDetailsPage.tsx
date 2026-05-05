@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -9,16 +9,14 @@ import {
   CalendarDays,
   MapPin,
   Package,
-  CreditCard,
-  Download,
   Truck,
-  Clock,
-  XCircle,
   ShoppingCart,
-  CheckCircle,
-  AlertTriangle,
-  X,
-  Wallet,
+  XCircle,
+  PackageCheck,
+  ExternalLink,
+  ChevronRight,
+  Info,
+  ArrowLeft,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,137 +24,25 @@ import { useRouter } from "next/navigation";
 import { urlFor } from "@/sanity/lib/image";
 import PriceFormatter from "./PriceFormatter";
 import { format } from "date-fns";
-import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { toast } from "sonner";
 import useCartStore from "@/store";
 import OrderTimeline from "./OrderTimeline";
 import { requestOrderCancellation } from "@/actions/orderCancellationActions";
 import {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { cn } from "@/lib/utils";
+import { Textarea } from "./ui/textarea";
 
 interface OrderDetailsPageProps {
-  order: {
-    _id: string;
-    orderNumber: string;
-    clerkUserId: string;
-    customerName: string;
-    email: string;
-    products: Array<{
-      product: {
-        _id: string;
-        name: string;
-        slug?: { current: string };
-        image?: { asset: { url: string } };
-        price: number;
-        currency: string;
-        categories?: Array<{ title: string }>;
-      };
-      quantity: number;
-    }>;
-    subtotal: number;
-    tax: number;
-    shipping: number;
-    totalPrice: number;
-    currency: string;
-    amountDiscount: number;
-    address: {
-      name: string;
-      address: string;
-      city: string;
-      state: string;
-      zip: string;
-    };
-    status: string;
-    paymentStatus: string;
-    paymentMethod: string;
-    orderDate: string;
-    invoice?: {
-      id: string;
-      number: string;
-      hosted_invoice_url: string;
-    };
-    stripeCheckoutSessionId?: string;
-    stripePaymentIntentId?: string;
-    paymentCompletedAt?: string;
-    addressConfirmedAt?: string;
-    addressConfirmedBy?: string;
-    orderConfirmedAt?: string;
-    orderConfirmedBy?: string;
-    packedAt?: string;
-    packedBy?: string;
-    cashCollectedAt?: string;
-    deliveredAt?: string;
-    deliveredBy?: string;
-    assignedDeliverymanName?: string;
-    dispatchedAt?: string;
-  };
+  order: any; // Using any for brevity, replace with your full interface
 }
 
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case ORDER_STATUSES.PAID:
-    case ORDER_STATUSES.DELIVERED:
-      return <CheckCircle className="w-5 h-5 text-green-500" />;
-    case ORDER_STATUSES.CANCELLED:
-      return <XCircle className="w-5 h-5 text-red-500" />;
-    case ORDER_STATUSES.SHIPPED:
-    case ORDER_STATUSES.OUT_FOR_DELIVERY:
-      return <Truck className="w-5 h-5 text-blue-500" />;
-    default:
-      return <Clock className="w-5 h-5 text-yellow-500" />;
-  }
-};
-
-const getPaymentStatusIcon = (status: string) => {
-  switch (status) {
-    case PAYMENT_STATUSES.PAID:
-      return <CheckCircle className="w-4 h-4 text-green-500" />;
-    case PAYMENT_STATUSES.FAILED:
-    case PAYMENT_STATUSES.CANCELLED:
-      return <XCircle className="w-4 h-4 text-red-500" />;
-    default:
-      return <Clock className="w-4 h-4 text-yellow-500" />;
-  }
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case ORDER_STATUSES.PAID:
-    case ORDER_STATUSES.DELIVERED:
-      return "bg-green-100 text-green-800";
-    case ORDER_STATUSES.CANCELLED:
-      return "bg-red-100 text-red-800";
-    case ORDER_STATUSES.SHIPPED:
-    case ORDER_STATUSES.OUT_FOR_DELIVERY:
-      return "bg-blue-100 text-blue-800";
-    case ORDER_STATUSES.PROCESSING:
-      return "bg-yellow-100 text-yellow-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
-
-const getPaymentStatusColor = (status: string) => {
-  switch (status) {
-    case PAYMENT_STATUSES.PAID:
-      return "bg-green-100 text-green-800";
-    case PAYMENT_STATUSES.FAILED:
-    case PAYMENT_STATUSES.CANCELLED:
-      return "bg-red-100 text-red-800";
-    default:
-      return "bg-yellow-100 text-yellow-800";
-  }
-};
-
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
-  const [generatingInvoice, setGeneratingInvoice] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(order);
   const [isReordering, setIsReordering] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -166,563 +52,247 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
   const { addMultipleItems } = useCartStore();
   const router = useRouter();
 
-  const handleReorder = async () => {
-    setIsReordering(true);
-    try {
-      // Transform order products to cart format
-      const cartItems = order.products.map(({ product, quantity }) => ({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        product: product as any,
-        quantity,
-      }));
+  // Logic to separate the Default Package from Specific Shipments
+  const { defaultPackage, trackedPackages } = useMemo(() => {
+    const tracked: Record<string, any[]> = {};
+    const unassigned: any[] = [];
 
-      // Add all items to cart at once
-      addMultipleItems(cartItems);
-
-      toast.success(`${order.products.length} items added to cart!`, {
-        description: "Redirecting to cart...",
-      });
-
-      // Redirect to cart after a short delay
-      setTimeout(() => {
-        router.push("/cart");
-      }, 1000);
-    } catch (error) {
-      console.error("Error reordering:", error);
-      toast.error("Failed to reorder items. Please try again.");
-    } finally {
-      setIsReordering(false);
-    }
-  };
-
-  const handleGenerateInvoice = async () => {
-    setGeneratingInvoice(true);
-    try {
-      const response = await fetch(
-        `/api/orders/${order._id}/generate-invoice`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        toast.success(data.message || "Invoice generated successfully!");
-        // Update the current order with the new invoice data
-        setCurrentOrder((prev) => ({
-          ...prev,
-          invoice: data.invoice,
-        }));
+    order.products.forEach((item: any) => {
+      if (item.trackingId) {
+        if (!tracked[item.trackingId]) tracked[item.trackingId] = [];
+        tracked[item.trackingId].push(item);
       } else {
-        console.error("Invoice generation failed:", data);
-        const errorMessage = data.error || "Failed to generate invoice";
-        const details = data.details ? ` Details: ${data.details}` : "";
-        toast.error(errorMessage + details);
+        unassigned.push(item);
       }
-    } catch (error) {
-      console.error("Invoice generation error:", error);
-      toast.error(
-        "Network error: Failed to generate invoice. Please try again."
-      );
-    } finally {
-      setGeneratingInvoice(false);
-    }
-  };
+    });
+
+    return { defaultPackage: unassigned, trackedPackages: tracked };
+  }, [order.products]);
 
   const handleCancelOrder = async () => {
+    if (!cancellationReason.trim()) {
+      toast.error("Please provide a reason for cancellation.");
+      return;
+    }
     setIsCancelling(true);
     try {
-      const result = await requestOrderCancellation(
-        order._id,
-        cancellationReason || "Cancelled by customer"
-      );
-
+      const result = await requestOrderCancellation(order._id, cancellationReason);
       if (result.success) {
-        toast.success(result.message);
-        // Update the current order to show cancellation request pending
-        setCurrentOrder(
-          (prev) =>
-            ({
-              ...prev,
-              cancellationRequested: true,
-              cancellationRequestedAt: new Date().toISOString(),
-              cancellationRequestReason:
-                cancellationReason || "Cancelled by customer",
-            } as any)
-        );
+        toast.success("Cancellation request submitted.");
         setShowCancelDialog(false);
-        setCancellationReason("");
-
-        // Refresh the page to show updated status
         router.refresh();
       } else {
-        toast.error(result.message || "Failed to submit cancellation request");
+        toast.error(result.message);
       }
     } catch (error) {
-      console.error("Error requesting cancellation:", error);
-      toast.error(
-        "An error occurred while submitting the cancellation request"
-      );
+      toast.error("Failed to cancel order.");
     } finally {
       setIsCancelling(false);
     }
   };
 
-  // Check if order can be cancelled (before order is confirmed)
-  const canCancelOrder = () => {
-    const cancellableStatuses = ["pending", "address_confirmed"];
-    return (
-      cancellableStatuses.includes(currentOrder.status) &&
-      currentOrder.status !== "cancelled" &&
-      !(currentOrder as any).cancellationRequested // Don't show cancel button if request already pending
-    );
-  };
-
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
-          <p className="text-gray-600 mt-1">
-            Order #{currentOrder.orderNumber}
-          </p>
+    <div className="min-h-screen bg-gray-50/50 pb-20">
+      <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
+        
+        {/* Top Navigation & Status Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <Link href="/user/orders" className="text-sm text-gray-500 hover:text-shop_orange flex items-center gap-1 mb-2 transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Back to My Orders
+            </Link>
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+              Order <span className="text-shop_orange">#{order.orderNumber.slice(-8)}</span>
+            </h1>
+            <p className="text-gray-500 flex items-center gap-2">
+              <CalendarDays className="w-4 h-4" /> 
+              Placed on {format(new Date(order.orderDate), "PPP")}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+             <Button onClick={() => setIsReordering(true)} variant="outline" className="rounded-full shadow-sm">
+                <ShoppingCart className="w-4 h-4 mr-2" /> Buy Again
+             </Button>
+             {order.status === "pending" && (
+                <Button onClick={() => setShowCancelDialog(true)} variant="destructive" className="rounded-full shadow-sm">
+                  <XCircle className="w-4 h-4 mr-2" /> Cancel Order
+                </Button>
+             )}
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          {currentOrder.invoice?.hosted_invoice_url ? (
-            <Button asChild variant="outline">
-              <Link
-                href={currentOrder.invoice.hosted_invoice_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Invoice
-              </Link>
-            </Button>
-          ) : currentOrder.paymentStatus === "paid" ||
-            currentOrder.status === "paid" ? (
-            <Button
-              onClick={handleGenerateInvoice}
-              disabled={generatingInvoice}
-              variant="outline"
-            >
-              {generatingInvoice ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4 mr-2" />
-                  Generate Invoice
-                </>
-              )}
-            </Button>
-          ) : null}
-          <Button
-            onClick={handleReorder}
-            disabled={isReordering}
-            variant="outline"
-            className="bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200"
-          >
-            {isReordering ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-                Adding to Cart...
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Reorder
-              </>
-            )}
-          </Button>
-          {canCancelOrder() && (
-            <Button
-              onClick={() => setShowCancelDialog(true)}
-              disabled={isCancelling}
-              variant="outline"
-              className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
-            >
-              {isCancelling ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2"></div>
-                  Cancelling...
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-4 h-4 mr-2" />
-                  Cancel Order
-                </>
-              )}
-            </Button>
-          )}
-          <Button asChild>
-            <Link href="/user/orders">← Back to Orders</Link>
-          </Button>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Order Information */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Cancellation Request Notice */}
-          {(currentOrder as any).cancellationRequested && (
-            <Card className="border-orange-300 bg-orange-50">
-              <CardHeader>
-                <CardTitle className="text-orange-800 flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  Cancellation Request Pending
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-orange-700">
-                  Your cancellation request has been submitted and is awaiting
-                  admin review. You will be notified once it has been processed.
-                </p>
-                {(currentOrder as any).cancellationRequestedAt && (
-                  <p className="text-xs text-orange-600 mt-2">
-                    Requested on:{" "}
-                    {format(
-                      new Date((currentOrder as any).cancellationRequestedAt),
-                      "MMM dd, yyyy 'at' h:mm a"
-                    )}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Order Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {getStatusIcon(currentOrder.status)}
-                Order Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Order Status</p>
-                  <Badge
-                    className={`${getStatusColor(currentOrder.status)} mt-1`}
-                  >
-                    {currentOrder.status}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Payment Status</p>
-                  <Badge
-                    className={`${getPaymentStatusColor(
-                      currentOrder.paymentStatus
-                    )} mt-1 flex items-center gap-1 w-fit`}
-                  >
-                    {getPaymentStatusIcon(currentOrder.paymentStatus)}
-                    {currentOrder.paymentStatus}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Payment Method</p>
-                  <p className="font-medium capitalize flex items-center gap-2">
-                    <CreditCard className="w-4 h-4" />
-                    {currentOrder.paymentMethod.replace("_", " ")}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Order Date</p>
-                  <p className="font-medium flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4" />
-                    {format(new Date(currentOrder.orderDate), "PPP")}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Order Timeline */}
-          <OrderTimeline order={currentOrder} />
-
-          {/* Products */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="w-5 h-5" />
-                Order Items ({order.products.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-10">
+            
+            {/* 1. DEFAULT PACKAGE SECTION */}
+            {defaultPackage.length > 0 && (
               <div className="space-y-4">
-                {order.products?.map(
-                  (
-                    item: {
-                      product: {
-                        _id: string;
-                        name: string;
-                        slug?: { current: string };
-                        image?: { asset: { url: string } };
-                        price: number;
-                        currency: string;
-                        categories?: Array<{ title: string }>;
-                      };
-                      quantity: number;
-                    },
-                    index: number
-                  ) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 p-4 border rounded-lg"
-                    >
-                      {item.product.image && (
-                        <div className="relative w-16 h-16 shrink-0">
-                          <Image
-                            src={urlFor(item.product.image).url()}
-                            alt={item.product.name}
-                            fill
-                            className="object-cover rounded-md"
-                          />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">
-                          {item.product.slug ? (
-                            <Link
-                              href={`/product/${item.product.slug.current}`}
-                              className="hover:text-shop_dark_green transition-colors"
-                            >
-                              {item.product.name}
-                            </Link>
-                          ) : (
-                            item.product.name
-                          )}
-                        </h3>
-                        {item.product.categories && (
-                          <p className="text-sm text-gray-500 mt-1">
-                            {item.product.categories
-                              .map((cat) => cat.title)
-                              .join(", ")}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-4 mt-2">
-                          <span className="text-sm text-gray-600">
-                            Qty: {item.quantity}
-                          </span>
-                          <PriceFormatter
-                            amount={item.product.price}
-                            className="font-medium"
-                          />
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <PriceFormatter
-                          amount={item.product.price * item.quantity}
-                          className="font-medium text-lg"
-                        />
-                      </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-shop_orange/10 rounded-lg">
+                      <Package className="w-5 h-5 text-shop_orange" />
                     </div>
-                  )
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Order Summary & Address */}
-        <div className="space-y-6">
-          {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal</span>
-                  <PriceFormatter amount={currentOrder.subtotal} />
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tax</span>
-                  <PriceFormatter amount={currentOrder.tax} />
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
-                  <PriceFormatter amount={currentOrder.shipping} />
-                </div>
-                {currentOrder.amountDiscount > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
-                    <span>
-                      -<PriceFormatter amount={currentOrder.amountDiscount} />
-                    </span>
+                    <h2 className="text-xl font-bold text-gray-800">Default Package</h2>
                   </div>
-                )}
-                <Separator />
-                <div className="flex justify-between font-medium text-lg">
-                  <span>Total</span>
-                  <PriceFormatter amount={currentOrder.totalPrice} />
+                  <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                    Preparing for Shipment
+                  </Badge>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Shipping Address */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
-                Shipping Address
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm space-y-1">
-                <p className="font-medium">{currentOrder.address.name}</p>
-                <p className="text-gray-600">{currentOrder.address.address}</p>
-                <p className="text-gray-600">
-                  {currentOrder.address.city}, {currentOrder.address.state}{" "}
-                  {currentOrder.address.zip}
-                </p>
+                <Card className="border-2 border-dashed border-gray-200 bg-white/50 overflow-hidden">
+                  <CardContent className="p-6 space-y-8">
+                    {/* Full Timeline for Default Package[cite: 1] */}
+                    <OrderTimeline order={currentOrder} />
+                    
+                    <div className="divide-y divide-gray-100 border-t pt-6">
+                      {defaultPackage.map((item, idx) => (
+                        <div key={idx} className="py-4 flex items-center gap-4 group">
+                          <div className="relative w-20 h-20 rounded-xl overflow-hidden border bg-gray-50 transition-transform group-hover:scale-105">
+                            <Image src={urlFor(item.product.image!).url()} alt={item.product.name} fill className="object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-gray-900 truncate">{item.product.name}</h4>
+                            <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                            {order.packedAt && (
+                               <Badge className="mt-2 bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-100">
+                                 <PackageCheck className="w-3 h-3 mr-1" /> Packed
+                               </Badge>
+                            )}
+                          </div>
+                          <PriceFormatter amount={item.product.price * item.quantity} className="font-bold text-lg" />
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
+            )}
 
-          {/* Customer Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm space-y-2">
-                <div>
-                  <p className="font-medium">{currentOrder.customerName}</p>
-                  <p className="text-gray-600">{currentOrder.email}</p>
-                </div>
-                {currentOrder.paymentCompletedAt && (
-                  <div className="pt-2 border-t">
-                    <p className="text-gray-600">Payment Completed</p>
-                    <p className="font-medium">
-                      {format(new Date(currentOrder.paymentCompletedAt), "PPp")}
-                    </p>
+            {/* 2. OTHER SHIPPING OPTIONS (Tracked Packages) */}
+            {Object.keys(trackedPackages).length > 0 && (
+              <div className="space-y-6 pt-4">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-50 rounded-lg">
+                    <Truck className="w-5 h-5 text-blue-600" />
                   </div>
-                )}
+                  <h2 className="text-xl font-bold text-gray-800">Other Shipping Options</h2>
+                </div>
+
+                {Object.entries(trackedPackages).map(([trackingId, items], idx) => (
+                  <Card key={trackingId} className="border-blue-100 shadow-md overflow-hidden bg-white">
+                    <div className="bg-blue-600 px-6 py-3 flex items-center justify-between">
+                       <span className="text-white text-xs font-bold uppercase tracking-widest">Shipment #{idx + 1}</span>
+                       <span className="text-blue-100 text-xs font-mono">{trackingId}</span>
+                    </div>
+                    <CardContent className="p-6 space-y-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-500 uppercase">Carrier</p>
+                          <p className="text-lg font-bold text-blue-700">{items[0].carrier || "Standard Shipping"}</p>
+                        </div>
+                        <Button variant="outline" size="sm" className="border-blue-200 text-blue-700 hover:bg-blue-50" asChild>
+                          <a href={`https://track.com/?id=${trackingId}`} target="_blank">
+                             Track Order <ExternalLink className="ml-2 w-3 h-3" />
+                          </a>
+                        </Button>
+                      </div>
+
+                      <Separator className="bg-blue-50" />
+
+                      {/* Display sub-timeline for this specific package if available[cite: 1] */}
+                      <OrderTimeline order={{ ...currentOrder, status: items[0].status || "shipped" }} />
+
+                      <div className="space-y-4 pt-4 border-t border-gray-50">
+                        {items.map((item, i) => (
+                          <div key={i} className="flex items-center gap-4">
+                             <div className="w-12 h-12 rounded-lg border bg-gray-50 overflow-hidden relative">
+                                <Image src={urlFor(item.product.image!).url()} alt="" fill className="object-cover" />
+                             </div>
+                             <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900 line-clamp-1">{item.product.name}</p>
+                                <p className="text-xs text-gray-500">Quantity: {item.quantity}</p>
+                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </div>
+
+          {/* Sidebar: Address & Summary */}
+          <div className="space-y-6">
+             <Card className="border-none shadow-xl shadow-gray-200/50 overflow-hidden">
+                <div className="h-2 bg-shop_orange" />
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Info className="w-5 h-5 text-shop_orange" /> Order Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                   <div className="flex justify-between text-gray-600">
+                      <span>Subtotal</span>
+                      <PriceFormatter amount={order.subtotal} />
+                   </div>
+                   <div className="flex justify-between text-gray-600">
+                      <span>Shipping</span>
+                      <span className="text-green-600 font-medium">FREE</span>
+                   </div>
+                   <Separator />
+                   <div className="flex justify-between items-baseline pt-2">
+                      <span className="text-lg font-bold">Total</span>
+                      <PriceFormatter amount={order.totalPrice} className="text-2xl font-black text-shop_orange" />
+                   </div>
+                </CardContent>
+             </Card>
+
+             <Card className="border-none shadow-lg">
+                <CardHeader>
+                   <CardTitle className="text-base flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-400" /> Delivery Address
+                   </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-gray-600 leading-relaxed">
+                   <p className="font-bold text-gray-900 text-base mb-1">{order.address.name}</p>
+                   <p>{order.address.address}</p>
+                   <p>{order.address.city}, {order.address.state} {order.address.zip}</p>
+                </CardContent>
+             </Card>
+          </div>
         </div>
       </div>
 
-      {/* Cancel Order Confirmation Dialog */}
+      {/* Cancellation Dialog[cite: 3] */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogPortal>
-          <DialogOverlay />
-          <DialogPrimitive.Content
-            className={cn(
-              "fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg"
-            )}
-          >
-            <VisuallyHidden.Root>
-              <DialogTitle>Cancel Order Confirmation</DialogTitle>
-            </VisuallyHidden.Root>
-            <div className="text-center space-y-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-50 border-4 border-red-100">
-                <AlertTriangle className="h-8 w-8 text-red-600 animate-pulse" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-gray-900">
-                  Request Order Cancellation
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Your cancellation request will be submitted to our team for
-                  review.
-                </p>
-
-                {/* Cancellation Reason Input */}
-                <div className="mt-4 text-left">
-                  <label
-                    htmlFor="cancellationReason"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Reason for cancellation (optional)
-                  </label>
-                  <textarea
-                    id="cancellationReason"
-                    value={cancellationReason}
-                    onChange={(e) => setCancellationReason(e.target.value)}
-                    placeholder="e.g., Changed my mind, found a better deal..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    rows={3}
-                  />
-                </div>
-
-                {currentOrder.paymentStatus === "paid" && (
-                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <div className="shrink-0">
-                        <Wallet className="h-5 w-5 text-blue-600 mt-0.5" />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-blue-900">
-                          Refund Information
-                        </p>
-                        <p className="text-sm text-blue-700 mt-1">
-                          If approved, your payment of{" "}
-                          <span className="font-bold">
-                            <PriceFormatter amount={currentOrder.totalPrice} />
-                          </span>{" "}
-                          will be added to your wallet balance.
-                        </p>
-                        <ul className="text-sm text-blue-700 mt-2 space-y-1 list-disc list-inside">
-                          <li>Use it for future orders</li>
-                          <li>Request withdrawal anytime</li>
-                          <li>View balance in your dashboard</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-3 pt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowCancelDialog(false);
-                  setCancellationReason("");
-                }}
-                disabled={isCancelling}
-                className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
-              >
-                Keep Order
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleCancelOrder}
-                disabled={isCancelling}
-                className="flex-1 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500 font-semibold shadow-lg hover:shadow-orange-200"
-              >
-                {isCancelling ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Submit Request
-                  </>
-                )}
-              </Button>
-            </div>
-            <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
-          </DialogPrimitive.Content>
-        </DialogPortal>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Cancel Order</DialogTitle>
+            <DialogDescription>
+              Please tell us why you want to cancel. This action cannot be undone once approved.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              placeholder="Reason for cancellation..."
+              value={cancellationReason}
+              onChange={(e) => setCancellationReason(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowCancelDialog(false)}>Close</Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleCancelOrder} 
+              disabled={isCancelling}
+            >
+              {isCancelling ? "Processing..." : "Confirm Cancellation"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   );
