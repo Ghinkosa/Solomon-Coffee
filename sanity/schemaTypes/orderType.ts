@@ -77,6 +77,12 @@ export const orderType = defineType({
               title: "Quantity Purchased",
               type: "number",
             }),
+            defineField({
+              name: "packaging",
+              title: "Packaging Choice",
+              type: "reference",
+              to: [{ type: "packaging" }],
+            }),
           ],
           preview: {
             select: {
@@ -85,11 +91,12 @@ export const orderType = defineType({
               image: "product.image",
               price: "product.price",
               currency: "product.currency",
+              pkg: "packaging.title", // Add this
             },
             prepare(select) {
-              return {
+             return {
                 title: `${select.product} x ${select.quantity}`,
-                subtitle: `${select.price * select.quantity}`,
+                subtitle: select.pkg ? `Packaging: ${select.pkg}` : "Standard Packaging",
                 media: select.image,
               };
             },
