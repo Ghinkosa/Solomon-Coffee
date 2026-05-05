@@ -3,9 +3,21 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import _ from "lodash";
 
+// Interface strictly matching your Sanity "packaging" schema
+export interface PackagingOption {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  description?: string;
+  price: number;
+  default: boolean;
+  image?: any;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedPackaging?: PackagingOption; // Added for per-product selection
 }
 
 interface StoreState {
@@ -22,11 +34,16 @@ interface StoreState {
   getTotalDiscount: () => number;
   getItemCount: (productId: string) => number;
   getGroupedItems: () => CartItem[];
+  
+  // Packaging Selection
+  updateCartItemPackaging: (productId: string, packaging: PackagingOption) => void;
+
   // favorite
   favoriteProduct: Product[];
   addToFavorite: (product: Product) => Promise<void>;
   removeFromFavorite: (productId: string) => void;
   resetFavorite: () => void;
+  
   // order placement state
   isPlacingOrder: boolean;
   orderStep: "validating" | "creating" | "emailing" | "redirecting";
@@ -34,6 +51,7 @@ interface StoreState {
     isPlacing: boolean,
     step?: "validating" | "creating" | "emailing" | "redirecting",
   ) => void;
+  
   // auth sidebar state
   isAuthSidebarOpen: boolean;
   authMode: "signIn" | "signUp";
@@ -46,6 +64,7 @@ const useCartStore = create<StoreState>()(
     (set, get) => ({
       items: [],
       favoriteProduct: [],
+      
       addItem: (product) =>
         set((state) => {
           const existingItem = _.find(
@@ -64,6 +83,7 @@ const useCartStore = create<StoreState>()(
             return { items: [...state.items, { product, quantity: 1 }] };
           }
         }),
+
       addMultipleItems: (products) =>
         set((state) => {
           let updatedItems = [...state.items];
@@ -87,6 +107,7 @@ const useCartStore = create<StoreState>()(
 
           return { items: updatedItems };
         }),
+
       removeItem: (productId) =>
         set((state) => ({
           items: _.reduce(
@@ -104,6 +125,7 @@ const useCartStore = create<StoreState>()(
             [] as CartItem[],
           ),
         })),
+
       deleteCartProduct: (productId) =>
         set((state) => ({
           items: _.filter(
@@ -111,17 +133,27 @@ const useCartStore = create<StoreState>()(
             ({ product }) => product?._id !== productId,
           ),
         })),
+
+      updateCartItemPackaging: (productId, packaging) =>
+        set((state) => ({
+          items: _.map(state.items, (item) =>
+            item.product._id === productId
+              ? { ...item, selectedPackaging: packaging }
+              : item
+          ),
+        })),
+
       resetCart: () => set({ items: [] }),
+
       getTotalPrice: () => {
-        // This should be the final payable amount (current/discounted prices)
         return _.reduce(
           get().items,
           (total, item) => total + (item.product.price ?? 0) * item.quantity,
           0,
         );
       },
+
       getSubTotalPrice: () => {
-        // This should be the gross amount (before discount)
         return _.reduce(
           get().items,
           (total, item) => {
@@ -134,8 +166,8 @@ const useCartStore = create<StoreState>()(
           0,
         );
       },
+
       getTotalDiscount: () => {
-        // New function to get total discount amount
         return _.reduce(
           get().items,
           (total, item) => {
@@ -147,6 +179,7 @@ const useCartStore = create<StoreState>()(
           0,
         );
       },
+
       getItemCount: (productId) => {
         const item = _.find(
           get().items,
@@ -154,7 +187,9 @@ const useCartStore = create<StoreState>()(
         );
         return item ? item.quantity : 0;
       },
+
       getGroupedItems: () => get().items,
+
       addToFavorite: (product: Product) => {
         return new Promise<void>((resolve) => {
           set((state: StoreState) => {
@@ -174,6 +209,7 @@ const useCartStore = create<StoreState>()(
           resolve();
         });
       },
+
       removeFromFavorite: (productId: string) => {
         set((state: StoreState) => ({
           favoriteProduct: _.filter(
@@ -182,9 +218,11 @@ const useCartStore = create<StoreState>()(
           ),
         }));
       },
+
       resetFavorite: () => {
         set({ favoriteProduct: [] });
       },
+
       // order placement state
       isPlacingOrder: false,
       orderStep: "validating" as const,
@@ -194,6 +232,7 @@ const useCartStore = create<StoreState>()(
           orderStep: step,
         });
       },
+
       // auth sidebar state
       isAuthSidebarOpen: false,
       authMode: "signIn",

@@ -4,7 +4,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { ServerCartContent } from "./ServerCartContent";
 import { CartSkeleton } from "./CartSkeleton";
-import { trackCartView } from "@/lib/analytics";
+import Link from "next/link";
+import { Button } from "../ui/button";
 
 // Interface for Address
 interface Address {
@@ -24,28 +25,24 @@ interface UserOrder {
   _id: string;
   orderNumber: string;
   totalPrice: number;
-  currency: string;
   status: string;
   orderDate: string;
-  customerName: string;
-  email: string;
 }
 
-// Fixed: Interface matching your Sanity "packaging" schema
-interface PackagingOption {
+// Fixed: Interface strictly matching your Sanity "packaging" schema
+export interface PackagingOption {
   _id: string;
   title: string;
   slug: { current: string };
   description?: string;
   price: number;
-  default: boolean; // This is the field we will use for initial state
-  image?: any;
+  default: boolean;
+  image?: any; // Sanity image object
 }
 
 interface UserData {
   addresses: Address[];
   orders: UserOrder[];
-  // Fixed: Expecting the full documents from Sanity
   packagingOptions: PackagingOption[]; 
 }
 
@@ -67,7 +64,6 @@ export function ClientCartContent() {
 
     try {
       setLoading(true);
-      // Ensure your API route returns the "packaging" documents from Sanity
       const response = await fetch(
         `/api/user-data?email=${encodeURIComponent(userEmail)}`
       );
@@ -106,9 +102,6 @@ export function ClientCartContent() {
 
   useEffect(() => {
     fetchUserData();
-    if (user) {
-      trackCartView(user.id);
-    }
   }, [user, fetchUserData]);
 
   if (!isLoaded || loading) return <CartSkeleton />;
@@ -116,15 +109,24 @@ export function ClientCartContent() {
   if (error) {
     return (
       <div className="text-center py-10">
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-500 font-medium">{error}</p>
+        <button 
+          onClick={() => fetchUserData()} 
+          className="mt-4 text-sm text-primary underline"
+        >
+          Try again
+        </button>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="text-center py-10">
+      <div className="text-center py-20 border rounded-lg bg-gray-50">
         <p className="text-muted-foreground">Please sign in to view your cart.</p>
+        <Link href="/sign-in" className="mt-4 inline-block">
+           <Button>Sign In</Button>
+        </Link>
       </div>
     );
   }
@@ -137,8 +139,6 @@ export function ClientCartContent() {
       userId={user.id}
       userAddresses={userData?.addresses || []}
       userOrders={userData?.orders || []}
-      // Fixed: Pass the whole array so ServerCartContent can find the "default"[cite: 3]
-      packagingOptions={userData?.packagingOptions || []}
       onAddressesRefresh={refreshAddresses}
     />
   );
