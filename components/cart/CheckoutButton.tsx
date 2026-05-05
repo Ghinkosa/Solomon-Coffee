@@ -64,6 +64,10 @@ export function CheckoutButton({
   // Include packaging price in final total
   const finalTotal = currentSubtotal + shipping + tax + packagingPrice;
 
+  // Debug logging
+  console.log("CheckoutButton - packagingPrice:", packagingPrice);
+  console.log("CheckoutButton - finalTotal:", finalTotal);
+
   const handleCheckout = async () => {
     if (!selectedAddress) {
       toast.error("Please select a shipping address");
@@ -91,11 +95,11 @@ export function CheckoutButton({
 
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
     
-    // Pass packaging price to checkout page
-    let checkoutUrl = `/checkout?address=${addressParam}`;
-    if (packagingPrice > 0) {
-      checkoutUrl += `&packagingPrice=${packagingPrice}`;
-    }
+    // IMPORTANT: Pass packaging price to checkout page
+    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPrice}`;
+    
+    console.log("Redirecting to checkout with URL:", checkoutUrl);
+    console.log("Packaging price being sent:", packagingPrice);
     
     window.location.href = checkoutUrl;
   };

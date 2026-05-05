@@ -221,6 +221,32 @@ export function CheckoutContent() {
     }
   }, [cart, hasInitialCart, isLoaded]);
 
+  useEffect(() => {
+  const priceParam = searchParams.get("packagingPrice");
+  console.log("CheckoutContent - URL packagingPrice param:", priceParam);
+  if (priceParam) {
+    const price = parseFloat(priceParam);
+    if (!isNaN(price)) {
+      console.log("CheckoutContent - Setting packagingPrice to:", price);
+      setPackagingPrice(price);
+    }
+  }
+}, [searchParams]);
+
+// In ServerCartContent, after calculating totalPackagingFee
+const totalPackagingFee = cart.reduce((total, item) => {
+  const itemPkgPrice = item.selectedPackaging?.price || 0;
+  return total + (itemPkgPrice * item.quantity);
+}, 0);
+
+console.log("ServerCartContent - totalPackagingFee:", totalPackagingFee);
+console.log("ServerCartContent - cart items:", cart.map(item => ({
+  name: item.product.name,
+  packagingPrice: item.selectedPackaging?.price,
+  quantity: item.quantity,
+  total: (item.selectedPackaging?.price || 0) * item.quantity
+})));
+
   const handlePayNowClick = () => {
     if (!selectedAddress) {
       toast.error("Please select a shipping address");
