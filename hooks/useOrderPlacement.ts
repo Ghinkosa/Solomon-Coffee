@@ -70,7 +70,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     tax: number,
     total: number,
     redirectToCheckout: boolean = false,
-    packagingId?: string // FIXED: Added 8th argument
+    packagingData?: Array<{ productId: string; packaging: any | null }>
   ) => {
     if (!selectedAddress) {
       toast.error("Address Required", {
@@ -98,16 +98,45 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     try {
       setOrderPlacementState(true, "creating");
 
-      // FIXED: Include packagingId in the payload for your API
+      // Prepare items with packaging data (only add packaging field)
+      const itemsWithPackaging = cartSnapshot.map((item) => {
+        // Find packaging for this product from the passed data
+        const productPackaging = packagingData?.find(
+          (pkg) => pkg.productId === item.product._id
+        )?.packaging;
+        
+        // Use packaging from cart item if exists
+        const finalPackaging = item.selectedPackaging || productPackaging;
+        
+        const itemData: any = {
+          product: {
+            _id: item.product._id,
+            name: item.product.name,
+            price: item.product.price,
+          },
+          quantity: item.quantity,
+        };
+        
+        // Only add packaging if it exists
+        if (finalPackaging) {
+          itemData.packaging = {
+            _id: finalPackaging._id,
+            title: finalPackaging.title,
+            price: finalPackaging.price,
+          };
+        }
+        
+        return itemData;
+      });
+
       const orderData = {
-        items: cartSnapshot,
+        items: itemsWithPackaging,
         shippingAddress: selectedAddress,
         paymentMethod: selectedPaymentMethod,
         totalAmount: total,
         subtotal,
         shipping,
         tax,
-        packagingId, 
       };
 
       const orderResponse = await fetch("/api/orders", {
@@ -169,7 +198,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             success: true,
             orderId,
             orderNumber,
-            redirectTo: `/checkout?order_id=${orderId}&orderNumber=${orderNumber}${packagingId ? `&packagingId=${packagingId}` : ''}`,
+            redirectTo: `/checkout?order_id=${orderId}&orderNumber=${orderNumber}`,
             isCheckoutRedirect: true,
           };
         } else {
@@ -183,7 +212,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
               email: user?.emailAddresses[0]?.emailAddress,
               shippingAddress: selectedAddress,
               orderAmount: total,
-              packagingId, // Optional: for Stripe metadata
             }),
           });
 
@@ -204,7 +232,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           orderNumber: orderNumber,
           payment_method: 'cod'
         });
-        if (packagingId) params.append('packagingId', packagingId);
 
         return {
           success: true,

@@ -101,20 +101,30 @@ export function CheckoutButton({
       itemCount: cart.length,
     });
 
-    const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
+    // Prepare packaging data for URL (store as JSON string)
+    const packagingDataForUrl = cart.map(item => ({
+      productId: item.product._id,
+      packaging: item.selectedPackaging ? {
+        _id: item.selectedPackaging._id,
+        title: item.selectedPackaging.title,
+        price: item.selectedPackaging.price,
+      } : null
+    }));
     
-    // Build URL with packaging price
-    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPrice}`;
+    const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
+    const packagingParam = encodeURIComponent(JSON.stringify(packagingDataForUrl));
+    
+    // Build URL with packaging data
+    const checkoutUrl = `/checkout?address=${addressParam}&packagingData=${packagingParam}&packagingPrice=${packagingPrice}`;
     
     console.log("🔗 REDIRECTING TO CHECKOUT:", checkoutUrl);
-    console.log("🔗 packagingPrice in URL:", packagingPrice);
+    console.log("🔗 packagingData:", packagingDataForUrl);
     
     // Use router.push for Next.js navigation
     try {
       await router.push(checkoutUrl);
     } catch (error) {
       console.error("Redirect error:", error);
-      // Fallback to window.location
       window.location.href = checkoutUrl;
     }
   };
@@ -135,6 +145,12 @@ export function CheckoutButton({
 
     setActionType("order");
 
+    // Prepare packaging data for each product
+    const packagingData = cart.map(item => ({
+      productId: item.product._id,
+      packaging: item.selectedPackaging || null,
+    }));
+
     const result = await placeOrder(
       selectedAddress,
       PAYMENT_METHODS.CASH_ON_DELIVERY,
@@ -143,7 +159,7 @@ export function CheckoutButton({
       tax,
       finalTotal,
       false,
-      undefined
+      packagingData // Pass packaging data
     );
 
     if (result?.success && result.redirectTo) {

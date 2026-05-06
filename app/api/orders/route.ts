@@ -39,7 +39,6 @@ export async function GET() {
     );
   }
 }
-
 export const POST = async (request: NextRequest) => {
   try {
     // Check authentication
@@ -95,7 +94,7 @@ export const POST = async (request: NextRequest) => {
     const userPhone =
       user.phoneNumbers?.[0]?.phoneNumber || shippingAddress.phone || "";
 
-    // Create order object
+    // Create order object with packaging support
     const orderData = {
       _type: "order" as const,
       orderNumber,
@@ -104,18 +103,34 @@ export const POST = async (request: NextRequest) => {
       phone: userPhone,
       clerkUserId: userId,
       products: items.map(
-        (item: { product: { _id: string }; quantity: number }) => ({
-          _key: crypto.randomUUID(), // Generate unique key for each product item
-          product: {
-            _type: "reference",
-            _ref: item.product._id,
-          },
-          quantity: item.quantity,
-        }),
+        (item: { 
+          product: { _id: string; name?: string; price?: number; category?: string }; 
+          quantity: number;
+          packaging?: { _id: string; title: string; price: number } | null;
+        }) => {
+          const productItem: any = {
+            _key: crypto.randomUUID(),
+            product: {
+              _type: "reference",
+              _ref: item.product._id,
+            },
+            quantity: item.quantity,
+          };
+          
+          // Add packaging reference if it exists
+          if (item.packaging && item.packaging._id) {
+            productItem.packaging = {
+              _type: "reference",
+              _ref: item.packaging._id,
+            };
+          }
+          
+          return productItem;
+        },
       ),
       totalPrice: totalAmount,
       currency: "USD",
-      amountDiscount: 0, // Can be calculated if you have discount logic
+      amountDiscount: 0,
       address: {
         _type: "object",
         name: shippingAddress.name,
@@ -134,33 +149,26 @@ export const POST = async (request: NextRequest) => {
       subtotal,
       shipping,
       tax,
-      // Add payment-specific fields based on payment method
       ...(paymentMethod === PAYMENT_METHODS.STRIPE && {
-        stripeCustomerId: "", // Will be populated when needed for invoicing
-        stripePaymentIntentId: "", // Will be populated for Stripe payments
-        stripeCheckoutSessionId: "", // Will be populated for Stripe payments
+        stripeCustomerId: "",
+        stripePaymentIntentId: "",
+        stripeCheckoutSessionId: "",
       }),
       ...(paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY && {
         stripePaymentIntentId: `cod_${orderNumber}`,
       }),
     };
 
-    // Create order in Sanity using writeClient (has create permissions)
+    // Create order in Sanity using writeClient
     const createdOrder = await writeClient.create(orderData);
 
     // Track order placed event
     try {
-      // Use a more robust way to get the base URL, or just fire and forget without awaiting if performance is an issue
-      // Ideally, we should import the tracking logic directly instead of fetching, but for now let's fix the URL.
-      // The issue might be that NEXT_PUBLIC_BASE_URL includes '/en', so appending '/api/...' creates an invalid path like '.../en/api/...'
-
       const baseUrl =
         process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
         "http://localhost:3000";
-      // Remove locale if present in base URL to get the root origin
       const origin = new URL(baseUrl).origin;
 
-      // We use fetch with a shorter timeout to prevent blocking the order response for too long
       const trackOrderPromise = fetch(`${origin}/api/analytics/track`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -178,15 +186,17 @@ export const POST = async (request: NextRequest) => {
             shipping: shipping,
             tax: tax,
             customerEmail: userEmail,
-            products: items.map((item: CartItem) => ({
+            products: items.map((item: CartItem & { packaging?: { _id: string; title: string; price: number } }) => ({
               productId: item.product._id,
               name: item.product.name || "Unknown Product",
               quantity: item.quantity,
               price: item.product.price || 0,
+              packaging: item.packaging?.title || null,
+              packagingPrice: item.packaging?.price || 0,
             })),
           },
         }),
-        signal: AbortSignal.timeout(5000), // 5 second timeout
+        signal: AbortSignal.timeout(5000),
       });
 
       const trackPurchasePromise = fetch(`${origin}/api/analytics/track`, {
@@ -198,12 +208,14 @@ export const POST = async (request: NextRequest) => {
             orderId: createdOrder._id,
             value: totalAmount,
             currency: "USD",
-            items: items.map((item: CartItem) => ({
+            items: items.map((item: CartItem & { packaging?: { _id: string; title: string; price: number } }) => ({
               productId: item.product._id,
               name: item.product.name || "Unknown Product",
               category: item.product.category || "Uncategorized",
               quantity: item.quantity,
               price: item.product.price || 0,
+              packaging: item.packaging?.title || null,
+              packagingPrice: item.packaging?.price || 0,
             })),
             userId: userId,
           },
@@ -211,7 +223,6 @@ export const POST = async (request: NextRequest) => {
         signal: AbortSignal.timeout(5000),
       });
 
-      // We don't await these to speed up the response, but we catch potential errors to avoid unhandled rejections
       Promise.allSettled([trackOrderPromise, trackPurchasePromise]).catch(
         (err) => console.error("Analytics tracking failed:", err),
       );
@@ -219,7 +230,7 @@ export const POST = async (request: NextRequest) => {
       console.error("Failed to initiate analytics tracking:", analyticsError);
     }
 
-    // Send order confirmation notification to user
+    // Send order confirmation notification
     try {
       await sendOrderStatusNotification({
         clerkUserId: userId,
@@ -232,7 +243,6 @@ export const POST = async (request: NextRequest) => {
         "Failed to send order confirmation notification:",
         notificationError,
       );
-      // Don't fail the order creation if notification fails
     }
 
     return NextResponse.json({

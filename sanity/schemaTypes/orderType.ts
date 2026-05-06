@@ -71,17 +71,22 @@ export const orderType = defineType({
               title: "Product Bought",
               type: "reference",
               to: [{ type: "product" }],
+              validation: (Rule) => Rule.required(),
             }),
             defineField({
               name: "quantity",
               title: "Quantity Purchased",
               type: "number",
+              validation: (Rule) => Rule.required().min(1),
             }),
             defineField({
               name: "packaging",
               title: "Packaging Choice",
               type: "reference",
               to: [{ type: "packaging" }],
+              description: "Optional: Selected packaging for this product",
+              // This makes it optional/nullable
+              hidden: ({ parent }) => !parent?.product, // Hide if no product selected
             }),
           ],
           preview: {
@@ -91,12 +96,17 @@ export const orderType = defineType({
               image: "product.image",
               price: "product.price",
               currency: "product.currency",
-              pkg: "packaging.title", // Add this
+              packagingTitle: "packaging.title",
+              packagingPrice: "packaging.price",
             },
             prepare(select) {
-             return {
+              const packagingText = select.packagingTitle 
+                ? ` + ${select.packagingTitle} ($${select.packagingPrice || 0})` 
+                : "";
+              
+              return {
                 title: `${select.product} x ${select.quantity}`,
-                subtitle: select.pkg ? `Packaging: ${select.pkg}` : "Standard Packaging",
+                subtitle: `Standard${packagingText}`,
                 media: select.image,
               };
             },
@@ -205,7 +215,7 @@ export const orderType = defineType({
         ],
       },
     }),
-    // Employee tracking fields
+    // Employee tracking fields (keep as is)
     defineField({
       name: "addressConfirmedBy",
       title: "Address Confirmed By",
@@ -333,7 +343,6 @@ export const orderType = defineType({
       title: "Cash Collected At",
       type: "datetime",
     }),
-    // Cash submission to accounts tracking
     defineField({
       name: "cashSubmittedToAccounts",
       title: "Cash Submitted to Accounts",
@@ -403,7 +412,6 @@ export const orderType = defineType({
       title: "Payment Received At",
       type: "datetime",
     }),
-    // Cancellation tracking fields
     defineField({
       name: "cancellationRequested",
       title: "Cancellation Requested",
@@ -545,7 +553,6 @@ export const orderType = defineType({
         5
       )}...${select.orderId.slice(-5)}`;
 
-      // Format status for display
       const statusMap: Record<string, string> = {
         pending: "🔴 Pending",
         address_confirmed: "🟡 Address Confirmed",
