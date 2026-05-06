@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CreditCard, Package, Box } from "lucide-react";
 import useCartStore, { CartItem } from "@/store";
@@ -41,6 +41,12 @@ export function CheckoutButton({
   });
   const [actionType, setActionType] = useState<"checkout" | "order" | null>(null);
 
+  // Log when component mounts and props change
+  useEffect(() => {
+    console.log("✅ CheckoutButton received packagingPrice:", packagingPrice);
+    console.log("✅ CheckoutButton cart items:", cart.length);
+  }, [packagingPrice, cart.length]);
+
   // Calculate cart totals
   const grossSubtotal = cart.reduce((sum, item) => {
     const currentPrice = item.product.price || 0;
@@ -62,10 +68,9 @@ export function CheckoutButton({
   const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
   const finalTotal = currentSubtotal + shipping + tax + packagingPrice;
 
-  console.log("🔵 CheckoutButton - packagingPrice received:", packagingPrice);
-  console.log("🔵 CheckoutButton - finalTotal:", finalTotal);
-
   const handleCheckout = async () => {
+    console.log("🚀 handleCheckout clicked - packagingPrice:", packagingPrice);
+    
     if (!selectedAddress) {
       toast.error("Please select a shipping address");
       return;
@@ -92,19 +97,13 @@ export function CheckoutButton({
 
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
     
-    // Build URL with packaging price - ensure it's always included even if 0
-    let checkoutUrl = `/checkout?address=${addressParam}`;
+    // Build URL with packaging price
+    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPrice}`;
     
-    // Always include packagingPrice parameter (even if 0, but we want to show when >0)
-    if (packagingPrice > 0) {
-      checkoutUrl += `&packagingPrice=${packagingPrice}`;
-    }
+    console.log("🔗 Redirecting to checkout URL:", checkoutUrl);
     
-    console.log("🟢 Redirecting to checkout with URL:", checkoutUrl);
-    console.log("🟢 Packaging price being sent:", packagingPrice);
-    
-    // Use window.location.assign for better debugging
-    window.location.assign(checkoutUrl);
+    // Use window.location.href for redirect
+    window.location.href = checkoutUrl;
   };
 
   const handlePlaceOrder = async () => {
@@ -160,14 +159,14 @@ export function CheckoutButton({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Box className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-700">Packaging Total</span>
+                <span className="text-sm font-medium text-blue-700">Packaging Fee</span>
               </div>
               <span className="text-sm font-semibold text-blue-700">
                 ${packagingPrice.toFixed(2)}
               </span>
             </div>
             <p className="text-xs text-blue-600 mt-1">
-              Special packaging selected for your items
+              Premium packaging selected for your items
             </p>
           </div>
         )}

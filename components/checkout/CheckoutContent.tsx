@@ -234,11 +234,11 @@ export function CheckoutContent() {
 }, [searchParams]);
 
 // Add this right after your existing useEffects in CheckoutContent
+// At the top of CheckoutContent component, add:
 useEffect(() => {
-  console.log("🔍 All URL params:", {
+  console.log("📍 CheckoutContent - URL params:", {
     packagingPrice: searchParams.get("packagingPrice"),
-    address: searchParams.get("address"),
-    allParams: Object.fromEntries(searchParams.entries())
+    fullUrl: window.location.href
   });
 }, [searchParams]);
 
