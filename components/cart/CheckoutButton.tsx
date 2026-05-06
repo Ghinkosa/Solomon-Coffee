@@ -10,7 +10,6 @@ import { useOrderPlacement } from "@/hooks/useOrderPlacement";
 import { PAYMENT_METHODS } from "@/lib/orderStatus";
 import { trackCheckoutStarted } from "@/lib/analytics";
 import { OrderPlacementOverlay } from "./OrderPlacementSkeleton";
-import { useRouter } from "next/navigation";
 
 interface Address {
   _id: string;
@@ -36,7 +35,6 @@ export function CheckoutButton({
   packagingPrice = 0 
 }: CheckoutButtonProps) {
   const { user } = useUser();
-  const router = useRouter();
   const { resetCart, setOrderPlacementState } = useCartStore();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
     user: user ? { emailAddresses: user.emailAddresses } : null,
@@ -44,8 +42,8 @@ export function CheckoutButton({
   const [actionType, setActionType] = useState<"checkout" | "order" | null>(null);
 
   useEffect(() => {
-    console.log("✅ CheckoutButton received packagingPrice:", packagingPrice);
-    console.log("✅ CheckoutButton cart items:", cart.length);
+    console.log("✅ CheckoutButton - packagingPrice received:", packagingPrice);
+    console.log("✅ CheckoutButton - cart items:", cart.length);
   }, [packagingPrice, cart.length]);
 
   // Calculate cart totals
@@ -98,15 +96,14 @@ export function CheckoutButton({
 
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
     
-    // Build URL with packaging price - IMPORTANT: Make sure it's a number
-    const packagingPriceValue = packagingPrice || 0;
-    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPriceValue}`;
+    // Build URL with packaging price
+    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPrice}`;
     
     console.log("🔗 Redirecting to checkout URL:", checkoutUrl);
-    console.log("🔗 Packaging price in URL:", packagingPriceValue);
+    console.log("🔗 Packaging price in URL:", packagingPrice);
     
-    // Use router.push for Next.js navigation
-    router.push(checkoutUrl);
+    // Use window.location.href for redirect
+    window.location.href = checkoutUrl;
   };
 
   const handlePlaceOrder = async () => {
@@ -138,7 +135,7 @@ export function CheckoutButton({
       setTimeout(() => {
         resetCart();
         setOrderPlacementState(false, "validating");
-        router.push(result.redirectTo);
+        window.location.href = result.redirectTo;
       }, 1500);
     } else {
       setOrderPlacementState(false, "validating");
@@ -177,7 +174,7 @@ export function CheckoutButton({
         {hasOutOfStockItems && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-700">
-              Some items are out of stock and need to be removed
+              Some items are out of stock. Please remove them to continue.
             </p>
           </div>
         )}
@@ -200,7 +197,7 @@ export function CheckoutButton({
               !selectedAddress ||
               cart.length === 0
             }
-            className="w-full h-12 text-lg font-semibold"
+            className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90"
             size="lg"
           >
             {actionType === "checkout" ? (
