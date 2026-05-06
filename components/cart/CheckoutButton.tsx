@@ -10,6 +10,7 @@ import { useOrderPlacement } from "@/hooks/useOrderPlacement";
 import { PAYMENT_METHODS } from "@/lib/orderStatus";
 import { trackCheckoutStarted } from "@/lib/analytics";
 import { OrderPlacementOverlay } from "./OrderPlacementSkeleton";
+import { useRouter } from "next/navigation";
 
 interface Address {
   _id: string;
@@ -35,13 +36,13 @@ export function CheckoutButton({
   packagingPrice = 0 
 }: CheckoutButtonProps) {
   const { user } = useUser();
+  const router = useRouter();
   const { resetCart, setOrderPlacementState } = useCartStore();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
     user: user ? { emailAddresses: user.emailAddresses } : null,
   });
   const [actionType, setActionType] = useState<"checkout" | "order" | null>(null);
 
-  // Log when component mounts and props change
   useEffect(() => {
     console.log("✅ CheckoutButton received packagingPrice:", packagingPrice);
     console.log("✅ CheckoutButton cart items:", cart.length);
@@ -97,13 +98,15 @@ export function CheckoutButton({
 
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
     
-    // Build URL with packaging price
-    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPrice}`;
+    // Build URL with packaging price - IMPORTANT: Make sure it's a number
+    const packagingPriceValue = packagingPrice || 0;
+    const checkoutUrl = `/checkout?address=${addressParam}&packagingPrice=${packagingPriceValue}`;
     
     console.log("🔗 Redirecting to checkout URL:", checkoutUrl);
+    console.log("🔗 Packaging price in URL:", packagingPriceValue);
     
-    // Use window.location.href for redirect
-    window.location.href = checkoutUrl;
+    // Use router.push for Next.js navigation
+    router.push(checkoutUrl);
   };
 
   const handlePlaceOrder = async () => {
@@ -135,7 +138,7 @@ export function CheckoutButton({
       setTimeout(() => {
         resetCart();
         setOrderPlacementState(false, "validating");
-        window.location.href = result.redirectTo;
+        router.push(result.redirectTo);
       }, 1500);
     } else {
       setOrderPlacementState(false, "validating");

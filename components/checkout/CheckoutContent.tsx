@@ -83,15 +83,24 @@ export function CheckoutContent() {
   const [packagingPrice, setPackagingPrice] = useState(0);
 
   // Fetch packaging price from URL params
-  useEffect(() => {
-    const priceParam = searchParams.get("packagingPrice");
-    if (priceParam) {
-      const price = parseFloat(priceParam);
-      if (!isNaN(price)) {
-        setPackagingPrice(price);
-      }
+// Replace the packaging price useEffect with this:
+useEffect(() => {
+  const priceParam = searchParams.get("packagingPrice");
+  console.log("📍 CheckoutContent - Raw packagingPrice param:", priceParam);
+  console.log("📍 CheckoutContent - All search params:", Object.fromEntries(searchParams.entries()));
+  
+  if (priceParam) {
+    const price = parseFloat(priceParam);
+    if (!isNaN(price) && price > 0) {
+      console.log("📍 CheckoutContent - Setting packagingPrice to:", price);
+      setPackagingPrice(price);
+    } else {
+      console.log("📍 CheckoutContent - Invalid packagingPrice value:", priceParam);
     }
-  }, [searchParams]);
+  } else {
+    console.log("📍 CheckoutContent - No packagingPrice param found in URL");
+  }
+}, [searchParams]);
 
   // New pricing structure
   const grossSubtotal = getSubTotalPrice(); // Gross amount (before discount)
