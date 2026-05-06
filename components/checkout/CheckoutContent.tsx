@@ -82,30 +82,30 @@ export function CheckoutContent() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [packagingPrice, setPackagingPrice] = useState(0);
 
-  // Fetch packaging price from URL params
-// Replace the packaging price useEffect with this:
-useEffect(() => {
-  const priceParam = searchParams.get("packagingPrice");
-  console.log("📍 CheckoutContent - Raw packagingPrice param:", priceParam);
-  console.log("📍 CheckoutContent - All search params:", Object.fromEntries(searchParams.entries()));
-  
-  if (priceParam) {
-    const price = parseFloat(priceParam);
-    if (!isNaN(price) && price > 0) {
-      console.log("📍 CheckoutContent - Setting packagingPrice to:", price);
-      setPackagingPrice(price);
+  // Fetch packaging price from URL params - SINGLE EFFECT
+  useEffect(() => {
+    const priceParam = searchParams.get("packagingPrice");
+    console.log("📍 CheckoutContent - Raw packagingPrice param:", priceParam);
+    console.log("📍 CheckoutContent - All search params:", Object.fromEntries(searchParams.entries()));
+    console.log("📍 CheckoutContent - Full URL:", window.location.href);
+    
+    if (priceParam) {
+      const price = parseFloat(priceParam);
+      if (!isNaN(price) && price > 0) {
+        console.log("📍 CheckoutContent - Setting packagingPrice to:", price);
+        setPackagingPrice(price);
+      } else {
+        console.log("📍 CheckoutContent - Invalid packagingPrice value:", priceParam);
+      }
     } else {
-      console.log("📍 CheckoutContent - Invalid packagingPrice value:", priceParam);
+      console.log("📍 CheckoutContent - No packagingPrice param found in URL");
     }
-  } else {
-    console.log("📍 CheckoutContent - No packagingPrice param found in URL");
-  }
-}, [searchParams]);
+  }, [searchParams]);
 
   // New pricing structure
-  const grossSubtotal = getSubTotalPrice(); // Gross amount (before discount)
-  const totalDiscount = getTotalDiscount(); // Total discount amount
-  const currentSubtotal = grossSubtotal - totalDiscount; // After discount
+  const grossSubtotal = getSubTotalPrice();
+  const totalDiscount = getTotalDiscount();
+  const currentSubtotal = grossSubtotal - totalDiscount;
 
   // Business account discount (2% additional discount)
   const businessDiscount = userProfile?.isBusiness ? currentSubtotal * 0.02 : 0;
@@ -117,6 +117,15 @@ useEffect(() => {
   const shipping = subtotalWithPackaging > 100 ? 0 : 10;
   const tax = subtotalWithPackaging * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
   const total = subtotalWithPackaging + shipping + tax;
+
+  console.log("📍 CheckoutContent - Calculations:", {
+    packagingPrice,
+    currentSubtotal,
+    subtotalWithPackaging,
+    shipping,
+    tax,
+    total
+  });
 
   // Fetch user profile for business account status
   useEffect(() => {
@@ -159,7 +168,6 @@ useEffect(() => {
           const data = await response.json();
           setAddresses(data.addresses || []);
 
-          // Set default address (most recently used)
           const defaultAddress = data.addresses?.find(
             (addr: OrderAddress) => addr.default
           );
@@ -181,13 +189,12 @@ useEffect(() => {
     }
   }, [isLoaded, user]);
 
-  // Read address from URL parameters (when coming from cart)
+  // Read address from URL parameters
   useEffect(() => {
     const addressParam = searchParams.get("address");
     if (addressParam) {
       try {
         const decodedAddress = JSON.parse(decodeURIComponent(addressParam));
-        // Convert regular address to OrderAddress format
         const orderAddress: OrderAddress = {
           _id: decodedAddress._id,
           name: decodedAddress.name,
@@ -204,10 +211,8 @@ useEffect(() => {
         };
         setSelectedAddress(orderAddress);
 
-        // Show success message
         toast.success("Ready for Checkout! 🛒", {
-          description:
-            "Complete your order by selecting a payment method below",
+          description: "Complete your order by selecting a payment method below",
           duration: 4000,
         });
       } catch (error) {
@@ -221,49 +226,12 @@ useEffect(() => {
   useEffect(() => {
     if (hasInitialCart === null && isLoaded && cart !== undefined) {
       setHasInitialCart(cart.length > 0);
-
-      // If cart is empty on initial load, redirect to cart
       if (cart.length === 0) {
         window.location.href = "/cart";
         return;
       }
     }
   }, [cart, hasInitialCart, isLoaded]);
-
-  useEffect(() => {
-  const priceParam = searchParams.get("packagingPrice");
-  console.log("CheckoutContent - URL packagingPrice param:", priceParam);
-  if (priceParam) {
-    const price = parseFloat(priceParam);
-    if (!isNaN(price)) {
-      console.log("CheckoutContent - Setting packagingPrice to:", price);
-      setPackagingPrice(price);
-    }
-  }
-}, [searchParams]);
-
-// Add this right after your existing useEffects in CheckoutContent
-// At the top of CheckoutContent component, add:
-useEffect(() => {
-  console.log("📍 CheckoutContent - URL params:", {
-    packagingPrice: searchParams.get("packagingPrice"),
-    fullUrl: window.location.href
-  });
-}, [searchParams]);
-
-// In ServerCartContent, after calculating totalPackagingFee
-const totalPackagingFee = cart.reduce((total, item) => {
-  const itemPkgPrice = item.selectedPackaging?.price || 0;
-  return total + (itemPkgPrice * item.quantity);
-}, 0);
-
-console.log("ServerCartContent - totalPackagingFee:", totalPackagingFee);
-console.log("ServerCartContent - cart items:", cart.map(item => ({
-  name: item.product.name,
-  packagingPrice: item.selectedPackaging?.price,
-  quantity: item.quantity,
-  total: (item.selectedPackaging?.price || 0) * item.quantity
-})));
 
   const handlePayNowClick = () => {
     if (!selectedAddress) {
@@ -289,7 +257,6 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
 
     setActionType(action);
 
-    // Determine payment method based on action and gateway
     let paymentMethodToUse = selectedPaymentMethod;
     if (action === "pay" && paymentGateway === "stripe") {
       paymentMethodToUse = PAYMENT_METHODS.STRIPE;
@@ -303,17 +270,15 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
       tax,
       total,
       false,
-      undefined // No packaging ID needed, just the price is included in totals
+      undefined
     );
 
     if (result?.success && result.redirectTo) {
       setIsRedirecting(true);
       if (action === "pay" && result.isStripeRedirect) {
-        // Direct payment - clear cart and redirect
         resetCart();
         window.location.href = result.redirectTo;
       } else {
-        // Order placed - clear cart and redirect with appropriate delay
         setTimeout(
           () => {
             resetCart();
@@ -341,7 +306,6 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
     );
   }
 
-  // Show loading during redirect process
   if (isRedirecting) {
     return (
       <div className="text-center py-10">
@@ -354,13 +318,10 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
     );
   }
 
-  // If cart is empty and we had an initial cart, show loading (likely during order processing)
   if ((!cart || cart.length === 0) && hasInitialCart) {
     return <CheckoutSkeleton />;
   }
 
-  // If cart is empty and no initial cart, this shouldn't happen due to redirect
-  // But show fallback just in case
   if (!cart || cart.length === 0) {
     return (
       <div className="text-center py-10 animate-in fade-in-0 duration-500">
@@ -378,7 +339,7 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
 
   return (
     <div className="grid lg:grid-cols-3 gap-8">
-      {/* Order Items */}
+      {/* Left Column */}
       <div className="lg:col-span-2 space-y-6">
         {/* Payment Method */}
         <Card>
@@ -456,17 +417,8 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
                     <div className="h-3 bg-gray-200 rounded animate-pulse w-40"></div>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-4 border rounded-lg">
-                  <div className="w-4 h-4 bg-gray-200 rounded-full animate-pulse mt-1"></div>
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-28"></div>
-                    <div className="h-3 bg-gray-200 rounded animate-pulse w-52"></div>
-                    <div className="h-3 bg-gray-200 rounded animate-pulse w-36"></div>
-                  </div>
-                </div>
               </div>
             ) : searchParams.get("address") ? (
-              // Show only selected address when coming from cart
               selectedAddress && (
                 <div className="p-4 border rounded-lg bg-muted/50">
                   <div className="flex items-start justify-between">
@@ -479,11 +431,6 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
                         {selectedAddress.city}, {selectedAddress.state}{" "}
                         {selectedAddress.zip}
                       </p>
-                      {selectedAddress.email && (
-                        <p className="text-sm text-muted-foreground">
-                          {selectedAddress.email}
-                        </p>
-                      )}
                     </div>
                     <div className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded">
                       ✓ Selected
@@ -576,7 +523,7 @@ console.log("ServerCartContent - cart items:", cart.map(item => ({
               </div>
             )}
             
-            {/* Packaging Price - Simple display without name/ID */}
+            {/* Packaging Price Display */}
             {packagingPrice > 0 && (
               <div className="flex justify-between pt-2 border-t">
                 <div className="flex items-center gap-2">
