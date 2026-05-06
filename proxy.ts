@@ -28,8 +28,8 @@ function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
 
-  // @ts-ignore locales are readonly
-  const locales: string[] = i18n.locales;
+  // Fix: Use as string[] to avoid readonly issue
+  const locales = i18n.locales as unknown as string[];
   let languages = new Negotiator({ headers: negotiatorHeaders }).languages(
     locales,
   );
@@ -39,9 +39,13 @@ function getLocale(request: NextRequest): string | undefined {
 
 export default clerkMiddleware(async (auth, req) => {
   const pathname = req.nextUrl.pathname;
+  const searchParams = req.nextUrl.searchParams;
+  
+  // Log incoming request for debugging
+  console.log("📍 Middleware - Incoming URL:", req.url);
+  console.log("📍 Middleware - Search params:", Object.fromEntries(searchParams));
 
   // 1. Check if locale is missing (I18n Middleware Logic)
-  // Exclude likely static files, API routes, or studio
   if (
     !pathname.startsWith("/_next") &&
     !pathname.includes("/api/") &&
@@ -55,35 +59,38 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (pathnameIsMissingLocale) {
       const locale = getLocale(req);
-      return NextResponse.redirect(
-        new URL(
-          `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
-          req.url,
-        ),
-      );
+      
+      // Build new URL with locale
+      let newPathname = pathname;
+      if (!newPathname.startsWith("/")) {
+        newPathname = "/" + newPathname;
+      }
+      
+      const newUrl = new URL(`/${locale}${newPathname}`, req.url);
+      
+      // CRITICAL: Copy ALL search params to the new URL
+      searchParams.forEach((value, key) => {
+        newUrl.searchParams.set(key, value);
+      });
+      
+      console.log("🔄 Middleware - Redirecting to:", newUrl.toString());
+      console.log("🔄 Middleware - Preserved params:", Object.fromEntries(newUrl.searchParams));
+      
+      return NextResponse.redirect(newUrl);
     }
   }
 
-  // 2. Clerk Auth Protection (Locale-aware due to route matchers)
+  // 2. Clerk Auth Protection
   if (isProtectedRoute(req)) {
     await auth.protect();
   }
 
-  if (isAdminRoute(req)) {
-    const { userId } = await auth();
-    if (!userId) {
-      // Logic to handle unauthenticated admin access is handled by protect() usually,
-      // but here we might want specific redirect.
-      // However, auth.protect() above already handles it if it matches isProtectedRoute.
-      // If isAdminRoute is a subset of isProtectedRoute, we are good.
-      // Admin routes ARE in protected routes list.
-    }
-  }
+  return NextResponse.next();
 });
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
+    // Skip Next.js internals and all static files
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Always run for API routes
     "/(api|trpc)(.*)",
