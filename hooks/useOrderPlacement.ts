@@ -98,14 +98,12 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     try {
       setOrderPlacementState(true, "creating");
 
-      // Prepare items with packaging data (only add packaging field)
+      // Prepare items with packaging data
       const itemsWithPackaging = cartSnapshot.map((item) => {
-        // Find packaging for this product from the passed data
         const productPackaging = packagingData?.find(
           (pkg) => pkg.productId === item.product._id
         )?.packaging;
         
-        // Use packaging from cart item if exists
         const finalPackaging = item.selectedPackaging || productPackaging;
         
         const itemData: any = {
@@ -117,7 +115,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           quantity: item.quantity,
         };
         
-        // Only add packaging if it exists
         if (finalPackaging) {
           itemData.packaging = {
             _id: finalPackaging._id,
@@ -129,12 +126,19 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         return itemData;
       });
 
+      // Calculate totals with packaging
+      const productsTotal = itemsWithPackaging.reduce((sum, item) => {
+        const productPrice = item.product.price * item.quantity;
+        const packagingPrice = (item.packaging?.price || 0) * item.quantity;
+        return sum + productPrice + packagingPrice;
+      }, 0);
+
       const orderData = {
         items: itemsWithPackaging,
         shippingAddress: selectedAddress,
         paymentMethod: selectedPaymentMethod,
         totalAmount: total,
-        subtotal,
+        subtotal: productsTotal - (shipping + tax),
         shipping,
         tax,
       };
@@ -202,16 +206,20 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             isCheckoutRedirect: true,
           };
         } else {
+          // Stripe payment
           const stripeResponse = await fetch("/api/checkout/stripe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               orderId,
               orderNumber,
-              items: cartSnapshot,
+              items: itemsWithPackaging,
               email: user?.emailAddresses[0]?.emailAddress,
               shippingAddress: selectedAddress,
               orderAmount: total,
+              subtotal: subtotal,
+              shipping: shipping,
+              tax: tax,
             }),
           });
 
