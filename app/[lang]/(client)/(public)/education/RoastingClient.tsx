@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion"; // Note: changed to framer-motion as it is the standard package name
+import { motion } from "framer-motion";
 import {
   Thermometer,
   Clock,
@@ -8,6 +8,9 @@ import {
   Flame,
   ArrowRight,
   CheckCircle2,
+  Droplets,
+  Sun,
+  Beaker
 } from "lucide-react";
 
 import Container from "@/components/Container";
@@ -19,246 +22,213 @@ import Link from "next/link";
 import Image from "next/image";
 
 const RoastingClient = () => {
-  const steps = [
-    {
-      icon: Thermometer,
-      title: "Precision Heat Control",
-      description:
-        "Every roast is carefully monitored to ensure balanced bean development and clarity of flavor.",
-      color: "text-orange-600",
-    },
-    {
-      icon: Clock,
-      title: "Slow Development",
-      description:
-        "We roast slowly and intentionally, allowing sweetness and complexity to emerge naturally.",
-      color: "text-amber-700",
-    },
-    {
-      icon: Wind,
-      title: "Clean Airflow",
-      description:
-        "Controlled airflow keeps the roasting environment stable and consistent throughout the process.",
-      color: "text-blue-500",
-    },
-    {
-      icon: Flame,
-      title: "Small Batch Roasting",
-      description:
-        "Small production batches allow us to maintain freshness, quality, and attention to detail.",
-      color: "text-red-700",
-    },
-  ];
-
   return (
     <div className="bg-gradient-to-b from-stone-100 to-white min-h-screen">
       {/* HERO SECTION */}
-      <section className="py-28 bg-stone-950 text-white relative overflow-hidden">
+      <section className="py-32 bg-stone-950 text-white relative overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070"
-          alt="Coffee Roasting Process"
+          src="https://images.pexels.com/photos/684965/pexels-photo-684965.jpeg"
+          alt="Coffee Roasting Hero"
           fill
           priority
-          className="object-cover opacity-30"
+          className="object-cover opacity-40"
         />
-
         <Container className="max-w-6xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <Badge className="mb-6 bg-white/10 border-white/20 text-white">
-              Our Roasting Process
+            <Badge className="mb-6 bg-amber-600/20 border-amber-600/50 text-amber-500 hover:bg-amber-600/30 transition-colors">
+              The Art of the Roast
             </Badge>
-
-            <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-              Crafted With Care <br /> Roasted With Purpose
+            <h1 className="text-6xl lg:text-8xl font-bold mb-8 leading-tight tracking-tight">
+              Crafted With Care <br /> <span className="text-amber-500">Roasted With Purpose</span>
             </h1>
-
-            <p className="text-xl lg:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl lg:text-2xl text-stone-300 max-w-3xl mx-auto leading-relaxed font-light">
               At Sheba Cup Coffee, roasting is simple, intentional, and precise. 
-              We preserve the natural beauty of 100% Ethiopian specialty coffee.
+              We preserve the soul of 100% Ethiopian specialty coffee through 
+              small-batch mastery in Allentown, PA.
             </p>
           </motion.div>
         </Container>
       </section>
 
-      {/* ROASTING FEATURES GRID */}
-      <section className="py-16 -mt-12 relative z-20">
-        <Container className="max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {steps.map((step, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="bg-white border-none shadow-lg hover:shadow-2xl transition-all duration-300 h-full">
-                  <CardContent className="pt-8 text-center">
-                    <step.icon
-                      className={`w-10 h-10 mx-auto mb-4 ${step.color}`}
-                    />
-                    <h3 className="text-xl font-bold text-stone-900 mb-3">
-                      {step.title}
-                    </h3>
-                    <p className="text-stone-600 leading-relaxed text-sm">
-                      {step.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* MAIN ROASTING PROCESS CONTENT */}
+      {/* PHILOSOPHY & ROASTING DETAILS */}
       <section className="py-24 bg-white">
         <Container className="max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* LEFT IMAGES (Grid of 3 as requested) */}
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               className="grid grid-cols-2 gap-4"
             >
-              <div className="col-span-2 relative h-72 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="col-span-2 relative h-80 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=2070"
-                  alt="Specialty Coffee Sorting"
+                  src="https://images.pexels.com/photos/894612/pexels-photo-894612.jpeg"
+                  alt="Roasting Drum Close Up"
                   fill
                   className="object-cover"
                 />
               </div>
-              <div className="relative h-52 rounded-3xl overflow-hidden shadow-xl">
+              <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1525088553748-01d6e210e00b?q=80&w=2070"
-                  alt="The Roasting Drum"
+                  src="https://images.pexels.com/photos/3035845/pexels-photo-3035845.jpeg"
+                  alt="Green Coffee Beans"
                   fill
                   className="object-cover"
                 />
               </div>
-              <div className="relative h-52 rounded-3xl overflow-hidden shadow-xl">
+              <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1580915411954-282cb1b0d780?q=80&w=2070"
-                  alt="Freshly Roasted Beans"
+                  src="https://images.pexels.com/photos/1235706/pexels-photo-1235706.jpeg"
+                  alt="Finished Roast"
                   fill
                   className="object-cover"
                 />
               </div>
             </motion.div>
 
-            {/* RIGHT CONTENT */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <Badge className="mb-5 bg-amber-100 text-amber-800 border-amber-200">
-                How We Roast
-              </Badge>
-
-              <h2 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-6 leading-tight">
-                Our Roasting Philosophy <br /> in Allentown, PA
+              <h2 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-8 leading-tight">
+                Our Roasting Process <br /> At Sheba Cup
               </h2>
-
-              <p className="text-lg text-stone-600 mb-6 leading-relaxed">
-                From our small roastery in Allentown, Pennsylvania, we roast 100% 
-                Ethiopian specialty coffee in small batches to maintain complete 
-                control over quality, freshness, and flavor.
-              </p>
-
-              <p className="text-lg text-stone-600 mb-6 leading-relaxed">
-                Ethiopian specialty coffee is naturally complex — known for its 
-                floral aromatics, bright acidity, and smooth sweetness. Our philosophy 
-                is built around preserving those qualities, not overpowering them.
-              </p>
-
-              <div className="space-y-4 mb-8">
-                {[
-                  "Light to medium roasting profiles",
-                  "Never smoky. Never bitter. Never rushed.",
-                  "Balanced, expressive, and alive",
-                  "Designed to let natural character shine"
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                    <p className="text-stone-700 font-medium">{item}</p>
-                  </div>
-                ))}
+              <div className="space-y-6 text-lg text-stone-600 leading-relaxed">
+                <p>
+                  Every specialty coffee roast begins slowly and deliberately. 
+                  We gently apply heat so the beans develop evenly and cleanly. 
+                  As the roast progresses, natural sugars emerge and sweetness builds naturally.
+                </p>
+                <p>
+                  We finish the roast at the exact moment the beans become balanced, 
+                  expressive, and alive—where clarity, sweetness, and acidity come 
+                  together in perfect harmony.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                  {[
+                    "Light to medium profiles",
+                    "Never smoky or bitter",
+                    "Never rushed",
+                    "100% Ethiopian origin"
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-amber-600" />
+                      <span className="text-stone-800 font-medium">{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-
-              <Button
-                asChild
-                className="bg-stone-900 hover:bg-stone-800 rounded-full px-8 h-12"
-              >
-                <Link href="/shop">
-                  Explore Our Coffee
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
             </motion.div>
           </div>
         </Container>
       </section>
 
-      {/* WHY WE ROAST THIS WAY - BRAND VOICE */}
-      <section className="py-24 bg-stone-100">
+      {/* PROCESSING METHODS (The detailed content you provided) */}
+      <section className="py-24 bg-stone-50 border-y border-stone-200">
+        <Container className="max-w-6xl">
+          <div className="text-center mb-16">
+            <Badge className="mb-4">Beyond the Roast</Badge>
+            <h2 className="text-4xl font-bold text-stone-900">Our Processing Methods</h2>
+            <p className="text-stone-500 mt-4 max-w-2xl mx-auto italic">
+              The journey from cherry to bean defines the flavor profile long before it hits our roaster.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* NATURAL PROCESS */}
+            <Card className="border-none shadow-xl bg-white overflow-hidden group">
+              <div className="h-48 relative">
+                <Image 
+                  src="https://images.pexels.com/photos/14894361/pexels-photo-14894361.jpeg" 
+                  alt="Natural Process" 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div className="absolute inset-0 bg-black/20" />
+                <Sun className="absolute bottom-4 right-4 text-white w-8 h-8" />
+              </div>
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4 text-stone-900">Natural Process</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">
+                  We carefully sort coffee cherries multiple times, selecting only those at peak ripeness. 
+                  Intact cherries are laid on raised drying beds to dry naturally under the sun for 
+                  approximately 34 days. This allows the fruit to infuse the bean, creating 
+                  fruit-forward notes like blueberry, mango, and ripe strawberry.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* WASHED PROCESS */}
+            <Card className="border-none shadow-xl bg-white overflow-hidden group">
+              <div className="h-48 relative">
+                <Image 
+                  src="https://images.pexels.com/photos/14894635/pexels-photo-14894635.jpeg" 
+                  alt="Washed Process" 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div className="absolute inset-0 bg-black/20" />
+                <Droplets className="absolute bottom-4 right-4 text-white w-8 h-8" />
+              </div>
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4 text-stone-900">Washed Process</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">
+                  Cherries are depulped and fermented for 12–48 hours, then washed in controlled channels 
+                  where high-quality dense beans settle. They dry slowly on 1,700 raised beds for 
+                  exceptional consistency and clarity. Expect a clean, refined cup that highlights 
+                  the bean's elegant acidity.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* HONEY PROCESS */}
+            <Card className="border-none shadow-xl bg-white overflow-hidden group">
+              <div className="h-48 relative">
+                <Image 
+                  src="https://images.pexels.com/photos/14894291/pexels-photo-14894291.jpeg" 
+                  alt="Honey Process" 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div className="absolute inset-0 bg-black/20" />
+                <Beaker className="absolute bottom-4 right-4 text-white w-8 h-8" />
+              </div>
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4 text-stone-900">Honey Process</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">
+                  The cherry peel is removed but the sweet "mucilage" remains while drying. 
+                  Depending on how much mucilage is left, we produce varieties from white and 
+                  yellow to black honey coffees. This results in a fuller-bodied coffee with a 
+                  distinctive, syrupy sweetness reminiscent of honey.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </Container>
+      </section>
+
+      {/* FINAL CALL TO ACTION */}
+      <section className="py-24 text-center">
         <Container className="max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
+          <h2 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-6">
+            Because Great Coffee <br /> Should Speak Clearly
+          </h2>
+          <p className="text-xl text-stone-600 leading-relaxed mb-10">
+            Dark roasting masks origin. Our approach allows the coffee’s true identity to remain intact—from 
+            the land it was grown on to the cup in your hand. Bright, floral, and aromatic.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="bg-stone-950 hover:bg-stone-800 text-white rounded-full px-12 h-14 text-lg"
           >
-            <Badge className="mb-5 bg-stone-900 text-white">
-              Why Choose Us
-            </Badge>
-
-            <h2 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-8">
-              Because Flavor Should <br /> Speak Softly and Clearly
-            </h2>
-
-            <p className="text-xl text-stone-600 leading-relaxed mb-6">
-              Dark roasting masks origin and erases character. Our approach allows 
-              the coffee’s true identity to remain intact — from the land it was 
-              grown on to the cup in your hand.
-            </p>
-
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-stone-200 mb-10">
-               <h4 className="text-stone-900 font-bold mb-4 uppercase tracking-widest text-sm">What You’ll Taste</h4>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <p className="text-amber-700 font-bold text-lg">Bright</p>
-                    <p className="text-stone-500 text-sm">Yet smooth and balanced</p>
-                  </div>
-                  <div>
-                    <p className="text-amber-700 font-bold text-lg">Floral</p>
-                    <p className="text-stone-500 text-sm">Naturally aromatic notes</p>
-                  </div>
-                  <div>
-                    <p className="text-amber-700 font-bold text-lg">Clean</p>
-                    <p className="text-stone-500 text-sm">From first sip to finish</p>
-                  </div>
-               </div>
-            </div>
-
-            <p className="text-lg text-stone-500 italic mb-10">
-              "This is coffee meant to be enjoyed black, where Ethiopian origin speaks clearly and honestly."
-            </p>
-
-            <Button
-              asChild
-              size="lg"
-              className="bg-amber-600 hover:bg-amber-700 rounded-full px-10 shadow-lg shadow-amber-600/20"
-            >
-              <Link href="/shop">Order Freshly Roasted Coffee</Link>
-            </Button>
-          </motion.div>
+            <Link href="/shop">Explore the Collection</Link>
+          </Button>
         </Container>
       </section>
     </div>
