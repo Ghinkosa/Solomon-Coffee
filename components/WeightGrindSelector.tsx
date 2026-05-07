@@ -42,9 +42,20 @@ export function WeightGrindSelector({
   onWeightChange,
   onGrindChange,
 }: WeightGrindSelectorProps) {
-  // If no options, don't render
+  console.log(`🎛️ WeightGrindSelector rendering for product ${productId}:`, {
+    weightOptionsCount: weightOptions.length,
+    grindOptionsCount: grindOptions.length,
+    weightOptions,
+    grindOptions,
+  });
+
+  // If no options, show a message
   if (weightOptions.length === 0 && grindOptions.length === 0) {
-    return null;
+    return (
+      <div className="text-sm text-gray-400 italic p-2 text-center">
+        No weight or grind options available for this product
+      </div>
+    );
   }
 
   return (

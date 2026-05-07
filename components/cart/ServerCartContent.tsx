@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import useCartStore from "@/store";
-import type { PackagingOption } from "@/store"; // Import from store instead of redefining
+import type { PackagingOption } from "@/store";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -41,8 +41,6 @@ interface GrindOption {
   available: boolean;
 }
 
-// REMOVED local PackagingOption interface - now importing from store
-
 interface Address {
   _id: string;
   name: string;
@@ -73,12 +71,16 @@ interface ServerCartContentProps {
 
 // Helper to safely get weight options from product
 const getWeightOptions = (product: any): WeightOption[] => {
-  return product.weightOptions || [];
+  const options = product.weightOptions || [];
+  console.log(`📦 Weight options for ${product.name}:`, options);
+  return options;
 };
 
 // Helper to safely get grind options from product
 const getGrindOptions = (product: any): GrindOption[] => {
-  return product.grindOptions || [];
+  const options = product.grindOptions || [];
+  console.log(`☕ Grind options for ${product.name}:`, options);
+  return options;
 };
 
 export function ServerCartContent({
@@ -101,6 +103,21 @@ export function ServerCartContent({
 
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [showClearModal, setShowClearModal] = useState(false);
+
+  // Debug: Log cart items to see what data we have
+  useEffect(() => {
+    console.log("🛒 Cart items:", cart);
+    cart.forEach((item, index) => {
+      console.log(`Item ${index}:`, {
+        name: item.product.name,
+        weightOptions: item.product.weightOptions,
+        grindOptions: item.product.grindOptions,
+        selectedWeight: item.selectedWeight,
+        selectedGrind: item.selectedGrind,
+        selectedPackaging: item.selectedPackaging,
+      });
+    });
+  }, [cart]);
 
   // Initialize Default Address
   useEffect(() => {
@@ -161,82 +178,99 @@ export function ServerCartContent({
     <>
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
-          {cart.map((item) => (
-            <div 
-              key={`${item.product._id}-${item.selectedWeight?.weight || 'default'}-${item.selectedGrind?.grindType || 'default'}-${item.selectedPackaging?._id || 'default'}`} 
-              className="border rounded-lg p-4 bg-white shadow-sm"
-            >
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative w-24 h-24 flex-shrink-0">
-                  <Image
-                    src={item.product.images?.[0] ? urlFor(item.product.images[0]).url() : "/placeholder.jpg"}
-                    alt='Product image'
-                    fill
-                    className="object-cover rounded-md"
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-semibold">{item.product.name}</h3>
-                    <PriceFormatter amount={getItemCurrentPrice(item)} />
-                  </div>
-                  
-                  <div className="flex justify-between items-center mt-4">
-                    <CartItemControls product={item.product} />
-                    <PriceFormatter 
-                      amount={(getItemCurrentPrice(item) + (item.selectedPackaging?.price || 0)) * item.quantity} 
-                      className="font-bold" 
+          {cart.map((item) => {
+            const weightOptions = getWeightOptions(item.product);
+            const grindOptions = getGrindOptions(item.product);
+            const hasWeightOptions = weightOptions.length > 0;
+            const hasGrindOptions = grindOptions.length > 0;
+            
+            return (
+              <div 
+                key={`${item.product._id}-${item.selectedWeight?.weight || 'default'}-${item.selectedGrind?.grindType || 'default'}-${item.selectedPackaging?._id || 'default'}`} 
+                className="border rounded-lg p-4 bg-white shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="relative w-24 h-24 flex-shrink-0">
+                    <Image
+                      src={item.product.images?.[0] ? urlFor(item.product.images[0]).url() : "/placeholder.jpg"}
+                      alt='Product image'
+                      fill
+                      className="object-cover rounded-md"
                     />
                   </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-semibold">{item.product.name}</h3>
+                      <PriceFormatter amount={getItemCurrentPrice(item)} />
+                    </div>
+                    
+                    <div className="flex justify-between items-center mt-4">
+                      <CartItemControls product={item.product} />
+                      <PriceFormatter 
+                        amount={(getItemCurrentPrice(item) + (item.selectedPackaging?.price || 0)) * item.quantity} 
+                        className="font-bold" 
+                      />
+                    </div>
 
-                  {/* Display selected options */}
-                  <div className="mt-2 text-sm text-gray-500 space-x-3">
-                    {item.selectedWeight && (
-                      <span className="inline-flex items-center gap-1">
-                        <Scale className="w-3 h-3" />
-                        Weight: {item.selectedWeight.weight}
-                      </span>
-                    )}
-                    {item.selectedGrind && (
-                      <span className="inline-flex items-center gap-1">
-                        <Coffee className="w-3 h-3" />
-                        Grind: {item.selectedGrind.grindType.replace('-', ' ').toUpperCase()}
-                      </span>
-                    )}
-                    {item.selectedPackaging && (
-                      <span className="inline-flex items-center gap-1">
-                        <Package className="w-3 h-3" />
-                        Packaging: {item.selectedPackaging.title}
-                      </span>
-                    )}
-                  </div>
+                    {/* Display selected options */}
+                    <div className="mt-2 text-sm text-gray-500 space-x-3">
+                      {item.selectedWeight && (
+                        <span className="inline-flex items-center gap-1">
+                          <Scale className="w-3 h-3" />
+                          Weight: {item.selectedWeight.weight}
+                        </span>
+                      )}
+                      {item.selectedGrind && (
+                        <span className="inline-flex items-center gap-1">
+                          <Coffee className="w-3 h-3" />
+                          Grind: {item.selectedGrind.grindType.replace('-', ' ').toUpperCase()}
+                        </span>
+                      )}
+                      {item.selectedPackaging && (
+                        <span className="inline-flex items-center gap-1">
+                          <Package className="w-3 h-3" />
+                          Packaging: {item.selectedPackaging.title}
+                        </span>
+                      )}
+                    </div>
 
-                  {/* Weight and Grind Selector */}
-                  <div className="mt-4 pt-4 border-t border-dashed">
-                    <WeightGrindSelector 
-                      productId={item.product._id}
-                      weightOptions={getWeightOptions(item.product)}
-                      grindOptions={getGrindOptions(item.product)}
-                      selectedWeight={item.selectedWeight}
-                      selectedGrind={item.selectedGrind}
-                      onWeightChange={(weight) => updateCartItemWeight(item.product._id, weight)}
-                      onGrindChange={(grind) => updateCartItemGrind(item.product._id, grind)}
-                    />
-                  </div>
+                    {/* Weight Selector - Show even if no options (for debugging) */}
+                    <div className="mt-4 pt-4 border-t border-dashed">
+                      <div className="text-xs text-gray-400 mb-2">
+                        {hasWeightOptions ? `${weightOptions.length} weight options available` : "No weight options configured for this product"}
+                      </div>
+                      <WeightGrindSelector 
+                        productId={item.product._id}
+                        weightOptions={weightOptions}
+                        grindOptions={grindOptions}
+                        selectedWeight={item.selectedWeight}
+                        selectedGrind={item.selectedGrind}
+                        onWeightChange={(weight) => {
+                          console.log("Weight changed:", weight);
+                          updateCartItemWeight(item.product._id, weight);
+                        }}
+                        onGrindChange={(grind) => {
+                          console.log("Grind changed:", grind);
+                          updateCartItemGrind(item.product._id, grind);
+                        }}
+                      />
+                    </div>
 
-                  {/* Packaging Selector */}
-                  <div className="mt-4 pt-4 border-t border-dashed">
-                    <PackagingSelector 
-                      selectedId={item.selectedPackaging?._id}
-                      onSelect={(pkg: PackagingOption) => {
-                        updateCartItemPackaging(item.product._id, pkg);
-                      }}
-                    />
+                    {/* Packaging Selector */}
+                    <div className="mt-4 pt-4 border-t border-dashed">
+                      <PackagingSelector 
+                        selectedId={item.selectedPackaging?._id}
+                        onSelect={(pkg: PackagingOption) => {
+                          console.log("Packaging changed:", pkg);
+                          updateCartItemPackaging(item.product._id, pkg);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           
           <div className="flex justify-between items-center pt-4">
             <Button asChild variant="outline">
