@@ -27,7 +27,7 @@ const RoastingClient = () => {
       {/* HERO SECTION */}
       <section className="py-32 bg-stone-950 text-white relative overflow-hidden">
         <Image
-          src="https://images.pexels.com/photos/684965/pexels-photo-684965.jpeg"
+          src="/sheba-hero-roast.jpg"
           alt="Coffee Roasting Hero"
           fill
           priority
@@ -66,7 +66,7 @@ const RoastingClient = () => {
             >
               <div className="col-span-2 relative h-80 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://images.pexels.com/photos/894612/pexels-photo-894612.jpeg"
+                  src="/roast1.jpg"
                   alt="Roasting Drum Close Up"
                   fill
                   className="object-cover"
@@ -74,7 +74,7 @@ const RoastingClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.pexels.com/photos/3035845/pexels-photo-3035845.jpeg"
+                  src="/roast2.jpg"
                   alt="Green Coffee Beans"
                   fill
                   className="object-cover"
@@ -82,7 +82,7 @@ const RoastingClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.pexels.com/photos/1235706/pexels-photo-1235706.jpeg"
+                  src="/roast3.jpg"
                   alt="Finished Roast"
                   fill
                   className="object-cover"
@@ -144,7 +144,7 @@ const RoastingClient = () => {
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
               <div className="h-48 relative">
                 <Image 
-                  src="https://images.pexels.com/photos/14894361/pexels-photo-14894361.jpeg" 
+                  src="sheba-natural-process.jpg" 
                   alt="Natural Process" 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -167,7 +167,7 @@ const RoastingClient = () => {
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
               <div className="h-48 relative">
                 <Image 
-                  src="https://images.pexels.com/photos/14894635/pexels-photo-14894635.jpeg" 
+                  src="/sheba-washed-process.jpg" 
                   alt="Washed Process" 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -190,7 +190,7 @@ const RoastingClient = () => {
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
               <div className="h-48 relative">
                 <Image 
-                  src="https://images.pexels.com/photos/14894291/pexels-photo-14894291.jpeg" 
+                  src="/honey.jpg" 
                   alt="Honey Process" 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-500" 
