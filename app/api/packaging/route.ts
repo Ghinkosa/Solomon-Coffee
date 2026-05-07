@@ -6,11 +6,11 @@ import { backendClient } from "@/sanity/lib/backendClient";
  */
 export async function GET() {
   try {
-    // GROQ query to fetch packaging details - returns slug as string
+    // GROQ query to fetch packaging details
     const query = `*[_type == "packaging"] | order(price asc) {
       _id,
       title,
-      slug,
+      "slug": slug.current,
       description,
       price,
       default,
@@ -19,13 +19,7 @@ export async function GET() {
 
     const packagings = await backendClient.fetch(query);
     
-    // Transform slug to string format for easier handling
-    const transformedPackagings = packagings.map((pkg: any) => ({
-      ...pkg,
-      slug: pkg.slug?.current || pkg.slug || "",
-    }));
-
-    return NextResponse.json(transformedPackagings);
+    return NextResponse.json(packagings);
   } catch (error) {
     console.error("Error fetching packaging:", error);
     return NextResponse.json(

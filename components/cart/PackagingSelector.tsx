@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { Check, Package } from "lucide-react";
 import type { PackagingOption } from "@/store";
 
 interface PackagingSelectorProps {
@@ -11,27 +11,8 @@ interface PackagingSelectorProps {
   onSelect: (pkg: PackagingOption) => void;
 }
 
-// Extended type that includes imageUrl for UI purposes
-interface ExtendedPackagingOption extends PackagingOption {
-  imageUrl?: string;
-}
-
-// Transform API response to match store's PackagingOption type
-const transformToStoreFormat = (apiData: any): PackagingOption => {
-  return {
-    _id: apiData._id,
-    title: apiData.title,
-    slug: { current: apiData.slug || "" },
-    description: apiData.description,
-    price: apiData.price,
-    default: apiData.default,
-    image: apiData.image,
-    // imageUrl is stored separately, not in the store's PackagingOption
-  };
-};
-
 export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorProps) {
-  const [options, setOptions] = useState<ExtendedPackagingOption[]>([]);
+  const [options, setOptions] = useState<PackagingOption[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,14 +23,19 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
           throw new Error("Failed to fetch packaging options");
         }
         const data = await res.json();
-        console.log("📦 Raw API data:", data);
+        console.log("📦 Packaging options loaded:", data);
         
-        // Transform each item to match store format, but keep imageUrl for UI
+        // Transform the data to match store's PackagingOption type
         const transformedData = data.map((item: any) => ({
-          ...transformToStoreFormat(item),
+          _id: item._id,
+          title: item.title,
+          slug: { current: item.slug || "" },
+          description: item.description,
+          price: item.price,
+          default: item.default,
+          image: item.image,
           imageUrl: item.imageUrl,
         }));
-        console.log("📦 Transformed data:", transformedData);
         
         setOptions(transformedData);
       } catch (err) {
@@ -64,7 +50,8 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
   if (loading) {
     return (
       <div className="mt-4 p-4 border border-dashed rounded-xl bg-gray-50/50">
-        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground">
+        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground flex items-center gap-2">
+          <Package className="w-3 h-3" />
           Select Packaging
         </h4>
         <div className="h-24 animate-pulse bg-gray-100 rounded-lg" />
@@ -75,7 +62,8 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
   if (options.length === 0) {
     return (
       <div className="mt-4 p-4 border border-dashed rounded-xl bg-gray-50/50">
-        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground">
+        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground flex items-center gap-2">
+          <Package className="w-3 h-3" />
           Select Packaging
         </h4>
         <div className="text-center text-sm text-gray-400 py-4">
@@ -87,13 +75,21 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
 
   return (
     <div className="mt-4 p-4 border border-dashed rounded-xl bg-gray-50/50">
-      <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground">
+      <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground flex items-center gap-2">
+        <Package className="w-3 h-3" />
         Select Packaging
       </h4>
       <div className="grid grid-cols-2 gap-3">
         {options.map((pkg) => {
           const isSelected = selectedId === pkg._id;
-          const imgUrl = pkg.imageUrl || "/placeholder-pkg.png";
+          
+          // Get image URL safely
+          let imgUrl = "/placeholder-pkg.png";
+          if ((pkg as any).imageUrl) {
+            imgUrl = (pkg as any).imageUrl;
+          } else if (pkg.image && typeof pkg.image === 'object' && (pkg.image as any).asset?.url) {
+            imgUrl = (pkg.image as any).asset.url;
+          }
 
           return (
             <button
