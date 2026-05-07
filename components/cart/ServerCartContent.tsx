@@ -26,6 +26,7 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { PackagingSelector } from "./PackagingSelector";
 import { WeightGrindSelector } from "../WeightGrindSelector";
 
+
 interface WeightOption {
   weight: string;
   price: number;
@@ -216,12 +217,11 @@ export function ServerCartContent({
                         onGrindChange={(grind) => updateCartItemGrind(item.product._id, grind)}
                       />
                     </div>
-
                     {/* Packaging Selector */}
                     <div className="mt-4 pt-4 border-t border-dashed">
                       <PackagingSelector 
                         selectedId={item.selectedPackaging?._id}
-                        onSelect={(pkg: PackagingOption) => {
+                        onSelect={(pkg) => {  // Remove the type annotation here
                           updateCartItemPackaging(item.product._id, pkg);
                         }}
                       />

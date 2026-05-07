@@ -3,32 +3,35 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Check, Package } from "lucide-react";
-
-// Packaging Option interface matching your Sanity schema
-interface PackagingOption {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  description?: string;
-  price: number;
-  default: boolean;
-  image?: {
-    asset?: {
-      _ref: string;
-      url?: string;
-    };
-  };
-  imageUrl?: string;
-}
+import { Check } from "lucide-react";
+import type { PackagingOption } from "@/store";
 
 interface PackagingSelectorProps {
   selectedId?: string;
   onSelect: (pkg: PackagingOption) => void;
 }
 
+// Extended type that includes imageUrl for UI purposes
+interface ExtendedPackagingOption extends PackagingOption {
+  imageUrl?: string;
+}
+
+// Transform API response to match store's PackagingOption type
+const transformToStoreFormat = (apiData: any): PackagingOption => {
+  return {
+    _id: apiData._id,
+    title: apiData.title,
+    slug: { current: apiData.slug || "" },
+    description: apiData.description,
+    price: apiData.price,
+    default: apiData.default,
+    image: apiData.image,
+    // imageUrl is stored separately, not in the store's PackagingOption
+  };
+};
+
 export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorProps) {
-  const [options, setOptions] = useState<PackagingOption[]>([]);
+  const [options, setOptions] = useState<ExtendedPackagingOption[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,8 +42,16 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
           throw new Error("Failed to fetch packaging options");
         }
         const data = await res.json();
-        console.log("📦 Packaging options loaded:", data);
-        setOptions(data);
+        console.log("📦 Raw API data:", data);
+        
+        // Transform each item to match store format, but keep imageUrl for UI
+        const transformedData = data.map((item: any) => ({
+          ...transformToStoreFormat(item),
+          imageUrl: item.imageUrl,
+        }));
+        console.log("📦 Transformed data:", transformedData);
+        
+        setOptions(transformedData);
       } catch (err) {
         console.error("Failed to load packaging", err);
       } finally {
@@ -53,8 +64,7 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
   if (loading) {
     return (
       <div className="mt-4 p-4 border border-dashed rounded-xl bg-gray-50/50">
-        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground flex items-center gap-2">
-          <Package className="w-3 h-3" />
+        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground">
           Select Packaging
         </h4>
         <div className="h-24 animate-pulse bg-gray-100 rounded-lg" />
@@ -65,8 +75,7 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
   if (options.length === 0) {
     return (
       <div className="mt-4 p-4 border border-dashed rounded-xl bg-gray-50/50">
-        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground flex items-center gap-2">
-          <Package className="w-3 h-3" />
+        <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground">
           Select Packaging
         </h4>
         <div className="text-center text-sm text-gray-400 py-4">
@@ -78,21 +87,13 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
 
   return (
     <div className="mt-4 p-4 border border-dashed rounded-xl bg-gray-50/50">
-      <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground flex items-center gap-2">
-        <Package className="w-3 h-3" />
+      <h4 className="text-[10px] uppercase tracking-widest font-black mb-3 text-muted-foreground">
         Select Packaging
       </h4>
       <div className="grid grid-cols-2 gap-3">
         {options.map((pkg) => {
           const isSelected = selectedId === pkg._id;
-          
-          // Get image URL safely
-          let imgUrl = "/placeholder-pkg.png";
-          if (pkg.imageUrl) {
-            imgUrl = pkg.imageUrl;
-          } else if (pkg.image?.asset?.url) {
-            imgUrl = pkg.image.asset.url;
-          }
+          const imgUrl = pkg.imageUrl || "/placeholder-pkg.png";
 
           return (
             <button

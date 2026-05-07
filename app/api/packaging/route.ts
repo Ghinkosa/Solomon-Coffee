@@ -6,11 +6,11 @@ import { backendClient } from "@/sanity/lib/backendClient";
  */
 export async function GET() {
   try {
-    // GROQ query to fetch packaging details based on your schema
+    // GROQ query to fetch packaging details - returns slug as string
     const query = `*[_type == "packaging"] | order(price asc) {
       _id,
       title,
-      "slug": slug.current,
+      slug,
       description,
       price,
       default,
@@ -18,8 +18,14 @@ export async function GET() {
     }`;
 
     const packagings = await backendClient.fetch(query);
+    
+    // Transform slug to string format for easier handling
+    const transformedPackagings = packagings.map((pkg: any) => ({
+      ...pkg,
+      slug: pkg.slug?.current || pkg.slug || "",
+    }));
 
-    return NextResponse.json(packagings);
+    return NextResponse.json(transformedPackagings);
   } catch (error) {
     console.error("Error fetching packaging:", error);
     return NextResponse.json(
@@ -65,7 +71,10 @@ export async function POST(request: NextRequest) {
       description,
       price,
       default: isDefault || false,
-      // Note: Image upload via API requires a separate asset upload step
+      slug: {
+        _type: "slug",
+        current: title.toLowerCase().replace(/\s+/g, "-"),
+      },
     });
 
     return NextResponse.json({
