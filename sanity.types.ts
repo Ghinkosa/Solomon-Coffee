@@ -597,7 +597,9 @@ export type Order = {
   }>;
 };
 
-// Weight Option Type
+// ============================================
+// WEIGHT OPTION TYPE - ADDED
+// ============================================
 export type WeightOption = {
   weight: string; // "125G", "250G", "500G", "1KG"
   price: number;
@@ -605,13 +607,18 @@ export type WeightOption = {
   stock: number;
 };
 
-// Grind Option Type
+// ============================================
+// GRIND OPTION TYPE - ADDED
+// ============================================
 export type GrindOption = {
   grindType: string; // "whole-bean", "cafetiere", "filter", "espresso"
   isDefault: boolean;
   available: boolean;
 };
 
+// ============================================
+// PRODUCT TYPE - UPDATED with weightOptions and grindOptions
+// ============================================
 export type Product = {
   _id: string;
   _type: "product";
@@ -652,8 +659,8 @@ export type Product = {
   };
   status?: "new" | "hot" | "sale";
   variant?: "Light Roast" | "Medium Roast" | "Dark Roast" | "Extra Dark";
-  weightOptions?: WeightOption[]; // ADDED
-  grindOptions?: GrindOption[]; // ADDED
+  weightOptions?: WeightOption[]; // ADDED - Weight selection options
+  grindOptions?: GrindOption[]; // ADDED - Grind selection options
   isFeatured?: boolean;
   averageRating?: number;
   totalReviews?: number;

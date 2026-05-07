@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import useCartStore from "@/store";
+import type { PackagingOption } from "@/store"; // Import from store instead of redefining
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { CartItemControls } from "./CartItemControls";
 import { AddressSelector } from "./AddressSelector";
 import { CheckoutButton } from "./CheckoutButton";
-import { Trash2, AlertTriangle } from "lucide-react";
+import { Trash2, AlertTriangle, Package, Coffee, Scale } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import { PackagingSelector } from "./PackagingSelector";
 import { WeightGrindSelector } from "../WeightGrindSelector";
 
 // Interfaces for weight and grind options
@@ -38,6 +40,8 @@ interface GrindOption {
   isDefault: boolean;
   available: boolean;
 }
+
+// REMOVED local PackagingOption interface - now importing from store
 
 interface Address {
   _id: string;
@@ -63,7 +67,7 @@ interface ServerCartContentProps {
   userEmail: string;
   userId: string;
   userAddresses: Address[];
-  userOrders: UserOrder[];
+  userOrders?: UserOrder[];
   onAddressesRefresh?: () => Promise<void>;
 }
 
@@ -81,7 +85,7 @@ export function ServerCartContent({
   userEmail,
   userId,
   userAddresses,
-  userOrders,
+  userOrders = [],
   onAddressesRefresh,
 }: ServerCartContentProps) {
   const {
@@ -90,6 +94,7 @@ export function ServerCartContent({
     getTotalDiscount,
     resetCart,
     setOrderPlacementState,
+    updateCartItemPackaging,
     updateCartItemWeight,
     updateCartItemGrind,
   } = useCartStore();
@@ -124,11 +129,16 @@ export function ServerCartContent({
     if (item.selectedWeight && item.selectedWeight.price) {
       return item.selectedWeight.price;
     }
-    // Fallback to default weight or product price
     const weightOptions = getWeightOptions(item.product);
     const defaultWeight = weightOptions.find((w: WeightOption) => w.isDefault);
     return defaultWeight?.price || item.product.price || 0;
   };
+
+  // Calculate total packaging fee
+  const totalPackagingFee = cart.reduce((total, item) => {
+    const itemPkgPrice = item.selectedPackaging?.price || 0;
+    return total + (itemPkgPrice * item.quantity);
+  }, 0);
 
   // --- Pricing Logic ---
   const grossSubtotal = cart.reduce((sum, item) => {
@@ -137,22 +147,11 @@ export function ServerCartContent({
   }, 0);
   
   const totalDiscount = getTotalDiscount();
-  const currentSubtotal = grossSubtotal - totalDiscount;
+  const currentSubtotal = grossSubtotal - totalDiscount + totalPackagingFee;
   
   const shipping = currentSubtotal > 100 ? 0 : 10;
   const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
   const finalTotal = currentSubtotal + shipping + tax;
-
-  // Debug logging
-  console.log("📊 ServerCartContent Debug:", {
-    cartLength: cart.length,
-    selectedAddress: selectedAddress?.name,
-    grossSubtotal,
-    currentSubtotal,
-    shipping,
-    tax,
-    finalTotal
-  });
 
   if (!cart || cart.length === 0) {
     return <EmptyCart />;
@@ -163,12 +162,15 @@ export function ServerCartContent({
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {cart.map((item) => (
-            <div key={`${item.product._id}-${item.selectedWeight?.weight || 'default'}-${item.selectedGrind?.grindType || 'default'}`} className="border rounded-lg p-4 bg-white shadow-sm">
+            <div 
+              key={`${item.product._id}-${item.selectedWeight?.weight || 'default'}-${item.selectedGrind?.grindType || 'default'}-${item.selectedPackaging?._id || 'default'}`} 
+              className="border rounded-lg p-4 bg-white shadow-sm"
+            >
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative w-24 h-24 flex-shrink-0">
                   <Image
                     src={item.product.images?.[0] ? urlFor(item.product.images[0]).url() : "/placeholder.jpg"}
-                    alt='image not found'
+                    alt='Product image'
                     fill
                     className="object-cover rounded-md"
                   />
@@ -181,25 +183,36 @@ export function ServerCartContent({
                   
                   <div className="flex justify-between items-center mt-4">
                     <CartItemControls product={item.product} />
-                    <PriceFormatter amount={getItemCurrentPrice(item) * item.quantity} className="font-bold" />
+                    <PriceFormatter 
+                      amount={(getItemCurrentPrice(item) + (item.selectedPackaging?.price || 0)) * item.quantity} 
+                      className="font-bold" 
+                    />
                   </div>
 
-                  {/* Display selected weight and grind */}
-                  <div className="mt-2 text-sm text-gray-500">
+                  {/* Display selected options */}
+                  <div className="mt-2 text-sm text-gray-500 space-x-3">
                     {item.selectedWeight && (
-                      <span className="inline-block mr-3">
+                      <span className="inline-flex items-center gap-1">
+                        <Scale className="w-3 h-3" />
                         Weight: {item.selectedWeight.weight}
                       </span>
                     )}
                     {item.selectedGrind && (
-                      <span>
+                      <span className="inline-flex items-center gap-1">
+                        <Coffee className="w-3 h-3" />
                         Grind: {item.selectedGrind.grindType.replace('-', ' ').toUpperCase()}
+                      </span>
+                    )}
+                    {item.selectedPackaging && (
+                      <span className="inline-flex items-center gap-1">
+                        <Package className="w-3 h-3" />
+                        Packaging: {item.selectedPackaging.title}
                       </span>
                     )}
                   </div>
 
                   {/* Weight and Grind Selector */}
-                  <div className="mt-4 pt-4 border-t border-dashed space-y-3">
+                  <div className="mt-4 pt-4 border-t border-dashed">
                     <WeightGrindSelector 
                       productId={item.product._id}
                       weightOptions={getWeightOptions(item.product)}
@@ -210,21 +223,26 @@ export function ServerCartContent({
                       onGrindChange={(grind) => updateCartItemGrind(item.product._id, grind)}
                     />
                   </div>
+
+                  {/* Packaging Selector */}
+                  <div className="mt-4 pt-4 border-t border-dashed">
+                    <PackagingSelector 
+                      selectedId={item.selectedPackaging?._id}
+                      onSelect={(pkg: PackagingOption) => {
+                        updateCartItemPackaging(item.product._id, pkg);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           ))}
           
-          {/* Continue Shopping and Clear Cart buttons */}
           <div className="flex justify-between items-center pt-4">
             <Button asChild variant="outline">
               <Link href="/shop">Continue Shopping</Link>
             </Button>
-            <Button 
-              variant="destructive" 
-              onClick={handleResetCart}
-              className="gap-2"
-            >
+            <Button variant="destructive" onClick={handleResetCart} className="gap-2">
               <Trash2 className="w-4 h-4" />
               Clear Cart
             </Button>
@@ -254,6 +272,15 @@ export function ServerCartContent({
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Discount</span>
                   <span>-<PriceFormatter amount={totalDiscount} /></span>
+                </div>
+              )}
+              
+              {totalPackagingFee > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="flex items-center gap-1">
+                    <Package className="w-3 h-3" /> Packaging Fee
+                  </span>
+                  <PriceFormatter amount={totalPackagingFee} />
                 </div>
               )}
               
@@ -293,7 +320,7 @@ export function ServerCartContent({
       <Dialog open={showClearModal} onOpenChange={setShowClearModal}>
         <DialogPortal>
           <DialogOverlay />
-          <DialogPrimitive.Content
+          <DialogPrimitive.Content 
             className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg"
           >
             <VisuallyHidden.Root>
@@ -318,9 +345,6 @@ export function ServerCartContent({
                 Cancel
               </Button>
             </div>
-            <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </DialogPortal>
       </Dialog>
