@@ -91,7 +91,7 @@ export const productType = defineType({
       },
     }),
     
-    // Weight/Price Options Field
+    // Weight Options
     defineField({
       name: "weightOptions",
       title: "Weight Options",
@@ -156,7 +156,7 @@ export const productType = defineType({
       ],
     }),
 
-    // NEW: Grind Options Field (replaces packaging)
+    // Grind Options
     defineField({
       name: "grindOptions",
       title: "Grind Options",
@@ -213,6 +213,65 @@ export const productType = defineType({
                   : isDefault 
                     ? "✓ DEFAULT OPTION" 
                     : "",
+              };
+            },
+          },
+        }),
+      ],
+    }),
+
+    // Packaging Options (Reference to packaging document)
+    defineField({
+      name: "packagingOptions",
+      title: "Packaging Options",
+      type: "array",
+      description: "Select available packaging options for this product",
+      of: [
+        defineField({
+          name: "packagingOption",
+          title: "Packaging Option",
+          type: "object",
+          fields: [
+            defineField({
+              name: "packaging",
+              title: "Packaging Type",
+              type: "reference",
+              to: [{ type: "packaging" }],
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "isDefault",
+              title: "Set as Default",
+              type: "boolean",
+              description: "This packaging will be selected by default for this product",
+              initialValue: false,
+            }),
+            defineField({
+              name: "available",
+              title: "Available",
+              type: "boolean",
+              description: "Is this packaging option available for this product?",
+              initialValue: true,
+            }),
+          ],
+          preview: {
+            select: {
+              title: "packaging.title",
+              subtitle: "packaging.price",
+              isDefault: "isDefault",
+              available: "available",
+              media: "packaging.image",
+            },
+            prepare(selection) {
+              const { title, subtitle, isDefault, available, media } = selection;
+              return {
+                title: title || "Unknown Packaging",
+                subtitle: !available 
+                  ? "❌ UNAVAILABLE" 
+                  : isDefault 
+                    ? `✓ DEFAULT (${subtitle === 0 ? "Free" : `+$${subtitle}`})` 
+                    : subtitle === 0 ? "Free" : `+$${subtitle}`,
+                media: media,
               };
             },
           },
@@ -436,11 +495,9 @@ export const productType = defineType({
       const { title, price, stock, media, weightOptions } = selection;
       const image = media && media[0];
 
-      // Find default weight option
       const defaultWeight = weightOptions?.find((opt: any) => opt.isDefault);
       const displayPrice = defaultWeight ? defaultWeight.price : price;
 
-      // Determine stock status and styling
       let stockStatus = "";
       let stockColor = "";
 

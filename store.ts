@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import _ from "lodash";
 
-// Interface for Packaging Option (existing)
+// Interface for Packaging Option (referenced from Sanity)
 export interface PackagingOption {
   _id: string;
   title: string;
@@ -14,7 +14,7 @@ export interface PackagingOption {
   image?: any;
 }
 
-// Interface for Weight Option (NEW)
+// Interface for Weight Option
 export interface WeightOption {
   weight: string; // "125G", "250G", "500G", "1KG"
   price: number;
@@ -22,7 +22,7 @@ export interface WeightOption {
   stock: number;
 }
 
-// Interface for Grind Option (NEW)
+// Interface for Grind Option
 export interface GrindOption {
   grindType: string; // "whole-bean", "cafetiere", "filter", "espresso"
   isDefault: boolean;
@@ -32,9 +32,9 @@ export interface GrindOption {
 export interface CartItem {
   product: Product;
   quantity: number;
-  selectedPackaging?: PackagingOption; // KEPT existing
-  selectedWeight?: WeightOption; // NEW
-  selectedGrind?: GrindOption; // NEW
+  selectedPackaging?: PackagingOption;
+  selectedWeight?: WeightOption;
+  selectedGrind?: GrindOption;
 }
 
 interface StoreState {
@@ -52,10 +52,8 @@ interface StoreState {
   getItemCount: (productId: string) => number;
   getGroupedItems: () => CartItem[];
   
-  // Packaging Selection (existing)
+  // Selection Updates
   updateCartItemPackaging: (productId: string, packaging: PackagingOption) => void;
-  
-  // Weight and Grind Selection (NEW)
   updateCartItemWeight: (productId: string, weight: WeightOption) => void;
   updateCartItemGrind: (productId: string, grind: GrindOption) => void;
 
@@ -107,7 +105,6 @@ const useCartStore = create<StoreState>()(
       
       addItem: (product, selectedWeight, selectedGrind, selectedPackaging) =>
         set((state) => {
-          // Use provided selections or fallback to defaults
           const weightToUse = selectedWeight || getDefaultWeight(product);
           const grindToUse = selectedGrind || getDefaultGrind(product);
           const packagingToUse = selectedPackaging;
@@ -115,7 +112,6 @@ const useCartStore = create<StoreState>()(
           const existingItem = _.find(
             state.items,
             (item) => {
-              // Check if same product with same weight, grind, and packaging
               const sameProduct = item.product._id === product._id;
               const sameWeight = item.selectedWeight?.weight === weightToUse?.weight;
               const sameGrind = item.selectedGrind?.grindType === grindToUse?.grindType;
@@ -330,7 +326,6 @@ const useCartStore = create<StoreState>()(
         set({ favoriteProduct: [] });
       },
 
-      // order placement state
       isPlacingOrder: false,
       orderStep: "validating" as const,
       setOrderPlacementState: (isPlacing, step = "validating") => {
@@ -340,7 +335,6 @@ const useCartStore = create<StoreState>()(
         });
       },
 
-      // auth sidebar state
       isAuthSidebarOpen: false,
       authMode: "signIn",
       openAuthSidebar: (mode = "signIn") =>

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import useCartStore from "@/store";
 import type { PackagingOption } from "@/store";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import EmptyCart from "@/components/EmptyCart";
@@ -27,7 +26,6 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { PackagingSelector } from "./PackagingSelector";
 import { WeightGrindSelector } from "../WeightGrindSelector";
 
-// Interfaces for weight and grind options
 interface WeightOption {
   weight: string;
   price: number;
@@ -69,18 +67,12 @@ interface ServerCartContentProps {
   onAddressesRefresh?: () => Promise<void>;
 }
 
-// Helper to safely get weight options from product
 const getWeightOptions = (product: any): WeightOption[] => {
-  const options = product.weightOptions || [];
-  console.log(`📦 Weight options for ${product.name}:`, options);
-  return options;
+  return product.weightOptions || [];
 };
 
-// Helper to safely get grind options from product
 const getGrindOptions = (product: any): GrindOption[] => {
-  const options = product.grindOptions || [];
-  console.log(`☕ Grind options for ${product.name}:`, options);
-  return options;
+  return product.grindOptions || [];
 };
 
 export function ServerCartContent({
@@ -92,7 +84,6 @@ export function ServerCartContent({
 }: ServerCartContentProps) {
   const {
     items: cart,
-    getSubTotalPrice,
     getTotalDiscount,
     resetCart,
     setOrderPlacementState,
@@ -104,22 +95,6 @@ export function ServerCartContent({
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [showClearModal, setShowClearModal] = useState(false);
 
-  // Debug: Log cart items to see what data we have
-  useEffect(() => {
-    console.log("🛒 Cart items:", cart);
-    cart.forEach((item, index) => {
-      console.log(`Item ${index}:`, {
-        name: item.product.name,
-        weightOptions: item.product.weightOptions,
-        grindOptions: item.product.grindOptions,
-        selectedWeight: item.selectedWeight,
-        selectedGrind: item.selectedGrind,
-        selectedPackaging: item.selectedPackaging,
-      });
-    });
-  }, [cart]);
-
-  // Initialize Default Address
   useEffect(() => {
     const defaultAddress = userAddresses.find((addr) => addr.default);
     if (defaultAddress) {
@@ -141,7 +116,6 @@ export function ServerCartContent({
     toast.success("Cart cleared successfully");
   };
 
-  // Calculate current price based on selected weight for each item
   const getItemCurrentPrice = (item: any) => {
     if (item.selectedWeight && item.selectedWeight.price) {
       return item.selectedWeight.price;
@@ -151,13 +125,11 @@ export function ServerCartContent({
     return defaultWeight?.price || item.product.price || 0;
   };
 
-  // Calculate total packaging fee
   const totalPackagingFee = cart.reduce((total, item) => {
     const itemPkgPrice = item.selectedPackaging?.price || 0;
     return total + (itemPkgPrice * item.quantity);
   }, 0);
 
-  // --- Pricing Logic ---
   const grossSubtotal = cart.reduce((sum, item) => {
     const itemPrice = getItemCurrentPrice(item);
     return sum + (itemPrice * item.quantity);
@@ -181,8 +153,6 @@ export function ServerCartContent({
           {cart.map((item) => {
             const weightOptions = getWeightOptions(item.product);
             const grindOptions = getGrindOptions(item.product);
-            const hasWeightOptions = weightOptions.length > 0;
-            const hasGrindOptions = grindOptions.length > 0;
             
             return (
               <div 
@@ -234,25 +204,16 @@ export function ServerCartContent({
                       )}
                     </div>
 
-                    {/* Weight Selector - Show even if no options (for debugging) */}
+                    {/* Weight and Grind Selector */}
                     <div className="mt-4 pt-4 border-t border-dashed">
-                      <div className="text-xs text-gray-400 mb-2">
-                        {hasWeightOptions ? `${weightOptions.length} weight options available` : "No weight options configured for this product"}
-                      </div>
                       <WeightGrindSelector 
                         productId={item.product._id}
                         weightOptions={weightOptions}
                         grindOptions={grindOptions}
                         selectedWeight={item.selectedWeight}
                         selectedGrind={item.selectedGrind}
-                        onWeightChange={(weight) => {
-                          console.log("Weight changed:", weight);
-                          updateCartItemWeight(item.product._id, weight);
-                        }}
-                        onGrindChange={(grind) => {
-                          console.log("Grind changed:", grind);
-                          updateCartItemGrind(item.product._id, grind);
-                        }}
+                        onWeightChange={(weight) => updateCartItemWeight(item.product._id, weight)}
+                        onGrindChange={(grind) => updateCartItemGrind(item.product._id, grind)}
                       />
                     </div>
 
@@ -261,7 +222,6 @@ export function ServerCartContent({
                       <PackagingSelector 
                         selectedId={item.selectedPackaging?._id}
                         onSelect={(pkg: PackagingOption) => {
-                          console.log("Packaging changed:", pkg);
                           updateCartItemPackaging(item.product._id, pkg);
                         }}
                       />
