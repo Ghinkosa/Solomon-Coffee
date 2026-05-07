@@ -29,7 +29,7 @@ interface UserOrder {
   orderDate: string;
 }
 
-// Fixed: Interface strictly matching your Sanity "packaging" schema
+// Interface strictly matching your Sanity "packaging" schema
 export interface PackagingOption {
   _id: string;
   title: string;
@@ -37,7 +37,7 @@ export interface PackagingOption {
   description?: string;
   price: number;
   default: boolean;
-  image?: any; // Sanity image object
+  image?: any;
 }
 
 interface UserData {
