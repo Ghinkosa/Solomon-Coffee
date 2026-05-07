@@ -13,7 +13,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { CartItemControls } from "./CartItemControls";
 import { AddressSelector } from "./AddressSelector";
 import { CheckoutButton } from "./CheckoutButton";
-import { Trash2, AlertTriangle, Package } from "lucide-react";
+import { Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -23,10 +23,21 @@ import {
 } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { PackagingSelector } from "./PackagingSelector";
+import { WeightGrindSelector } from "../WeightGrindSelector";
 
-// Ensure your store uses the PackagingOption interface
-import { PackagingOption } from "./ClientCartContent"; 
+// Interfaces for weight and grind options
+interface WeightOption {
+  weight: string;
+  price: number;
+  isDefault: boolean;
+  stock: number;
+}
+
+interface GrindOption {
+  grindType: string;
+  isDefault: boolean;
+  available: boolean;
+}
 
 interface Address {
   _id: string;
@@ -56,6 +67,16 @@ interface ServerCartContentProps {
   onAddressesRefresh?: () => Promise<void>;
 }
 
+// Helper to safely get weight options from product
+const getWeightOptions = (product: any): WeightOption[] => {
+  return product.weightOptions || [];
+};
+
+// Helper to safely get grind options from product
+const getGrindOptions = (product: any): GrindOption[] => {
+  return product.grindOptions || [];
+};
+
 export function ServerCartContent({
   userEmail,
   userId,
@@ -69,7 +90,8 @@ export function ServerCartContent({
     getTotalDiscount,
     resetCart,
     setOrderPlacementState,
-    updateCartItemPackaging, 
+    updateCartItemWeight,
+    updateCartItemGrind,
   } = useCartStore();
 
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -97,36 +119,39 @@ export function ServerCartContent({
     toast.success("Cart cleared successfully");
   };
 
+  // Calculate current price based on selected weight for each item
+  const getItemCurrentPrice = (item: any) => {
+    if (item.selectedWeight && item.selectedWeight.price) {
+      return item.selectedWeight.price;
+    }
+    // Fallback to default weight or product price
+    const weightOptions = getWeightOptions(item.product);
+    const defaultWeight = weightOptions.find((w: WeightOption) => w.isDefault);
+    return defaultWeight?.price || item.product.price || 0;
+  };
+
   // --- Pricing Logic ---
-  const grossSubtotal = getSubTotalPrice();
+  const grossSubtotal = cart.reduce((sum, item) => {
+    const itemPrice = getItemCurrentPrice(item);
+    return sum + (itemPrice * item.quantity);
+  }, 0);
+  
   const totalDiscount = getTotalDiscount();
   const currentSubtotal = grossSubtotal - totalDiscount;
   
-  // Uses "price" from your Sanity Packaging Schema
-  const totalPackagingFee = cart.reduce((total, item) => {
-    const itemPkgPrice = item.selectedPackaging?.price || 0;
-    return total + (itemPkgPrice * item.quantity);
-  }, 0);
-
   const shipping = currentSubtotal > 100 ? 0 : 10;
   const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
-  const finalTotal = currentSubtotal + shipping + tax + totalPackagingFee;
+  const finalTotal = currentSubtotal + shipping + tax;
 
   // Debug logging
   console.log("📊 ServerCartContent Debug:", {
     cartLength: cart.length,
-    totalPackagingFee,
     selectedAddress: selectedAddress?.name,
     grossSubtotal,
     currentSubtotal,
     shipping,
     tax,
     finalTotal
-  });
-
-  // Log each cart item's packaging fee
-  cart.forEach(item => {
-    console.log(`📦 Item: ${item.product.name}, Packaging Price: ${item.selectedPackaging?.price || 0}, Quantity: ${item.quantity}, Total: ${(item.selectedPackaging?.price || 0) * item.quantity}`);
   });
 
   if (!cart || cart.length === 0) {
@@ -138,7 +163,7 @@ export function ServerCartContent({
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {cart.map((item) => (
-            <div key={item.product._id} className="border rounded-lg p-4 bg-white shadow-sm">
+            <div key={`${item.product._id}-${item.selectedWeight?.weight || 'default'}-${item.selectedGrind?.grindType || 'default'}`} className="border rounded-lg p-4 bg-white shadow-sm">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative w-24 h-24 flex-shrink-0">
                   <Image
@@ -151,21 +176,38 @@ export function ServerCartContent({
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <h3 className="font-semibold">{item.product.name}</h3>
-                    <PriceFormatter amount={item.product.price} />
+                    <PriceFormatter amount={getItemCurrentPrice(item)} />
                   </div>
                   
                   <div className="flex justify-between items-center mt-4">
                     <CartItemControls product={item.product} />
-                    <PriceFormatter amount={(item.product.price || 0) * item.quantity} className="font-bold" />
+                    <PriceFormatter amount={getItemCurrentPrice(item) * item.quantity} className="font-bold" />
                   </div>
 
-                  {/* Per-Product Packaging Selector using Sanity data */}
-                  <div className="mt-4 pt-4 border-t border-dashed">
-                    <PackagingSelector 
-                      selectedId={item.selectedPackaging?._id}
-                      onSelect={(pkg: PackagingOption) => {
-                        updateCartItemPackaging(item.product._id, pkg);
-                      }}
+                  {/* Display selected weight and grind */}
+                  <div className="mt-2 text-sm text-gray-500">
+                    {item.selectedWeight && (
+                      <span className="inline-block mr-3">
+                        Weight: {item.selectedWeight.weight}
+                      </span>
+                    )}
+                    {item.selectedGrind && (
+                      <span>
+                        Grind: {item.selectedGrind.grindType.replace('-', ' ').toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Weight and Grind Selector */}
+                  <div className="mt-4 pt-4 border-t border-dashed space-y-3">
+                    <WeightGrindSelector 
+                      productId={item.product._id}
+                      weightOptions={getWeightOptions(item.product)}
+                      grindOptions={getGrindOptions(item.product)}
+                      selectedWeight={item.selectedWeight}
+                      selectedGrind={item.selectedGrind}
+                      onWeightChange={(weight) => updateCartItemWeight(item.product._id, weight)}
+                      onGrindChange={(grind) => updateCartItemGrind(item.product._id, grind)}
                     />
                   </div>
                 </div>
@@ -215,15 +257,6 @@ export function ServerCartContent({
                 </div>
               )}
               
-              {totalPackagingFee > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="flex items-center gap-1">
-                    <Package className="w-3 h-3" /> Packaging Fee
-                  </span>
-                  <PriceFormatter amount={totalPackagingFee} />
-                </div>
-              )}
-              
               <div className="flex justify-between text-sm">
                 <span>Shipping</span>
                 {shipping === 0 ? (
@@ -249,8 +282,7 @@ export function ServerCartContent({
             <div className="mt-6">
               <CheckoutButton 
                 cart={cart} 
-                selectedAddress={selectedAddress} 
-                packagingPrice={totalPackagingFee}
+                selectedAddress={selectedAddress}
               />
             </div>
           </div>

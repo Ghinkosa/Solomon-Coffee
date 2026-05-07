@@ -36,15 +36,16 @@ export const productType = defineType({
     }),
     defineField({
       name: "price",
-      title: "Price",
+      title: "Base Price",
       type: "number",
-      validation: (Rule) => Rule.required().min(0),
+      description: "Base price if no weight variations",
+      validation: (Rule) => Rule.min(0),
     }),
     defineField({
       name: "discount",
       title: "Discount",
       type: "number",
-      validation: (Rule) => Rule.required().min(0),
+      validation: (Rule) => Rule.min(0),
     }),
     defineField({
       name: "categories",
@@ -64,7 +65,6 @@ export const productType = defineType({
       type: "reference",
       to: { type: "brand" },
     }),
-
     defineField({
       name: "status",
       title: "Product Status",
@@ -90,6 +90,136 @@ export const productType = defineType({
         ],
       },
     }),
+    
+    // Weight/Price Options Field
+    defineField({
+      name: "weightOptions",
+      title: "Weight Options",
+      type: "array",
+      description: "Add different weight/package sizes with their prices",
+      of: [
+        defineField({
+          name: "weightOption",
+          title: "Weight Option",
+          type: "object",
+          fields: [
+            defineField({
+              name: "weight",
+              title: "Weight",
+              type: "string",
+              options: {
+                list: [
+                  { title: "125G", value: "125G" },
+                  { title: "250G", value: "250G" },
+                  { title: "500G", value: "500G" },
+                  { title: "1KG", value: "1KG" },
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "price",
+              title: "Price",
+              type: "number",
+              validation: (Rule) => Rule.required().min(0),
+            }),
+            defineField({
+              name: "isDefault",
+              title: "Set as Default",
+              type: "boolean",
+              description: "This weight will be selected by default",
+              initialValue: false,
+            }),
+            defineField({
+              name: "stock",
+              title: "Stock for this weight",
+              type: "number",
+              validation: (Rule) => Rule.min(0),
+              initialValue: 0,
+            }),
+          ],
+          preview: {
+            select: {
+              title: "weight",
+              subtitle: "price",
+              isDefault: "isDefault",
+            },
+            prepare(selection) {
+              const { title, subtitle, isDefault } = selection;
+              return {
+                title: `${title} - $${subtitle}`,
+                subtitle: isDefault ? "✓ DEFAULT OPTION" : "",
+              };
+            },
+          },
+        }),
+      ],
+    }),
+
+    // NEW: Grind Options Field (replaces packaging)
+    defineField({
+      name: "grindOptions",
+      title: "Grind Options",
+      type: "array",
+      description: "Select available grind types for this product",
+      of: [
+        defineField({
+          name: "grindOption",
+          title: "Grind Option",
+          type: "object",
+          fields: [
+            defineField({
+              name: "grindType",
+              title: "Grind Type",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Whole Bean", value: "whole-bean" },
+                  { title: "Cafetiere", value: "cafetiere" },
+                  { title: "Filter", value: "filter" },
+                  { title: "Espresso", value: "espresso" },
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "isDefault",
+              title: "Set as Default",
+              type: "boolean",
+              description: "This grind will be selected by default",
+              initialValue: false,
+            }),
+            defineField({
+              name: "available",
+              title: "Available",
+              type: "boolean",
+              description: "Is this grind option available?",
+              initialValue: true,
+            }),
+          ],
+          preview: {
+            select: {
+              title: "grindType",
+              isDefault: "isDefault",
+              available: "available",
+            },
+            prepare(selection) {
+              const { title, isDefault, available } = selection;
+              const titleDisplay = title?.replace("-", " ").toUpperCase();
+              return {
+                title: titleDisplay,
+                subtitle: !available 
+                  ? "❌ UNAVAILABLE" 
+                  : isDefault 
+                    ? "✓ DEFAULT OPTION" 
+                    : "",
+              };
+            },
+          },
+        }),
+      ],
+    }),
+
     defineField({
       name: "coffeeDetails",
       title: "Coffee Details",
@@ -300,10 +430,15 @@ export const productType = defineType({
       media: "images",
       price: "price",
       stock: "stock",
+      weightOptions: "weightOptions",
     },
     prepare(selection) {
-      const { title, price, stock, media } = selection;
+      const { title, price, stock, media, weightOptions } = selection;
       const image = media && media[0];
+
+      // Find default weight option
+      const defaultWeight = weightOptions?.find((opt: any) => opt.isDefault);
+      const displayPrice = defaultWeight ? defaultWeight.price : price;
 
       // Determine stock status and styling
       let stockStatus = "";
@@ -322,7 +457,7 @@ export const productType = defineType({
 
       return {
         title: title,
-        subtitle: `$${price} • ${stockColor} ${stockStatus}`,
+        subtitle: `$${displayPrice} • ${stockColor} ${stockStatus}`,
         media: image,
       };
     },

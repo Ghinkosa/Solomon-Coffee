@@ -10,6 +10,8 @@ interface EmailOrderItem {
   name: string;
   price: number;
   quantity: number;
+  weight?: string;
+  grind?: string;
   image?: any; 
 }
 
@@ -53,6 +55,15 @@ interface UseOrderPlacementProps {
   } | null;
 }
 
+// Helper to get current price based on selected weight
+const getItemCurrentPrice = (item: CartItem): number => {
+  if (item.selectedWeight && item.selectedWeight.price) {
+    return item.selectedWeight.price;
+  }
+  const defaultWeight = item.product.weightOptions?.find((w: any) => w.isDefault);
+  return defaultWeight?.price || item.product.price || 0;
+};
+
 export function useOrderPlacement({ user }: UseOrderPlacementProps) {
   const {
     items: cart,
@@ -70,7 +81,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     tax: number,
     total: number,
     redirectToCheckout: boolean = false,
-    packagingData?: Array<{ productId: string; packaging: any | null }>
+    selectionsData?: Array<{ productId: string; weight: any | null; grind: any | null }>
   ) => {
     if (!selectedAddress) {
       toast.error("Address Required", {
@@ -86,8 +97,13 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
     const cartSnapshot: CartItem[] = JSON.parse(JSON.stringify(cart));
 
-    // Stock validation
-    const outOfStockItems = cartSnapshot.filter((item) => (item.product.stock || 0) === 0);
+    // Stock validation with weight consideration
+    const outOfStockItems = cartSnapshot.filter((item) => {
+      const selectedWeightStock = item.selectedWeight?.stock;
+      const productStock = item.product.stock;
+      return (selectedWeightStock !== undefined ? selectedWeightStock : productStock) === 0;
+    });
+    
     if (outOfStockItems.length > 0) {
       toast.error("Insufficient Stock");
       return { success: false };
@@ -98,47 +114,57 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     try {
       setOrderPlacementState(true, "creating");
 
-      // Prepare items with packaging data
-      const itemsWithPackaging = cartSnapshot.map((item) => {
-        const productPackaging = packagingData?.find(
-          (pkg) => pkg.productId === item.product._id
-        )?.packaging;
+      // Prepare items with weight and grind data
+      const itemsWithSelections = cartSnapshot.map((item) => {
+        const productSelections = selectionsData?.find(
+          (sel) => sel.productId === item.product._id
+        );
         
-        const finalPackaging = item.selectedPackaging || productPackaging;
+        const finalWeight = item.selectedWeight || productSelections?.weight;
+        const finalGrind = item.selectedGrind || productSelections?.grind;
+        const itemPrice = finalWeight?.price || getItemCurrentPrice(item);
         
         const itemData: any = {
           product: {
             _id: item.product._id,
             name: item.product.name,
-            price: item.product.price,
+            price: itemPrice,
+            originalPrice: item.product.price,
           },
           quantity: item.quantity,
         };
         
-        if (finalPackaging) {
-          itemData.packaging = {
-            _id: finalPackaging._id,
-            title: finalPackaging.title,
-            price: finalPackaging.price,
+        if (finalWeight) {
+          itemData.weight = {
+            value: finalWeight.weight,
+            price: finalWeight.price,
+          };
+        }
+        
+        if (finalGrind) {
+          itemData.grind = {
+            type: finalGrind.grindType,
+            label: finalGrind.grindType === "whole-bean" ? "Whole Bean" :
+                   finalGrind.grindType === "cafetiere" ? "Cafetiere" :
+                   finalGrind.grindType === "filter" ? "Filter" : "Espresso",
           };
         }
         
         return itemData;
       });
 
-      // Calculate totals with packaging
-      const productsTotal = itemsWithPackaging.reduce((sum, item) => {
+      // Calculate totals with weight-based pricing
+      const productsTotal = itemsWithSelections.reduce((sum, item) => {
         const productPrice = item.product.price * item.quantity;
-        const packagingPrice = (item.packaging?.price || 0) * item.quantity;
-        return sum + productPrice + packagingPrice;
+        return sum + productPrice;
       }, 0);
 
       const orderData = {
-        items: itemsWithPackaging,
+        items: itemsWithSelections,
         shippingAddress: selectedAddress,
         paymentMethod: selectedPaymentMethod,
         totalAmount: total,
-        subtotal: productsTotal - (shipping + tax),
+        subtotal: productsTotal,
         shipping,
         tax,
       };
@@ -160,7 +186,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
       setOrderPlacementState(true, "emailing");
 
-      // Prepare Email Data
+      // Prepare Email Data with weight and grind info
       const emailData: EmailOrderData = {
         customerName: selectedAddress.name || "Customer",
         customerEmail: user?.emailAddresses[0]?.emailAddress || "",
@@ -168,8 +194,10 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         orderDate: new Date().toLocaleDateString(),
         items: cartSnapshot.map((item) => ({
           name: item.product.name || "Unknown Product",
-          price: item.product.price || 0,
+          price: getItemCurrentPrice(item),
           quantity: item.quantity,
+          weight: item.selectedWeight?.weight,
+          grind: item.selectedGrind?.grindType,
           image: item.product.images?.[0] || undefined,
         })),
         subtotal,
@@ -213,7 +241,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             body: JSON.stringify({
               orderId,
               orderNumber,
-              items: itemsWithPackaging,
+              items: itemsWithSelections,
               email: user?.emailAddresses[0]?.emailAddress,
               shippingAddress: selectedAddress,
               orderAmount: total,

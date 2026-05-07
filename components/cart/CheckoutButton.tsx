@@ -27,13 +27,20 @@ interface Address {
 interface CheckoutButtonProps {
   cart: CartItem[];
   selectedAddress: Address | null;
-  packagingPrice?: number;
 }
+
+// Helper to get current price based on selected weight
+const getItemCurrentPrice = (item: CartItem): number => {
+  if (item.selectedWeight && item.selectedWeight.price) {
+    return item.selectedWeight.price;
+  }
+  const defaultWeight = item.product.weightOptions?.find((w: any) => w.isDefault);
+  return defaultWeight?.price || item.product.price || 0;
+};
 
 export function CheckoutButton({ 
   cart, 
   selectedAddress, 
-  packagingPrice = 0 
 }: CheckoutButtonProps) {
   const { user } = useUser();
   const router = useRouter();
@@ -45,34 +52,22 @@ export function CheckoutButton({
   const [actionType, setActionType] = useState<"checkout" | "order" | null>(null);
 
   useEffect(() => {
-    console.log("✅ CheckoutButton - packagingPrice received:", packagingPrice);
     console.log("✅ CheckoutButton - cart items:", cart.length);
-  }, [packagingPrice, cart.length]);
+  }, [cart.length]);
 
-  // Calculate cart totals
+  // Calculate cart totals with weight-based pricing
   const grossSubtotal = cart.reduce((sum, item) => {
-    const currentPrice = item.product.price || 0;
-    const discount = item.product.discount || 0;
-    const discountAmount = (discount * currentPrice) / 100;
-    const grossPrice = currentPrice + discountAmount;
-    return sum + grossPrice * item.quantity;
+    const itemPrice = getItemCurrentPrice(item);
+    return sum + itemPrice * item.quantity;
   }, 0);
 
-  const totalDiscount = cart.reduce((sum, item) => {
-    const currentPrice = item.product.price || 0;
-    const discount = item.product.discount || 0;
-    const discountAmount = (discount * currentPrice) / 100;
-    return sum + discountAmount * item.quantity;
-  }, 0);
-
-  const currentSubtotal = grossSubtotal - totalDiscount;
-  const shipping = currentSubtotal > 100 ? 0 : 10;
-  const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
-  const finalTotal = currentSubtotal + shipping + tax + packagingPrice;
+  const shipping = grossSubtotal > 100 ? 0 : 10;
+  const tax = grossSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
+  const finalTotal = grossSubtotal + shipping + tax;
 
   const handleProceedToCheckout = async (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("🚀 PROCEED TO CHECKOUT clicked - packagingPrice:", packagingPrice);
+    console.log("🚀 PROCEED TO CHECKOUT clicked");
     
     if (!selectedAddress) {
       toast.error("Please select a shipping address");
@@ -80,7 +75,12 @@ export function CheckoutButton({
       return;
     }
 
-    const outOfStockItems = cart.filter((item) => item.product.stock === 0);
+    const outOfStockItems = cart.filter((item) => {
+      const selectedWeightStock = item.selectedWeight?.stock;
+      const productStock = item.product.stock;
+      return (selectedWeightStock !== undefined ? selectedWeightStock : productStock) === 0;
+    });
+    
     if (outOfStockItems.length > 0) {
       toast.error("Some items are out of stock. Please remove them to continue.");
       setIsRedirecting(false);
@@ -91,36 +91,30 @@ export function CheckoutButton({
     setActionType("checkout");
 
     const cartValue = cart.reduce(
-      (sum, item) => sum + (item.product.price || 0) * item.quantity,
+      (sum, item) => sum + getItemCurrentPrice(item) * item.quantity,
       0
     );
     
     trackCheckoutStarted({
       userId: user?.id,
-      cartValue: cartValue + packagingPrice,
+      cartValue: cartValue,
       itemCount: cart.length,
     });
 
-    // Prepare packaging data for URL (store as JSON string)
-    const packagingDataForUrl = cart.map(item => ({
+    // Prepare weight and grind data for URL
+    const selectionsDataForUrl = cart.map(item => ({
       productId: item.product._id,
-      packaging: item.selectedPackaging ? {
-        _id: item.selectedPackaging._id,
-        title: item.selectedPackaging.title,
-        price: item.selectedPackaging.price,
-      } : null
+      weight: item.selectedWeight || null,
+      grind: item.selectedGrind || null,
     }));
     
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
-    const packagingParam = encodeURIComponent(JSON.stringify(packagingDataForUrl));
+    const selectionsParam = encodeURIComponent(JSON.stringify(selectionsDataForUrl));
     
-    // Build URL with packaging data
-    const checkoutUrl = `/checkout?address=${addressParam}&packagingData=${packagingParam}&packagingPrice=${packagingPrice}`;
+    const checkoutUrl = `/checkout?address=${addressParam}&selections=${selectionsParam}`;
     
     console.log("🔗 REDIRECTING TO CHECKOUT:", checkoutUrl);
-    console.log("🔗 packagingData:", packagingDataForUrl);
     
-    // Use router.push for Next.js navigation
     try {
       await router.push(checkoutUrl);
     } catch (error) {
@@ -130,14 +124,19 @@ export function CheckoutButton({
   };
 
   const handlePlaceOrder = async () => {
-    console.log("🚀 PLACE ORDER (Pay Later) clicked - packagingPrice:", packagingPrice);
+    console.log("🚀 PLACE ORDER (Pay Later) clicked");
     
     if (!selectedAddress) {
       toast.error("Please select a shipping address");
       return;
     }
 
-    const outOfStockItems = cart.filter((item) => item.product.stock === 0);
+    const outOfStockItems = cart.filter((item) => {
+      const selectedWeightStock = item.selectedWeight?.stock;
+      const productStock = item.product.stock;
+      return (selectedWeightStock !== undefined ? selectedWeightStock : productStock) === 0;
+    });
+    
     if (outOfStockItems.length > 0) {
       toast.error("Some items are out of stock. Please remove them to continue.");
       return;
@@ -145,21 +144,22 @@ export function CheckoutButton({
 
     setActionType("order");
 
-    // Prepare packaging data for each product
-    const packagingData = cart.map(item => ({
+    // Prepare weight and grind data for each product
+    const selectionsData = cart.map(item => ({
       productId: item.product._id,
-      packaging: item.selectedPackaging || null,
+      weight: item.selectedWeight || null,
+      grind: item.selectedGrind || null,
     }));
 
     const result = await placeOrder(
       selectedAddress,
       PAYMENT_METHODS.CASH_ON_DELIVERY,
-      currentSubtotal,
+      grossSubtotal,
       shipping,
       tax,
       finalTotal,
       false,
-      packagingData // Pass packaging data
+      selectionsData
     );
 
     if (result?.success && result.redirectTo) {
@@ -176,7 +176,11 @@ export function CheckoutButton({
     }
   };
 
-  const hasOutOfStockItems = cart.some((item) => item.product.stock === 0);
+  const hasOutOfStockItems = cart.some((item) => {
+    const selectedWeightStock = item.selectedWeight?.stock;
+    const productStock = item.product.stock;
+    return (selectedWeightStock !== undefined ? selectedWeightStock : productStock) === 0;
+  });
 
   return (
     <>
@@ -185,24 +189,6 @@ export function CheckoutButton({
       )}
 
       <div className="space-y-4">
-        {/* Packaging Summary Display */}
-        {packagingPrice > 0 && (
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Box className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-700">Packaging Fee</span>
-              </div>
-              <span className="text-sm font-semibold text-blue-700">
-                ${packagingPrice.toFixed(2)}
-              </span>
-            </div>
-            <p className="text-xs text-blue-600 mt-1">
-              Premium packaging selected for your items
-            </p>
-          </div>
-        )}
-
         {hasOutOfStockItems && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-700">
@@ -240,7 +226,7 @@ export function CheckoutButton({
             ) : (
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5" />
-                Proceed to Checkout {packagingPrice > 0 ? `(+$${packagingPrice.toFixed(2)})` : ""}
+                Proceed to Checkout
               </div>
             )}
           </Button>
@@ -266,7 +252,7 @@ export function CheckoutButton({
             ) : (
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Place Order (Pay Later) {packagingPrice > 0 ? `(+$${packagingPrice.toFixed(2)})` : ""}
+                Place Order (Pay Later)
               </div>
             )}
           </Button>

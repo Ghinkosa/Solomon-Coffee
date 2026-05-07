@@ -597,6 +597,21 @@ export type Order = {
   }>;
 };
 
+// Weight Option Type
+export type WeightOption = {
+  weight: string; // "125G", "250G", "500G", "1KG"
+  price: number;
+  isDefault: boolean;
+  stock: number;
+};
+
+// Grind Option Type
+export type GrindOption = {
+  grindType: string; // "whole-bean", "cafetiere", "filter", "espresso"
+  isDefault: boolean;
+  available: boolean;
+};
+
 export type Product = {
   _id: string;
   _type: "product";
@@ -637,6 +652,8 @@ export type Product = {
   };
   status?: "new" | "hot" | "sale";
   variant?: "Light Roast" | "Medium Roast" | "Dark Roast" | "Extra Dark";
+  weightOptions?: WeightOption[]; // ADDED
+  grindOptions?: GrindOption[]; // ADDED
   isFeatured?: boolean;
   averageRating?: number;
   totalReviews?: number;
@@ -941,6 +958,8 @@ export type QueryResult = Array<{
       };
       status?: "hot" | "new" | "sale";
       variant?: "Dark Roast" | "Extra Dark" | "Light Roast" | "Medium Roast";
+      weightOptions?: WeightOption[];
+      grindOptions?: GrindOption[];
       isFeatured?: boolean;
       averageRating?: number;
       totalReviews?: number;
@@ -1082,6 +1101,8 @@ export type PRODUCT_BY_CATEGORY_QUERY_RESULT = Array<{
   };
   status?: "hot" | "new" | "sale";
   variant?: "Dark Roast" | "Extra Dark" | "Light Roast" | "Medium Roast";
+  weightOptions?: WeightOption[];
+  grindOptions?: GrindOption[];
   isFeatured?: boolean;
   averageRating?: number;
   totalReviews?: number;
