@@ -68,7 +68,26 @@ const ProductGrid = ({
       setLoading(true);
       try {
         // Updated query to include weightOptions, grindOptions, and resolved packagingOptions
-        const query = selectedTab
+        const baseQuery = `*[_type == "product"] | order(${getSortQuery(sortBy)}) {
+          ...,
+          "categories": categories[]->title,
+          weightOptions[],
+          grindOptions[],
+          packagingOptions[] {
+            ...,
+            packaging-> {
+              _id,
+              title,
+              slug,
+              description,
+              price,
+              default,
+              "imageUrl": image.asset->url
+            }
+          }
+        }`;
+        
+        const filteredQuery = selectedTab
           ? `*[_type == "product" && variant == $variant] | order(${getSortQuery(sortBy)}) {
               ...,
               "categories": categories[]->title,
@@ -87,48 +106,44 @@ const ProductGrid = ({
                 }
               }
             }`
-          : `*[_type == "product"] | order(${getSortQuery(sortBy)}) {
-              ...,
-              "categories": categories[]->title,
-              weightOptions[],
-              grindOptions[],
-              packagingOptions[] {
-                ...,
-                packaging-> {
-                  _id,
-                  title,
-                  slug,
-                  description,
-                  price,
-                  default,
-                  "imageUrl": image.asset->url
-                }
-              }
-            }`;
+          : baseQuery;
+        
+        console.log("🔄 Fetching products with query:", filteredQuery);
         
         const data = selectedTab
-          ? await client.fetch(query, { variant: selectedTab })
-          : await client.fetch(query);
+          ? await client.fetch(filteredQuery, { variant: selectedTab })
+          : await client.fetch(baseQuery);
         
         // Ensure data is always an array
         const fetchedProducts = data || [];
         
+        console.log(`✅ Fetched ${fetchedProducts.length} items for ${selectedTab || 'all products'}`);
+        
+        // Detailed debug logging for each product
+        fetchedProducts.forEach((product: any, index: number) => {
+          console.log(`\n📦 Product ${index + 1}: ${product.name}`);
+          console.log(`  - Weight Options:`, product.weightOptions?.length || 0, product.weightOptions);
+          console.log(`  - Grind Options:`, product.grindOptions?.length || 0, product.grindOptions);
+          console.log(`  - Packaging Options Raw:`, product.packagingOptions);
+          
+          // Check packaging resolution
+          if (product.packagingOptions && product.packagingOptions.length > 0) {
+            product.packagingOptions.forEach((pkgRef: any, pkgIndex: number) => {
+              console.log(`    Package ${pkgIndex + 1}:`, {
+                hasPackaging: !!pkgRef.packaging,
+                packagingData: pkgRef.packaging,
+                isDefault: pkgRef.isDefault,
+                available: pkgRef.available
+              });
+            });
+          }
+        });
+        
         setProducts(fetchedProducts);
         setFilteredProducts(fetchedProducts);
         
-        console.log(`Fetched ${fetchedProducts.length} items for ${selectedTab || 'all products'}`);
-        
-        // Log sample product to verify packaging data
-        if (fetchedProducts.length > 0) {
-          console.log("Sample product with packaging:", {
-            name: fetchedProducts[0].name,
-            weightOptions: fetchedProducts[0].weightOptions,
-            grindOptions: fetchedProducts[0].grindOptions,
-            packagingOptions: fetchedProducts[0].packagingOptions,
-          });
-        }
       } catch (error) {
-        console.error("Sanity Fetch Error:", error);
+        console.error("❌ Sanity Fetch Error:", error);
       } finally {
         setLoading(false);
       }

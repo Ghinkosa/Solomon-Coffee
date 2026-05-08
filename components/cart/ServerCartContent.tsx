@@ -66,6 +66,8 @@ interface ServerCartContentProps {
   onAddressesRefresh?: () => Promise<void>;
 }
 
+// ========== HELPER FUNCTIONS (defined first) ==========
+
 const getWeightOptions = (product: any): WeightOption[] => {
   return product.weightOptions || [];
 };
@@ -75,14 +77,40 @@ const getGrindOptions = (product: any): GrindOption[] => {
 };
 
 const getPackagingOptions = (product: any): PackagingOption[] => {
+  console.log("🔍 Debug - Full product object:", product);
+  console.log("🔍 Debug - product.packagingOptions:", product.packagingOptions);
+  
   if (!product.packagingOptions || !Array.isArray(product.packagingOptions)) {
+    console.log("❌ No packagingOptions found on product");
     return [];
   }
   
-  return product.packagingOptions
-    .filter((ref: any) => ref.available !== false && ref.packaging)
+  const packagingList = product.packagingOptions
+    .filter((ref: any) => {
+      console.log("🔍 Debug - Processing ref:", ref);
+      if (!ref.packaging) {
+        console.log("❌ No packaging in ref:", ref);
+        return false;
+      }
+      if (ref.available === false) {
+        console.log("❌ Packaging not available:", ref.packaging);
+        return false;
+      }
+      return true;
+    })
     .map((ref: any) => {
       const pkg = ref.packaging;
+      console.log("✅ Processing packaging:", pkg);
+      
+      let imageUrl = "";
+      if (pkg.imageUrl) {
+        imageUrl = pkg.imageUrl;
+      } else if (pkg.image && pkg.image.asset && pkg.image.asset.url) {
+        imageUrl = pkg.image.asset.url;
+      } else if (pkg.image && typeof pkg.image === 'string') {
+        imageUrl = pkg.image;
+      }
+      
       return {
         _id: pkg._id,
         title: pkg.title,
@@ -91,10 +119,15 @@ const getPackagingOptions = (product: any): PackagingOption[] => {
         price: pkg.price || 0,
         default: ref.isDefault || pkg.default || false,
         image: pkg.image,
-        imageUrl: pkg.imageUrl || pkg.image?.asset?.url,
+        imageUrl: imageUrl,
       } as PackagingOption;
     });
+  
+  console.log("📦 Final packaging options:", packagingList);
+  return packagingList;
 };
+
+// ========== MAIN COMPONENT ==========
 
 export function ServerCartContent({
   userEmail,
@@ -116,6 +149,7 @@ export function ServerCartContent({
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [showClearModal, setShowClearModal] = useState(false);
 
+  // Initialize Default Address
   useEffect(() => {
     const defaultAddress = userAddresses.find((addr) => addr.default);
     if (defaultAddress) {
@@ -128,6 +162,18 @@ export function ServerCartContent({
   useEffect(() => {
     setOrderPlacementState(false, "validating");
   }, [setOrderPlacementState]);
+
+  // Debug useEffect - now getPackagingOptions is defined above
+  useEffect(() => {
+    console.log("🛒 Full cart data:", JSON.stringify(cart, null, 2));
+    cart.forEach((item, idx) => {
+      console.log(`📦 Item ${idx}:`, {
+        name: item.product.name,
+        packagingOptionsRaw: (item.product as any).packagingOptions,
+        packagingOptionsProcessed: getPackagingOptions(item.product),
+      });
+    });
+  }, [cart]);
 
   const handleResetCart = () => setShowClearModal(true);
 
@@ -175,6 +221,13 @@ export function ServerCartContent({
             const weightOptions = getWeightOptions(item.product);
             const grindOptions = getGrindOptions(item.product);
             const packagingOptions = getPackagingOptions(item.product);
+            
+            console.log(`🎯 Rendering ${item.product.name} with:`, {
+              weightOptionsCount: weightOptions.length,
+              grindOptionsCount: grindOptions.length,
+              packagingOptionsCount: packagingOptions.length,
+              packagingOptions: packagingOptions,
+            });
             
             return (
               <div 
@@ -236,9 +289,18 @@ export function ServerCartContent({
                         selectedWeight={item.selectedWeight}
                         selectedGrind={item.selectedGrind}
                         selectedPackaging={item.selectedPackaging}
-                        onWeightChange={(weight) => updateCartItemWeight(item.product._id, weight)}
-                        onGrindChange={(grind) => updateCartItemGrind(item.product._id, grind)}
-                        onPackagingChange={(packaging) => updateCartItemPackaging(item.product._id, packaging)}
+                        onWeightChange={(weight) => {
+                          console.log("Weight changed:", weight);
+                          updateCartItemWeight(item.product._id, weight);
+                        }}
+                        onGrindChange={(grind) => {
+                          console.log("Grind changed:", grind);
+                          updateCartItemGrind(item.product._id, grind);
+                        }}
+                        onPackagingChange={(packaging) => {
+                          console.log("Packaging changed:", packaging);
+                          updateCartItemPackaging(item.product._id, packaging);
+                        }}
                       />
                     </div>
                   </div>
