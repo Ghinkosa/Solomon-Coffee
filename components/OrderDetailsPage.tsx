@@ -19,6 +19,9 @@ import {
   AlertTriangle,
   X,
   Wallet,
+  Scale,
+  Coffee,
+  Box,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,6 +62,19 @@ interface OrderDetailsPageProps {
         categories?: Array<{ title: string }>;
       };
       quantity: number;
+      weight?: {
+        value: string;
+        price: number;
+      };
+      grind?: {
+        type: string;
+        label: string;
+      };
+      packaging?: {
+        id: string;
+        title: string;
+        price: number;
+      };
     }>;
     subtotal: number;
     tax: number;
@@ -169,11 +185,28 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
   const handleReorder = async () => {
     setIsReordering(true);
     try {
-      // Transform order products to cart format
-      const cartItems = order.products.map(({ product, quantity }) => ({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // Transform order products to cart format with options
+      const cartItems = order.products.map(({ product, quantity, weight, grind, packaging }) => ({
         product: product as any,
         quantity,
+        selectedWeight: weight ? {
+          weight: weight.value,
+          price: weight.price,
+          isDefault: false,
+          stock: 0,
+        } : undefined,
+        selectedGrind: grind ? {
+          grindType: grind.type,
+          isDefault: false,
+          available: true,
+        } : undefined,
+        selectedPackaging: packaging ? {
+          _id: packaging.id,
+          title: packaging.title,
+          price: packaging.price,
+          slug: { current: packaging.title.toLowerCase() },
+          default: false,
+        } : undefined,
       }));
 
       // Add all items to cart at once
@@ -212,7 +245,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
 
       if (response.ok && data.success) {
         toast.success(data.message || "Invoice generated successfully!");
-        // Update the current order with the new invoice data
         setCurrentOrder((prev) => ({
           ...prev,
           invoice: data.invoice,
@@ -243,7 +275,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
 
       if (result.success) {
         toast.success(result.message);
-        // Update the current order to show cancellation request pending
         setCurrentOrder(
           (prev) =>
             ({
@@ -256,8 +287,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
         );
         setShowCancelDialog(false);
         setCancellationReason("");
-
-        // Refresh the page to show updated status
         router.refresh();
       } else {
         toast.error(result.message || "Failed to submit cancellation request");
@@ -272,13 +301,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
     }
   };
 
-  // Check if order can be cancelled (before order is confirmed)
   const canCancelOrder = () => {
     const cancellableStatuses = ["pending", "address_confirmed"];
     return (
       cancellableStatuses.includes(currentOrder.status) &&
       currentOrder.status !== "cancelled" &&
-      !(currentOrder as any).cancellationRequested // Don't show cancel button if request already pending
+      !(currentOrder as any).cancellationRequested
     );
   };
 
@@ -471,6 +499,19 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                         categories?: Array<{ title: string }>;
                       };
                       quantity: number;
+                      weight?: {
+                        value: string;
+                        price: number;
+                      };
+                      grind?: {
+                        type: string;
+                        label: string;
+                      };
+                      packaging?: {
+                        id: string;
+                        title: string;
+                        price: number;
+                      };
                     },
                     index: number
                   ) => (
@@ -501,6 +542,36 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                             item.product.name
                           )}
                         </h3>
+                        
+                        {/* Weight Option Display */}
+                        {item.weight && (
+                          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                            <Scale className="w-3 h-3" />
+                            <span>Weight: {item.weight.value}</span>
+                            <span className="text-gray-400">|</span>
+                            <PriceFormatter amount={item.weight.price} />
+                          </div>
+                        )}
+                        
+                        {/* Grind Option Display */}
+                        {item.grind && (
+                          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                            <Coffee className="w-3 h-3" />
+                            <span>Grind: {item.grind.label || item.grind.type}</span>
+                          </div>
+                        )}
+                        
+                        {/* Packaging Option Display */}
+                        {item.packaging && (
+                          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                            <Box className="w-3 h-3" />
+                            <span>Packaging: {item.packaging.title}</span>
+                            {item.packaging.price > 0 && (
+                              <span className="text-gray-400">(+${item.packaging.price})</span>
+                            )}
+                          </div>
+                        )}
+                        
                         {item.product.categories && (
                           <p className="text-sm text-gray-500 mt-1">
                             {item.product.categories
