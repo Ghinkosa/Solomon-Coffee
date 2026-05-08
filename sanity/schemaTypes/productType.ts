@@ -1,5 +1,49 @@
 import { TrolleyIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
+import React from "react";
+
+// Custom preview component for product
+const ProductPreview = (props: any) => {
+  const { title, media, price, stock, weightOptions } = props;
+  
+  // Find the default weight option
+  const defaultWeight = weightOptions?.find((opt: any) => opt.isDefault);
+  const displayPrice = defaultWeight ? defaultWeight.price : price;
+  
+  // Determine stock status
+  let stockStatus = "";
+  let stockColor = "";
+  if (stock === 0 || stock === null || stock === undefined) {
+    stockStatus = "OUT OF STOCK";
+    stockColor = "🔴";
+  } else if (stock <= 5) {
+    stockStatus = `LOW STOCK (${stock})`;
+    stockColor = "🟠";
+  } else {
+    stockStatus = `In Stock: ${stock}`;
+    stockColor = "🟢";
+  }
+  
+  // Show weight info if default weight exists
+  const weightInfo = defaultWeight ? ` (Default: ${defaultWeight.weight})` : "";
+  
+  return React.createElement('div', {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '4px 0'
+    }
+  }, [
+    media ? React.createElement('div', { key: 'media', style: { width: '40px', height: '40px', overflow: 'hidden', borderRadius: '4px' } }, media) : null,
+    React.createElement('div', { key: 'content', style: { flex: 1 } }, [
+      React.createElement('div', { key: 'title', style: { fontWeight: 'bold' } }, title),
+      React.createElement('div', { key: 'subtitle', style: { fontSize: '12px', color: '#666' } }, 
+        `$${displayPrice}${weightInfo} • ${stockColor} ${stockStatus}`
+      )
+    ])
+  ]);
+};
 
 export const productType = defineType({
   name: "product",
@@ -453,8 +497,13 @@ export const productType = defineType({
     prepare(selection) {
       const { title, price, stock, media, weightOptions } = selection;
       const image = media && media[0];
+      
+      // Find the default weight option - this changes the display price
       const defaultWeight = weightOptions?.find((opt: any) => opt.isDefault);
       const displayPrice = defaultWeight ? defaultWeight.price : price;
+      
+      // Show weight info if default weight exists
+      const weightInfo = defaultWeight ? ` (Default: ${defaultWeight.weight})` : "";
 
       let stockStatus = "";
       let stockColor = "";
@@ -471,7 +520,7 @@ export const productType = defineType({
 
       return {
         title: title,
-        subtitle: `$${displayPrice} • ${stockColor} ${stockStatus}`,
+        subtitle: `$${displayPrice}${weightInfo} • ${stockColor} ${stockStatus}`,
         media: image,
       };
     },
