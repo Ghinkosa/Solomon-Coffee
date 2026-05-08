@@ -163,19 +163,31 @@ export function CheckoutButton({
       packaging: item.selectedPackaging || null,
     }));
 
-// In CheckoutButton.tsx, update the placeOrder call:
+    // Calculate totals with packaging
+    const grossSubtotalCalc = cart.reduce((sum, item) => {
+      const itemPrice = getItemCurrentPrice(item);
+      return sum + itemPrice * item.quantity;
+    }, 0);
 
-  const result = await placeOrder(
-    selectedAddress,
-    PAYMENT_METHODS.CASH_ON_DELIVERY,
-    grossSubtotal,      // subtotal
-    totalPackagingFee,  // packagingFee
-    shipping,           // shipping
-    tax,                // tax
-    finalTotal,         // total
-    false,              // redirectToCheckout
-    selectionsData      // selectionsData
-  );
+    const totalPackagingFeeCalc = cart.reduce((sum, item) => {
+      return sum + (item.selectedPackaging?.price || 0) * item.quantity;
+    }, 0);
+
+    const shippingCalc = (grossSubtotalCalc + totalPackagingFeeCalc) > 100 ? 0 : 10;
+    const taxCalc = (grossSubtotalCalc + totalPackagingFeeCalc) * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
+    const finalTotalCalc = grossSubtotalCalc + totalPackagingFeeCalc + shippingCalc + taxCalc;
+
+    const result = await placeOrder(
+      selectedAddress,
+      PAYMENT_METHODS.CASH_ON_DELIVERY,
+      grossSubtotalCalc,      // subtotal (without packaging)
+      totalPackagingFeeCalc,  // packagingFee
+      shippingCalc,           // shipping
+      taxCalc,                // tax
+      finalTotalCalc,         // total
+      false,                  // redirectToCheckout
+      selectionsData          // selectionsData with weight, grind, packaging
+    );
 
     if (result?.success && result.redirectTo) {
       console.log("✅ Order placed successfully, redirecting to:", result.redirectTo);

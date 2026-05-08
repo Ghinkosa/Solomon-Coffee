@@ -10,6 +10,7 @@ interface EmailOrderItem {
   price: number;
   quantity: number;
   weight?: string;
+  weightPrice?: number;
   grind?: string;
   packaging?: string;
   packagingPrice?: number;
@@ -103,6 +104,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
     const cartSnapshot: CartItem[] = JSON.parse(JSON.stringify(cart));
 
+    // Stock validation with weight consideration
     const outOfStockItems = cartSnapshot.filter((item) => {
       const selectedWeightStock = item.selectedWeight?.stock;
       const productStock = item.product.stock;
@@ -119,6 +121,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     try {
       setOrderPlacementState(true, "creating");
 
+      // Prepare items with weight, grind, and packaging data
       const itemsWithSelections = cartSnapshot.map((item) => {
         const productSelections = selectionsData?.find(
           (sel) => sel.productId === item.product._id
@@ -139,33 +142,41 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           quantity: item.quantity,
         };
         
+        // ✅ ADD WEIGHT INFORMATION
         if (finalWeight) {
           itemData.weight = {
             value: finalWeight.weight,
             price: finalWeight.price,
+            isDefault: finalWeight.isDefault,
           };
         }
         
+        // ✅ ADD GRIND INFORMATION
         if (finalGrind) {
+          const grindLabel = finalGrind.grindType === "whole-bean" ? "Whole Bean" :
+                   finalGrind.grindType === "cafetiere" ? "Cafetiere" :
+                   finalGrind.grindType === "filter" ? "Filter" : "Espresso";
           itemData.grind = {
             type: finalGrind.grindType,
-            label: finalGrind.grindType === "whole-bean" ? "Whole Bean" :
-                   finalGrind.grindType === "cafetiere" ? "Cafetiere" :
-                   finalGrind.grindType === "filter" ? "Filter" : "Espresso",
+            label: grindLabel,
+            isDefault: finalGrind.isDefault,
           };
         }
 
+        // ✅ ADD PACKAGING INFORMATION
         if (finalPackaging) {
           itemData.packaging = {
             id: finalPackaging._id,
             title: finalPackaging.title,
             price: finalPackaging.price,
+            isDefault: finalPackaging.default,
           };
         }
         
         return itemData;
       });
 
+      // Calculate products total with weight prices
       const productsTotal = itemsWithSelections.reduce((sum, item) => {
         const productPrice = item.product.price * item.quantity;
         return sum + productPrice;
@@ -181,6 +192,8 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         shipping,
         tax,
       };
+
+      console.log("📦 Order Data being sent (with Weight, Grind, Packaging):", JSON.stringify(orderData, null, 2));
 
       const orderResponse = await fetch("/api/orders", {
         method: "POST",
@@ -199,21 +212,29 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
       setOrderPlacementState(true, "emailing");
 
+      // ✅ Prepare Email Data with ALL selections (Weight, Grind, Packaging)
       const emailData: EmailOrderData = {
         customerName: selectedAddress.name || "Customer",
         customerEmail: user?.emailAddresses[0]?.emailAddress || "",
         orderId: orderNumber,
         orderDate: new Date().toLocaleDateString(),
-        items: cartSnapshot.map((item) => ({
-          name: item.product.name || "Unknown Product",
-          price: getItemCurrentPrice(item),
-          quantity: item.quantity,
-          weight: item.selectedWeight?.weight,
-          grind: item.selectedGrind?.grindType,
-          packaging: item.selectedPackaging?.title,
-          packagingPrice: item.selectedPackaging?.price,
-          image: item.product.images?.[0] || undefined,
-        })),
+        items: cartSnapshot.map((item) => {
+          const finalWeight = item.selectedWeight || selectionsData?.find(s => s.productId === item.product._id)?.weight;
+          const finalGrind = item.selectedGrind || selectionsData?.find(s => s.productId === item.product._id)?.grind;
+          const finalPackaging = item.selectedPackaging || selectionsData?.find(s => s.productId === item.product._id)?.packaging;
+          
+          return {
+            name: item.product.name || "Unknown Product",
+            price: finalWeight?.price || getItemCurrentPrice(item),
+            quantity: item.quantity,
+            weight: finalWeight?.weight,
+            weightPrice: finalWeight?.price,
+            grind: finalGrind?.grindType,
+            packaging: finalPackaging?.title,
+            packagingPrice: finalPackaging?.price,
+            image: item.product.images?.[0] || undefined,
+          };
+        }),
         subtotal,
         packagingFee,
         shipping,
@@ -229,6 +250,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         },
       };
 
+      // Send email asynchronously
       fetch("/api/orders/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -237,6 +259,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
       setOrderPlacementState(true, "redirecting");
 
+      // Handle redirect based on payment method
       if (selectedPaymentMethod === PAYMENT_METHODS.STRIPE) {
         if (redirectToCheckout) {
           return {
@@ -247,6 +270,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             isCheckoutRedirect: true,
           };
         } else {
+          // ✅ Stripe checkout with all item details
           const stripeResponse = await fetch("/api/checkout/stripe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -274,6 +298,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           };
         }
       } else {
+        // COD Logic
         const targetPath = redirectToCheckout ? '/checkout' : '/success';
         const params = new URLSearchParams({
           order_id: orderId,
