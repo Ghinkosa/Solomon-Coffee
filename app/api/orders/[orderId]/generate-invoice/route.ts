@@ -99,14 +99,12 @@ export async function POST(
     // Handle Stripe customer - create or find existing customer
     let stripeCustomerId = order.stripeCustomerId;
 
-    // If we don't have a valid Stripe customer ID, create one
     if (
       !stripeCustomerId ||
       stripeCustomerId.includes("@") ||
       !stripeCustomerId.startsWith("cus_")
     ) {
       try {
-        // First, try to find existing customer by email
         const existingCustomers = await stripe.customers.list({
           email: order.email,
           limit: 1,
@@ -115,7 +113,6 @@ export async function POST(
         if (existingCustomers.data.length > 0) {
           stripeCustomerId = existingCustomers.data[0].id;
         } else {
-          // Create new customer
           const customer = await stripe.customers.create({
             email: order.email,
             name: order.customerName,
@@ -127,7 +124,6 @@ export async function POST(
           stripeCustomerId = customer.id;
         }
 
-        // Update order with correct Stripe customer ID
         await writeClient.patch(order._id).set({ stripeCustomerId }).commit();
       } catch (customerError) {
         console.error(`Failed to create/find Stripe customer:`, customerError);
@@ -158,7 +154,6 @@ export async function POST(
         continue;
       }
 
-      // Build description with all options
       let description = `${item.product.name} x ${item.quantity}`;
       if (item.weight && item.weight.value) {
         description += `\nWeight: ${item.weight.value} ($${item.weight.price})`;
@@ -177,7 +172,7 @@ export async function POST(
         await stripe.invoiceItems.create({
           customer: stripeCustomerId,
           invoice: invoice.id,
-          amount: Math.round(item.product.price * item.quantity * 100), // Convert to cents
+          amount: Math.round(item.product.price * item.quantity * 100),
           currency: currency,
           description: description,
           metadata: {
@@ -295,7 +290,6 @@ export async function POST(
   } catch (error) {
     console.error("Invoice generation error:", error);
 
-    // Provide more specific error messages
     let errorMessage = "Failed to generate invoice";
     let statusCode = 500;
 

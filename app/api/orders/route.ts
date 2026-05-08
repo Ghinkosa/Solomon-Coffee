@@ -102,7 +102,7 @@ export const POST = async (request: NextRequest) => {
     // Generate order number
     const orderNumber = `ORDER-${Date.now()}-${Math.random()
       .toString(36)
-      .substr(2, 9)
+      .substring(2, 11)
       .toUpperCase()}`;
 
     const userEmail = user.emailAddresses[0]?.emailAddress;
@@ -141,7 +141,10 @@ export const POST = async (request: NextRequest) => {
         if (item.grind && item.grind.type) {
           productItem.grind = {
             type: item.grind.type,
-            label: item.grind.label || item.grind.type,
+            label: item.grind.label || 
+              (item.grind.type === "whole-bean" ? "Whole Bean" :
+               item.grind.type === "cafetiere" ? "Cafetiere" :
+               item.grind.type === "filter" ? "Filter" : "Espresso"),
           };
         }
         
@@ -182,9 +185,9 @@ export const POST = async (request: NextRequest) => {
         paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY
           ? PAYMENT_STATUSES.PENDING
           : PAYMENT_STATUSES.PENDING,
-      subtotal,
-      shipping,
-      tax,
+      subtotal: subtotal || 0,
+      shipping: shipping || 0,
+      tax: tax || 0,
       ...(paymentMethod === PAYMENT_METHODS.STRIPE && {
         stripeCustomerId: "",
         stripePaymentIntentId: "",
@@ -201,6 +204,7 @@ export const POST = async (request: NextRequest) => {
     const createdOrder = await writeClient.create(orderData);
 
     console.log("✅ Order created successfully:", createdOrder._id);
+    console.log("✅ Order products with options:", JSON.stringify(createdOrder.products, null, 2));
 
     // Track order placed event
     try {

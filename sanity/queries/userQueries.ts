@@ -161,7 +161,10 @@ export const USER_ORDERS_QUERY = `
         price,
         currency
       },
-      quantity
+      quantity,
+      weight,
+      grind,
+      packaging
     },
     totalPrice,
     currency,
@@ -173,6 +176,7 @@ export const USER_ORDERS_QUERY = `
   }
 `;
 
+// ✅ UPDATED: ORDER_BY_ID_QUERY with weight, grind, packaging
 export const ORDER_BY_ID_QUERY = `
   *[_type == "order" && _id == $orderId][0] {
     _id,
@@ -197,7 +201,10 @@ export const ORDER_BY_ID_QUERY = `
           title
         }
       },
-      quantity
+      quantity,
+      weight,
+      grind,
+      packaging
     },
     subtotal,
     tax,
@@ -205,6 +212,7 @@ export const ORDER_BY_ID_QUERY = `
     totalPrice,
     currency,
     amountDiscount,
+    packagingFee,
     address,
     status,
     paymentStatus,
@@ -295,6 +303,7 @@ export const getUserOrders = async (clerkUserId: string) => {
   }
 };
 
+// ✅ UPDATED: getOrderById function
 export const getOrderById = async (orderId: string) => {
   try {
     const { data } = await sanityFetch({

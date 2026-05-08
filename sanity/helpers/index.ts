@@ -28,7 +28,7 @@ export const getProductsByCategory = async (categorySlug: string) => {
   }
 };
 
-// Add this new function to get all products
+// Get all products
 export const getAllProducts = async () => {
   const ALL_PRODUCTS_QUERY = defineQuery(
     `*[_type == 'product'] {
@@ -52,7 +52,7 @@ export const getAllProducts = async () => {
   }
 };
 
-// Add this new function to get a single product by slug
+// Get a single product by slug
 export const getProductBySlug = async (slug: string) => {
   const PRODUCT_BY_SLUG_QUERY = defineQuery(
     `*[_type == 'product' && slug.current == $slug][0] {
@@ -144,6 +144,7 @@ export const saveContactMessage = async (contactData: {
   }
 };
 
+// ✅ UPDATED: getMyOrders with weight, grind, packaging
 export const getMyOrders = async (
   userId: string,
   page: number = 1,
@@ -155,33 +156,35 @@ export const getMyOrders = async (
 
   const offset = (page - 1) * limit;
 
-  // Query for paginated orders
-  const MY_ORDERS_QUERY =
-    defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc)[$start...$end]{
-    ...,
-    paymentStatus,
-    paymentMethod,
-    products[]{
+  const MY_ORDERS_QUERY = defineQuery(`
+    *[_type == 'order' && clerkUserId == $userId] | order(orderDate desc)[$start...$end]{
       ...,
-      product->{
-        _id,
-        name,
-        slug,
-        image,
-        images,
-        price,
-        currency,
-        weightOptions[],
-        grindOptions[],
-        packagingOptions[] {
-          ...,
-          packaging->
-        }
+      paymentStatus,
+      paymentMethod,
+      products[]{
+        ...,
+        product->{
+          _id,
+          name,
+          slug,
+          image,
+          images,
+          price,
+          currency,
+          weightOptions[],
+          grindOptions[],
+          packagingOptions[] {
+            ...,
+            packaging->
+          }
+        },
+        weight,
+        grind,
+        packaging
       }
     }
-  }`);
+  `);
 
-  // Query for total count
   const COUNT_QUERY = defineQuery(
     `count(*[_type == 'order' && clerkUserId == $userId])`,
   );
