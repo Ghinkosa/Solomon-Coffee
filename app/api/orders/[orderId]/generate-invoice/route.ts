@@ -21,7 +21,7 @@ export async function POST(
       );
     }
 
-    // Get the order from Sanity
+    // Get the order from Sanity with full product details including weight, grind, packaging
     const order = await writeClient.fetch(
       `*[_type == "order" && _id == $orderId && clerkUserId == $clerkUserId][0]{
         _id,
@@ -36,12 +36,16 @@ export async function POST(
             price,
             currency
           },
-          quantity
+          quantity,
+          weight,
+          grind,
+          packaging
         },
         subtotal,
         tax,
         shipping,
         totalPrice,
+        packagingFee,
         currency,
         status,
         paymentStatus,
@@ -147,11 +151,26 @@ export async function POST(
       collection_method: "charge_automatically",
     });
 
-    // Add invoice items for products
+    // Add invoice items for products with weight, grind, packaging details
     for (const item of order.products) {
       if (!item.product || !item.product.name || !item.product.price) {
         console.warn(`Skipping invalid product in order ${orderId}:`, item);
         continue;
+      }
+
+      // Build description with all options
+      let description = `${item.product.name} x ${item.quantity}`;
+      if (item.weight && item.weight.value) {
+        description += `\nWeight: ${item.weight.value} ($${item.weight.price})`;
+      }
+      if (item.grind && item.grind.label) {
+        description += `\nGrind: ${item.grind.label}`;
+      }
+      if (item.packaging && item.packaging.title) {
+        description += `\nPackaging: ${item.packaging.title}`;
+        if (item.packaging.price > 0) {
+          description += ` (+$${item.packaging.price})`;
+        }
       }
 
       try {
@@ -160,10 +179,15 @@ export async function POST(
           invoice: invoice.id,
           amount: Math.round(item.product.price * item.quantity * 100), // Convert to cents
           currency: currency,
-          description: `${item.product.name} x ${item.quantity}`,
+          description: description,
           metadata: {
             productId: item.product._id,
             quantity: item.quantity.toString(),
+            weight: item.weight?.value || "",
+            weightPrice: item.weight?.price?.toString() || "",
+            grind: item.grind?.label || "",
+            packaging: item.packaging?.title || "",
+            packagingPrice: item.packaging?.price?.toString() || "",
           },
         });
       } catch (error) {
@@ -171,6 +195,25 @@ export async function POST(
           `Failed to add invoice item for product ${item.product._id}:`,
           error
         );
+        throw error;
+      }
+    }
+
+    // Add packaging fee as separate line item if present
+    if (order.packagingFee && order.packagingFee > 0) {
+      try {
+        await stripe.invoiceItems.create({
+          customer: stripeCustomerId,
+          invoice: invoice.id,
+          amount: Math.round(order.packagingFee * 100),
+          currency: currency,
+          description: "Packaging Fee",
+          metadata: {
+            type: "packaging_fee",
+          },
+        });
+      } catch (error) {
+        console.error(`Failed to add packaging fee:`, error);
         throw error;
       }
     }

@@ -18,6 +18,19 @@ interface CartItem {
     category?: string;
   };
   quantity: number;
+  weight?: {
+    value: string;
+    price: number;
+  };
+  grind?: {
+    type: string;
+    label: string;
+  };
+  packaging?: {
+    id: string;
+    title: string;
+    price: number;
+  };
 }
 
 export async function GET() {
@@ -39,6 +52,7 @@ export async function GET() {
     );
   }
 }
+
 export const POST = async (request: NextRequest) => {
   try {
     // Check authentication
@@ -58,7 +72,10 @@ export const POST = async (request: NextRequest) => {
       subtotal,
       shipping,
       tax,
+      packagingFee,
     } = reqBody;
+
+    console.log("📦 Order API received items:", JSON.stringify(items, null, 2));
 
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -94,7 +111,7 @@ export const POST = async (request: NextRequest) => {
     const userPhone =
       user.phoneNumbers?.[0]?.phoneNumber || shippingAddress.phone || "";
 
-    // Create order object with packaging support
+    // Create order object with full support for weight, grind, and packaging
     const orderData = {
       _type: "order" as const,
       orderNumber,
@@ -102,35 +119,54 @@ export const POST = async (request: NextRequest) => {
       email: userEmail,
       phone: userPhone,
       clerkUserId: userId,
-      products: items.map(
-        (item: { 
-          product: { _id: string; name?: string; price?: number; category?: string }; 
-          quantity: number;
-          packaging?: { _id: string; title: string; price: number } | null;
-        }) => {
-          const productItem: any = {
-            _key: crypto.randomUUID(),
-            product: {
-              _type: "reference",
-              _ref: item.product._id,
-            },
-            quantity: item.quantity,
+      products: items.map((item: CartItem) => {
+        const productItem: any = {
+          _key: crypto.randomUUID(),
+          product: {
+            _type: "reference",
+            _ref: item.product._id,
+          },
+          quantity: item.quantity,
+        };
+        
+        // ✅ Add weight information if present
+        if (item.weight && item.weight.value) {
+          productItem.weight = {
+            value: item.weight.value,
+            price: item.weight.price,
           };
-          
-          // Add packaging reference if it exists
-          if (item.packaging && item.packaging._id) {
-            productItem.packaging = {
+        }
+        
+        // ✅ Add grind information if present
+        if (item.grind && item.grind.type) {
+          productItem.grind = {
+            type: item.grind.type,
+            label: item.grind.label || item.grind.type,
+          };
+        }
+        
+        // ✅ Add packaging information if present
+        if (item.packaging && item.packaging.id) {
+          productItem.packaging = {
+            id: item.packaging.id,
+            title: item.packaging.title,
+            price: item.packaging.price,
+          };
+          // Also add packaging reference if needed
+          if (item.packaging.id) {
+            productItem.packagingRef = {
               _type: "reference",
-              _ref: item.packaging._id,
+              _ref: item.packaging.id,
             };
           }
-          
-          return productItem;
-        },
-      ),
+        }
+        
+        return productItem;
+      }),
       totalPrice: totalAmount,
       currency: "USD",
       amountDiscount: 0,
+      packagingFee: packagingFee || 0,
       address: {
         _type: "object",
         name: shippingAddress.name,
@@ -159,8 +195,12 @@ export const POST = async (request: NextRequest) => {
       }),
     };
 
+    console.log("📦 Creating order with data:", JSON.stringify(orderData, null, 2));
+
     // Create order in Sanity using writeClient
     const createdOrder = await writeClient.create(orderData);
+
+    console.log("✅ Order created successfully:", createdOrder._id);
 
     // Track order placed event
     try {
@@ -185,12 +225,16 @@ export const POST = async (request: NextRequest) => {
             subtotal: subtotal,
             shipping: shipping,
             tax: tax,
+            packagingFee: packagingFee,
             customerEmail: userEmail,
-            products: items.map((item: CartItem & { packaging?: { _id: string; title: string; price: number } }) => ({
+            products: items.map((item: CartItem) => ({
               productId: item.product._id,
               name: item.product.name || "Unknown Product",
               quantity: item.quantity,
               price: item.product.price || 0,
+              weight: item.weight?.value || null,
+              weightPrice: item.weight?.price || null,
+              grind: item.grind?.label || null,
               packaging: item.packaging?.title || null,
               packagingPrice: item.packaging?.price || 0,
             })),
@@ -208,12 +252,15 @@ export const POST = async (request: NextRequest) => {
             orderId: createdOrder._id,
             value: totalAmount,
             currency: "USD",
-            items: items.map((item: CartItem & { packaging?: { _id: string; title: string; price: number } }) => ({
+            items: items.map((item: CartItem) => ({
               productId: item.product._id,
               name: item.product.name || "Unknown Product",
               category: item.product.category || "Uncategorized",
               quantity: item.quantity,
               price: item.product.price || 0,
+              weight: item.weight?.value || null,
+              weightPrice: item.weight?.price || null,
+              grind: item.grind?.label || null,
               packaging: item.packaging?.title || null,
               packagingPrice: item.packaging?.price || 0,
             })),

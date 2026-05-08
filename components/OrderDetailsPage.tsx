@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -182,6 +182,21 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
   const { addMultipleItems } = useCartStore();
   const router = useRouter();
 
+  // Debug logging to see what data we have
+  useEffect(() => {
+    console.log("🔍 Order Details Debug:");
+    console.log("Full order object:", order);
+    console.log("Products array:", order.products);
+    order.products?.forEach((product, idx) => {
+      console.log(`Product ${idx}:`, {
+        name: product.product.name,
+        weight: product.weight,
+        grind: product.grind,
+        packaging: product.packaging,
+      });
+    });
+  }, [order]);
+
   const handleReorder = async () => {
     setIsReordering(true);
     try {
@@ -208,6 +223,8 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
           default: false,
         } : undefined,
       }));
+
+      console.log("🔄 Reorder cart items:", cartItems);
 
       // Add all items to cart at once
       addMultipleItems(cartItems);
@@ -514,89 +531,106 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                       };
                     },
                     index: number
-                  ) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 p-4 border rounded-lg"
-                    >
-                      {item.product.image && (
-                        <div className="relative w-16 h-16 shrink-0">
-                          <Image
-                            src={urlFor(item.product.image).url()}
-                            alt={item.product.name}
-                            fill
-                            className="object-cover rounded-md"
-                          />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">
-                          {item.product.slug ? (
-                            <Link
-                              href={`/product/${item.product.slug.current}`}
-                              className="hover:text-shop_dark_green transition-colors"
-                            >
-                              {item.product.name}
-                            </Link>
-                          ) : (
-                            item.product.name
-                          )}
-                        </h3>
-                        
-                        {/* Weight Option Display */}
-                        {item.weight && (
-                          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
-                            <Scale className="w-3 h-3" />
-                            <span>Weight: {item.weight.value}</span>
-                            <span className="text-gray-400">|</span>
-                            <PriceFormatter amount={item.weight.price} />
+                  ) => {
+                    // Debug each item
+                    console.log(`Rendering item ${index}:`, {
+                      name: item.product.name,
+                      hasWeight: !!item.weight,
+                      weightData: item.weight,
+                      hasGrind: !!item.grind,
+                      grindData: item.grind,
+                      hasPackaging: !!item.packaging,
+                      packagingData: item.packaging,
+                    });
+
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center gap-4 p-4 border rounded-lg"
+                      >
+                        {item.product.image && (
+                          <div className="relative w-16 h-16 shrink-0">
+                            <Image
+                              src={urlFor(item.product.image).url()}
+                              alt={item.product.name}
+                              fill
+                              className="object-cover rounded-md"
+                            />
                           </div>
                         )}
-                        
-                        {/* Grind Option Display */}
-                        {item.grind && (
-                          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
-                            <Coffee className="w-3 h-3" />
-                            <span>Grind: {item.grind.label || item.grind.type}</span>
-                          </div>
-                        )}
-                        
-                        {/* Packaging Option Display */}
-                        {item.packaging && (
-                          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
-                            <Box className="w-3 h-3" />
-                            <span>Packaging: {item.packaging.title}</span>
-                            {item.packaging.price > 0 && (
-                              <span className="text-gray-400">(+${item.packaging.price})</span>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 truncate">
+                            {item.product.slug ? (
+                              <Link
+                                href={`/product/${item.product.slug.current}`}
+                                className="hover:text-shop_dark_green transition-colors"
+                              >
+                                {item.product.name}
+                              </Link>
+                            ) : (
+                              item.product.name
                             )}
+                          </h3>
+                          
+                          {/* Weight Option Display */}
+                          {item.weight && item.weight.value && (
+                            <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                              <Scale className="w-3 h-3" />
+                              <span>Weight: {item.weight.value}</span>
+                              {item.weight.price > 0 && (
+                                <>
+                                  <span className="text-gray-400">|</span>
+                                  <PriceFormatter amount={item.weight.price} />
+                                </>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Grind Option Display */}
+                          {item.grind && item.grind.type && (
+                            <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                              <Coffee className="w-3 h-3" />
+                              <span>Grind: {item.grind.label || item.grind.type}</span>
+                            </div>
+                          )}
+                          
+                          {/* Packaging Option Display */}
+                          {item.packaging && item.packaging.title && (
+                            <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+                              <Box className="w-3 h-3" />
+                              <span>Packaging: {item.packaging.title}</span>
+                              {item.packaging.price > 0 && (
+                                <span className="text-gray-400">(+${item.packaging.price})</span>
+                              )}
+                            </div>
+                          )}
+                          
+                          {item.product.categories && item.product.categories.length > 0 && (
+                            <p className="text-sm text-gray-500 mt-1">
+                              {item.product.categories
+                                .map((cat) => cat.title)
+                                .join(", ")}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-4 mt-2">
+                            <span className="text-sm text-gray-600">
+                              Qty: {item.quantity}
+                            </span>
+                            <PriceFormatter
+                              amount={item.product.price}
+                              className="font-medium"
+                            />
                           </div>
-                        )}
-                        
-                        {item.product.categories && (
-                          <p className="text-sm text-gray-500 mt-1">
-                            {item.product.categories
-                              .map((cat) => cat.title)
-                              .join(", ")}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-4 mt-2">
-                          <span className="text-sm text-gray-600">
-                            Qty: {item.quantity}
-                          </span>
+                        </div>
+                        <div className="text-right">
                           <PriceFormatter
-                            amount={item.product.price}
-                            className="font-medium"
+                            amount={item.product.price * item.quantity}
+                            className="font-medium text-lg"
                           />
                         </div>
                       </div>
-                      <div className="text-right">
-                        <PriceFormatter
-                          amount={item.product.price * item.quantity}
-                          className="font-medium text-lg"
-                        />
-                      </div>
-                    </div>
-                  )
+                    );
+                  }
                 )}
               </div>
             </CardContent>
