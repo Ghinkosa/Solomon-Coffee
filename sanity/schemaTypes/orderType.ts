@@ -83,7 +83,7 @@ export const orderType = defineType({
         document?.paymentMethod !== "stripe",
     }),
 
-    // PRODUCTS
+    // PRODUCTS with Weight, Grind, and Packaging support
     defineField({
       name: "products",
       title: "Products",
@@ -106,8 +106,69 @@ export const orderType = defineType({
               name: "quantity",
               title: "Quantity Purchased",
               type: "number",
-              validation: (Rule) =>
-                Rule.required().min(1),
+              validation: (Rule) => Rule.required().min(1),
+            }),
+
+            // ✅ ADD WEIGHT FIELD
+            defineField({
+              name: "weight",
+              title: "Selected Weight",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "value",
+                  title: "Weight Value",
+                  type: "string",
+                }),
+                defineField({
+                  name: "price",
+                  title: "Weight Price",
+                  type: "number",
+                }),
+              ],
+            }),
+
+            // ✅ ADD GRIND FIELD
+            defineField({
+              name: "grind",
+              title: "Selected Grind",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "type",
+                  title: "Grind Type",
+                  type: "string",
+                }),
+                defineField({
+                  name: "label",
+                  title: "Grind Label",
+                  type: "string",
+                }),
+              ],
+            }),
+
+            // ✅ ADD PACKAGING FIELD
+            defineField({
+              name: "packaging",
+              title: "Selected Packaging",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "id",
+                  title: "Packaging ID",
+                  type: "string",
+                }),
+                defineField({
+                  name: "title",
+                  title: "Packaging Title",
+                  type: "string",
+                }),
+                defineField({
+                  name: "price",
+                  title: "Packaging Price",
+                  type: "number",
+                }),
+              ],
             }),
           ],
 
@@ -117,21 +178,29 @@ export const orderType = defineType({
               quantity: "quantity",
               image: "product.images.0",
               price: "product.price",
+              weight: "weight.value",
+              grind: "grind.label",
+              packaging: "packaging.title",
             },
-
             prepare(selection) {
               const {
                 product,
                 quantity,
                 image,
                 price,
+                weight,
+                grind,
+                packaging,
               } = selection;
 
+              let subtitle = `Qty: ${quantity || 0} | $${price || 0}`;
+              if (weight) subtitle += ` | Weight: ${weight}`;
+              if (grind) subtitle += ` | Grind: ${grind}`;
+              if (packaging) subtitle += ` | Packaging: ${packaging}`;
+
               return {
-                title: `${product || "Unknown Product"} x ${
-                  quantity || 0
-                }`,
-                subtitle: `Price: $${price || 0}`,
+                title: `${product || "Unknown Product"}`,
+                subtitle: subtitle,
                 media: image,
               };
             },
@@ -159,6 +228,15 @@ export const orderType = defineType({
       title: "Shipping Cost",
       type: "number",
       validation: (Rule) => Rule.required().min(0),
+    }),
+
+    defineField({
+      name: "packagingFee",
+      title: "Packaging Fee",
+      type: "number",
+      description: "Total additional cost for packaging",
+      initialValue: 0,
+      validation: (Rule) => Rule.min(0),
     }),
 
     defineField({
@@ -193,25 +271,21 @@ export const orderType = defineType({
           title: "State",
           type: "string",
         }),
-
         defineField({
           name: "zip",
           title: "Zip Code",
           type: "string",
         }),
-
         defineField({
           name: "city",
           title: "City",
           type: "string",
         }),
-
         defineField({
           name: "address",
           title: "Address",
           type: "string",
         }),
-
         defineField({
           name: "name",
           title: "Name",
@@ -228,34 +302,16 @@ export const orderType = defineType({
       options: {
         list: [
           { title: "Pending", value: "pending" },
-          {
-            title: "Address Confirmed",
-            value: "address_confirmed",
-          },
-          {
-            title: "Order Confirmed",
-            value: "order_confirmed",
-          },
+          { title: "Address Confirmed", value: "address_confirmed" },
+          { title: "Order Confirmed", value: "order_confirmed" },
           { title: "Packed", value: "packed" },
-          {
-            title: "Ready for Delivery",
-            value: "ready_for_delivery",
-          },
-          {
-            title: "Out for Delivery",
-            value: "out_for_delivery",
-          },
+          { title: "Ready for Delivery", value: "ready_for_delivery" },
+          { title: "Out for Delivery", value: "out_for_delivery" },
           { title: "Delivered", value: "delivered" },
           { title: "Completed", value: "completed" },
           { title: "Cancelled", value: "cancelled" },
-          {
-            title: "Rescheduled",
-            value: "rescheduled",
-          },
-          {
-            title: "Failed Delivery",
-            value: "failed_delivery",
-          },
+          { title: "Rescheduled", value: "rescheduled" },
+          { title: "Failed Delivery", value: "failed_delivery" },
         ],
       },
 
@@ -293,14 +349,29 @@ export const orderType = defineType({
 
       options: {
         list: [
-          {
-            title: "Cash on Delivery",
-            value: "cash_on_delivery",
-          },
+          { title: "Cash on Delivery", value: "cash_on_delivery" },
           { title: "Stripe", value: "stripe" },
           { title: "Card", value: "card" },
         ],
       },
+    }),
+
+    // ✅ Add status history for tracking
+    defineField({
+      name: "statusHistory",
+      title: "Status History",
+      type: "array",
+      of: [
+        defineArrayMember({
+          type: "object",
+          fields: [
+            defineField({ name: "status", title: "Status", type: "string" }),
+            defineField({ name: "changedBy", title: "Changed By", type: "string" }),
+            defineField({ name: "changedAt", title: "Changed At", type: "datetime" }),
+            defineField({ name: "notes", title: "Notes", type: "text" }),
+          ],
+        }),
+      ],
     }),
   ],
 
@@ -342,19 +413,12 @@ export const orderType = defineType({
         failed_delivery: "⚠️ Failed Delivery",
       };
 
-      const statusDisplay =
-        statusMap[status] || status;
-
-      const paymentDisplay =
-        paymentStatus === "paid"
-          ? "💳 Paid"
-          : `💰 ${paymentStatus}`;
+      const statusDisplay = statusMap[status] || status;
+      const paymentDisplay = paymentStatus === "paid" ? "💳 Paid" : `💰 ${paymentStatus}`;
 
       return {
         title: `${name || "Unknown"} (${orderIdSnippet})`,
-        subtitle: `${statusDisplay} | ${
-          amount || 0
-        } ${currency || "USD"} | ${paymentDisplay}`,
+        subtitle: `${statusDisplay} | ${amount || 0} ${currency || "USD"} | ${paymentDisplay}`,
         media: BasketIcon,
       };
     },
