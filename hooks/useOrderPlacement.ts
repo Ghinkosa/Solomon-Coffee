@@ -1,18 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import useCartStore, { CartItem } from "@/store";
+import useCartStore, { CartItem, PackagingOption, WeightOption, GrindOption } from "@/store";
 import { PAYMENT_METHODS, PaymentMethod } from "@/lib/orderStatus";
 import { toast } from "sonner";
 
-// Extended interface for email preparation
 interface EmailOrderItem {
   name: string;
   price: number;
   quantity: number;
   weight?: string;
   grind?: string;
-  image?: any; 
+  packaging?: string;
+  packagingPrice?: number;
+  image?: any;
 }
 
 interface EmailOrderData {
@@ -22,6 +23,7 @@ interface EmailOrderData {
   orderDate: string;
   items: EmailOrderItem[];
   subtotal: number;
+  packagingFee: number;
   shipping: number;
   tax: number;
   total: number;
@@ -33,7 +35,6 @@ interface EmailOrderData {
     zipCode: string;
     country: string;
   };
-  estimatedDelivery?: string;
 }
 
 interface Address {
@@ -55,12 +56,11 @@ interface UseOrderPlacementProps {
   } | null;
 }
 
-// Helper to get current price based on selected weight
 const getItemCurrentPrice = (item: CartItem): number => {
   if (item.selectedWeight && item.selectedWeight.price) {
     return item.selectedWeight.price;
   }
-  const defaultWeight = item.product.weightOptions?.find((w: any) => w.isDefault);
+  const defaultWeight = (item.product as any).weightOptions?.find((w: WeightOption) => w.isDefault);
   return defaultWeight?.price || item.product.price || 0;
 };
 
@@ -77,11 +77,17 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     selectedAddress: Address,
     selectedPaymentMethod: PaymentMethod,
     subtotal: number,
+    packagingFee: number,
     shipping: number,
     tax: number,
     total: number,
     redirectToCheckout: boolean = false,
-    selectionsData?: Array<{ productId: string; weight: any | null; grind: any | null }>
+    selectionsData?: Array<{ 
+      productId: string; 
+      weight: WeightOption | null; 
+      grind: GrindOption | null;
+      packaging: PackagingOption | null;
+    }>
   ) => {
     if (!selectedAddress) {
       toast.error("Address Required", {
@@ -97,7 +103,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
     const cartSnapshot: CartItem[] = JSON.parse(JSON.stringify(cart));
 
-    // Stock validation with weight consideration
     const outOfStockItems = cartSnapshot.filter((item) => {
       const selectedWeightStock = item.selectedWeight?.stock;
       const productStock = item.product.stock;
@@ -114,7 +119,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     try {
       setOrderPlacementState(true, "creating");
 
-      // Prepare items with weight and grind data
       const itemsWithSelections = cartSnapshot.map((item) => {
         const productSelections = selectionsData?.find(
           (sel) => sel.productId === item.product._id
@@ -122,6 +126,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         
         const finalWeight = item.selectedWeight || productSelections?.weight;
         const finalGrind = item.selectedGrind || productSelections?.grind;
+        const finalPackaging = item.selectedPackaging || productSelections?.packaging;
         const itemPrice = finalWeight?.price || getItemCurrentPrice(item);
         
         const itemData: any = {
@@ -149,11 +154,18 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
                    finalGrind.grindType === "filter" ? "Filter" : "Espresso",
           };
         }
+
+        if (finalPackaging) {
+          itemData.packaging = {
+            id: finalPackaging._id,
+            title: finalPackaging.title,
+            price: finalPackaging.price,
+          };
+        }
         
         return itemData;
       });
 
-      // Calculate totals with weight-based pricing
       const productsTotal = itemsWithSelections.reduce((sum, item) => {
         const productPrice = item.product.price * item.quantity;
         return sum + productPrice;
@@ -165,6 +177,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         paymentMethod: selectedPaymentMethod,
         totalAmount: total,
         subtotal: productsTotal,
+        packagingFee,
         shipping,
         tax,
       };
@@ -186,7 +199,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
       setOrderPlacementState(true, "emailing");
 
-      // Prepare Email Data with weight and grind info
       const emailData: EmailOrderData = {
         customerName: selectedAddress.name || "Customer",
         customerEmail: user?.emailAddresses[0]?.emailAddress || "",
@@ -198,9 +210,12 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           quantity: item.quantity,
           weight: item.selectedWeight?.weight,
           grind: item.selectedGrind?.grindType,
+          packaging: item.selectedPackaging?.title,
+          packagingPrice: item.selectedPackaging?.price,
           image: item.product.images?.[0] || undefined,
         })),
         subtotal,
+        packagingFee,
         shipping,
         tax,
         total,
@@ -214,7 +229,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         },
       };
 
-      // Async email trigger
       fetch("/api/orders/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -223,7 +237,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
       setOrderPlacementState(true, "redirecting");
 
-      // REDIRECT LOGIC
       if (selectedPaymentMethod === PAYMENT_METHODS.STRIPE) {
         if (redirectToCheckout) {
           return {
@@ -234,7 +247,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             isCheckoutRedirect: true,
           };
         } else {
-          // Stripe payment
           const stripeResponse = await fetch("/api/checkout/stripe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -246,8 +258,9 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
               shippingAddress: selectedAddress,
               orderAmount: total,
               subtotal: subtotal,
-              shipping: shipping,
-              tax: tax,
+              packagingFee,
+              shipping,
+              tax,
             }),
           });
 
@@ -261,7 +274,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           };
         }
       } else {
-        // COD Logic
         const targetPath = redirectToCheckout ? '/checkout' : '/success';
         const params = new URLSearchParams({
           order_id: orderId,

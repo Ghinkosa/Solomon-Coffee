@@ -34,8 +34,13 @@ const getItemCurrentPrice = (item: CartItem): number => {
   if (item.selectedWeight && item.selectedWeight.price) {
     return item.selectedWeight.price;
   }
-  const defaultWeight = item.product.weightOptions?.find((w: any) => w.isDefault);
+  const defaultWeight = (item.product as any).weightOptions?.find((w: any) => w.isDefault);
   return defaultWeight?.price || item.product.price || 0;
+};
+
+// Helper to get packaging fee for an item
+const getItemPackagingFee = (item: CartItem): number => {
+  return item.selectedPackaging?.price || 0;
 };
 
 export function CheckoutButton({ 
@@ -55,15 +60,20 @@ export function CheckoutButton({
     console.log("✅ CheckoutButton - cart items:", cart.length);
   }, [cart.length]);
 
-  // Calculate cart totals with weight-based pricing
+  // Calculate cart totals with weight-based pricing and packaging fees
   const grossSubtotal = cart.reduce((sum, item) => {
     const itemPrice = getItemCurrentPrice(item);
     return sum + itemPrice * item.quantity;
   }, 0);
 
-  const shipping = grossSubtotal > 100 ? 0 : 10;
-  const tax = grossSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
-  const finalTotal = grossSubtotal + shipping + tax;
+  const totalPackagingFee = cart.reduce((sum, item) => {
+    return sum + getItemPackagingFee(item) * item.quantity;
+  }, 0);
+
+  const subtotalWithPackaging = grossSubtotal + totalPackagingFee;
+  const shipping = subtotalWithPackaging > 100 ? 0 : 10;
+  const tax = subtotalWithPackaging * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
+  const finalTotal = subtotalWithPackaging + shipping + tax;
 
   const handleProceedToCheckout = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -91,7 +101,7 @@ export function CheckoutButton({
     setActionType("checkout");
 
     const cartValue = cart.reduce(
-      (sum, item) => sum + getItemCurrentPrice(item) * item.quantity,
+      (sum, item) => sum + (getItemCurrentPrice(item) + getItemPackagingFee(item)) * item.quantity,
       0
     );
     
@@ -101,11 +111,12 @@ export function CheckoutButton({
       itemCount: cart.length,
     });
 
-    // Prepare weight and grind data for URL
+    // Prepare weight, grind, and packaging data for URL
     const selectionsDataForUrl = cart.map(item => ({
       productId: item.product._id,
       weight: item.selectedWeight || null,
       grind: item.selectedGrind || null,
+      packaging: item.selectedPackaging || null,
     }));
     
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
@@ -144,23 +155,27 @@ export function CheckoutButton({
 
     setActionType("order");
 
-    // Prepare weight and grind data for each product
+    // Prepare weight, grind, and packaging data for each product
     const selectionsData = cart.map(item => ({
       productId: item.product._id,
       weight: item.selectedWeight || null,
       grind: item.selectedGrind || null,
+      packaging: item.selectedPackaging || null,
     }));
 
-    const result = await placeOrder(
-      selectedAddress,
-      PAYMENT_METHODS.CASH_ON_DELIVERY,
-      grossSubtotal,
-      shipping,
-      tax,
-      finalTotal,
-      false,
-      selectionsData
-    );
+// In CheckoutButton.tsx, update the placeOrder call:
+
+  const result = await placeOrder(
+    selectedAddress,
+    PAYMENT_METHODS.CASH_ON_DELIVERY,
+    grossSubtotal,      // subtotal
+    totalPackagingFee,  // packagingFee
+    shipping,           // shipping
+    tax,                // tax
+    finalTotal,         // total
+    false,              // redirectToCheckout
+    selectionsData      // selectionsData
+  );
 
     if (result?.success && result.redirectTo) {
       console.log("✅ Order placed successfully, redirecting to:", result.redirectTo);
@@ -189,6 +204,23 @@ export function CheckoutButton({
       )}
 
       <div className="space-y-4">
+        {totalPackagingFee > 0 && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Package className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">Packaging Fee</span>
+              </div>
+              <span className="text-sm font-semibold text-blue-700">
+                +${totalPackagingFee.toFixed(2)}
+              </span>
+            </div>
+            <p className="text-xs text-blue-600 mt-1">
+              Premium packaging selected for your items
+            </p>
+          </div>
+        )}
+
         {hasOutOfStockItems && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-700">
@@ -227,6 +259,7 @@ export function CheckoutButton({
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5" />
                 Proceed to Checkout
+                {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}
           </Button>
@@ -253,6 +286,7 @@ export function CheckoutButton({
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
                 Place Order (Pay Later)
+                {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}
           </Button>

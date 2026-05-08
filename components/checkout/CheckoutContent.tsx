@@ -17,8 +17,10 @@ import {
   Loader2,
   X,
   Box,
+  Scale,
+  Coffee,
 } from "lucide-react";
-import useCartStore, { CartItem } from "@/store";
+import useCartStore, { CartItem, WeightOption, GrindOption, PackagingOption } from "@/store";
 import PriceFormatter from "@/components/PriceFormatter";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
@@ -53,6 +55,20 @@ interface OrderAddress {
   source: "order";
 }
 
+// Helper to get current price based on selected weight
+const getItemCurrentPrice = (item: CartItem): number => {
+  if (item.selectedWeight && item.selectedWeight.price) {
+    return item.selectedWeight.price;
+  }
+  const defaultWeight = (item.product as any).weightOptions?.find((w: WeightOption) => w.isDefault);
+  return defaultWeight?.price || item.product.price || 0;
+};
+
+// Helper to get packaging fee
+const getItemPackagingFee = (item: CartItem): number => {
+  return item.selectedPackaging?.price || 0;
+};
+
 export function CheckoutContent() {
   const { user, isLoaded } = useUser();
   const searchParams = useSearchParams();
@@ -80,47 +96,63 @@ export function CheckoutContent() {
     isActive: boolean;
   } | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [packagingPrice, setPackagingPrice] = useState(0);
+  const [selectionsData, setSelectionsData] = useState<Array<{
+    productId: string;
+    weight: WeightOption | null;
+    grind: GrindOption | null;
+    packaging: PackagingOption | null;
+  }>>([]);
 
-  // Fetch packaging price from URL params - SINGLE EFFECT
+  // Parse selections from URL params
   useEffect(() => {
-    const priceParam = searchParams.get("packagingPrice");
-    console.log("📍 CheckoutContent - Raw packagingPrice param:", priceParam);
-    console.log("📍 CheckoutContent - All search params:", Object.fromEntries(searchParams.entries()));
-    console.log("📍 CheckoutContent - Full URL:", window.location.href);
+    const selectionsParam = searchParams.get("selections");
+    console.log("📍 CheckoutContent - Raw selections param:", selectionsParam);
     
-    if (priceParam) {
-      const price = parseFloat(priceParam);
-      if (!isNaN(price) && price > 0) {
-        console.log("📍 CheckoutContent - Setting packagingPrice to:", price);
-        setPackagingPrice(price);
-      } else {
-        console.log("📍 CheckoutContent - Invalid packagingPrice value:", priceParam);
+    if (selectionsParam) {
+      try {
+        const decodedSelections = JSON.parse(decodeURIComponent(selectionsParam));
+        console.log("📍 CheckoutContent - Parsed selections:", decodedSelections);
+        setSelectionsData(decodedSelections);
+      } catch (error) {
+        console.error("Error parsing selections from URL:", error);
       }
-    } else {
-      console.log("📍 CheckoutContent - No packagingPrice param found in URL");
     }
   }, [searchParams]);
 
-  // New pricing structure
-  const grossSubtotal = getSubTotalPrice();
+  // Calculate pricing with weight and packaging
+  const grossSubtotal = cart.reduce((sum, item) => {
+    const itemPrice = getItemCurrentPrice(item);
+    return sum + itemPrice * item.quantity;
+  }, 0);
+  
   const totalDiscount = getTotalDiscount();
   const currentSubtotal = grossSubtotal - totalDiscount;
+
+  // Calculate total packaging fee
+  const totalPackagingFee = cart.reduce((sum, item) => {
+    // First try from URL selections, then from cart item
+    const urlPackaging = selectionsData.find(s => s.productId === item.product._id)?.packaging;
+    const packagingPrice = urlPackaging?.price || item.selectedPackaging?.price || 0;
+    return sum + packagingPrice * item.quantity;
+  }, 0);
 
   // Business account discount (2% additional discount)
   const businessDiscount = userProfile?.isBusiness ? currentSubtotal * 0.02 : 0;
   const subtotalAfterBusinessDiscount = currentSubtotal - businessDiscount;
 
   // Add packaging price
-  const subtotalWithPackaging = subtotalAfterBusinessDiscount + packagingPrice;
+  const subtotalWithPackaging = subtotalAfterBusinessDiscount + totalPackagingFee;
 
   const shipping = subtotalWithPackaging > 100 ? 0 : 10;
   const tax = subtotalWithPackaging * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
   const total = subtotalWithPackaging + shipping + tax;
 
   console.log("📍 CheckoutContent - Calculations:", {
-    packagingPrice,
+    grossSubtotal,
+    totalDiscount,
     currentSubtotal,
+    totalPackagingFee,
+    businessDiscount,
     subtotalWithPackaging,
     shipping,
     tax,
@@ -262,15 +294,24 @@ export function CheckoutContent() {
       paymentMethodToUse = PAYMENT_METHODS.STRIPE;
     }
 
+    // Prepare selections data with current selections
+    const currentSelectionsData = cart.map(item => ({
+      productId: item.product._id,
+      weight: item.selectedWeight || null,
+      grind: item.selectedGrind || null,
+      packaging: item.selectedPackaging || selectionsData.find(s => s.productId === item.product._id)?.packaging || null,
+    }));
+
     const result = await placeOrder(
       selectedAddress,
       paymentMethodToUse,
-      subtotalWithPackaging,
-      shipping,
-      tax,
-      total,
-      false,
-      undefined
+      currentSubtotal,           // subtotal (without packaging)
+      totalPackagingFee,         // packagingFee
+      shipping,                  // shipping
+      tax,                       // tax
+      total,                     // total
+      false,                     // redirectToCheckout
+      currentSelectionsData      // selectionsData
     );
 
     if (result?.success && result.redirectTo) {
@@ -455,42 +496,69 @@ export function CheckoutContent() {
             <CardTitle>Order Items ({cart.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {cart.map((item: CartItem) => (
-              <div
-                key={item.product._id}
-                className="flex gap-3 p-3 border rounded-lg"
-              >
-                <div className="w-16 h-16 shrink-0">
-                  <Image
-                    src={
-                      item.product.images?.[0]
-                        ? urlFor(item.product.images[0]).url()
-                        : "/placeholder.jpg"
-                    }
-                    alt={item.product.name || "Product"}
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-cover rounded"
-                  />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-medium">{item.product.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Qty: {item.quantity}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium">
-                    <PriceFormatter
-                      amount={(item.product.price || 0) * item.quantity}
+            {cart.map((item: CartItem) => {
+              const itemPrice = getItemCurrentPrice(item);
+              const urlPackaging = selectionsData.find(s => s.productId === item.product._id)?.packaging;
+              const packagingPrice = urlPackaging?.price || item.selectedPackaging?.price || 0;
+              const totalItemPrice = (itemPrice + packagingPrice) * item.quantity;
+              
+              return (
+                <div
+                  key={item.product._id}
+                  className="flex gap-3 p-3 border rounded-lg"
+                >
+                  <div className="w-16 h-16 shrink-0">
+                    <Image
+                      src={
+                        item.product.images?.[0]
+                          ? urlFor(item.product.images[0]).url()
+                          : "/placeholder.jpg"
+                      }
+                      alt={item.product.name || "Product"}
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover rounded"
                     />
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    <PriceFormatter amount={item.product.price || 0} /> each
-                  </p>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-medium">{item.product.name}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Qty: {item.quantity}
+                    </p>
+                    {/* Display selected options */}
+                    <div className="mt-1 text-xs text-gray-500 space-x-2">
+                      {item.selectedWeight && (
+                        <span className="inline-flex items-center gap-1">
+                          <Scale className="w-3 h-3" />
+                          {item.selectedWeight.weight}
+                        </span>
+                      )}
+                      {item.selectedGrind && (
+                        <span className="inline-flex items-center gap-1">
+                          <Coffee className="w-3 h-3" />
+                          {item.selectedGrind.grindType.replace('-', ' ').toUpperCase()}
+                        </span>
+                      )}
+                      {(urlPackaging || item.selectedPackaging) && (
+                        <span className="inline-flex items-center gap-1">
+                          <Box className="w-3 h-3" />
+                          {urlPackaging?.title || item.selectedPackaging?.title}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">
+                      <PriceFormatter amount={totalItemPrice} />
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      <PriceFormatter amount={itemPrice} /> each
+                      {packagingPrice > 0 && ` + $${packagingPrice} packaging`}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </CardContent>
         </Card>
       </div>
@@ -524,13 +592,13 @@ export function CheckoutContent() {
             )}
             
             {/* Packaging Price Display */}
-            {packagingPrice > 0 && (
+            {totalPackagingFee > 0 && (
               <div className="flex justify-between pt-2 border-t">
                 <div className="flex items-center gap-2">
                   <Box className="w-4 h-4 text-muted-foreground" />
                   <span>Packaging</span>
                 </div>
-                <PriceFormatter amount={packagingPrice} />
+                <PriceFormatter amount={totalPackagingFee} />
               </div>
             )}
             
@@ -570,6 +638,7 @@ export function CheckoutContent() {
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5" />
                 Pay Now
+                {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}
           </Button>
@@ -590,6 +659,7 @@ export function CheckoutContent() {
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
                 Place Order (Pay Later)
+                {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}
           </Button>
