@@ -1,3 +1,5 @@
+"use client";
+
 import Container from "./Container";
 import Title from "./Title";
 import Link from "next/link";
@@ -8,7 +10,6 @@ import {
   Headphones,
   ShieldCheck,
   ArrowRight,
-  Star,
 } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { urlFor } from "@/sanity/lib/image";
@@ -59,11 +60,11 @@ const ShopByBrands = ({
       {/* Header Section */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-3 mb-4">
-          <div className="h-1 w-12 bg-linear-to-r from-shop_orange to-shop_light_orange rounded-full"></div>
+          <div className="h-1 w-12 bg-gradient-to-r from-shop_orange to-shop_light_orange rounded-full"></div>
           <Title className="text-3xl lg:text-4xl font-bold text-dark-color">
             {dictionary?.title || "Shop by Roasters"}
           </Title>
-          <div className="h-1 w-12 bg-linear-to-l from-shop_orange to-shop_light_orange rounded-full"></div>
+          <div className="h-1 w-12 bg-gradient-to-l from-shop_orange to-shop_light_orange rounded-full"></div>
         </div>
         <p className="text-light-color text-lg max-w-2xl mx-auto">
           {dictionary?.description ||
@@ -79,7 +80,7 @@ const ShopByBrands = ({
       </div>
 
       {/* Brands Grid */}
-      <div className="bg-linear-to-br from-shop_light_bg via-white to-shop_light_pink p-8 lg:p-12 rounded-3xl shadow-xl border border-shop_light_green/20 mb-16">
+      <div className="bg-gradient-to-br from-shop_light_bg via-white to-shop_light_pink p-8 lg:p-12 rounded-3xl shadow-xl border border-shop_light_green/20 mb-16">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-6">
           {brands.map((brand, index) => (
             <Link
@@ -101,7 +102,7 @@ const ShopByBrands = ({
                     className="max-w-full max-h-full object-contain group-hover:scale-110 hoverEffect filter group-hover:brightness-110"
                   />
                 )}
-                <div className="absolute inset-0 bg-linear-to-t from-shop_orange/5 to-transparent opacity-0 group-hover:opacity-100 hoverEffect rounded-xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-shop_orange/5 to-transparent opacity-0 group-hover:opacity-100 hoverEffect rounded-xl"></div>
               </div>
             </Link>
           ))}
@@ -150,7 +151,7 @@ const ShopByBrands = ({
           </div>
 
           <div className="relative group">
-            <div className="absolute -inset-4 bg-linear-to-r from-shop_light_pink to-shop_light_orange/20 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 hoverEffect"></div>
+            <div className="absolute -inset-4 bg-gradient-to-r from-shop_light_pink to-shop_light_orange/20 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 hoverEffect"></div>
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border-8 border-white">
               <Image
                 src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1600&auto=format&fit=crop"
@@ -158,7 +159,7 @@ const ShopByBrands = ({
                 fill
                 className="object-cover group-hover:scale-105 hoverEffect"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-dark-color/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-dark-color/40 to-transparent"></div>
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="flex items-center gap-4 text-white">
                   <div className="h-12 w-12 rounded-full border-2 border-white/50 flex items-center justify-center backdrop-blur-md">

@@ -210,11 +210,11 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
     <Container className="my-16 lg:my-24">
       <div className="mb-12 text-center">
         <div className="mb-4 inline-flex items-center gap-3">
-          <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_dark_green/70 to-shop_dark_green"></div>
+          <div className="h-1 w-12 rounded-full bg-gradient-to-r from-shop_dark_green/70 to-shop_dark_green"></div>
           <h2 className="text-3xl font-bold uppercase tracking-tight text-dark-color lg:text-4xl">
             {dictionary?.title || "Why choose Sheba Cup Coffee"}
           </h2>
-          <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_dark_green/70 to-shop_dark_green"></div>
+          <div className="h-1 w-12 rounded-full bg-gradient-to-l from-shop_dark_green/70 to-shop_dark_green"></div>
         </div>
         <p className="mx-auto max-w-2xl text-lg leading-relaxed text-light-color">
           {dictionary?.description ||
@@ -235,13 +235,9 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <div className="mb-5 flex justify-center">
-                  <div
-                    className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E4C290]/15 group-hover:shadow-lg hoverEffect"
-                  >
-                    <IconComponent
-                      className="h-8 w-8 text-[#E4C290] group-hover:scale-110 hoverEffect"
-                    />
-                    <div className="absolute inset-0 rounded-2xl bg-linear-to-t from-[#E4C290]/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                  <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E4C290]/15 group-hover:shadow-lg hoverEffect">
+                    <IconComponent className="h-8 w-8 text-[#E4C290] group-hover:scale-110 hoverEffect" />
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-[#E4C290]/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
                   </div>
                 </div>
 
@@ -271,33 +267,25 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         <div className="mt-12 border-t border-[#E4C290]/25 pt-8">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
-                50K+
-              </div>
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">50K+</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.happyCustomers || "Happy coffee drinkers"}
               </p>
             </div>
             <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
-                100K+
-              </div>
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">100K+</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.productsSold || "Bags shipped"}
               </p>
             </div>
             <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
-                99%
-              </div>
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">99%</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.satisfactionRate || "Would recommend us"}
               </p>
             </div>
             <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">
-                24/7
-              </div>
+              <div className="mb-2 text-4xl font-bold text-[#E4C290]">24/7</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.customerSupport || "Order & brew support"}
               </p>
@@ -318,7 +306,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
                   key={star}
                   className="h-5 w-5 fill-current text-[#E4C290]"
                   viewBox="0 0 20 20"
-                  aria-hidden
+                  aria-hidden="true"
                 >
                   <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                 </svg>

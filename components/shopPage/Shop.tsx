@@ -34,15 +34,32 @@ const Shop = ({ categories, dictionary }: Props) => {
         minPrice = min;
         maxPrice = max;
       }
+
+      // Updated query to include weightOptions, grindOptions, and resolved packagingOptions
       const query = `
-      *[_type == 'product' 
-        && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
-        && price >= $minPrice && price <= $maxPrice
-      ] 
-      | order(name asc) {
-        ...,"categories": categories[]->title
-      }
-    `;
+        *[_type == 'product' 
+          && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
+          && price >= $minPrice && price <= $maxPrice
+        ] 
+        | order(name asc) {
+          ...,
+          "categories": categories[]->title,
+          weightOptions[],
+          grindOptions[],
+          packagingOptions[] {
+            ...,
+            packaging-> {
+              _id,
+              title,
+              slug,
+              description,
+              price,
+              default,
+              "imageUrl": image.asset->url
+            }
+          }
+        }
+      `;
 
       const data = await client.fetch(
         query,
@@ -53,16 +70,23 @@ const Shop = ({ categories, dictionary }: Props) => {
         },
         { next: { revalidate: 0 } },
       );
-      setProducts(data);
+      
+      console.log("✅ Shop fetched products:", data?.length || 0);
+      if (data && data.length > 0) {
+        console.log("📦 Sample product packaging:", data[0].packagingOptions);
+      }
+      
+      setProducts(data || []);
     } catch (error) {
       console.log("Shop product fetching Error", error);
     } finally {
       setLoading(false);
     }
   }, [selectedCategory, selectedPrice]);
+
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, selectedPrice]);
+  }, [fetchProducts, selectedCategory, selectedPrice]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -72,14 +96,13 @@ const Shop = ({ categories, dictionary }: Props) => {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
               <Title className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                {dictionary.shop.title}
+                {dictionary?.shop?.title || "Shop"}
               </Title>
               <p className="text-gray-600 text-sm">
-                {dictionary.shop.description}
+                {dictionary?.shop?.description || "Browse our collection of premium coffee"}
               </p>
             </div>
-            {(selectedCategory !== null ||
-              selectedPrice !== null) && (
+            {(selectedCategory !== null || selectedPrice !== null) && (
               <button
                 onClick={() => {
                   setSelectedCategory(null);
@@ -87,7 +110,7 @@ const Shop = ({ categories, dictionary }: Props) => {
                 }}
                 className="inline-flex items-center px-4 py-2 bg-red-50 text-red-700 border border-red-200 rounded-md hover:bg-red-100 transition-colors duration-200 text-sm font-medium"
               >
-                {dictionary.shop.clearFilters}
+                {dictionary?.shop?.clearFilters || "Clear Filters"}
               </button>
             )}
           </div>
@@ -97,11 +120,11 @@ const Shop = ({ categories, dictionary }: Props) => {
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex flex-wrap gap-2">
                 <span className="text-sm font-medium text-gray-700 mr-2">
-                  {dictionary.shop.activeFilters}
+                  {dictionary?.shop?.activeFilters || "Active Filters:"}
                 </span>
                 {selectedCategory && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {dictionary.shop.category}{" "}
+                    {dictionary?.shop?.category || "Category"}:{" "}
                     {
                       categories?.find(
                         (cat) => cat?.slug?.current === selectedCategory,
@@ -111,7 +134,7 @@ const Shop = ({ categories, dictionary }: Props) => {
                 )}
                 {selectedPrice && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                    {dictionary.shop.price} $
+                    {dictionary?.shop?.price || "Price"}: $
                     {selectedPrice.replace("-", " - $")}
                   </span>
                 )}
@@ -128,19 +151,16 @@ const Shop = ({ categories, dictionary }: Props) => {
           >
             <Filter className="w-4 h-4 mr-2" />
             {showMobileFilters
-              ? dictionary.shop.hideFilters
-              : dictionary.shop.showFilters}
+              ? (dictionary?.shop?.hideFilters || "Hide Filters")
+              : (dictionary?.shop?.showFilters || "Show Filters")}
             {(selectedCategory || selectedPrice) && (
               <span className="ml-2 bg-shop_dark_green text-white text-xs px-2 py-1 rounded-full">
-                {
-                  [selectedCategory, selectedPrice].filter(Boolean).length
-                }
+                {[selectedCategory, selectedPrice].filter(Boolean).length}
               </span>
             )}
           </button>
         </div>
 
-        {/* <div className="flex flex-col lg:flex-row gap-6" /> */}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Mobile Filter Overlay */}
           {showMobileFilters && (
@@ -152,7 +172,7 @@ const Shop = ({ categories, dictionary }: Props) => {
               <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-xl shadow-xl max-h-[80vh] overflow-y-auto">
                 <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {dictionary.shop.filters}
+                    {dictionary?.shop?.filters || "Filters"}
                   </h3>
                   <button
                     onClick={() => setShowMobileFilters(false)}
@@ -177,7 +197,7 @@ const Shop = ({ categories, dictionary }: Props) => {
                     onClick={() => setShowMobileFilters(false)}
                     className="w-full bg-shop_dark_green text-white py-3 px-4 rounded-lg font-medium hover:bg-shop_dark_green/90 transition-colors duration-200"
                   >
-                    {dictionary.shop.applyFilters}
+                    {dictionary?.shop?.applyFilters || "Apply Filters"}
                   </button>
                 </div>
               </div>
@@ -190,7 +210,7 @@ const Shop = ({ categories, dictionary }: Props) => {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {dictionary.shop.filters}
+                    {dictionary?.shop?.filters || "Filters"}
                   </h3>
                 </div>
                 <div className="divide-y divide-gray-100">
@@ -233,10 +253,10 @@ const Shop = ({ categories, dictionary }: Props) => {
                   <div>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 pb-4 border-b border-gray-100">
                       <h2 className="text-lg font-semibold text-gray-900 mb-2 sm:mb-0">
-                        {products.length} {dictionary.shop.productsFound}
+                        {products.length} {dictionary?.shop?.productsFound || "products found"}
                       </h2>
                       <div className="text-sm text-gray-600">
-                        {dictionary.shop.showingAll}
+                        {dictionary?.shop?.showingAll || "Showing all products"}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
