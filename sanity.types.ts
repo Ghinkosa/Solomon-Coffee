@@ -597,28 +597,6 @@ export type Order = {
   }>;
 };
 
-// ============================================
-// WEIGHT OPTION TYPE - ADDED
-// ============================================
-export type WeightOption = {
-  weight: string; // "125G", "250G", "500G", "1KG"
-  price: number;
-  isDefault: boolean;
-  stock: number;
-};
-
-// ============================================
-// GRIND OPTION TYPE - ADDED
-// ============================================
-export type GrindOption = {
-  grindType: string; // "whole-bean", "cafetiere", "filter", "espresso"
-  isDefault: boolean;
-  available: boolean;
-};
-
-// ============================================
-// PRODUCT TYPE - UPDATED with weightOptions and grindOptions
-// ============================================
 export type Product = {
   _id: string;
   _type: "product";
@@ -658,9 +636,7 @@ export type Product = {
     [internalGroqTypeReferenceTo]?: "brand";
   };
   status?: "new" | "hot" | "sale";
-  variant?: "Light Roast" | "Medium Roast" | "Dark Roast" | "Extra Dark";
-  weightOptions?: WeightOption[]; // ADDED - Weight selection options
-  grindOptions?: GrindOption[]; // ADDED - Grind selection options
+  variant?: "light-roast" | "medium-roast" | "dark-roast" | "extra-dark";
   isFeatured?: boolean;
   averageRating?: number;
   totalReviews?: number;
@@ -964,9 +940,7 @@ export type QueryResult = Array<{
         [internalGroqTypeReferenceTo]?: "brand";
       };
       status?: "hot" | "new" | "sale";
-      variant?: "Dark Roast" | "Extra Dark" | "Light Roast" | "Medium Roast";
-      weightOptions?: WeightOption[];
-      grindOptions?: GrindOption[];
+      variant?: "dark-roast" | "extra-dark" | "light-roast" | "medium-roast";
       isFeatured?: boolean;
       averageRating?: number;
       totalReviews?: number;
@@ -1067,7 +1041,7 @@ export type QueryResult = Array<{
 
 // Source: sanity/helpers/index.ts
 // Variable: PRODUCT_BY_CATEGORY_QUERY
-// Query: *[_type == 'product' && references(*[_type == "category" && slug.current == $categorySlug]._id)] | order(name asc)
+// Query: *[_type == 'product' && references(*[_type == "category" && slug.current == $categorySlug]._id)] {      ...,      weightOptions[],      grindOptions[],      packagingOptions[] {        ...,        packaging->      }    } | order(name asc)
 export type PRODUCT_BY_CATEGORY_QUERY_RESULT = Array<{
   _id: string;
   _type: "product";
@@ -1107,9 +1081,7 @@ export type PRODUCT_BY_CATEGORY_QUERY_RESULT = Array<{
     [internalGroqTypeReferenceTo]?: "brand";
   };
   status?: "hot" | "new" | "sale";
-  variant?: "Dark Roast" | "Extra Dark" | "Light Roast" | "Medium Roast";
-  weightOptions?: WeightOption[];
-  grindOptions?: GrindOption[];
+  variant?: "dark-roast" | "extra-dark" | "light-roast" | "medium-roast";
   isFeatured?: boolean;
   averageRating?: number;
   totalReviews?: number;
@@ -1120,7 +1092,126 @@ export type PRODUCT_BY_CATEGORY_QUERY_RESULT = Array<{
     twoStars?: number;
     oneStar?: number;
   };
+  weightOptions: null;
+  grindOptions: null;
+  packagingOptions: null;
 }>;
+
+// Source: sanity/helpers/index.ts
+// Variable: ALL_PRODUCTS_QUERY
+// Query: *[_type == 'product'] {      ...,      weightOptions[],      grindOptions[],      packagingOptions[] {        ...,        packaging->      }    } | order(name asc)
+export type ALL_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  images?: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+  description?: string;
+  price?: number;
+  discount?: number;
+  categories?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "category";
+  }>;
+  stock?: number;
+  brand?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "brand";
+  };
+  status?: "hot" | "new" | "sale";
+  variant?: "dark-roast" | "extra-dark" | "light-roast" | "medium-roast";
+  isFeatured?: boolean;
+  averageRating?: number;
+  totalReviews?: number;
+  ratingDistribution?: {
+    fiveStars?: number;
+    fourStars?: number;
+    threeStars?: number;
+    twoStars?: number;
+    oneStar?: number;
+  };
+  weightOptions: null;
+  grindOptions: null;
+  packagingOptions: null;
+}>;
+
+// Source: sanity/helpers/index.ts
+// Variable: PRODUCT_BY_SLUG_QUERY
+// Query: *[_type == 'product' && slug.current == $slug][0] {      ...,      weightOptions[],      grindOptions[],      packagingOptions[] {        ...,        packaging->      }    }
+export type PRODUCT_BY_SLUG_QUERY_RESULT = {
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  images?: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+  description?: string;
+  price?: number;
+  discount?: number;
+  categories?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "category";
+  }>;
+  stock?: number;
+  brand?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "brand";
+  };
+  status?: "hot" | "new" | "sale";
+  variant?: "dark-roast" | "extra-dark" | "light-roast" | "medium-roast";
+  isFeatured?: boolean;
+  averageRating?: number;
+  totalReviews?: number;
+  ratingDistribution?: {
+    fiveStars?: number;
+    fourStars?: number;
+    threeStars?: number;
+    twoStars?: number;
+    oneStar?: number;
+  };
+  weightOptions: null;
+  grindOptions: null;
+  packagingOptions: null;
+} | null;
 
 // Source: sanity/helpers/index.ts
 // Variable: BANNER_QUERY
@@ -1158,7 +1249,7 @@ export type SALE_QUERY_RESULT = Array<never>;
 
 // Source: sanity/helpers/index.ts
 // Variable: MY_ORDERS_QUERY
-// Query: *[_type == 'order' && clerkUserId == $userId] | order(orderDate desc)[$start...$end]{    ...,    paymentStatus,    paymentMethod,    products[]{      ...,      product->{        _id,        name,        slug,        image,        images,        price,        currency      }    }  }
+// Query: *[_type == 'order' && clerkUserId == $userId] | order(orderDate desc)[$start...$end]{    ...,    paymentStatus,    paymentMethod,    products[]{      ...,      product->{        _id,        name,        slug,        image,        images,        price,        currency,        weightOptions[],        grindOptions[],        packagingOptions[] {          ...,          packaging->        }      }    }  }
 export type MY_ORDERS_QUERY_RESULT = Array<{
   _id: string;
   _type: "order";
@@ -1198,6 +1289,9 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
       }> | null;
       price: number | null;
       currency: null;
+      weightOptions: null;
+      grindOptions: null;
+      packagingOptions: null;
     } | null;
     quantity?: number;
     _key: string;
@@ -1296,10 +1390,12 @@ import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     "*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){\n  ...,products[]{\n    ...,product->\n  }\n}": QueryResult;
-    "*[_type == 'product' && references(*[_type == \"category\" && slug.current == $categorySlug]._id)] | order(name asc)": PRODUCT_BY_CATEGORY_QUERY_RESULT;
+    "*[_type == 'product' && references(*[_type == \"category\" && slug.current == $categorySlug]._id)] {\n      ...,\n      weightOptions[],\n      grindOptions[],\n      packagingOptions[] {\n        ...,\n        packaging->\n      }\n    } | order(name asc)": PRODUCT_BY_CATEGORY_QUERY_RESULT;
+    "*[_type == 'product'] {\n      ...,\n      weightOptions[],\n      grindOptions[],\n      packagingOptions[] {\n        ...,\n        packaging->\n      }\n    } | order(name asc)": ALL_PRODUCTS_QUERY_RESULT;
+    "*[_type == 'product' && slug.current == $slug][0] {\n      ...,\n      weightOptions[],\n      grindOptions[],\n      packagingOptions[] {\n        ...,\n        packaging->\n      }\n    }": PRODUCT_BY_SLUG_QUERY_RESULT;
     "*[_type == 'banner'] | order(weight asc, title asc){\n      ...,\n      backgroundVideo{\n        asset->{\n          url\n        }\n      },\n      \"backgroundVideoUrl\": backgroundVideo.asset->url\n    }": BANNER_QUERY_RESULT;
     "*[_type == 'sale'] | order(name asc)": SALE_QUERY_RESULT;
-    "*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc)[$start...$end]{\n    ...,\n    paymentStatus,\n    paymentMethod,\n    products[]{\n      ...,\n      product->{\n        _id,\n        name,\n        slug,\n        image,\n        images,\n        price,\n        currency\n      }\n    }\n  }": MY_ORDERS_QUERY_RESULT;
+    "*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc)[$start...$end]{\n    ...,\n    paymentStatus,\n    paymentMethod,\n    products[]{\n      ...,\n      product->{\n        _id,\n        name,\n        slug,\n        image,\n        images,\n        price,\n        currency,\n        weightOptions[],\n        grindOptions[],\n        packagingOptions[] {\n          ...,\n          packaging->\n        }\n      }\n    }\n  }": MY_ORDERS_QUERY_RESULT;
     "count(*[_type == 'order' && clerkUserId == $userId])": COUNT_QUERY_RESULT;
   }
 }

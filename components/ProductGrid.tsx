@@ -67,7 +67,7 @@ const ProductGrid = ({
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Updated query to include weightOptions, grindOptions, and packagingOptions
+        // Updated query to include weightOptions, grindOptions, and resolved packagingOptions
         const query = selectedTab
           ? `*[_type == "product" && variant == $variant] | order(${getSortQuery(sortBy)}) {
               ...,
@@ -76,7 +76,15 @@ const ProductGrid = ({
               grindOptions[],
               packagingOptions[] {
                 ...,
-                packaging->
+                packaging-> {
+                  _id,
+                  title,
+                  slug,
+                  description,
+                  price,
+                  default,
+                  "imageUrl": image.asset->url
+                }
               }
             }`
           : `*[_type == "product"] | order(${getSortQuery(sortBy)}) {
@@ -86,9 +94,18 @@ const ProductGrid = ({
               grindOptions[],
               packagingOptions[] {
                 ...,
-                packaging->
+                packaging-> {
+                  _id,
+                  title,
+                  slug,
+                  description,
+                  price,
+                  default,
+                  "imageUrl": image.asset->url
+                }
               }
             }`;
+        
         const data = selectedTab
           ? await client.fetch(query, { variant: selectedTab })
           : await client.fetch(query);
@@ -99,8 +116,17 @@ const ProductGrid = ({
         setProducts(fetchedProducts);
         setFilteredProducts(fetchedProducts);
         
-        console.log(`Fetched ${fetchedProducts.length} items for ${selectedTab || 'all'}`);
-        console.log("Sample product with packaging:", fetchedProducts[0]?.packagingOptions);
+        console.log(`Fetched ${fetchedProducts.length} items for ${selectedTab || 'all products'}`);
+        
+        // Log sample product to verify packaging data
+        if (fetchedProducts.length > 0) {
+          console.log("Sample product with packaging:", {
+            name: fetchedProducts[0].name,
+            weightOptions: fetchedProducts[0].weightOptions,
+            grindOptions: fetchedProducts[0].grindOptions,
+            packagingOptions: fetchedProducts[0].packagingOptions,
+          });
+        }
       } catch (error) {
         console.error("Sanity Fetch Error:", error);
       } finally {
@@ -254,37 +280,38 @@ const ProductGrid = ({
       ) : filteredProducts?.length > 0 ? (
         <div ref={gridWrapperRef} className="relative overflow-x-hidden">
           <div className={`grid ${gridClasses}`}>
-          <AnimatePresence mode="popLayout">
-            {visibleProducts.map((product, index) => (
-              <motion.div
-                key={product._id}
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                ref={(node) => {
-                  cardRefs.current[product._id] = node;
-                }}
-              >
-                <ProductCard
-                  product={product}
-                  mode="home"
-                  isExpanded={expandedCardId === product._id}
-                  onImageTap={() => handleImageTap(product, index)}
-                  onHoverStart={() => {
-                    if (window.innerWidth < 768) return;
-                    clearClosePanelTimeout();
-                    openDetailsPanel(product, index);
+            <AnimatePresence mode="popLayout">
+              {visibleProducts.map((product, index) => (
+                <motion.div
+                  key={product._id}
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  ref={(node) => {
+                    cardRefs.current[product._id] = node;
                   }}
-                  onHoverEnd={() => {
-                    if (window.innerWidth < 768) return;
-                    schedulePanelClose();
-                  }}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+                >
+                  <ProductCard
+                    product={product}
+                    mode="home"
+                    isExpanded={expandedCardId === product._id}
+                    onImageTap={() => handleImageTap(product, index)}
+                    onHoverStart={() => {
+                      if (window.innerWidth < 768) return;
+                      clearClosePanelTimeout();
+                      openDetailsPanel(product, index);
+                    }}
+                    onHoverEnd={() => {
+                      if (window.innerWidth < 768) return;
+                      schedulePanelClose();
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+          
           <AnimatePresence>
             {expandedProduct && detailPanelPosition && (
               <motion.div
@@ -360,6 +387,7 @@ const ProductGrid = ({
       ) : (
         <NoProductAvailable selectedTab={selectedTab || undefined} />
       )}
+      
       <div className="mt-8 pb-6 flex justify-center">
         <Link
           href={`/${lang}/shop`}

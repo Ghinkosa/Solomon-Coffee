@@ -75,42 +75,25 @@ const getGrindOptions = (product: any): GrindOption[] => {
 };
 
 const getPackagingOptions = (product: any): PackagingOption[] => {
-  console.log("Raw product packagingOptions:", product.packagingOptions);
-  
-  // Check if product has packagingOptions
   if (!product.packagingOptions || !Array.isArray(product.packagingOptions)) {
-    console.log("No packagingOptions found");
     return [];
   }
   
-  // Extract packaging data from references
-  const packagingList = product.packagingOptions
-    .filter((ref: any) => {
-      // Check if packaging reference exists and is available
-      if (!ref.packaging) {
-        console.log("Missing packaging reference:", ref);
-        return false;
-      }
-      return ref.available !== false;
-    })
+  return product.packagingOptions
+    .filter((ref: any) => ref.available !== false && ref.packaging)
     .map((ref: any) => {
-      const packaging = ref.packaging;
-      console.log("Processing packaging:", packaging);
-      
+      const pkg = ref.packaging;
       return {
-        _id: packaging._id,
-        title: packaging.title,
-        slug: packaging.slug || { current: "" },
-        description: packaging.description,
-        price: packaging.price || 0,
-        default: ref.isDefault || packaging.default || false,
-        image: packaging.image,
-        imageUrl: packaging.image?.asset?.url || (packaging as any).imageUrl,
+        _id: pkg._id,
+        title: pkg.title,
+        slug: pkg.slug || { current: "" },
+        description: pkg.description,
+        price: pkg.price || 0,
+        default: ref.isDefault || pkg.default || false,
+        image: pkg.image,
+        imageUrl: pkg.imageUrl || pkg.image?.asset?.url,
       } as PackagingOption;
     });
-  
-  console.log("Processed packaging options:", packagingList);
-  return packagingList;
 };
 
 export function ServerCartContent({
@@ -179,15 +162,6 @@ export function ServerCartContent({
   const shipping = currentSubtotal > 100 ? 0 : 10;
   const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
   const finalTotal = currentSubtotal + shipping + tax;
-
-  // Debug log to see what's in the cart
-  useEffect(() => {
-    console.log("Cart items with packaging:", cart.map(item => ({
-      name: item.product.name,
-      packagingOptions: item.product.packagingOptions,
-      selectedPackaging: item.selectedPackaging
-    })));
-  }, [cart]);
 
   if (!cart || cart.length === 0) {
     return <EmptyCart />;

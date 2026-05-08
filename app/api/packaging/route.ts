@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { backendClient } from "@/sanity/lib/backendClient";
 
-/**
- * GET: Fetches all available packaging options from Sanity
- */
 export async function GET() {
   try {
-    // GROQ query to fetch packaging details
     const query = `*[_type == "packaging"] | order(price asc) {
       _id,
       title,
@@ -16,9 +12,8 @@ export async function GET() {
       default,
       "imageUrl": image.asset->url
     }`;
-
-    const packagings = await backendClient.fetch(query);
     
+    const packagings = await backendClient.fetch(query);
     return NextResponse.json(packagings);
   } catch (error) {
     console.error("Error fetching packaging:", error);

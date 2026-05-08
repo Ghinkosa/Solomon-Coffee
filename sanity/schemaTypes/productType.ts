@@ -283,7 +283,6 @@ export const productType = defineType({
       name: "coffeeDetails",
       title: "Coffee Details",
       type: "object",
-      description: "Specialty coffee attributes shown on product pages.",
       fields: [
         defineField({
           name: "originCountry",
@@ -332,16 +331,6 @@ export const productType = defineType({
           title: "Recommended Brew Methods",
           type: "array",
           of: [{ type: "string" }],
-          options: {
-            list: [
-              { title: "Espresso", value: "espresso" },
-              { title: "Pour Over", value: "pour-over" },
-              { title: "French Press", value: "french-press" },
-              { title: "Aeropress", value: "aeropress" },
-              { title: "Cold Brew", value: "cold-brew" },
-              { title: "Moka Pot", value: "moka-pot" },
-            ],
-          },
         }),
         defineField({
           name: "grindRecommendation",
@@ -361,7 +350,6 @@ export const productType = defineType({
           name: "brewRatio",
           title: "Suggested Brew Ratio",
           type: "string",
-          description: "Example: 1:16 (coffee:water)",
         }),
         defineField({
           name: "roastDate",
@@ -424,7 +412,6 @@ export const productType = defineType({
       name: "isFeatured",
       title: "Featured Product",
       type: "boolean",
-      description: "Toggle to Featured on or off",
       initialValue: false,
     }),
     defineField({
@@ -432,7 +419,6 @@ export const productType = defineType({
       title: "Average Rating",
       type: "number",
       readOnly: true,
-      description: "Calculated average rating from approved reviews",
       validation: (Rule) => Rule.min(0).max(5),
     }),
     defineField({
@@ -441,45 +427,18 @@ export const productType = defineType({
       type: "number",
       readOnly: true,
       initialValue: 0,
-      description: "Total number of approved reviews",
     }),
     defineField({
       name: "ratingDistribution",
       title: "Rating Distribution",
       type: "object",
       readOnly: true,
-      description: "Distribution of ratings (1-5 stars)",
       fields: [
-        defineField({
-          name: "fiveStars",
-          title: "5 Stars",
-          type: "number",
-          initialValue: 0,
-        }),
-        defineField({
-          name: "fourStars",
-          title: "4 Stars",
-          type: "number",
-          initialValue: 0,
-        }),
-        defineField({
-          name: "threeStars",
-          title: "3 Stars",
-          type: "number",
-          initialValue: 0,
-        }),
-        defineField({
-          name: "twoStars",
-          title: "2 Stars",
-          type: "number",
-          initialValue: 0,
-        }),
-        defineField({
-          name: "oneStar",
-          title: "1 Star",
-          type: "number",
-          initialValue: 0,
-        }),
+        defineField({ name: "fiveStars", title: "5 Stars", type: "number", initialValue: 0 }),
+        defineField({ name: "fourStars", title: "4 Stars", type: "number", initialValue: 0 }),
+        defineField({ name: "threeStars", title: "3 Stars", type: "number", initialValue: 0 }),
+        defineField({ name: "twoStars", title: "2 Stars", type: "number", initialValue: 0 }),
+        defineField({ name: "oneStar", title: "1 Star", type: "number", initialValue: 0 }),
       ],
     }),
   ],
@@ -494,13 +453,11 @@ export const productType = defineType({
     prepare(selection) {
       const { title, price, stock, media, weightOptions } = selection;
       const image = media && media[0];
-
       const defaultWeight = weightOptions?.find((opt: any) => opt.isDefault);
       const displayPrice = defaultWeight ? defaultWeight.price : price;
 
       let stockStatus = "";
       let stockColor = "";
-
       if (stock === 0 || stock === null || stock === undefined) {
         stockStatus = "OUT OF STOCK";
         stockColor = "🔴";

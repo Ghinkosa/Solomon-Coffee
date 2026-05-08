@@ -1,4 +1,3 @@
-// sanity/schemaTypes/packaging.ts
 import { defineType, defineField } from "sanity";
 import { PackageIcon } from "@sanity/icons";
 

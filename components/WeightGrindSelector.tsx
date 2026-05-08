@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Coffee, Scale, Package } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
