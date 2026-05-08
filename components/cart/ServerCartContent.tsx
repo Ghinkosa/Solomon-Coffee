@@ -75,9 +75,23 @@ const getGrindOptions = (product: any): GrindOption[] => {
 };
 
 const getPackagingOptions = (product: any): PackagingOption[] => {
-  // If product has packaging references, transform them
+  // Check if product has packagingOptions with references
   if (product.packagingOptions && product.packagingOptions.length > 0) {
-    return product.packagingOptions.map((ref: any) => ref.packaging).filter(Boolean);
+    return product.packagingOptions
+      .map((ref: any) => {
+        // The packaging reference could be in different formats
+        if (ref.packaging) {
+          // If it's a reference object with packaging property
+          return ref.packaging;
+        } else if (ref._ref) {
+          // If it's just a reference with _ref, we need to fetch it
+          // But for now, return null
+          console.warn("Packaging reference needs resolving:", ref);
+          return null;
+        }
+        return null;
+      })
+      .filter(Boolean);
   }
   return [];
 };
@@ -149,6 +163,14 @@ export function ServerCartContent({
   const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
   const finalTotal = currentSubtotal + shipping + tax;
 
+  // Debug: Log product data to see what's coming from Sanity
+  console.log("Cart product data:", cart.map(item => ({
+    name: item.product.name,
+    packagingOptions: item.product.packagingOptions,
+    weightOptions: item.product.weightOptions,
+    grindOptions: item.product.grindOptions
+  })));
+
   if (!cart || cart.length === 0) {
     return <EmptyCart />;
   }
@@ -161,6 +183,9 @@ export function ServerCartContent({
             const weightOptions = getWeightOptions(item.product);
             const grindOptions = getGrindOptions(item.product);
             const packagingOptions = getPackagingOptions(item.product);
+            
+            // Debug each product's packaging options
+            console.log(`Packaging for ${item.product.name}:`, packagingOptions);
             
             return (
               <div 
