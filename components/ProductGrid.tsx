@@ -67,14 +67,27 @@ const ProductGrid = ({
     const fetchData = async () => {
       setLoading(true);
       try {
+        // Updated query to include weightOptions, grindOptions, and packagingOptions
         const query = selectedTab
-          ? `*[_type == "product" && variant == $variant] | order(${getSortQuery(sortBy)}){
+          ? `*[_type == "product" && variant == $variant] | order(${getSortQuery(sortBy)}) {
               ...,
-              "categories": categories[]->title
+              "categories": categories[]->title,
+              weightOptions[],
+              grindOptions[],
+              packagingOptions[] {
+                ...,
+                packaging->
+              }
             }`
-          : `*[_type == "product"] | order(${getSortQuery(sortBy)}){
+          : `*[_type == "product"] | order(${getSortQuery(sortBy)}) {
               ...,
-              "categories": categories[]->title
+              "categories": categories[]->title,
+              weightOptions[],
+              grindOptions[],
+              packagingOptions[] {
+                ...,
+                packaging->
+              }
             }`;
         const data = selectedTab
           ? await client.fetch(query, { variant: selectedTab })
@@ -86,7 +99,8 @@ const ProductGrid = ({
         setProducts(fetchedProducts);
         setFilteredProducts(fetchedProducts);
         
-        console.log(`Fetched ${fetchedProducts.length} items for ${selectedTab}`);
+        console.log(`Fetched ${fetchedProducts.length} items for ${selectedTab || 'all'}`);
+        console.log("Sample product with packaging:", fetchedProducts[0]?.packagingOptions);
       } catch (error) {
         console.error("Sanity Fetch Error:", error);
       } finally {
@@ -323,7 +337,9 @@ const ProductGrid = ({
                 <div className="mt-3 max-h-56 space-y-3 overflow-y-auto pr-1">
                   {expandedProduct?.categories && (
                     <p className="rounded-md bg-[#3a2417]/70 px-2 py-1 uppercase line-clamp-2 text-xs font-medium text-[#fdf6e8]">
-                      {expandedProduct.categories.map((cat) => cat).join(", ")}
+                      {Array.isArray(expandedProduct.categories) 
+                        ? expandedProduct.categories.map((cat) => cat).join(", ")
+                        : expandedProduct.categories}
                     </p>
                   )}
 

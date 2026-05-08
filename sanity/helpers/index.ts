@@ -4,7 +4,15 @@ import { writeClient } from "../lib/client";
 
 export const getProductsByCategory = async (categorySlug: string) => {
   const PRODUCT_BY_CATEGORY_QUERY = defineQuery(
-    `*[_type == 'product' && references(*[_type == "category" && slug.current == $categorySlug]._id)] | order(name asc)`,
+    `*[_type == 'product' && references(*[_type == "category" && slug.current == $categorySlug]._id)] {
+      ...,
+      weightOptions[],
+      grindOptions[],
+      packagingOptions[] {
+        ...,
+        packaging->
+      }
+    } | order(name asc)`,
   );
   try {
     const products = await sanityFetch({
@@ -17,6 +25,55 @@ export const getProductsByCategory = async (categorySlug: string) => {
   } catch (error) {
     console.error("Error fetching products by category:", error);
     return [];
+  }
+};
+
+// Add this new function to get all products
+export const getAllProducts = async () => {
+  const ALL_PRODUCTS_QUERY = defineQuery(
+    `*[_type == 'product'] {
+      ...,
+      weightOptions[],
+      grindOptions[],
+      packagingOptions[] {
+        ...,
+        packaging->
+      }
+    } | order(name asc)`,
+  );
+  try {
+    const products = await sanityFetch({
+      query: ALL_PRODUCTS_QUERY,
+    });
+    return products?.data || [];
+  } catch (error) {
+    console.error("Error fetching all products:", error);
+    return [];
+  }
+};
+
+// Add this new function to get a single product by slug
+export const getProductBySlug = async (slug: string) => {
+  const PRODUCT_BY_SLUG_QUERY = defineQuery(
+    `*[_type == 'product' && slug.current == $slug][0] {
+      ...,
+      weightOptions[],
+      grindOptions[],
+      packagingOptions[] {
+        ...,
+        packaging->
+      }
+    }`,
+  );
+  try {
+    const product = await sanityFetch({
+      query: PRODUCT_BY_SLUG_QUERY,
+      params: { slug },
+    });
+    return product?.data || null;
+  } catch (error) {
+    console.error("Error fetching product by slug:", error);
+    return null;
   }
 };
 
@@ -86,6 +143,7 @@ export const saveContactMessage = async (contactData: {
     return { success: false, error: "Failed to save contact message" };
   }
 };
+
 export const getMyOrders = async (
   userId: string,
   page: number = 1,
@@ -112,7 +170,13 @@ export const getMyOrders = async (
         image,
         images,
         price,
-        currency
+        currency,
+        weightOptions[],
+        grindOptions[],
+        packagingOptions[] {
+          ...,
+          packaging->
+        }
       }
     }
   }`);
