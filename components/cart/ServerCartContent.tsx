@@ -23,9 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { PackagingSelector } from "./PackagingSelector";
 import { WeightGrindSelector } from "../WeightGrindSelector";
-
 
 interface WeightOption {
   weight: string;
@@ -74,6 +72,14 @@ const getWeightOptions = (product: any): WeightOption[] => {
 
 const getGrindOptions = (product: any): GrindOption[] => {
   return product.grindOptions || [];
+};
+
+const getPackagingOptions = (product: any): PackagingOption[] => {
+  // If product has packaging references, transform them
+  if (product.packagingOptions && product.packagingOptions.length > 0) {
+    return product.packagingOptions.map((ref: any) => ref.packaging).filter(Boolean);
+  }
+  return [];
 };
 
 export function ServerCartContent({
@@ -154,6 +160,7 @@ export function ServerCartContent({
           {cart.map((item) => {
             const weightOptions = getWeightOptions(item.product);
             const grindOptions = getGrindOptions(item.product);
+            const packagingOptions = getPackagingOptions(item.product);
             
             return (
               <div 
@@ -205,25 +212,19 @@ export function ServerCartContent({
                       )}
                     </div>
 
-                    {/* Weight and Grind Selector */}
+                    {/* Combined Weight, Grind, and Packaging Selector */}
                     <div className="mt-4 pt-4 border-t border-dashed">
                       <WeightGrindSelector 
                         productId={item.product._id}
                         weightOptions={weightOptions}
                         grindOptions={grindOptions}
+                        packagingOptions={packagingOptions}
                         selectedWeight={item.selectedWeight}
                         selectedGrind={item.selectedGrind}
+                        selectedPackaging={item.selectedPackaging}
                         onWeightChange={(weight) => updateCartItemWeight(item.product._id, weight)}
                         onGrindChange={(grind) => updateCartItemGrind(item.product._id, grind)}
-                      />
-                    </div>
-                    {/* Packaging Selector */}
-                    <div className="mt-4 pt-4 border-t border-dashed">
-                      <PackagingSelector 
-                        selectedId={item.selectedPackaging?._id}
-                        onSelect={(pkg) => {  // Remove the type annotation here
-                          updateCartItemPackaging(item.product._id, pkg);
-                        }}
+                        onPackagingChange={(packaging) => updateCartItemPackaging(item.product._id, packaging)}
                       />
                     </div>
                   </div>
