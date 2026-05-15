@@ -11,7 +11,7 @@ import { Locale } from "@/i18n-config";
 import Script from "next/script";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Heart, HandHelping, Coffee, GraduationCap, Users, Leaf } from "lucide-react";
+import { ArrowRight, Heart, Coffee } from "lucide-react";
 import productMockup from "@/images/product-mockup.png";
 
 export default async function Home({
@@ -47,144 +47,54 @@ export default async function Home({
 
       <HomeBanner lang={lang} dictionary={dictionary} />
 
-      {/* Combined Mission & Vision Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
-        {/* Mission Part */}
-        <div className="grid md:grid-cols-2 gap-16 items-center mb-24 lg:mb-32">
-          <div className="space-y-8 order-2 md:order-1">
-            <div className="inline-block px-4 py-1 bg-amber-700 text-white text-xs uppercase tracking-widest rounded-full">
-              Behind the Coffee
-            </div>
-            <h2 className="text-4xl md:text-5xl font-serif leading-tight">
-              Our Mission: <br />
-              <span className="italic text-amber-700">Coffee with a Purpose</span>
-            </h2>
-            <p className="text-lg text-stone-800/70 leading-relaxed">
-              At Sheba Cup Coffee, our mission goes beyond coffee.
-            </p>
-            <p className="text-stone-800/70 leading-relaxed">
-              Every bag you buy supports lifesaving care. A portion of each sale goes to the{" "}
-              <Link href="#" className="text-amber-700 font-medium hover:underline">
-                Mathiwos Wondu Foundation Ethiopia
+      {/* Mission & Vision Combined Section - Small & Simple */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="bg-gradient-to-r from-amber-50 to-stone-100 rounded-3xl overflow-hidden shadow-xl">
+          <div className="grid md:grid-cols-2 gap-8 items-center p-8 lg:p-12">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Heart className="text-amber-600" size={24} />
+                <span className="text-xs uppercase tracking-wider text-amber-700 font-semibold">Our Mission</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900">
+                Coffee with a Purpose
+              </h2>
+              <p className="text-stone-700 leading-relaxed">
+                Every bag supports childhood cancer care through the{" "}
+                <span className="font-medium text-amber-700">Mathiwos Wondu Foundation Ethiopia</span>.
+              </p>
+              <div className="border-t border-amber-200 pt-4 mt-2">
+                <div className="flex items-center gap-2">
+                  <Coffee className="text-amber-600" size={24} />
+                  <span className="text-xs uppercase tracking-wider text-amber-700 font-semibold">Our Vision</span>
+                </div>
+                <p className="text-stone-700 leading-relaxed mt-2">
+                  30+ years of family farming. Direct partnerships with <span className="font-medium">Birbirsa</span> and{" "}
+                  <span className="font-medium">Shakicha Farms</span>. Supporting education for women and children.
+                </p>
+              </div>
+              <Link
+                href="/mission"
+                className="inline-flex items-center gap-2 bg-amber-700 text-white px-6 py-3 rounded-full font-medium hover:bg-amber-800 transition-all mt-4"
+              >
+                <span>Our Story</span>
+                <ArrowRight size={16} />
               </Link>
-              , an organization focused on childhood cancer care.
-            </p>
-            <p className="text-stone-800/70 leading-relaxed">
-              Your purchase helps provide screenings, treatment support, and care for families.
-            </p>
-            <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200">
-              <p className="text-amber-800 font-serif text-xl italic text-center">
-                "One bag of coffee helps fund lifesaving support."
-              </p>
             </div>
-            <p className="text-stone-800/70 leading-relaxed">
-              Sheba Cup Coffee stands for great coffee with a purpose.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <div className="flex items-center gap-2">
-                <Heart className="text-amber-600" size={20} />
-                <span className="text-sm text-stone-600">Childhood Cancer Care</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <HandHelping className="text-amber-600" size={20} />
-                <span className="text-sm text-stone-600">Treatment Support</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="text-amber-600" size={20} />
-                <span className="text-sm text-stone-600">Family Care</span>
-              </div>
-            </div>
-          </div>
-          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl order-1 md:order-2">
-            <Image
-              src={productMockup}
-              alt="Sheba Cup Coffee - Supporting childhood cancer care"
-              className="w-full h-full object-cover"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority={false}
-            />
-            <div className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur p-6 rounded-xl shadow-lg">
-              <p className="font-serif text-lg text-amber-800 text-center">
-                Every cup tells a story of hope
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Vision Part */}
-        <div className="bg-stone-900 rounded-3xl overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-16 items-center p-8 lg:p-12">
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg">
               <Image
                 src={productMockup}
-                alt="Ethiopian organic coffee farm - Birbirsa and Shakicha Coffee Farms"
+                alt="Sheba Cup Coffee"
                 className="w-full h-full object-cover"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-transparent to-transparent" />
-              <div className="absolute bottom-8 left-8 right-8">
-                <div className="flex gap-3 justify-center flex-wrap">
-                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">30+ Years</span>
-                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Birbirsa Farm</span>
-                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Shakicha Farm</span>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-8">
-              <div className="inline-block px-4 py-1 bg-amber-600 text-white text-xs uppercase tracking-widest rounded-full">
-                Behind the Name
-              </div>
-              <h2 className="text-4xl md:text-5xl font-serif leading-tight text-white">
-                Our Vision: <br />
-                <span className="italic text-amber-400">From Farm to Cup</span>
-              </h2>
-              <p className="text-lg text-stone-300 leading-relaxed">
-                Sheba Cup Coffee brings authentic organic Ethiopian specialty Arabica coffee from farm to cup across the world.
-              </p>
-              <p className="text-stone-300 leading-relaxed">
-                Our family holds more than 30 years of coffee farming experience. We work directly with{" "}
-                <span className="text-amber-400 font-medium">Birbirsa Coffee Farm</span> and{" "}
-                <span className="text-amber-400 font-medium">Shakicha Coffee Farm</span>. These partnerships support quality, 
-                sustainable farming, and Ethiopia's coffee heritage.
-              </p>
-              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-stone-700">
-                <div className="space-y-2">
-                  <Coffee className="text-amber-400" size={28} />
-                  <h3 className="font-serif text-xl text-white">Organic & Sustainable</h3>
-                  <p className="text-sm text-stone-400">
-                    Authentic Ethiopian specialty Arabica
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <GraduationCap className="text-amber-400" size={28} />
-                  <h3 className="font-serif text-xl text-white">Community Growth</h3>
-                  <p className="text-sm text-stone-400">
-                    Education & development programs
-                  </p>
-                </div>
-              </div>
-              <p className="text-stone-300 italic border-l-4 border-amber-400 pl-4">
-                Our goal reaches beyond coffee. Growth from our business supports education and development programs 
-                for women and children, helping build stronger communities for the next generation.
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <p className="absolute bottom-4 left-4 right-4 text-white text-sm text-center font-medium">
+                Great coffee with an even greater purpose
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Combined Call to Action */}
-        <div className="text-center mt-16 lg:mt-20">
-          <Link
-            href="/mission"
-            className="inline-flex items-center space-x-2 bg-amber-700 text-white px-8 py-4 rounded-full font-medium hover:bg-amber-800 transition-all text-lg"
-          >
-            <span>Learn More About Our Mission & Vision</span>
-            <ArrowRight size={18} />
-          </Link>
-          <p className="text-stone-500 text-sm mt-4">
-            Discover how every cup of Sheba Cup Coffee makes a difference
-          </p>
         </div>
       </section>
 
