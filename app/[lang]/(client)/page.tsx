@@ -11,7 +11,7 @@ import { Locale } from "@/i18n-config";
 import Script from "next/script";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Play, Leaf, Award } from "lucide-react";
+import { ArrowRight, Heart, HandHelping, Coffee, GraduationCap, Users, Leaf } from "lucide-react";
 import productMockup from "@/images/product-mockup.png";
 
 export default async function Home({
@@ -45,104 +45,148 @@ export default async function Home({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
 
-      {/* Hero Section - Static Version for Server Component */}
-      {/* <section className="relative h-[90vh] flex items-center overflow-hidden bg-stone-900 text-stone-100">
-        <div className="absolute inset-0 opacity-40">
-          <img
-            src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2000"
-            alt="Coffee Roasting"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="max-w-2xl">
-            <span className="text-sm uppercase tracking-[0.3em] font-medium mb-6 block text-stone-400">
-              Authentic Ethiopian Heritage
-            </span>
-            <h1 className="text-6xl md:text-8xl font-serif leading-tight mb-8">
-              Bring the <span className="italic">farm flavor</span> into your cup.
-            </h1>
-            <div className="flex flex-wrap gap-6">
-              <Link
-                href="/shop"
-                className="bg-stone-100 text-stone-900 px-8 py-4 rounded-full font-medium flex items-center space-x-2 hover:bg-stone-200 transition-colors"
-              >
-                <span>Shop the Collection</span>
-                <ArrowRight size={18} />
-              </Link>
-              <button className="flex items-center space-x-3 group">
-                <div className="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center group-hover:bg-stone-100 group-hover:text-stone-900 transition-all">
-                  <Play size={16} fill="currentColor" />
-                </div>
-                <span className="text-sm uppercase tracking-widest font-medium">
-                  Watch the Journey
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section> */}
       <HomeBanner lang={lang} dictionary={dictionary} />
 
-      {/* Educational / Philosophy Section */}
+      {/* Behind the Coffee - Our Mission Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
-            <div className="inline-block px-4 py-1 bg-stone-900 text-stone-100 text-xs uppercase tracking-widest rounded-full">
-              Our Philosophy
+          <div className="space-y-8 order-2 md:order-1">
+            <div className="inline-block px-4 py-1 bg-amber-700 text-white text-xs uppercase tracking-widest rounded-full">
+              Behind the Coffee
             </div>
             <h2 className="text-4xl md:text-5xl font-serif leading-tight">
-              Beyond the Bean: <br />
-              <span className="italic text-stone-600">An Educational Journey</span>
+              Our Mission: <br />
+              <span className="italic text-amber-700">Coffee with a Purpose</span>
             </h2>
             <p className="text-lg text-stone-800/70 leading-relaxed">
-              At Sheba Cup Coffee, we believe that understanding the origin is as important as the taste.
-              Our roasting process is a delicate balance of tradition and science, designed to highlight
-              the unique terroir of Ethiopia's finest high-altitude farms.
+              At Sheba Cup Coffee, our mission goes beyond coffee.
             </p>
-            <div className="grid grid-cols-2 gap-8 pt-4">
-              <div className="space-y-3">
-                <Leaf className="text-stone-600" size={32} />
-                <h3 className="font-serif text-xl">Sustainable Sourcing</h3>
-                <p className="text-sm text-stone-600">
-                  Direct relationships with small-holder farmers.
-                </p>
+            <p className="text-stone-800/70 leading-relaxed">
+              Every bag you buy supports lifesaving care. A portion of each sale goes to the{" "}
+              <Link href="#" className="text-amber-700 font-medium hover:underline">
+                Mathiwos Wondu Foundation Ethiopia
+              </Link>
+              , an organization focused on childhood cancer care.
+            </p>
+            <p className="text-stone-800/70 leading-relaxed">
+              Your purchase helps provide screenings, treatment support, and care for families.
+            </p>
+            <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200">
+              <p className="text-amber-800 font-serif text-xl italic">
+                "One bag of coffee helps fund lifesaving support."
+              </p>
+            </div>
+            <p className="text-stone-800/70 leading-relaxed">
+              Sheba Cup Coffee stands for great coffee with a purpose.
+            </p>
+            <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex items-center gap-2">
+                <Heart className="text-amber-600" size={20} />
+                <span className="text-sm text-stone-600">Childhood Cancer Care</span>
               </div>
-              <div className="space-y-3">
-                <Award className="text-stone-600" size={32} />
-                <h3 className="font-serif text-xl">Artisanal Roasting</h3>
-                <p className="text-sm text-stone-600">
-                  Small batches, profiled for maximum clarity.
-                </p>
+              <div className="flex items-center gap-2">
+                <HandHelping className="text-amber-600" size={20} />
+                <span className="text-sm text-stone-600">Treatment Support</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="text-amber-600" size={20} />
+                <span className="text-sm text-stone-600">Family Care</span>
               </div>
             </div>
             <Link
-              href="/education"
-              className="inline-flex items-center space-x-2 text-stone-900 font-medium border-b border-stone-900 pb-1 hover:text-stone-600 hover:border-stone-600 transition-all"
+              href="/mission"
+              className="inline-flex items-center space-x-2 bg-amber-700 text-white px-6 py-3 rounded-full font-medium hover:bg-amber-800 transition-all"
             >
-              <span>Learn about our process</span>
+              <span>Learn About Our Mission</span>
               <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl order-1 md:order-2">
             <Image
               src={productMockup}
-              alt="Sheba Cup Coffee product mockup"
+              alt="Sheba Cup Coffee - Supporting childhood cancer care"
               className="w-full h-full object-cover"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               priority={false}
             />
-            <div className="absolute bottom-8 left-8 right-8 bg-stone-100/90 backdrop-blur p-6 rounded-xl">
-              <p className="font-serif italic text-xl text-stone-900">
-                "Saba" style narrative: Every cup tells a story of the soil, the sun, and the hands that nurtured it.
+            <div className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur p-6 rounded-xl shadow-lg">
+              <p className="font-serif text-lg text-amber-800 text-center">
+                Every cup tells a story of hope
               </p>
             </div>
           </div>
         </div>
       </section>
 
-    
+      {/* Behind the Name - Our Vision Section */}
+      <section className="bg-stone-900 py-20 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src={productMockup}
+                alt="Ethiopian organic coffee farm - Birbirsa and Shakicha Coffee Farms"
+                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-transparent to-transparent" />
+              <div className="absolute bottom-8 left-8 right-8">
+                <div className="flex gap-3 justify-center">
+                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">30+ Years</span>
+                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Ethiopian Heritage</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-8">
+              <div className="inline-block px-4 py-1 bg-amber-600 text-white text-xs uppercase tracking-widest rounded-full">
+                Behind the Name
+              </div>
+              <h2 className="text-4xl md:text-5xl font-serif leading-tight text-white">
+                Our Vision: <br />
+                <span className="italic text-amber-400">From Farm to Cup</span>
+              </h2>
+              <p className="text-lg text-stone-300 leading-relaxed">
+                Sheba Cup Coffee brings authentic organic Ethiopian specialty Arabica coffee from farm to cup across the world.
+              </p>
+              <p className="text-stone-300 leading-relaxed">
+                Our family holds more than 30 years of coffee farming experience. We work directly with{" "}
+                <span className="text-amber-400 font-medium">Birbirsa Coffee Farm</span> and{" "}
+                <span className="text-amber-400 font-medium">Shakicha Coffee Farm</span>. These partnerships support quality, 
+                sustainable farming, and Ethiopia's coffee heritage.
+              </p>
+              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-stone-700">
+                <div className="space-y-2">
+                  <Coffee className="text-amber-400" size={28} />
+                  <h3 className="font-serif text-xl text-white">Organic & Sustainable</h3>
+                  <p className="text-sm text-stone-400">
+                    Authentic Ethiopian specialty Arabica
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <GraduationCap className="text-amber-400" size={28} />
+                  <h3 className="font-serif text-xl text-white">Community Growth</h3>
+                  <p className="text-sm text-stone-400">
+                    Education & development programs
+                  </p>
+                </div>
+              </div>
+              <p className="text-stone-300 italic border-l-4 border-amber-400 pl-4">
+                Our goal reaches beyond coffee. Growth from our business supports education and development programs 
+                for women and children, helping build stronger communities for the next generation.
+              </p>
+              <Link
+                href="/vision"
+                className="inline-flex items-center space-x-2 bg-amber-600 text-white px-6 py-3 rounded-full font-medium hover:bg-amber-700 transition-all"
+              >
+                <span>Discover Our Vision</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="pt-8 pb-10 lg:pt-10 lg:pb-12">
         <section className="mt-16 lg:mt-20 bg-shop_light_bg py-8 lg:py-10">
