@@ -11,7 +11,7 @@ import { Locale } from "@/i18n-config";
 import Script from "next/script";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Heart, Coffee } from "lucide-react";
+import { ArrowRight, Heart, HandHelping, Users, Coffee, GraduationCap } from "lucide-react";
 import productMockup from "@/images/product-mockup.png";
 
 export default async function Home({
@@ -47,76 +47,89 @@ export default async function Home({
 
       <HomeBanner lang={lang} dictionary={dictionary} />
 
-      {/* Mission & Vision Combined Section - Clean & Simple */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-        <div className="bg-gradient-to-r from-amber-50 to-stone-100 rounded-3xl overflow-hidden shadow-xl">
-          <div className="grid md:grid-cols-2 gap-8 items-center p-8 lg:p-12">
-            <div className="space-y-5">
-              <div className="flex items-center gap-2">
-                <Heart className="text-amber-600" size={24} />
-                <span className="text-xs uppercase tracking-wider text-amber-700 font-semibold">Our Mission</span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900">
-                Coffee with a Purpose
-              </h2>
-              <p className="text-stone-700 leading-relaxed">
-                At Sheba Cup Coffee, our mission goes beyond coffee. Every bag you buy supports 
-                childhood cancer care through the{" "}
-                <span className="font-medium text-amber-700">Mathiwos Wondu Foundation Ethiopia</span>.
-                Your purchase helps provide screenings, treatment support, and care for families.
-              </p>
-              
-              <div className="pt-3">
-                <div className="flex items-center gap-2">
-                  <Coffee className="text-amber-600" size={24} />
-                  <span className="text-xs uppercase tracking-wider text-amber-700 font-semibold">Our Vision</span>
-                </div>
-                <p className="text-stone-700 leading-relaxed mt-2">
-                  With over 30 years of family farming experience, we work directly with 
-                  <span className="font-medium"> Birbirsa Coffee Farm</span> and{" "}
-                  <span className="font-medium">Shakicha Coffee Farm</span>. Our growth supports 
-                  education and development programs for women and children in Ethiopia.
+      {/* Mission & Vision Section - Old Style */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8">
+            <div className="inline-block px-4 py-1 bg-amber-700 text-white text-xs uppercase tracking-widest rounded-full">
+              Behind the Coffee
+            </div>
+            <h2 className="text-4xl md:text-5xl font-serif leading-tight">
+              Our Mission: <br />
+              <span className="italic text-amber-700">Coffee with a Purpose</span>
+            </h2>
+            <p className="text-lg text-stone-800/70 leading-relaxed">
+              At Sheba Cup Coffee, our mission goes beyond coffee. Every bag you buy supports 
+              lifesaving care for children battling cancer in Ethiopia.
+            </p>
+            <div className="grid grid-cols-2 gap-8 pt-4">
+              <div className="space-y-3">
+                <Heart className="text-amber-600" size={32} />
+                <h3 className="font-serif text-xl">Childhood Cancer Care</h3>
+                <p className="text-sm text-stone-600">
+                  Supporting the Mathiwos Wondu Foundation Ethiopia.
                 </p>
               </div>
-              
-              <Link
-                href="/mission"
-                className="inline-flex items-center gap-2 bg-amber-700 text-white px-6 py-3 rounded-full font-medium hover:bg-amber-800 transition-all mt-4"
-              >
-                <span>Learn Our Story</span>
-                <ArrowRight size={16} />
-              </Link>
+              <div className="space-y-3">
+                <HandHelping className="text-amber-600" size={32} />
+                <h3 className="font-serif text-xl">Treatment Support</h3>
+                <p className="text-sm text-stone-600">
+                  Screenings and care for families in need.
+                </p>
+              </div>
             </div>
-            <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg">
-              <Image
-                src={productMockup}
-                alt="Sheba Cup Coffee"
-                className="w-full h-full object-cover"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              <p className="absolute bottom-4 left-4 right-4 text-white text-sm text-center font-medium">
-                Great coffee with an even greater purpose
+            <div className="grid grid-cols-2 gap-8 pt-2">
+              <div className="space-y-3">
+                <Coffee className="text-amber-600" size={32} />
+                <h3 className="font-serif text-xl">30+ Years Experience</h3>
+                <p className="text-sm text-stone-600">
+                  Direct partnerships with Birbirsa & Shakicha Farms.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <GraduationCap className="text-amber-600" size={32} />
+                <h3 className="font-serif text-xl">Community Growth</h3>
+                <p className="text-sm text-stone-600">
+                  Education programs for women and children.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/mission"
+              className="inline-flex items-center space-x-2 text-amber-700 font-medium border-b border-amber-700 pb-1 hover:text-amber-800 hover:border-amber-800 transition-all"
+            >
+              <span>Learn about our mission</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+            <Image
+              src={productMockup}
+              alt="Sheba Cup Coffee - Coffee with a Purpose"
+              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority={false}
+            />
+            <div className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur p-6 rounded-xl shadow-lg">
+              <p className="font-serif italic text-xl text-amber-800 text-center">
+                "One bag of coffee helps fund lifesaving support."
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Rest of the page sections */}
       <div className="pt-8 pb-10 lg:pt-10 lg:pb-12">
         <section className="mt-16 lg:mt-20 bg-shop_light_bg py-8 lg:py-10">
           <ProductGrid dictionary={dictionary} lang={lang} />
         </section>
-        
         <section className="bg-[#09332C] pt-16 lg:pt-20 pb-8 lg:pb-10">
           <HomeCategories
             categories={categories}
             dictionary={dictionary.home.popularCategories}
           />
         </section>
-        
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 lg:mt-20">
           <div className="rounded-3xl bg-gradient-to-r from-shop_dark_green via-shop_btn_dark_green to-shop_dark_green p-8 sm:p-10 text-center border border-shop_light_green/25 shadow-xl">
             <h3 className="text-2xl sm:text-3xl font-bold text-shop_light_pink mb-3">
@@ -134,7 +147,6 @@ export default async function Home({
             </Link>
           </div>
         </section>
-        
         <ShopFeatures dictionary={dictionary.home.shopFeatures} />
         <LatestBlog dictionary={dictionary.home.latestBlog} />
         {/* <ShopByBrands
