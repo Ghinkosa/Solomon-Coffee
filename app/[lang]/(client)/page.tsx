@@ -72,7 +72,7 @@ export default async function Home({
               Your purchase helps provide screenings, treatment support, and care for families.
             </p>
             <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200">
-              <p className="text-amber-800 font-serif text-xl italic">
+              <p className="text-amber-800 font-serif text-xl italic text-center">
                 "One bag of coffee helps fund lifesaving support."
               </p>
             </div>
@@ -123,7 +123,7 @@ export default async function Home({
       <section className="bg-stone-900 py-20 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl order-1 md:order-1">
               <Image
                 src={productMockup}
                 alt="Ethiopian organic coffee farm - Birbirsa and Shakicha Coffee Farms"
@@ -133,13 +133,14 @@ export default async function Home({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-transparent to-transparent" />
               <div className="absolute bottom-8 left-8 right-8">
-                <div className="flex gap-3 justify-center">
+                <div className="flex gap-3 justify-center flex-wrap">
                   <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">30+ Years</span>
-                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Ethiopian Heritage</span>
+                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Birbirsa Farm</span>
+                  <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Shakicha Farm</span>
                 </div>
               </div>
             </div>
-            <div className="space-y-8">
+            <div className="space-y-8 order-2 md:order-2">
               <div className="inline-block px-4 py-1 bg-amber-600 text-white text-xs uppercase tracking-widest rounded-full">
                 Behind the Name
               </div>
@@ -188,16 +189,19 @@ export default async function Home({
         </div>
       </section>
 
+      {/* Rest of the page sections */}
       <div className="pt-8 pb-10 lg:pt-10 lg:pb-12">
         <section className="mt-16 lg:mt-20 bg-shop_light_bg py-8 lg:py-10">
           <ProductGrid dictionary={dictionary} lang={lang} />
         </section>
+        
         <section className="bg-[#09332C] pt-16 lg:pt-20 pb-8 lg:pb-10">
           <HomeCategories
             categories={categories}
             dictionary={dictionary.home.popularCategories}
           />
         </section>
+        
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 lg:mt-20">
           <div className="rounded-3xl bg-gradient-to-r from-shop_dark_green via-shop_btn_dark_green to-shop_dark_green p-8 sm:p-10 text-center border border-shop_light_green/25 shadow-xl">
             <h3 className="text-2xl sm:text-3xl font-bold text-shop_light_pink mb-3">
@@ -215,6 +219,7 @@ export default async function Home({
             </Link>
           </div>
         </section>
+        
         <ShopFeatures dictionary={dictionary.home.shopFeatures} />
         <LatestBlog dictionary={dictionary.home.latestBlog} />
         {/* <ShopByBrands
