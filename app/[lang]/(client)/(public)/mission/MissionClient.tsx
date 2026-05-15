@@ -25,7 +25,7 @@ const MissionClient = () => {
       {/* HERO SECTION - Behind the Coffee / Our Mission */}
       <section className="py-32 bg-stone-950 text-white relative overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2000"
+          src="/sheba-hero-roast.jpg"
           alt="Sheba Cup Coffee - Coffee with a Purpose"
           fill
           priority
@@ -63,7 +63,7 @@ const MissionClient = () => {
             >
               <div className="col-span-2 relative h-80 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=1200"
+                  src="/mission-hero.jpg"
                   alt="Supporting childhood cancer care in Ethiopia"
                   fill
                   className="object-cover"
@@ -72,7 +72,7 @@ const MissionClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1488521787991-1111b9b6b7a6?auto=format&fit=crop&q=80&w=800"
+                  src="/children-support.jpg"
                   alt="Children receiving care"
                   fill
                   className="object-cover"
@@ -80,7 +80,7 @@ const MissionClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&q=80&w=800"
+                  src="/community-care.jpg"
                   alt="Community health support"
                   fill
                   className="object-cover"
@@ -200,13 +200,13 @@ const MissionClient = () => {
             >
               <div className="col-span-2 relative h-80 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&q=80&w=1200"
+                  src="/ethiopian-coffee-farm.jpg"
                   alt="Birbirsa Coffee Farm - Ethiopian coffee farming"
                   fill
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 flex gap-2 justify-center flex-wrap">
+                <div className="absolute bottom-4 left-4 right-4 flex gap-2 justify-center">
                   <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">30+ Years</span>
                   <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Birbirsa Farm</span>
                   <span className="px-3 py-1 bg-amber-600 text-white text-xs rounded-full">Shakicha Farm</span>
@@ -214,7 +214,7 @@ const MissionClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1462917882517-150d6b6e5ed1?auto=format&fit=crop&q=80&w=800"
+                  src="/coffee-farming.jpg"
                   alt="Sustainable coffee farming practices"
                   fill
                   className="object-cover"
@@ -222,7 +222,7 @@ const MissionClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?auto=format&fit=crop&q=80&w=800"
+                  src="/ethiopian-heritage.jpg"
                   alt="Ethiopian coffee heritage"
                   fill
                   className="object-cover"
@@ -301,13 +301,13 @@ const MissionClient = () => {
           <Card className="border-none shadow-xl overflow-hidden">
             <div className="h-64 relative">
               <Image
-                src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=1200"
+                src="/mathiwos-foundation.jpg"
                 alt="Mathiwos Wondu Foundation Ethiopia"
                 fill
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <h3 className="text-3xl font-bold text-white text-center px-4">Mathiwos Wondu Foundation Ethiopia</h3>
+                <h3 className="text-3xl font-bold text-white">Mathiwos Wondu Foundation Ethiopia</h3>
               </div>
             </div>
             <CardContent className="p-8">
@@ -358,7 +358,7 @@ const MissionClient = () => {
               variant="outline"
               className="border-stone-300 text-stone-700 hover:bg-stone-100 rounded-full px-12 h-14 text-lg"
             >
-              <Link href="/roasting">Discover Our Roasting Process →</Link>
+              <Link href="/education">Discover Our Roasting Process →</Link>
             </Button>
           </div>
           <p className="mt-8 text-stone-500 text-sm">

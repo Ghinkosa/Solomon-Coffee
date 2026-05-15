@@ -47,9 +47,10 @@ export default async function Home({
 
       <HomeBanner lang={lang} dictionary={dictionary} />
 
-      {/* Behind the Coffee - Our Mission Section */}
+      {/* Combined Mission & Vision Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+        {/* Mission Part */}
+        <div className="grid md:grid-cols-2 gap-16 items-center mb-24 lg:mb-32">
           <div className="space-y-8 order-2 md:order-1">
             <div className="inline-block px-4 py-1 bg-amber-700 text-white text-xs uppercase tracking-widest rounded-full">
               Behind the Coffee
@@ -93,13 +94,6 @@ export default async function Home({
                 <span className="text-sm text-stone-600">Family Care</span>
               </div>
             </div>
-            <Link
-              href="/mission"
-              className="inline-flex items-center space-x-2 bg-amber-700 text-white px-6 py-3 rounded-full font-medium hover:bg-amber-800 transition-all"
-            >
-              <span>Learn About Our Mission</span>
-              <ArrowRight size={16} />
-            </Link>
           </div>
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl order-1 md:order-2">
             <Image
@@ -117,13 +111,11 @@ export default async function Home({
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Behind the Name - Our Vision Section */}
-      <section className="bg-stone-900 py-20 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl order-1 md:order-1">
+        {/* Vision Part */}
+        <div className="bg-stone-900 rounded-3xl overflow-hidden">
+          <div className="grid md:grid-cols-2 gap-16 items-center p-8 lg:p-12">
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src={productMockup}
                 alt="Ethiopian organic coffee farm - Birbirsa and Shakicha Coffee Farms"
@@ -140,7 +132,7 @@ export default async function Home({
                 </div>
               </div>
             </div>
-            <div className="space-y-8 order-2 md:order-2">
+            <div className="space-y-8">
               <div className="inline-block px-4 py-1 bg-amber-600 text-white text-xs uppercase tracking-widest rounded-full">
                 Behind the Name
               </div>
@@ -177,15 +169,22 @@ export default async function Home({
                 Our goal reaches beyond coffee. Growth from our business supports education and development programs 
                 for women and children, helping build stronger communities for the next generation.
               </p>
-              <Link
-                href="/vision"
-                className="inline-flex items-center space-x-2 bg-amber-600 text-white px-6 py-3 rounded-full font-medium hover:bg-amber-700 transition-all"
-              >
-                <span>Discover Our Vision</span>
-                <ArrowRight size={16} />
-              </Link>
             </div>
           </div>
+        </div>
+
+        {/* Combined Call to Action */}
+        <div className="text-center mt-16 lg:mt-20">
+          <Link
+            href="/mission"
+            className="inline-flex items-center space-x-2 bg-amber-700 text-white px-8 py-4 rounded-full font-medium hover:bg-amber-800 transition-all text-lg"
+          >
+            <span>Learn More About Our Mission & Vision</span>
+            <ArrowRight size={18} />
+          </Link>
+          <p className="text-stone-500 text-sm mt-4">
+            Discover how every cup of Sheba Cup Coffee makes a difference
+          </p>
         </div>
       </section>
 
