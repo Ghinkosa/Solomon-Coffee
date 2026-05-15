@@ -47,11 +47,11 @@ export default async function Home({
 
       <HomeBanner lang={lang} dictionary={dictionary} />
 
-      {/* Mission & Vision Combined Section - Small & Simple */}
+      {/* Mission & Vision Combined Section - Clean & Simple */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
         <div className="bg-gradient-to-r from-amber-50 to-stone-100 rounded-3xl overflow-hidden shadow-xl">
           <div className="grid md:grid-cols-2 gap-8 items-center p-8 lg:p-12">
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="flex items-center gap-2">
                 <Heart className="text-amber-600" size={24} />
                 <span className="text-xs uppercase tracking-wider text-amber-700 font-semibold">Our Mission</span>
@@ -60,24 +60,30 @@ export default async function Home({
                 Coffee with a Purpose
               </h2>
               <p className="text-stone-700 leading-relaxed">
-                Every bag supports childhood cancer care through the{" "}
+                At Sheba Cup Coffee, our mission goes beyond coffee. Every bag you buy supports 
+                childhood cancer care through the{" "}
                 <span className="font-medium text-amber-700">Mathiwos Wondu Foundation Ethiopia</span>.
+                Your purchase helps provide screenings, treatment support, and care for families.
               </p>
-              <div className="border-t border-amber-200 pt-4 mt-2">
+              
+              <div className="pt-3">
                 <div className="flex items-center gap-2">
                   <Coffee className="text-amber-600" size={24} />
                   <span className="text-xs uppercase tracking-wider text-amber-700 font-semibold">Our Vision</span>
                 </div>
                 <p className="text-stone-700 leading-relaxed mt-2">
-                  30+ years of family farming. Direct partnerships with <span className="font-medium">Birbirsa</span> and{" "}
-                  <span className="font-medium">Shakicha Farms</span>. Supporting education for women and children.
+                  With over 30 years of family farming experience, we work directly with 
+                  <span className="font-medium"> Birbirsa Coffee Farm</span> and{" "}
+                  <span className="font-medium">Shakicha Coffee Farm</span>. Our growth supports 
+                  education and development programs for women and children in Ethiopia.
                 </p>
               </div>
+              
               <Link
                 href="/mission"
                 className="inline-flex items-center gap-2 bg-amber-700 text-white px-6 py-3 rounded-full font-medium hover:bg-amber-800 transition-all mt-4"
               >
-                <span>Our Story</span>
+                <span>Learn Our Story</span>
                 <ArrowRight size={16} />
               </Link>
             </div>
