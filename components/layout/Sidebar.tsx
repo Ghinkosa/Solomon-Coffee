@@ -14,6 +14,7 @@ import {
   HelpCircle,
   Info,
   Grid3X3,
+  Store,
   Logs,
   ChevronRight,
   LogOut,
@@ -118,6 +119,7 @@ const Sidebar: FC<SidebarProps> = ({
       title: "Support",
       items: [
         { title: "Help Center", href: "/help", icon: HelpCircle },
+        { title: "Wholesale", href: "/wholesalers", icon: Store },
         { title: "Contact Us", href: "/contact", icon: Phone },
         { title: "About Us", href: "/about", icon: Info },
       ],

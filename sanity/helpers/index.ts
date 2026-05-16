@@ -144,6 +144,31 @@ export const saveContactMessage = async (contactData: {
   }
 };
 
+export const saveWholesaleInquiry = async (inquiryData: {
+  name: string;
+  email: string;
+  ipAddress?: string;
+  userAgent?: string;
+}) => {
+  try {
+    const doc = {
+      _type: "wholesaleInquiry",
+      name: inquiryData.name,
+      email: inquiryData.email,
+      status: "new",
+      submittedAt: new Date().toISOString(),
+      ipAddress: inquiryData.ipAddress || "",
+      userAgent: inquiryData.userAgent || "",
+    };
+
+    const result = await writeClient.create(doc);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Error saving wholesale inquiry:", error);
+    return { success: false, error: "Failed to save wholesale inquiry" };
+  }
+};
+
 // ✅ UPDATED: getMyOrders with weight, grind, packaging
 export const getMyOrders = async (
   userId: string,

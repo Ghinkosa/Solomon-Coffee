@@ -10,7 +10,9 @@
       "deals": "Tostados Limitados",
       "orders": "Pedidos",
       "contact": "Contacto",
-      "blog": "Blog"
+      "blog": "Blog",
+      "wholesalers": "Mayoristas",
+      "contactUs": "Contáctanos"
     },
     "auth": {
       "welcome": "Bienvenido",
@@ -85,6 +87,75 @@
       "badge": "Estamos para ayudarte",
       "title": "Contáctanos",
       "description": "¿Tienes dudas sobre nuestro café o tu pedido? Estamos aquí para ayudarte."
+    }
+  },
+  "wholesalers": {
+    "hero": {
+      "badge": "Sé nuestro socio",
+      "title": "Programa de café al por mayor",
+      "description": "Ofrece café etíope excepcional en tu cafetería, restaurante o tienda. Sheba Cup Coffee ofrece granos recién tostados, volúmenes flexibles y apoyo dedicado para socios mayoristas."
+    },
+    "info": {
+      "title": "Detalles del programa",
+      "salesTitle": "Ventas mayoristas",
+      "quickResponse": "Respuesta rápida",
+      "quickResponseText": "Nuestro equipo mayorista suele responder en 1–2 días hábiles con precios, mínimos y próximos pasos."
+    },
+    "benefits": {
+      "items": [
+        {
+          "title": "Café tostado premium",
+          "description": "Tostados consistentes en lotes pequeños, del claro al oscuro para cada menú."
+        },
+        {
+          "title": "Entrega confiable",
+          "description": "Entregas programadas y opciones de volumen para negocios activos."
+        },
+        {
+          "title": "Hecho para negocios",
+          "description": "Precios mayoristas, empaques y molienda adaptados a tu equipo."
+        },
+        {
+          "title": "Soporte dedicado",
+          "description": "Te ayudamos a elegir orígenes, planificar temporadas y mantener inventario."
+        }
+      ]
+    },
+    "form": {
+      "title": "Solicitar información mayorista",
+      "subtitle": "Comparte tu nombre y correo; nuestro equipo te contactará con precios, mínimos y próximos pasos.",
+      "name": "Nombre completo",
+      "namePlaceholder": "Tu nombre",
+      "email": "Correo comercial",
+      "emailPlaceholder": "tu@negocio.com",
+      "sendButton": "Solicitar información",
+      "sending": "Enviando...",
+      "successTitle": "¡Solicitud recibida!",
+      "successMessage": "Gracias por tu interés en el programa mayorista de Sheba Cup Coffee. Te contactaremos en 1–2 días hábiles.",
+      "close": "Cerrar",
+      "privacyNote": "Solo usamos tus datos para responder sobre oportunidades mayoristas."
+    },
+    "faq": {
+      "title": "Preguntas frecuentes mayoristas",
+      "description": "Respuestas a preguntas comunes sobre asociarte con Sheba Cup Coffee.",
+      "questions": [
+        {
+          "q": "¿Para quién es el programa mayorista?",
+          "a": "Cafeterías, restaurantes, hoteles, oficinas y tiendas que buscan café etíope especial de calidad constante."
+        },
+        {
+          "q": "¿Qué pasa después de enviar el formulario?",
+          "a": "Revisamos tu solicitud y te escribimos en 1–2 días hábiles con precios, pedidos mínimos y pasos de incorporación."
+        },
+        {
+          "q": "¿Pueden adaptar molienda y empaque?",
+          "a": "Sí. Ofrecemos empaque flexible, pesos y perfiles de molienda según tu equipo y método de preparación."
+        },
+        {
+          "q": "¿Envían a mi zona?",
+          "a": "Trabajamos con socios en varias regiones. Indica tu ubicación al contactarnos y confirmaremos opciones de entrega."
+        }
+      ]
     }
   },
   "cart": {

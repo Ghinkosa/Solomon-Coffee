@@ -12,6 +12,7 @@ import {
   HelpCircle,
   Info,
   Grid3X3,
+  Store,
   Logs,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -55,6 +56,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
 
   const supportMenuItems = [
     { title: "Help Center", href: "/help", icon: HelpCircle },
+    { title: "Wholesale", href: "/wholesalers", icon: Store },
     { title: "Customer Service", href: "/support", icon: Phone },
     { title: "About Us", href: "/about", icon: Info },
   ];

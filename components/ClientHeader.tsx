@@ -70,7 +70,7 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
           </div>
 
           {/* Center Section: Navigation Menu (Desktop Only) */}
-          <div className="hidden lg:flex items-center justify-center flex-1 mx-8">
+          <div className="hidden lg:flex items-center justify-center flex-1 mx-3 xl:mx-5 min-w-0">
             <HeaderMenu dictionary={dictionary} lang={lang} />
           </div>
 

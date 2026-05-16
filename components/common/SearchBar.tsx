@@ -113,7 +113,7 @@ const SearchBar = ({ dictionary }: { dictionary?: any }) => {
         {/* Desktop Version - Full Input Style */}
         <button
           onClick={() => setShowSearch(true)}
-          className="group hidden sm:flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-shop_light_green rounded-lg px-3 h-[38px] w-[150px] md:w-[170px] transition-all duration-200"
+          className="group hidden sm:flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-shop_light_green rounded-lg px-3 h-[38px] w-[130px] lg:w-[140px] xl:w-[160px] transition-all duration-200"
           aria-label="Open search"
         >
           {/* Search Icon */}

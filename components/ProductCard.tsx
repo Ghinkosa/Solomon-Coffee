@@ -11,7 +11,7 @@ import { image } from "@/sanity/image";
 
 interface ProductCardProps {
   product: Product;
-  mode?: "default" | "home";
+  mode?: "default" | "home" | "shop";
   isExpanded?: boolean;
   onImageTap?: () => void;
   onHoverStart?: () => void;
@@ -28,21 +28,22 @@ const ProductCard = memo(
     onHoverEnd,
   }: ProductCardProps) => {
   const isHomeMode = mode === "home";
+  const isExpandable = mode === "home" || mode === "shop";
 
   return (
     <div
       className={`text-sm border rounded-md border-dark-blue/20 group bg-white ${
-        isHomeMode
+        isExpandable
           ? "transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
           : ""
       }`}
-      onMouseEnter={isHomeMode ? onHoverStart : undefined}
-      onMouseLeave={isHomeMode ? onHoverEnd : undefined}
+      onMouseEnter={isExpandable ? onHoverStart : undefined}
+      onMouseLeave={isExpandable ? onHoverEnd : undefined}
     >
       <div className="relative group overflow-hidden bg-shop_light_bg">
         {product?.images && (
           <>
-            {isHomeMode ? (
+            {isExpandable ? (
               <>
                 <button
                   type="button"
@@ -137,7 +138,7 @@ const ProductCard = memo(
           </div>
         </Link>
 
-        {!isHomeMode && (
+        {mode !== "home" && (
           <div>
             {product?.categories && (
               <p className="uppercase line-clamp-1 text-xs font-medium text-light-text">

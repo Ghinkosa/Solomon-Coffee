@@ -8,7 +8,6 @@ import {
   Coffee,
   GraduationCap,
   Leaf,
-  ArrowRight,
 } from "lucide-react";
 
 import Container from "@/components/Container";
@@ -19,13 +18,27 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
+const MISSION_IMAGES = {
+  hero: "/sheba-hero-roast.jpg",
+  missionMain: "/sheba-hero-roast.jpg",
+  missionCare: "/roast1.jpg",
+  missionCommunity: "/honey.jpg",
+  farmMain: "/sheba-natural-process.jpg",
+  farmPractice: "/sheba-washed-process.jpg",
+  farmHeritage: "/roast2.jpg",
+  foundation: "/roast3.jpg",
+  impactCare: "/sheba-hero-roast.jpg",
+  impactEducation: "/black_coffee.jpeg",
+  impactSustainable: "/sheba-natural-process.jpg",
+} as const;
+
 const MissionClient = () => {
   return (
     <div className="bg-gradient-to-b from-stone-100 to-white min-h-screen">
       {/* HERO SECTION - Behind the Coffee / Our Mission */}
       <section className="py-32 bg-stone-950 text-white relative overflow-hidden">
         <Image
-          src="/sheba-hero-roast.jpg"
+          src={MISSION_IMAGES.hero}
           alt="Sheba Cup Coffee - Coffee with a Purpose"
           fill
           priority
@@ -63,26 +76,29 @@ const MissionClient = () => {
             >
               <div className="col-span-2 relative h-80 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/mission-hero.jpg"
+                  src={MISSION_IMAGES.missionMain}
                   alt="Supporting childhood cancer care in Ethiopia"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-amber-900/40 to-transparent" />
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="/children-support.jpg"
-                  alt="Children receiving care"
+                  src={MISSION_IMAGES.missionCare}
+                  alt="Fresh roasted coffee supporting our mission"
                   fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
                 />
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="/community-care.jpg"
-                  alt="Community health support"
+                  src={MISSION_IMAGES.missionCommunity}
+                  alt="Community and care through every purchase"
                   fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
                 />
               </div>
@@ -200,9 +216,10 @@ const MissionClient = () => {
             >
               <div className="col-span-2 relative h-80 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/ethiopian-coffee-farm.jpg"
+                  src={MISSION_IMAGES.farmMain}
                   alt="Birbirsa Coffee Farm - Ethiopian coffee farming"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent" />
@@ -214,17 +231,19 @@ const MissionClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="/coffee-farming.jpg"
+                  src={MISSION_IMAGES.farmPractice}
                   alt="Sustainable coffee farming practices"
                   fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
                 />
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="/ethiopian-heritage.jpg"
+                  src={MISSION_IMAGES.farmHeritage}
                   alt="Ethiopian coffee heritage"
                   fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
                 />
               </div>
@@ -247,9 +266,17 @@ const MissionClient = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Childhood Cancer Care */}
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
-              <div className="h-48 relative bg-gradient-to-br from-amber-600 to-amber-800">
-                <Heart className="absolute inset-0 m-auto w-20 h-20 text-white/30" />
-              </div>
+              <motion.div className="h-48 relative overflow-hidden">
+                <Image
+                  src={MISSION_IMAGES.impactCare}
+                  alt="Sheba Cup Coffee supporting childhood cancer care"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/70 to-amber-700/30" />
+                <Heart className="absolute top-4 right-4 w-10 h-10 text-white/40" />
+              </motion.div>
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4 text-stone-900">Childhood Cancer Care</h3>
                 <p className="text-stone-600 text-sm leading-relaxed">
@@ -262,9 +289,17 @@ const MissionClient = () => {
 
             {/* Education Programs */}
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
-              <div className="h-48 relative bg-gradient-to-br from-stone-700 to-stone-900">
-                <GraduationCap className="absolute inset-0 m-auto w-20 h-20 text-white/30" />
-              </div>
+              <motion.div className="h-48 relative overflow-hidden">
+                <Image
+                  src={MISSION_IMAGES.impactEducation}
+                  alt="Education and community development"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/70 to-stone-700/30" />
+                <GraduationCap className="absolute top-4 right-4 w-10 h-10 text-white/40" />
+              </motion.div>
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4 text-stone-900">Education for All</h3>
                 <p className="text-stone-600 text-sm leading-relaxed">
@@ -276,9 +311,17 @@ const MissionClient = () => {
 
             {/* Sustainable Farming */}
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
-              <div className="h-48 relative bg-gradient-to-br from-amber-700 to-stone-800">
-                <Leaf className="absolute inset-0 m-auto w-20 h-20 text-white/30" />
-              </div>
+              <motion.div className="h-48 relative overflow-hidden">
+                <Image
+                  src={MISSION_IMAGES.impactSustainable}
+                  alt="Sustainable Ethiopian coffee farming"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/60 to-stone-900/50" />
+                <Leaf className="absolute top-4 right-4 w-10 h-10 text-white/40" />
+              </motion.div>
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-4 text-stone-900">Sustainable Future</h3>
                 <p className="text-stone-600 text-sm leading-relaxed">
@@ -301,9 +344,10 @@ const MissionClient = () => {
           <Card className="border-none shadow-xl overflow-hidden">
             <div className="h-64 relative">
               <Image
-                src="/mathiwos-foundation.jpg"
+                src={MISSION_IMAGES.foundation}
                 alt="Mathiwos Wondu Foundation Ethiopia"
                 fill
+                sizes="(max-width: 896px) 100vw, 896px"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

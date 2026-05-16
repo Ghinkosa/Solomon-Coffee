@@ -18,7 +18,9 @@
       "deals": "Limited Roasts",
       "orders": "Orders",
       "contact": "Contact",
-      "blog": "Blog"
+      "blog": "Blog",
+      "wholesalers": "Wholesale",
+      "contactUs": "Contact Us"
     },
     "auth": {
       "welcome": "Welcome",
@@ -259,6 +261,75 @@
         {
           "q": "Do you offer customer support?",
           "a": "Yes. Our support team is available Monday-Friday, 9AM-6PM EST, for order help and brewing guidance."
+        }
+      ]
+    }
+  },
+  "wholesalers": {
+    "hero": {
+      "badge": "Partner With Us",
+      "title": "Wholesale Coffee Program",
+      "description": "Serve exceptional Ethiopian coffee at your café, restaurant, or retail location. Sheba Cup Coffee offers freshly roasted beans, flexible volumes, and dedicated support for wholesale partners."
+    },
+    "info": {
+      "title": "Program Details",
+      "salesTitle": "Wholesale Sales",
+      "quickResponse": "Quick Response",
+      "quickResponseText": "Our wholesale team typically responds within 1–2 business days with pricing, minimums, and next steps."
+    },
+    "benefits": {
+      "items": [
+        {
+          "title": "Premium Roasted Coffee",
+          "description": "Consistent, small-batch roasts sourced with care—light to dark profiles for every menu."
+        },
+        {
+          "title": "Reliable Fulfillment",
+          "description": "Scheduled deliveries and volume options designed for busy shops and hospitality teams."
+        },
+        {
+          "title": "Built for Business",
+          "description": "Wholesale pricing, packaging choices, and grind options tailored to your equipment."
+        },
+        {
+          "title": "Dedicated Support",
+          "description": "Our team helps you select origins, plan seasonal offerings, and keep shelves stocked."
+        }
+      ]
+    },
+    "form": {
+      "title": "Request Wholesale Information",
+      "subtitle": "Share your name and email and our wholesale team will contact you with pricing, minimums, and next steps.",
+      "name": "Full Name",
+      "namePlaceholder": "Your name",
+      "email": "Business Email",
+      "emailPlaceholder": "you@yourbusiness.com",
+      "sendButton": "Request Information",
+      "sending": "Submitting...",
+      "successTitle": "Request Received!",
+      "successMessage": "Thank you for your interest in Sheba Cup Coffee wholesale. Our team will reach out within 1–2 business days.",
+      "close": "Close",
+      "privacyNote": "We only use your details to respond about wholesale opportunities. We never share your information with third parties."
+    },
+    "faq": {
+      "title": "Wholesale FAQs",
+      "description": "Answers to common questions about partnering with Sheba Cup Coffee.",
+      "questions": [
+        {
+          "q": "Who is wholesale for?",
+          "a": "Cafés, restaurants, hotels, offices, and retailers looking for consistent Ethiopian specialty coffee with reliable fulfillment."
+        },
+        {
+          "q": "What happens after I submit the form?",
+          "a": "Our team reviews your request and emails you within 1–2 business days with pricing, minimum order details, and onboarding steps."
+        },
+        {
+          "q": "Can you match grind and packaging to our equipment?",
+          "a": "Yes. We offer flexible packaging, weight options, and grind profiles tailored to your brew method and operational needs."
+        },
+        {
+          "q": "Do you ship outside my local area?",
+          "a": "We work with partners across multiple regions. Share your location when you connect with our team and we will confirm delivery options."
         }
       ]
     }

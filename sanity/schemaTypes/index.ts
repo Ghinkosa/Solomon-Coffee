@@ -11,6 +11,7 @@ import { blogCategoryType } from "./blogCategoryType";
 import { authorType } from "./authType";
 import { addressType } from "./addressType";
 import { contactType } from "./contactType";
+import { wholesaleInquiryType } from "./wholesaleInquiryType";
 import { sentNotificationType } from "./sentNotificationType";
 import { userType } from "./userType";
 import { userAccessRequestType } from "./userAccessRequestType";
@@ -31,6 +32,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     authorType,
     addressType,
     contactType,
+    wholesaleInquiryType,
     sentNotificationType,
     userType,
     userAccessRequestType,

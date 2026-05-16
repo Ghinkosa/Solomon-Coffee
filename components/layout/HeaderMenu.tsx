@@ -1,5 +1,13 @@
 "use client";
-import { headerData } from "@/constants";
+
+import { headerContactNav, headerPrimaryNav } from "@/constants";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -8,53 +16,94 @@ interface HeaderMenuProps {
   lang: string;
 }
 
+type NavItem = { title: string; href: string };
+
+function getNavLabel(item: NavItem, dictionary: HeaderMenuProps["dictionary"]) {
+  if (item.title === "Home") return dictionary.header.menu.home;
+  if (item.title === "Shop") return dictionary.header.menu.shop;
+  if (item.title === "Limited Roasts" || item.title === "Hot Deal")
+    return dictionary.header.menu.deals;
+  if (item.title === "Contact") return dictionary.header.menu.contact;
+  if (item.title === "Blog") return dictionary.header.menu.blog;
+  if (item.title === "Wholesalers") return dictionary.header.menu.wholesalers;
+  return item.title;
+}
+
 const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
   const pathname = usePathname();
 
+  function isActive(href: string) {
+    const localized = `/${lang}${href === "/" ? "" : href}`;
+    return pathname === localized || pathname === href;
+  }
+
+  function renderLink(item: NavItem) {
+    const label = getNavLabel(item, dictionary);
+    const href = `/${lang}${item.href === "/" ? "" : item.href}`;
+    const active = isActive(item.href);
+
+    return (
+      <Link
+        key={item.title}
+        href={href}
+        className={`hover:text-shop_orange hoverEffect relative group whitespace-nowrap ${
+          active ? "text-shop_orange" : "text-shop_dark_green"
+        }`}
+      >
+        {label}
+        <span
+          className={`absolute -bottom-0.5 left-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:left-0 ${
+            active && "w-1/2"
+          }`}
+        />
+        <span
+          className={`absolute -bottom-0.5 right-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:right-0 ${
+            active && "w-1/2"
+          }`}
+        />
+      </Link>
+    );
+  }
+
+  const contactDropdownActive = headerContactNav.some((item) =>
+    isActive(item.href),
+  );
+  const contactUsLabel =
+    dictionary?.header?.menu?.contactUs ?? "Contact Us";
+
   return (
-    <div className="hidden md:inline-flex w-full items-center justify-center gap-7 text-sm capitalize font-bold text-shop_dark_green">
-      {headerData?.map((item) => {
-        const titleKey = item?.title?.toLowerCase();
-        let label = item?.title;
-        if (item.title === "Home") label = dictionary.header.menu.home;
-        if (item.title === "Shop") label = dictionary.header.menu.shop;
-        if (item.title === "Limited Roasts" || item.title === "Hot Deal")
-          label = dictionary.header.menu.deals;
-        if (item.title === "Contact") label = dictionary.header.menu.contact;
-        if (item.title === "Blog") label = dictionary.header.menu.blog;
-        // "Deals" is "deals", "Orders" is "orders".
-        // item.href is usually a good key?
-        // href: /deal -> deals
+    <nav className="hidden lg:inline-flex w-full items-center justify-center gap-5 xl:gap-6 text-sm capitalize font-semibold text-shop_dark_green">
+      {headerPrimaryNav.map((item) => renderLink(item))}
 
-        const href = `/${lang}${item.href === "/" ? "" : item.href}`;
-        // Note: pathname includes locale: /en/shop
-        // item.href: /shop
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className={`inline-flex items-center gap-1 hover:text-shop_orange hoverEffect outline-none whitespace-nowrap ${
+            contactDropdownActive ? "text-shop_orange" : "text-shop_dark_green"
+          }`}
+        >
+          {contactUsLabel}
+          <ChevronDown className="h-4 w-4 opacity-70" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="center" className="min-w-[10rem]">
+          {headerContactNav.map((item) => {
+            const label = getNavLabel(item, dictionary);
+            const href = `/${lang}${item.href}`;
+            const active = isActive(item.href);
 
-        const isActive = pathname === href || pathname === item.href; // Simple check
-
-        return (
-          <Link
-            key={item?.title}
-            href={href}
-            className={`hover:text-shop_orange hoverEffect relative group ${
-              isActive ? "text-shop_orange" : "text-shop_dark_green"
-            }`}
-          >
-            {label}
-            <span
-              className={`absolute -bottom-0.5 left-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:left-0 ${
-                isActive && "w-1/2"
-              }`}
-            />
-            <span
-              className={`absolute -bottom-0.5 right-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:right-0 ${
-                isActive && "w-1/2"
-              }`}
-            />
-          </Link>
-        );
-      })}
-    </div>
+            return (
+              <DropdownMenuItem key={item.title} asChild>
+                <Link
+                  href={href}
+                  className={`cursor-pointer ${active ? "text-shop_orange font-medium" : ""}`}
+                >
+                  {label}
+                </Link>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </nav>
   );
 };
 

@@ -2,13 +2,19 @@
 import { Category, Product } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import React, { useEffect, useState, useCallback } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import Container from "../Container";
 import Title from "../Title";
 import CategoryList from "./CategoryList";
-import { Loader2, Filter, X } from "lucide-react";
+import { Filter, X } from "lucide-react";
 import ProductCard from "../ProductCard";
 import NoProductAvailable from "../product/NoProductAvailable";
 import PriceList from "./PriceList";
+import { ProductDetailsPanel } from "../product/ProductDetailsPanel";
+import {
+  getShopGridColumnCount,
+  useProductDetailsPanel,
+} from "@/hooks/useProductDetailsPanel";
 
 interface Props {
   categories: Category[];
@@ -87,6 +93,22 @@ const Shop = ({ categories, dictionary }: Props) => {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts, selectedCategory, selectedPrice]);
+
+  const {
+    gridWrapperRef,
+    expandedCardId,
+    expandedProduct,
+    detailPanelPosition,
+    registerCardRef,
+    handleImageTap,
+    openDetailsPanel,
+    clearClosePanelTimeout,
+    schedulePanelClose,
+    closePanel,
+  } = useProductDetailsPanel({
+    products,
+    getColumnCount: getShopGridColumnCount,
+  });
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -259,10 +281,48 @@ const Shop = ({ categories, dictionary }: Props) => {
                         {dictionary?.shop?.showingAll || "Showing all products"}
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                      {products?.map((product) => (
-                        <ProductCard key={product?._id} product={product} />
-                      ))}
+                    <div
+                      ref={gridWrapperRef}
+                      className="relative overflow-x-hidden"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                        <AnimatePresence mode="popLayout">
+                          {products.map((product, index) => (
+                            <motion.div
+                              key={product._id}
+                              layout
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              ref={(node) => registerCardRef(product._id, node)}
+                            >
+                              <ProductCard
+                                product={product}
+                                mode="shop"
+                                isExpanded={expandedCardId === product._id}
+                                onImageTap={() => handleImageTap(product, index)}
+                                onHoverStart={() => {
+                                  if (window.innerWidth < 768) return;
+                                  clearClosePanelTimeout();
+                                  openDetailsPanel(product, index);
+                                }}
+                                onHoverEnd={() => {
+                                  if (window.innerWidth < 768) return;
+                                  schedulePanelClose();
+                                }}
+                              />
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+
+                      <ProductDetailsPanel
+                        expandedProduct={expandedProduct}
+                        detailPanelPosition={detailPanelPosition}
+                        onClose={closePanel}
+                        clearClosePanelTimeout={clearClosePanelTimeout}
+                        schedulePanelClose={schedulePanelClose}
+                      />
                     </div>
                   </div>
                 ) : (

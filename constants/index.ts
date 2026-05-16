@@ -1,11 +1,17 @@
-export const headerData = [
+export const headerPrimaryNav = [
   { title: "Home", href: "/" },
   { title: "Shop", href: "/shop" },
   { title: "Limited Roasts", href: "/deal" },
   { title: "Blog", href: "/blog" },
-  //{ title: "Education", href: "/education" },
+];
+
+export const headerContactNav = [
+  { title: "Wholesalers", href: "/wholesalers" },
   { title: "Contact", href: "/contact" },
 ];
+
+/** Full nav list (mobile sidebar, etc.) */
+export const headerData = [...headerPrimaryNav, ...headerContactNav];
 
 
 export const productType = [
@@ -17,6 +23,7 @@ export const productType = [
 
 export const quickLinksData = [
   { title: "About us", href: "/about" },
+  { title: "Wholesale", href: "/wholesalers" },
   { title: "Contact us", href: "/contact" },
   { title: "Terms & Conditions", href: "/terms" },
   { title: "Privacy Policy", href: "/privacy" },
