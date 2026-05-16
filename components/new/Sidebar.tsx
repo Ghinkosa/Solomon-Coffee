@@ -3,6 +3,7 @@ import {
   Home,
   ShoppingBag,
   BookOpen,
+  GraduationCap,
   Coffee,
   User,
   ShoppingCart,
@@ -51,6 +52,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
     { title: "Shop", href: "/shop", icon: ShoppingBag },
     { title: "Categories", href: "/category", icon: Grid3X3 },
     { title: "Blog", href: "/blog", icon: BookOpen },
+    { title: "Coffee Education", href: "/education", icon: GraduationCap },
     { title: "Limited Roasts", href: "/deal", icon: Coffee },
   ];
 

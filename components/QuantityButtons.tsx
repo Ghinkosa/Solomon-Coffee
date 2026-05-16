@@ -10,9 +10,17 @@ interface Props {
   product: Product;
   className?: string;
   borderStyle?: string;
+  countClassName?: string;
+  buttonClassName?: string;
 }
 
-const QuantityButtons = ({ product, className, borderStyle }: Props) => {
+const QuantityButtons = ({
+  product,
+  className,
+  borderStyle,
+  countClassName,
+  buttonClassName,
+}: Props) => {
   const { addItem, removeItem, getItemCount } = useCartStore();
   const itemCount = getItemCount(product?._id);
   const isOutOfStock = product?.stock === 0;
@@ -59,19 +67,30 @@ const QuantityButtons = ({ product, className, borderStyle }: Props) => {
       <Button
         variant="outline"
         size="icon"
-        className="w-6 h-6 border-0 hover:bg-shop_dark_green/20"
+        className={twMerge(
+          "w-6 h-6 border-0 hover:bg-shop_dark_green/20",
+          buttonClassName,
+        )}
         onClick={handleRemoveProduct}
         disabled={itemCount === 0 || isOutOfStock}
       >
         <HiMinus />
       </Button>
-      <span className="font-semibold text-sm w-6 text-center text-dark-color">
+      <span
+        className={twMerge(
+          "font-semibold text-sm w-6 text-center text-dark-color",
+          countClassName,
+        )}
+      >
         {itemCount}
       </span>
       <Button
         variant="outline"
         size="icon"
-        className="w-6 h-6 border-0 hover:bg-shop_dark_green/20"
+        className={twMerge(
+          "w-6 h-6 border-0 hover:bg-shop_dark_green/20",
+          buttonClassName,
+        )}
         onClick={handleAddToCart}
         disabled={isOutOfStock}
       >

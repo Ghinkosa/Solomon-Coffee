@@ -5,6 +5,7 @@ import {
   Home,
   ShoppingBag,
   BookOpen,
+  GraduationCap,
   Coffee,
   User,
   ShoppingCart,
@@ -107,12 +108,13 @@ const Sidebar: FC<SidebarProps> = ({
         { title: "Home", href: "/", icon: Home },
         { title: "Shop", href: "/shop", icon: ShoppingBag },
         { title: "Categories", href: "/category", icon: Grid3X3 },
-        { title: "Blog", href: "/blog", icon: BookOpen },
         {
           title: dealNavLabel ?? "Limited Roasts",
           href: "/deal",
           icon: Coffee,
         },
+        { title: "Blog", href: "/blog", icon: BookOpen },
+        { title: "Coffee Education", href: "/education", icon: GraduationCap },
       ],
     },
     {

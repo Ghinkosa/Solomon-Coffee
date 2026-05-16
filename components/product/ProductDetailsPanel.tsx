@@ -26,6 +26,7 @@ export function ProductDetailsPanel({
   variant = "default",
 }: ProductDetailsPanelProps) {
   const isCompact = variant === "compact";
+
   return (
     <AnimatePresence>
       {expandedProduct && detailPanelPosition && (
@@ -52,11 +53,12 @@ export function ProductDetailsPanel({
           transition={{ duration: 0.2 }}
           onMouseEnter={clearClosePanelTimeout}
           onMouseLeave={() => {
-            if (!detailPanelPosition.isMobile && window.innerWidth >= 768) return;
+            if (!detailPanelPosition.isMobile && window.innerWidth >= 768)
+              return;
             schedulePanelClose();
           }}
-          className={`absolute z-30 flex flex-col rounded-xl border border-[#e4c290]/35 bg-shop_dark_green text-[#e4c290] shadow-2xl ring-1 ring-[#e4c290]/20 ${
-            isCompact ? "p-4 md:p-5" : "p-6"
+          className={`absolute z-30 flex flex-col rounded-xl border border-[#e4c290]/40 bg-[#3a2417] text-[#fdf6e8] shadow-2xl ring-1 ring-[#e4c290]/25 ${
+            isCompact ? "p-4 md:p-5" : "p-5"
           }`}
           style={{
             top: detailPanelPosition.top,
@@ -67,48 +69,37 @@ export function ProductDetailsPanel({
               : {}),
           }}
         >
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#e4c290]">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#e4c290]">
               Coffee details
             </p>
             <button
               type="button"
               onClick={onClose}
-              className="text-[#e4c290]/70 hover:text-[#fdf6e8] transition-colors"
+              className="rounded-md p-1 text-[#e4c290]/80 transition-colors hover:bg-[#2a1810]/60 hover:text-[#fdf6e8]"
               aria-label="Close details"
             >
               <X size={16} />
             </button>
           </div>
 
-          <div
-            className={`mt-3 flex flex-1 gap-4 ${
-              isCompact
-                ? "flex-col md:flex-row md:items-end md:justify-between"
-                : "flex-col justify-between"
-            }`}
-          >
+          <div className="mt-4 flex flex-col gap-4">
             <ProductExpandedDetails
               product={expandedProduct}
               variant={variant}
             />
 
-            <div
-              className={`shrink-0 space-y-3 ${
-                isCompact
-                  ? "border-t border-[#e4c290]/20 pt-3 md:border-t-0 md:border-l md:pl-5 md:pt-0"
-                  : "border-t border-[#e4c290]/20 pt-3"
-              }`}
-            >
+            <div className="space-y-3 rounded-lg border border-[#e4c290]/25 bg-[#2a1810]/50 p-3.5">
               <PriceView
                 price={expandedProduct.price}
                 discount={expandedProduct.discount}
-                className="text-base text-[#fdf6e8]"
+                variant="onDark"
               />
               <AddToCartButton
                 product={expandedProduct}
-                className={`rounded-full !bg-[#e4c290] !text-[#09332c] !border-[#e4c290] hover:!bg-[#fdf6e8] hover:!text-[#09332c] hover:!border-[#fdf6e8] ${
-                  isCompact ? "w-full md:w-36" : "w-full max-w-[11rem]"
+                theme="onDark"
+                className={`rounded-full !bg-[#e4c290] !text-[#3a2417] !border-[#e4c290] hover:!bg-[#fdf6e8] hover:!text-[#3a2417] hover:!border-[#fdf6e8] ${
+                  isCompact ? "w-full" : "w-full max-w-none"
                 }`}
               />
             </div>

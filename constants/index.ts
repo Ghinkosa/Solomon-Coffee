@@ -2,7 +2,11 @@ export const headerPrimaryNav = [
   { title: "Home", href: "/" },
   { title: "Shop", href: "/shop" },
   { title: "Limited Roasts", href: "/deal" },
+];
+
+export const headerBlogNav = [
   { title: "Blog", href: "/blog" },
+  { title: "Education", href: "/education" },
 ];
 
 export const headerContactNav = [
@@ -11,7 +15,11 @@ export const headerContactNav = [
 ];
 
 /** Full nav list (mobile sidebar, etc.) */
-export const headerData = [...headerPrimaryNav, ...headerContactNav];
+export const headerData = [
+  ...headerPrimaryNav,
+  ...headerBlogNav,
+  ...headerContactNav,
+];
 
 
 export const productType = [

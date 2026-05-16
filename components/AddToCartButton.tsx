@@ -13,9 +13,11 @@ import { trackAddToCart } from "@/lib/analytics";
 interface Props {
   product: Product;
   className?: string;
+  theme?: "default" | "onDark";
 }
 
-const AddToCartButton = memo(({ product, className }: Props) => {
+const AddToCartButton = memo(({ product, className, theme = "default" }: Props) => {
+  const isOnDark = theme === "onDark";
   const { addItem, getItemCount } = useCartStore();
   const [isClient, setIsClient] = useState(false);
 
@@ -74,13 +76,41 @@ const AddToCartButton = memo(({ product, className }: Props) => {
       {itemCount ? (
         <div className="text-sm w-full">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">Quantity</span>
-            <QuantityButtons product={product} />
+            <span
+              className={cn(
+                "text-xs font-medium",
+                isOnDark ? "text-[#e4c290]/90" : "text-muted-foreground",
+              )}
+            >
+              Quantity
+            </span>
+            <QuantityButtons
+              product={product}
+              countClassName={isOnDark ? "text-[#fdf6e8]" : undefined}
+              buttonClassName={
+                isOnDark
+                  ? "border-[#e4c290]/40 bg-[#2a1810]/80 text-[#fdf6e8] hover:bg-[#3a2417]"
+                  : undefined
+              }
+            />
           </div>
-          <div className="flex items-center justify-between border-t pt-1">
-            <span className="text-xs font-semibold">Subtotal</span>
+          <div
+            className={cn(
+              "mt-2 flex items-center justify-between border-t pt-2",
+              isOnDark ? "border-[#e4c290]/25" : "",
+            )}
+          >
+            <span
+              className={cn(
+                "text-xs font-semibold",
+                isOnDark ? "text-[#e4c290]" : "",
+              )}
+            >
+              Subtotal
+            </span>
             <PriceFormatter
               amount={product?.price ? product.price * itemCount : 0}
+              className={isOnDark ? "text-[#fdf6e8] font-semibold" : undefined}
             />
           </div>
         </div>
