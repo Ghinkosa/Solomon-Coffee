@@ -50,6 +50,18 @@ interface ProductContentProps {
   brand: ProductBrandRows;
 }
 
+// API response type
+interface ApiPackagingOption {
+  _id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  price: number;
+  default: boolean;
+  imageUrl?: string;
+  image?: any;
+}
+
 const ProductContent = ({
   product,
   relatedProducts,
@@ -87,11 +99,11 @@ const ProductContent = ({
         if (!res.ok) {
           throw new Error("Failed to fetch packaging options");
         }
-        const data = await res.json();
+        const data: ApiPackagingOption[] = await res.json();
         console.log("📦 Packaging options loaded:", data);
         
         // Transform the data to match store's PackagingOption type
-        const transformedData = data.map((item: any) => ({
+        const transformedData: PackagingOption[] = data.map((item: ApiPackagingOption) => ({
           _id: item._id,
           title: item.title,
           slug: { current: item.slug || "" },
@@ -103,6 +115,14 @@ const ProductContent = ({
         }));
         
         setPackagingOptions(transformedData);
+        
+        // Set default packaging from the fetched options
+        const defaultPkg = transformedData.find((p: PackagingOption) => p.default);
+        if (defaultPkg) {
+          setSelectedPackaging(defaultPkg);
+        } else if (transformedData.length > 0) {
+          setSelectedPackaging(transformedData[0]);
+        }
       } catch (err) {
         console.error("Failed to load packaging", err);
       } finally {
@@ -111,19 +131,6 @@ const ProductContent = ({
     }
     fetchPackaging();
   }, []);
-
-  // Set default packaging after options are loaded
-  useEffect(() => {
-    if (packagingOptions.length > 0 && !selectedPackaging) {
-      const defaultPkg = packagingOptions.find(p => p.default);
-      if (defaultPkg) {
-        console.log("Setting default packaging:", defaultPkg);
-        setSelectedPackaging(defaultPkg);
-      } else {
-        setSelectedPackaging(packagingOptions[0]);
-      }
-    }
-  }, [packagingOptions, selectedPackaging]);
 
   const currentPrice = selectedWeight?.price || product.price || 0;
   const packagingPrice = selectedPackaging?.price || 0;
@@ -334,24 +341,23 @@ const ProductContent = ({
                   Select Packaging
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {packagingOptions.map((pkg) => {
+                  {packagingOptions.map((pkg: PackagingOption) => {
                     const isSelected = selectedPackaging?._id === pkg._id;
                     
-                    // Get image URL safely
+                    // Get image URL safely using type assertion
+                    const pkgAny = pkg as any;
                     let imgUrl = "/placeholder-pkg.png";
-                    if (pkg.imageUrl) {
-                      imgUrl = pkg.imageUrl;
-                    } else if (pkg.image && typeof pkg.image === 'object') {
-                      const asset = (pkg.image as any).asset;
-                      if (asset && asset.url) {
-                        imgUrl = asset.url;
-                      }
+                    if (pkgAny.imageUrl) {
+                      imgUrl = pkgAny.imageUrl;
                     }
                     
                     return (
                       <button
                         key={pkg._id}
-                        onClick={() => setSelectedPackaging(pkg)}
+                        onClick={() => {
+                          console.log("📦 Selected packaging:", pkg);
+                          setSelectedPackaging(pkg);
+                        }}
                         className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
                           isSelected
                             ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
