@@ -40,7 +40,6 @@ import {
 import RelatedProducts from "./RelatedProducts";
 import { WeightOption, GrindOption, PackagingOption } from "@/store";
 import Image from "next/image";
-import { urlFor } from "@/sanity/lib/image";
 
 /** Rows from BRAND_QUERY (`"brandName": brand->title`) */
 type ProductBrandRows = Array<{ brandName?: string | null }> | null;
@@ -50,40 +49,6 @@ interface ProductContentProps {
   relatedProducts: Product[];
   brand: ProductBrandRows;
 }
-
-// Helper function to get packaging options from product (same as ServerCartContent)
-const getPackagingOptions = (product: any): PackagingOption[] => {
-  if (!product.packagingOptions || !Array.isArray(product.packagingOptions)) {
-    return [];
-  }
-  
-  return product.packagingOptions
-    .filter((ref: any) => {
-      if (!ref.packaging) return false;
-      if (ref.available === false) return false;
-      return true;
-    })
-    .map((ref: any) => {
-      const pkg = ref.packaging;
-      let imageUrl = "";
-      if (pkg.imageUrl) {
-        imageUrl = pkg.imageUrl;
-      } else if (pkg.image && pkg.image.asset && pkg.image.asset.url) {
-        imageUrl = pkg.image.asset.url;
-      }
-      
-      return {
-        _id: pkg._id,
-        title: pkg.title,
-        slug: pkg.slug || { current: "" },
-        description: pkg.description,
-        price: pkg.price || 0,
-        default: ref.isDefault || pkg.default || false,
-        image: pkg.image,
-        imageUrl: imageUrl,
-      } as PackagingOption;
-    });
-};
 
 const ProductContent = ({
   product,
@@ -97,9 +62,8 @@ const ProductContent = ({
     (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available)
   );
   const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption | undefined>(undefined);
-  
-  // Get packaging options directly from the product (same as ServerCartContent)
-  const packagingOptions = getPackagingOptions(product);
+  const [packagingOptions, setPackagingOptions] = useState<PackagingOption[]>([]);
+  const [loadingPackaging, setLoadingPackaging] = useState(true);
 
   // Get actual review data from product
   const averageRating = product?.averageRating || 0;
@@ -115,11 +79,45 @@ const ProductContent = ({
     }
   }, [product]);
 
+  // Fetch packaging from API (same as PackagingSelector)
+  useEffect(() => {
+    async function fetchPackaging() {
+      try {
+        const res = await fetch("/api/packaging");
+        if (!res.ok) {
+          throw new Error("Failed to fetch packaging options");
+        }
+        const data = await res.json();
+        console.log("📦 Packaging options loaded:", data);
+        
+        // Transform the data to match store's PackagingOption type
+        const transformedData = data.map((item: any) => ({
+          _id: item._id,
+          title: item.title,
+          slug: { current: item.slug || "" },
+          description: item.description,
+          price: item.price,
+          default: item.default,
+          image: item.image,
+          imageUrl: item.imageUrl,
+        }));
+        
+        setPackagingOptions(transformedData);
+      } catch (err) {
+        console.error("Failed to load packaging", err);
+      } finally {
+        setLoadingPackaging(false);
+      }
+    }
+    fetchPackaging();
+  }, []);
+
   // Set default packaging after options are loaded
   useEffect(() => {
     if (packagingOptions.length > 0 && !selectedPackaging) {
       const defaultPkg = packagingOptions.find(p => p.default);
       if (defaultPkg) {
+        console.log("Setting default packaging:", defaultPkg);
         setSelectedPackaging(defaultPkg);
       } else {
         setSelectedPackaging(packagingOptions[0]);
@@ -317,8 +315,19 @@ const ProductContent = ({
               </div>
             )}
 
-            {/* Packaging Selection - Using product's packagingOptions (same as ServerCartContent) */}
-            {packagingOptions.length > 0 ? (
+            {/* Packaging Selection - Using API like PackagingSelector */}
+            {loadingPackaging ? (
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 font-medium text-gray-700">
+                  <Package className="w-4 h-4 text-shop_dark_green" />
+                  Select Packaging
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
+                  <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
+                </div>
+              </div>
+            ) : packagingOptions.length > 0 ? (
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Package className="w-4 h-4 text-shop_dark_green" />
@@ -328,34 +337,36 @@ const ProductContent = ({
                   {packagingOptions.map((pkg) => {
                     const isSelected = selectedPackaging?._id === pkg._id;
                     
+                    // Get image URL safely
+                    let imgUrl = "/placeholder-pkg.png";
+                    if (pkg.imageUrl) {
+                      imgUrl = pkg.imageUrl;
+                    } else if (pkg.image && typeof pkg.image === 'object') {
+                      const asset = (pkg.image as any).asset;
+                      if (asset && asset.url) {
+                        imgUrl = asset.url;
+                      }
+                    }
+                    
                     return (
                       <button
                         key={pkg._id}
-                        onClick={() => {
-                          console.log("📦 Selected packaging:", pkg);
-                          setSelectedPackaging(pkg);
-                        }}
+                        onClick={() => setSelectedPackaging(pkg)}
                         className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
                           isSelected
                             ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
                             : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
                         }`}
                       >
-                        {pkg.imageUrl ? (
-                          <div className="relative w-10 h-10 shrink-0 bg-gray-50 rounded-md overflow-hidden">
-                            <Image
-                              src={pkg.imageUrl}
-                              alt={pkg.title}
-                              width={40}
-                              height={40}
-                              className="object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-10 h-10 shrink-0 flex items-center justify-center bg-gray-100 rounded-lg">
-                            <Package className="w-5 h-5 text-gray-400" />
-                          </div>
-                        )}
+                        <div className="relative w-10 h-10 shrink-0 bg-gray-50 rounded-md overflow-hidden">
+                          <Image
+                            src={imgUrl}
+                            alt={pkg.title}
+                            width={40}
+                            height={40}
+                            className="object-contain"
+                          />
+                        </div>
                         <div className="flex-1 text-left">
                           <div className="font-semibold text-gray-900">{pkg.title}</div>
                           <div className="text-sm text-gray-600">

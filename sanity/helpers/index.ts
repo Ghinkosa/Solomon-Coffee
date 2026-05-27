@@ -10,15 +10,7 @@ export const getProductsByCategory = async (categorySlug: string) => {
       grindOptions[],
       packagingOptions[] {
         ...,
-        packaging-> {
-          _id,
-          title,
-          slug,
-          description,
-          price,
-          default,
-          "imageUrl": image.asset->url
-        }
+        packaging->
       }
     } | order(name asc)`,
   );
@@ -45,15 +37,7 @@ export const getAllProducts = async () => {
       grindOptions[],
       packagingOptions[] {
         ...,
-        packaging-> {
-          _id,
-          title,
-          slug,
-          description,
-          price,
-          default,
-          "imageUrl": image.asset->url
-        }
+        packaging->
       }
     } | order(name asc)`,
   );
@@ -77,15 +61,7 @@ export const getProductBySlug = async (slug: string) => {
       grindOptions[],
       packagingOptions[] {
         ...,
-        packaging-> {
-          _id,
-          title,
-          slug,
-          description,
-          price,
-          default,
-          "imageUrl": image.asset->url
-        }
+        packaging->
       }
     }`,
   );
@@ -94,7 +70,6 @@ export const getProductBySlug = async (slug: string) => {
       query: PRODUCT_BY_SLUG_QUERY,
       params: { slug },
     });
-    console.log("🔍 Fetched product packaging:", JSON.stringify(product?.data?.packagingOptions, null, 2));
     return product?.data || null;
   } catch (error) {
     console.error("Error fetching product by slug:", error);
@@ -225,15 +200,7 @@ export const getMyOrders = async (
           grindOptions[],
           packagingOptions[] {
             ...,
-            packaging-> {
-              _id,
-              title,
-              slug,
-              description,
-              price,
-              default,
-              "imageUrl": image.asset->url
-            }
+            packaging->
           }
         },
         weight,
