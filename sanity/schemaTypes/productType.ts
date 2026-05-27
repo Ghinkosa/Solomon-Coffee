@@ -1,5 +1,5 @@
 import { TrolleyIcon } from "@sanity/icons";
-import { defineArrayMember, defineField, defineType } from "sanity";
+import { defineField, defineType } from "sanity";
 import React from "react";
 
 // Custom preview component for product
@@ -76,61 +76,7 @@ export const productType = defineType({
     defineField({
       name: "description",
       title: "Description",
-      type: "array",
-      of: [
-        defineArrayMember({
-          type: "block",
-          styles: [
-            { title: "Normal", value: "normal" },
-            { title: "Heading 1", value: "h1" },
-            { title: "Heading 2", value: "h2" },
-            { title: "Heading 3", value: "h3" },
-            { title: "Quote", value: "blockquote" },
-          ],
-          lists: [
-            { title: "Bullet", value: "bullet" },
-            { title: "Numbered", value: "number" },
-          ],
-          marks: {
-            decorators: [
-              { title: "Strong", value: "strong" },
-              { title: "Emphasis", value: "em" },
-              { title: "Underline", value: "underline" },
-              { title: "Strike", value: "strike-through" },
-            ],
-            annotations: [
-              {
-                name: "link",
-                title: "Link",
-                type: "object",
-                fields: [
-                  {
-                    name: "href",
-                    title: "URL",
-                    type: "url",
-                  },
-                ],
-              },
-            ],
-          },
-        }),
-        defineArrayMember({
-          type: "image",
-          options: { hotspot: true },
-          fields: [
-            {
-              name: "caption",
-              title: "Caption",
-              type: "string",
-            },
-            {
-              name: "alt",
-              title: "Alt Text",
-              type: "string",
-            },
-          ],
-        }),
-      ],
+      type: "string",
     }),
     defineField({
       name: "price",
