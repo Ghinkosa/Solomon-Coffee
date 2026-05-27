@@ -18,8 +18,12 @@ import {
   Truck,
   Shield,
   RefreshCw,
+  Scale,
+  Coffee,
+  Package,
+  Check,
 } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { FiShare2 } from "react-icons/fi";
 import { RxBorderSplit } from "react-icons/rx";
@@ -34,6 +38,10 @@ import {
   ProductSectionWrapper,
 } from "@/components/ProductClientWrapper";
 import RelatedProducts from "./RelatedProducts";
+import { WeightOption, GrindOption, PackagingOption } from "@/store";
+import Image from "next/image";
+import { urlFor } from "@/sanity/lib/image";
+
 /** Rows from BRAND_QUERY (`"brandName": brand->title`) */
 type ProductBrandRows = Array<{ brandName?: string | null }> | null;
 
@@ -48,6 +56,16 @@ const ProductContent = ({
   relatedProducts,
   brand,
 }: ProductContentProps) => {
+  const [selectedWeight, setSelectedWeight] = useState<WeightOption | undefined>(
+    (product as any).weightOptions?.find((w: WeightOption) => w.isDefault)
+  );
+  const [selectedGrind, setSelectedGrind] = useState<GrindOption | undefined>(
+    (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available)
+  );
+  const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption | undefined>(
+    (product as any).packagingOptions?.find((p: any) => p.isDefault)?.packaging
+  );
+
   // Get actual review data from product
   const averageRating = product?.averageRating || 0;
   const totalReviews = product?.totalReviews || 0;
@@ -61,6 +79,10 @@ const ProductContent = ({
       });
     }
   }, [product]);
+
+  const currentPrice = selectedWeight?.price || product.price || 0;
+  const packagingPrice = selectedPackaging?.price || 0;
+  const packagingOptions = (product as any).packagingOptions?.map((opt: any) => opt.packaging).filter(Boolean) || [];
 
   return (
     <ProductAnimationWrapper>
@@ -140,11 +162,18 @@ const ProductContent = ({
 
             {/* Pricing Section */}
             <div className="space-y-4 border-t border-b border-gray-200 py-6 bg-white/70 rounded-lg px-4">
-              <PriceView
-                price={product?.price}
-                discount={product?.discount}
-                className="text-2xl font-bold"
-              />
+              <div className="flex items-baseline gap-2">
+                <PriceView
+                  price={currentPrice}
+                  discount={product?.discount}
+                  className="text-2xl font-bold"
+                />
+                {packagingPrice > 0 && (
+                  <span className="text-sm text-gray-500">
+                    + ${packagingPrice} packaging
+                  </span>
+                )}
+              </div>
 
               {/* Enhanced Stock Status */}
               <div className="flex items-center gap-3">
@@ -173,10 +202,128 @@ const ProductContent = ({
               )}
             </div>
 
+            {/* Weight Selection */}
+            {(product as any).weightOptions && (product as any).weightOptions.length > 0 && (
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 font-medium text-gray-700">
+                  <Scale className="w-4 h-4 text-shop_dark_green" />
+                  Select Weight
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {(product as any).weightOptions.map((option: WeightOption) => (
+                    <button
+                      key={option.weight}
+                      onClick={() => setSelectedWeight(option)}
+                      className={`p-3 rounded-xl border-2 text-center transition-all ${
+                        selectedWeight?.weight === option.weight
+                          ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
+                          : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="font-semibold text-gray-900">{option.weight}</div>
+                      <div className="text-sm text-gray-600">
+                        ${option.price}
+                      </div>
+                      {option.isDefault && (
+                        <div className="text-xs text-shop_dark_green mt-1">Default</div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Grind Selection */}
+            {(product as any).grindOptions && (product as any).grindOptions.length > 0 && (
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 font-medium text-gray-700">
+                  <Coffee className="w-4 h-4 text-shop_dark_green" />
+                  Select Grind
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {(product as any).grindOptions
+                    .filter((g: GrindOption) => g.available)
+                    .map((option: GrindOption) => (
+                      <button
+                        key={option.grindType}
+                        onClick={() => setSelectedGrind(option)}
+                        className={`p-3 rounded-xl border-2 text-center transition-all ${
+                          selectedGrind?.grindType === option.grindType
+                            ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
+                            : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="font-semibold text-gray-900">
+                          {option.grindType === "whole-bean"
+                            ? "Whole Bean"
+                            : option.grindType === "cafetiere"
+                            ? "Cafetiere"
+                            : option.grindType === "filter"
+                            ? "Filter"
+                            : "Espresso"}
+                        </div>
+                        {option.isDefault && (
+                          <div className="text-xs text-shop_dark_green mt-1">Default</div>
+                        )}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Packaging Selection */}
+            {packagingOptions.length > 0 && (
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 font-medium text-gray-700">
+                  <Package className="w-4 h-4 text-shop_dark_green" />
+                  Select Packaging
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {packagingOptions.map((pkg: PackagingOption) => (
+                    <button
+                      key={pkg._id}
+                      onClick={() => setSelectedPackaging(pkg)}
+                      className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                        selectedPackaging?._id === pkg._id
+                          ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
+                          : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pkg.image && (
+                        <div className="relative w-10 h-10 shrink-0">
+                          <Image
+                            src={urlFor(pkg.image).width(40).height(40).url()}
+                            alt={pkg.title}
+                            width={40}
+                            height={40}
+                            className="object-contain"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 text-left">
+                        <div className="font-semibold text-gray-900">{pkg.title}</div>
+                        <div className="text-sm text-gray-600">
+                          {pkg.price === 0 ? "Free" : `+$${pkg.price}`}
+                        </div>
+                      </div>
+                      {selectedPackaging?._id === pkg._id && (
+                        <Check className="w-5 h-5 text-shop_dark_green shrink-0" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <ProductActionWrapper delay={0.3}>
               <div className="flex items-center gap-2.5 lg:gap-5">
-                <AddToCartButton product={product} />
+                <AddToCartButton 
+                  product={product}
+                  selectedWeight={selectedWeight}
+                  selectedGrind={selectedGrind}
+                  selectedPackaging={selectedPackaging}
+                />
                 <FavoriteButton showProduct={true} product={product} />
               </div>
             </ProductActionWrapper>

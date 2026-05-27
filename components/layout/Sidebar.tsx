@@ -109,7 +109,7 @@ const Sidebar: FC<SidebarProps> = ({
         { title: "Shop", href: "/shop", icon: ShoppingBag },
         { title: "Categories", href: "/category", icon: Grid3X3 },
         {
-          title: dealNavLabel ?? "Limited Roasts",
+          title: dealNavLabel ?? "Our Roasting Process",
           href: "/deal",
           icon: Coffee,
         },

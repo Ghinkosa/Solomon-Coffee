@@ -10,6 +10,9 @@ type AddToCartParams = {
   price: number;
   quantity: number;
   userId?: string;
+  weight?: string;      // Added weight parameter
+  grind?: string;       // Added grind parameter
+  packaging?: string;   // Added packaging parameter
 };
 
 type RemoveFromCartParams = AddToCartParams;
@@ -60,36 +63,73 @@ export function trackEvent(
 
 // E-commerce specific events
 export function trackAddToCart(params: AddToCartParams) {
-  trackEvent("add_to_cart", params);
+  trackEvent("add_to_cart", {
+    product_id: params.productId,
+    name: params.name,
+    price: params.price,
+    quantity: params.quantity,
+    user_id: params.userId,
+    weight: params.weight,
+    grind: params.grind,
+    packaging: params.packaging,
+  });
 }
 
 export function trackRemoveFromCart(params: RemoveFromCartParams) {
-  trackEvent("remove_from_cart", params);
+  trackEvent("remove_from_cart", {
+    product_id: params.productId,
+    name: params.name,
+    price: params.price,
+    quantity: params.quantity,
+    user_id: params.userId,
+    weight: params.weight,
+    grind: params.grind,
+    packaging: params.packaging,
+  });
 }
 
 export function trackOrderPlaced(params: OrderPlacedParams) {
-  trackEvent("order_placed", params);
+  trackEvent("order_placed", {
+    order_id: params.orderId,
+    amount: params.amount,
+    status: params.status,
+    user_id: params.userId,
+  });
 }
 
 export function trackOrderStatusUpdate(params: OrderStatusUpdateParams) {
-  trackEvent("order_status_update", params);
+  trackEvent("order_status_update", {
+    order_id: params.orderId,
+    status: params.status,
+    user_id: params.userId,
+  });
 }
 
 export function trackUserRegistration(params: UserRegistrationParams) {
-  trackEvent("user_registration", params);
+  trackEvent("user_registration", {
+    user_id: params.userId,
+    email: params.email,
+  });
 }
 
 export function trackUserLogin(params: UserLoginParams) {
-  trackEvent("user_login", params);
+  trackEvent("user_login", {
+    user_id: params.userId,
+    email: params.email,
+  });
 }
 
 export function trackProductView(params: ProductViewParams) {
-  trackEvent("view_product", params);
+  trackEvent("view_product", {
+    product_id: params.productId,
+    name: params.name,
+    user_id: params.userId,
+  });
 }
 
 // Additional e-commerce tracking functions
 export function trackCartView(userId?: string) {
-  trackEvent("view_cart", { userId });
+  trackEvent("view_cart", { user_id: userId });
 }
 
 export function trackCheckoutStarted(params: {
@@ -97,7 +137,11 @@ export function trackCheckoutStarted(params: {
   cartValue: number;
   itemCount: number;
 }) {
-  trackEvent("begin_checkout", params);
+  trackEvent("begin_checkout", {
+    user_id: params.userId,
+    cart_value: params.cartValue,
+    item_count: params.itemCount,
+  });
 }
 
 export function trackSearchPerformed(params: {
@@ -105,7 +149,11 @@ export function trackSearchPerformed(params: {
   userId?: string;
   resultCount?: number;
 }) {
-  trackEvent("search", params);
+  trackEvent("search", {
+    search_term: params.searchTerm,
+    user_id: params.userId,
+    result_count: params.resultCount,
+  });
 }
 
 export function trackCategoryView(params: {
@@ -113,7 +161,11 @@ export function trackCategoryView(params: {
   categoryName: string;
   userId?: string;
 }) {
-  trackEvent("view_category", params);
+  trackEvent("view_category", {
+    category_id: params.categoryId,
+    category_name: params.categoryName,
+    user_id: params.userId,
+  });
 }
 
 export function trackWishlistAdd(params: {
@@ -121,7 +173,11 @@ export function trackWishlistAdd(params: {
   name: string;
   userId?: string;
 }) {
-  trackEvent("add_to_wishlist", params);
+  trackEvent("add_to_wishlist", {
+    product_id: params.productId,
+    name: params.name,
+    user_id: params.userId,
+  });
 }
 
 export function trackWishlistRemove(params: {
@@ -129,7 +185,11 @@ export function trackWishlistRemove(params: {
   name: string;
   userId?: string;
 }) {
-  trackEvent("remove_from_wishlist", params);
+  trackEvent("remove_from_wishlist", {
+    product_id: params.productId,
+    name: params.name,
+    user_id: params.userId,
+  });
 }
 
 export function trackPageView(params: {
@@ -137,7 +197,11 @@ export function trackPageView(params: {
   pageTitle?: string;
   userId?: string;
 }) {
-  trackEvent("page_view", params);
+  trackEvent("page_view", {
+    page_path: params.pagePath,
+    page_title: params.pageTitle,
+    user_id: params.userId,
+  });
 }
 
 // Advanced e-commerce tracking
@@ -151,10 +215,28 @@ export function trackPurchase(params: {
     category?: string;
     quantity: number;
     price: number;
+    weight?: string;
+    grind?: string;
+    packaging?: string;
   }>;
   userId?: string;
 }) {
-  trackEvent("purchase", params);
+  trackEvent("purchase", {
+    order_id: params.orderId,
+    value: params.value,
+    currency: params.currency || "USD",
+    items: params.items.map(item => ({
+      product_id: item.productId,
+      name: item.name,
+      category: item.category,
+      quantity: item.quantity,
+      price: item.price,
+      weight: item.weight,
+      grind: item.grind,
+      packaging: item.packaging,
+    })),
+    user_id: params.userId,
+  });
 }
 
 export function trackBestSellingProducts(params: {
@@ -165,9 +247,12 @@ export function trackBestSellingProducts(params: {
     salesCount: number;
     revenue: number;
   }>;
-  timeframe: string; // e.g., "weekly", "monthly"
+  timeframe: string;
 }) {
-  trackEvent("best_selling_products", params);
+  trackEvent("best_selling_products", {
+    products: params.products,
+    timeframe: params.timeframe,
+  });
 }
 
 export function trackOrderDetails(params: {
@@ -184,9 +269,30 @@ export function trackOrderDetails(params: {
     name: string;
     quantity: number;
     price: number;
+    weight?: string;
+    grind?: string;
+    packaging?: string;
   }>;
 }) {
-  trackEvent("order_details", params);
+  trackEvent("order_details", {
+    order_id: params.orderId,
+    order_number: params.orderNumber,
+    status: params.status,
+    value: params.value,
+    item_count: params.itemCount,
+    payment_method: params.paymentMethod,
+    shipping_method: params.shippingMethod,
+    user_id: params.userId,
+    products: params.products.map(p => ({
+      product_id: p.productId,
+      name: p.name,
+      quantity: p.quantity,
+      price: p.price,
+      weight: p.weight,
+      grind: p.grind,
+      packaging: p.packaging,
+    })),
+  });
 }
 
 export function trackOrderFullfillment(params: {
@@ -194,10 +300,17 @@ export function trackOrderFullfillment(params: {
   status: string;
   previousStatus: string;
   value: number;
-  fulfillmentTime?: number; // in hours/days
+  fulfillmentTime?: number;
   userId?: string;
 }) {
-  trackEvent("order_fulfillment", params);
+  trackEvent("order_fulfillment", {
+    order_id: params.orderId,
+    status: params.status,
+    previous_status: params.previousStatus,
+    value: params.value,
+    fulfillment_time: params.fulfillmentTime,
+    user_id: params.userId,
+  });
 }
 
 export function trackInventoryAction(params: {
@@ -207,7 +320,13 @@ export function trackInventoryAction(params: {
   currentStock: number;
   previousStock?: number;
 }) {
-  trackEvent("inventory_action", params);
+  trackEvent("inventory_action", {
+    product_id: params.productId,
+    name: params.name,
+    action: params.action,
+    current_stock: params.currentStock,
+    previous_stock: params.previousStock,
+  });
 }
 
 /**
@@ -306,5 +425,3 @@ export function trackUserLoginEnhanced(
     });
   }
 }
-
-// Add more as needed for your analytics needs

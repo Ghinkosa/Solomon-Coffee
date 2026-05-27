@@ -53,7 +53,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
     { title: "Categories", href: "/category", icon: Grid3X3 },
     { title: "Blog", href: "/blog", icon: BookOpen },
     { title: "Coffee Education", href: "/education", icon: GraduationCap },
-    { title: "Limited Roasts", href: "/deal", icon: Coffee },
+    { title: "Our Roasting Process", href: "/deal", icon: Coffee },
   ];
 
   const supportMenuItems = [
@@ -236,7 +236,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
             >
               <Coffee size={20} className="text-shop_orange" />
               <span className="text-xs font-medium text-zinc-300">
-                Limited Roasts
+                Our Roasting Process
               </span>
             </Link>
             <Link

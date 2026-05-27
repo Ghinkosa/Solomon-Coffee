@@ -598,6 +598,7 @@ export type Order = {
 };
 
 export type Product = {
+  weightOptions: any;
   _id: string;
   _type: "product";
   _createdAt: string;

@@ -70,6 +70,10 @@ const getDefaultGrind = (product: Product): GrindOption | undefined => {
   return (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available);
 };
 
+const getDefaultPackaging = (product: Product): PackagingOption | undefined => {
+  return (product as any).packagingOptions?.find((p: any) => p.isDefault)?.packaging;
+};
+
 const getItemCurrentPrice = (item: CartItem): number => {
   if (item.selectedWeight && item.selectedWeight.price) {
     return item.selectedWeight.price;

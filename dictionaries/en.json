@@ -15,7 +15,7 @@
     "menu": {
       "home": "Home",
       "shop": "Shop",
-      "deals": "Limited Roasts",
+      "deals": "Our Roasting Process",
       "orders": "Orders",
       "contact": "Contact",
       "blog": "Blog",
@@ -359,7 +359,7 @@
       "secs": "Secs"
     },
     "hero": {
-      "badge": "LIMITED ROASTS",
+      "badge": "OUR ROASTING PROCESS",
       "upToOff": "Up to {maxDiscount}% off",
       "title": "Roaster's limited selection",
       "description": "Hand-picked lots from our roastery and partner farms—special pricing on small batches while supplies last. Save up to {maxDiscount}% on these coffees.",
