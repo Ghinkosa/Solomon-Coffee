@@ -12,7 +12,6 @@ import {
   Droplets, 
   Sun, 
   Droplet, 
-  Coffee,
   Sparkles,
   TrendingUp,
   Award,
