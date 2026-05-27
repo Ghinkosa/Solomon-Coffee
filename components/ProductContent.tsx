@@ -10,8 +10,6 @@ import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 import ProductSpecs from "@/components/ProductSpecs";
 import ProductReviews from "@/components/ProductReviews";
 import { trackProductView } from "@/lib/analytics";
-import { urlFor } from "@/sanity/lib/image";
-
 
 import { Product } from "@/sanity.types";
 import {
@@ -339,13 +337,14 @@ const ProductContent = ({
                   {packagingOptions.map((pkg) => {
                     const isSelected = selectedPackaging?._id === pkg._id;
                     
-                    // Then in the packaging mapping:
+                    // Get image URL safely
                     let imgUrl = "/placeholder-pkg.png";
-                    if (pkg.image) {
-                      try {
-                        imgUrl = urlFor(pkg.image).url();
-                      } catch (e) {
-                        imgUrl = "/placeholder-pkg.png";
+                    if (pkg.imageUrl) {
+                      imgUrl = pkg.imageUrl;
+                    } else if (pkg.image && typeof pkg.image === 'object') {
+                      const asset = (pkg.image as any).asset;
+                      if (asset && asset.url) {
+                        imgUrl = asset.url;
                       }
                     }
                     

@@ -11,6 +11,7 @@ export interface PackagingOption {
   price: number;
   default: boolean;
   image?: any;
+  imageUrl?: string;  // ← ADD THIS
 }
 
 export interface WeightOption {
