@@ -10,6 +10,8 @@ import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 import ProductSpecs from "@/components/ProductSpecs";
 import ProductReviews from "@/components/ProductReviews";
 import { trackProductView } from "@/lib/analytics";
+import { urlFor } from "@/sanity/lib/image";
+
 
 import { Product } from "@/sanity.types";
 import {
@@ -40,7 +42,6 @@ import {
 import RelatedProducts from "./RelatedProducts";
 import { WeightOption, GrindOption, PackagingOption } from "@/store";
 import Image from "next/image";
-import { urlFor } from "@/sanity/lib/image";
 
 /** Rows from BRAND_QUERY (`"brandName": brand->title`) */
 type ProductBrandRows = Array<{ brandName?: string | null }> | null;
@@ -63,6 +64,8 @@ const ProductContent = ({
     (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available)
   );
   const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption | undefined>(undefined);
+  const [packagingOptions, setPackagingOptions] = useState<PackagingOption[]>([]);
+  const [loadingPackaging, setLoadingPackaging] = useState(true);
 
   // Get actual review data from product
   const averageRating = product?.averageRating || 0;
@@ -78,43 +81,38 @@ const ProductContent = ({
     }
   }, [product]);
 
-  // ✅ FIXED: Transform packaging options from Sanity structure - DEEPER DEBUG
-  const packagingOptions: PackagingOption[] = (() => {
-    console.log("🔍 Raw product.packagingOptions:", JSON.stringify((product as any).packagingOptions, null, 2));
-    
-    if (!(product as any).packagingOptions || !Array.isArray((product as any).packagingOptions)) {
-      console.log("❌ No packagingOptions array found");
-      return [];
-    }
-    
-    const options = (product as any).packagingOptions
-      .filter((opt: any) => {
-        console.log("🔍 Filtering option:", opt);
-        return opt.available !== false && opt.packaging;
-      })
-      .map((opt: any) => {
-        const packaging = opt.packaging;
-        console.log("✅ Processing packaging:", packaging);
-        
-        return {
-          _id: packaging._id,
-          title: packaging.title || packaging.name || "Unknown",
-          price: packaging.price || 0,
-          default: opt.isDefault || packaging.default || false,
-          slug: packaging.slug || { current: "" },
-          description: packaging.description,
-          image: packaging.image,
-        };
-      });
-    
-    console.log("📦 Final packagingOptions:", options);
-    return options;
-  })();
-
-  // Debug: Log packaging options
+  // Fetch packaging from API (same as PackagingSelector)
   useEffect(() => {
-    console.log("📦 Packaging Options State:", packagingOptions);
-  }, [packagingOptions]);
+    async function fetchPackaging() {
+      try {
+        const res = await fetch("/api/packaging");
+        if (!res.ok) {
+          throw new Error("Failed to fetch packaging options");
+        }
+        const data = await res.json();
+        console.log("📦 Packaging options loaded:", data);
+        
+        // Transform the data to match store's PackagingOption type
+        const transformedData = data.map((item: any) => ({
+          _id: item._id,
+          title: item.title,
+          slug: { current: item.slug || "" },
+          description: item.description,
+          price: item.price,
+          default: item.default,
+          image: item.image,
+          imageUrl: item.imageUrl,
+        }));
+        
+        setPackagingOptions(transformedData);
+      } catch (err) {
+        console.error("Failed to load packaging", err);
+      } finally {
+        setLoadingPackaging(false);
+      }
+    }
+    fetchPackaging();
+  }, []);
 
   // Set default packaging after options are loaded
   useEffect(() => {
@@ -124,7 +122,6 @@ const ProductContent = ({
         console.log("Setting default packaging:", defaultPkg);
         setSelectedPackaging(defaultPkg);
       } else {
-        console.log("No default, selecting first packaging:", packagingOptions[0]);
         setSelectedPackaging(packagingOptions[0]);
       }
     }
@@ -132,14 +129,6 @@ const ProductContent = ({
 
   const currentPrice = selectedWeight?.price || product.price || 0;
   const packagingPrice = selectedPackaging?.price || 0;
-  
-  console.log("Current selections:", {
-    selectedWeight: selectedWeight?.weight,
-    selectedGrind: selectedGrind?.grindType,
-    selectedPackaging: selectedPackaging?.title,
-    packagingPrice,
-    currentPrice
-  });
 
   return (
     <ProductAnimationWrapper>
@@ -328,8 +317,19 @@ const ProductContent = ({
               </div>
             )}
 
-            {/* ✅ FIXED: Packaging Selection - With proper title display */}
-            {packagingOptions.length > 0 ? (
+            {/* Packaging Selection - Using API like PackagingSelector */}
+            {loadingPackaging ? (
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 font-medium text-gray-700">
+                  <Package className="w-4 h-4 text-shop_dark_green" />
+                  Select Packaging
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
+                  <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
+                </div>
+              </div>
+            ) : packagingOptions.length > 0 ? (
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Package className="w-4 h-4 text-shop_dark_green" />
@@ -339,46 +339,37 @@ const ProductContent = ({
                   {packagingOptions.map((pkg) => {
                     const isSelected = selectedPackaging?._id === pkg._id;
                     
-                    // Get image URL if exists
-                    let imgUrl = "";
+                    // Then in the packaging mapping:
+                    let imgUrl = "/placeholder-pkg.png";
                     if (pkg.image) {
                       try {
                         imgUrl = urlFor(pkg.image).url();
                       } catch (e) {
-                        imgUrl = "";
+                        imgUrl = "/placeholder-pkg.png";
                       }
                     }
                     
                     return (
                       <button
                         key={pkg._id}
-                        onClick={() => {
-                          console.log("Selected packaging:", pkg);
-                          setSelectedPackaging(pkg);
-                        }}
+                        onClick={() => setSelectedPackaging(pkg)}
                         className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
                           isSelected
                             ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
                             : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
                         }`}
                       >
-                        {imgUrl ? (
-                          <div className="relative w-10 h-10 shrink-0">
-                            <Image
-                              src={imgUrl}
-                              alt={pkg.title}
-                              width={40}
-                              height={40}
-                              className="object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-10 h-10 shrink-0 flex items-center justify-center bg-gray-100 rounded-lg">
-                            <Package className="w-5 h-5 text-gray-400" />
-                          </div>
-                        )}
+                        <div className="relative w-10 h-10 shrink-0 bg-gray-50 rounded-md overflow-hidden">
+                          <Image
+                            src={imgUrl}
+                            alt={pkg.title}
+                            width={40}
+                            height={40}
+                            className="object-contain"
+                          />
+                        </div>
                         <div className="flex-1 text-left">
-                          <div className="font-semibold text-gray-900">{pkg.title || "Packaging"}</div>
+                          <div className="font-semibold text-gray-900">{pkg.title}</div>
                           <div className="text-sm text-gray-600">
                             {pkg.price === 0 ? "Free" : `+$${pkg.price}`}
                           </div>
@@ -393,7 +384,7 @@ const ProductContent = ({
               </div>
             ) : (
               <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded-lg">
-                No packaging options available for this product
+                No packaging options available
               </div>
             )}
 
