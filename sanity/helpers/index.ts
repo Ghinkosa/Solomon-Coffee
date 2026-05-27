@@ -61,7 +61,21 @@ export const getProductBySlug = async (slug: string) => {
       grindOptions[],
       packagingOptions[] {
         ...,
-        packaging->
+        packaging-> {
+          _id,
+          title,
+          slug,
+          description,
+          price,
+          default,
+          "imageUrl": image.asset->url,
+          image {
+            asset-> {
+              _id,
+              url
+            }
+          }
+        }
       }
     }`,
   );
