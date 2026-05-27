@@ -78,25 +78,42 @@ const ProductContent = ({
     }
   }, [product]);
 
-  // Transform packaging options from Sanity structure
-  const packagingOptions: PackagingOption[] = (product as any).packagingOptions
-    ?.filter((opt: any) => opt.available !== false && opt.packaging)
-    .map((opt: any) => {
-      const packaging = opt.packaging;
-      return {
-        _id: packaging._id,
-        title: packaging.title,
-        price: packaging.price || 0,
-        default: opt.isDefault || packaging.default || false,
-        slug: packaging.slug || { current: "" },
-        description: packaging.description,
-        image: packaging.image,
-      };
-    }) || [];
+  // ✅ FIXED: Transform packaging options from Sanity structure - DEEPER DEBUG
+  const packagingOptions: PackagingOption[] = (() => {
+    console.log("🔍 Raw product.packagingOptions:", JSON.stringify((product as any).packagingOptions, null, 2));
+    
+    if (!(product as any).packagingOptions || !Array.isArray((product as any).packagingOptions)) {
+      console.log("❌ No packagingOptions array found");
+      return [];
+    }
+    
+    const options = (product as any).packagingOptions
+      .filter((opt: any) => {
+        console.log("🔍 Filtering option:", opt);
+        return opt.available !== false && opt.packaging;
+      })
+      .map((opt: any) => {
+        const packaging = opt.packaging;
+        console.log("✅ Processing packaging:", packaging);
+        
+        return {
+          _id: packaging._id,
+          title: packaging.title || packaging.name || "Unknown",
+          price: packaging.price || 0,
+          default: opt.isDefault || packaging.default || false,
+          slug: packaging.slug || { current: "" },
+          description: packaging.description,
+          image: packaging.image,
+        };
+      });
+    
+    console.log("📦 Final packagingOptions:", options);
+    return options;
+  })();
 
   // Debug: Log packaging options
   useEffect(() => {
-    console.log("📦 Packaging Options:", packagingOptions);
+    console.log("📦 Packaging Options State:", packagingOptions);
   }, [packagingOptions]);
 
   // Set default packaging after options are loaded
@@ -107,7 +124,6 @@ const ProductContent = ({
         console.log("Setting default packaging:", defaultPkg);
         setSelectedPackaging(defaultPkg);
       } else {
-        // If no default, select the first one
         console.log("No default, selecting first packaging:", packagingOptions[0]);
         setSelectedPackaging(packagingOptions[0]);
       }
@@ -118,9 +134,9 @@ const ProductContent = ({
   const packagingPrice = selectedPackaging?.price || 0;
   
   console.log("Current selections:", {
-    selectedWeight,
-    selectedGrind,
-    selectedPackaging,
+    selectedWeight: selectedWeight?.weight,
+    selectedGrind: selectedGrind?.grindType,
+    selectedPackaging: selectedPackaging?.title,
     packagingPrice,
     currentPrice
   });
@@ -254,10 +270,7 @@ const ProductContent = ({
                   {(product as any).weightOptions.map((option: WeightOption) => (
                     <button
                       key={option.weight}
-                      onClick={() => {
-                        console.log("Selected weight:", option);
-                        setSelectedWeight(option);
-                      }}
+                      onClick={() => setSelectedWeight(option)}
                       className={`p-3 rounded-xl border-2 text-center transition-all ${
                         selectedWeight?.weight === option.weight
                           ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
@@ -290,10 +303,7 @@ const ProductContent = ({
                     .map((option: GrindOption) => (
                       <button
                         key={option.grindType}
-                        onClick={() => {
-                          console.log("Selected grind:", option);
-                          setSelectedGrind(option);
-                        }}
+                        onClick={() => setSelectedGrind(option)}
                         className={`p-3 rounded-xl border-2 text-center transition-all ${
                           selectedGrind?.grindType === option.grindType
                             ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
@@ -318,8 +328,8 @@ const ProductContent = ({
               </div>
             )}
 
-            {/* Packaging Selection - FIXED */}
-            {packagingOptions.length > 0 && (
+            {/* ✅ FIXED: Packaging Selection - With proper title display */}
+            {packagingOptions.length > 0 ? (
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Package className="w-4 h-4 text-shop_dark_green" />
@@ -328,6 +338,16 @@ const ProductContent = ({
                 <div className="grid grid-cols-2 gap-3">
                   {packagingOptions.map((pkg) => {
                     const isSelected = selectedPackaging?._id === pkg._id;
+                    
+                    // Get image URL if exists
+                    let imgUrl = "";
+                    if (pkg.image) {
+                      try {
+                        imgUrl = urlFor(pkg.image).url();
+                      } catch (e) {
+                        imgUrl = "";
+                      }
+                    }
                     
                     return (
                       <button
@@ -342,10 +362,10 @@ const ProductContent = ({
                             : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
                         }`}
                       >
-                        {pkg.image ? (
+                        {imgUrl ? (
                           <div className="relative w-10 h-10 shrink-0">
                             <Image
-                              src={urlFor(pkg.image).url()}
+                              src={imgUrl}
                               alt={pkg.title}
                               width={40}
                               height={40}
@@ -358,7 +378,7 @@ const ProductContent = ({
                           </div>
                         )}
                         <div className="flex-1 text-left">
-                          <div className="font-semibold text-gray-900">{pkg.title}</div>
+                          <div className="font-semibold text-gray-900">{pkg.title || "Packaging"}</div>
                           <div className="text-sm text-gray-600">
                             {pkg.price === 0 ? "Free" : `+$${pkg.price}`}
                           </div>
@@ -370,6 +390,10 @@ const ProductContent = ({
                     );
                   })}
                 </div>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded-lg">
+                No packaging options available for this product
               </div>
             )}
 
