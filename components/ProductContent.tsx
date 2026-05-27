@@ -40,6 +40,7 @@ import {
 import RelatedProducts from "./RelatedProducts";
 import { WeightOption, GrindOption, PackagingOption } from "@/store";
 import Image from "next/image";
+import { urlFor } from "@/sanity/lib/image";
 
 /** Rows from BRAND_QUERY (`"brandName": brand->title`) */
 type ProductBrandRows = Array<{ brandName?: string | null }> | null;
@@ -50,17 +51,39 @@ interface ProductContentProps {
   brand: ProductBrandRows;
 }
 
-// API response type
-interface ApiPackagingOption {
-  _id: string;
-  title: string;
-  slug: string;
-  description?: string;
-  price: number;
-  default: boolean;
-  imageUrl?: string;
-  image?: any;
-}
+// Helper function to get packaging options from product (same as ServerCartContent)
+const getPackagingOptions = (product: any): PackagingOption[] => {
+  if (!product.packagingOptions || !Array.isArray(product.packagingOptions)) {
+    return [];
+  }
+  
+  return product.packagingOptions
+    .filter((ref: any) => {
+      if (!ref.packaging) return false;
+      if (ref.available === false) return false;
+      return true;
+    })
+    .map((ref: any) => {
+      const pkg = ref.packaging;
+      let imageUrl = "";
+      if (pkg.imageUrl) {
+        imageUrl = pkg.imageUrl;
+      } else if (pkg.image && pkg.image.asset && pkg.image.asset.url) {
+        imageUrl = pkg.image.asset.url;
+      }
+      
+      return {
+        _id: pkg._id,
+        title: pkg.title,
+        slug: pkg.slug || { current: "" },
+        description: pkg.description,
+        price: pkg.price || 0,
+        default: ref.isDefault || pkg.default || false,
+        image: pkg.image,
+        imageUrl: imageUrl,
+      } as PackagingOption;
+    });
+};
 
 const ProductContent = ({
   product,
@@ -74,8 +97,9 @@ const ProductContent = ({
     (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available)
   );
   const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption | undefined>(undefined);
-  const [packagingOptions, setPackagingOptions] = useState<PackagingOption[]>([]);
-  const [loadingPackaging, setLoadingPackaging] = useState(true);
+  
+  // Get packaging options directly from the product (same as ServerCartContent)
+  const packagingOptions = getPackagingOptions(product);
 
   // Get actual review data from product
   const averageRating = product?.averageRating || 0;
@@ -91,46 +115,17 @@ const ProductContent = ({
     }
   }, [product]);
 
-  // Fetch packaging from API (same as PackagingSelector)
+  // Set default packaging after options are loaded
   useEffect(() => {
-    async function fetchPackaging() {
-      try {
-        const res = await fetch("/api/packaging");
-        if (!res.ok) {
-          throw new Error("Failed to fetch packaging options");
-        }
-        const data: ApiPackagingOption[] = await res.json();
-        console.log("📦 Packaging options loaded:", data);
-        
-        // Transform the data to match store's PackagingOption type
-        const transformedData: PackagingOption[] = data.map((item: ApiPackagingOption) => ({
-          _id: item._id,
-          title: item.title,
-          slug: { current: item.slug || "" },
-          description: item.description,
-          price: item.price,
-          default: item.default,
-          image: item.image,
-          imageUrl: item.imageUrl,
-        }));
-        
-        setPackagingOptions(transformedData);
-        
-        // Set default packaging from the fetched options
-        const defaultPkg = transformedData.find((p: PackagingOption) => p.default);
-        if (defaultPkg) {
-          setSelectedPackaging(defaultPkg);
-        } else if (transformedData.length > 0) {
-          setSelectedPackaging(transformedData[0]);
-        }
-      } catch (err) {
-        console.error("Failed to load packaging", err);
-      } finally {
-        setLoadingPackaging(false);
+    if (packagingOptions.length > 0 && !selectedPackaging) {
+      const defaultPkg = packagingOptions.find(p => p.default);
+      if (defaultPkg) {
+        setSelectedPackaging(defaultPkg);
+      } else {
+        setSelectedPackaging(packagingOptions[0]);
       }
     }
-    fetchPackaging();
-  }, []);
+  }, [packagingOptions, selectedPackaging]);
 
   const currentPrice = selectedWeight?.price || product.price || 0;
   const packagingPrice = selectedPackaging?.price || 0;
@@ -322,34 +317,16 @@ const ProductContent = ({
               </div>
             )}
 
-            {/* Packaging Selection - Using API like PackagingSelector */}
-            {loadingPackaging ? (
+            {/* Packaging Selection - Using product's packagingOptions (same as ServerCartContent) */}
+            {packagingOptions.length > 0 ? (
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Package className="w-4 h-4 text-shop_dark_green" />
                   Select Packaging
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
-                  <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
-                </div>
-              </div>
-            ) : packagingOptions.length > 0 ? (
-              <div className="space-y-3">
-                <label className="flex items-center gap-2 font-medium text-gray-700">
-                  <Package className="w-4 h-4 text-shop_dark_green" />
-                  Select Packaging
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {packagingOptions.map((pkg: PackagingOption) => {
+                  {packagingOptions.map((pkg) => {
                     const isSelected = selectedPackaging?._id === pkg._id;
-                    
-                    // Get image URL safely using type assertion
-                    const pkgAny = pkg as any;
-                    let imgUrl = "/placeholder-pkg.png";
-                    if (pkgAny.imageUrl) {
-                      imgUrl = pkgAny.imageUrl;
-                    }
                     
                     return (
                       <button
@@ -364,15 +341,21 @@ const ProductContent = ({
                             : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
                         }`}
                       >
-                        <div className="relative w-10 h-10 shrink-0 bg-gray-50 rounded-md overflow-hidden">
-                          <Image
-                            src={imgUrl}
-                            alt={pkg.title}
-                            width={40}
-                            height={40}
-                            className="object-contain"
-                          />
-                        </div>
+                        {pkg.imageUrl ? (
+                          <div className="relative w-10 h-10 shrink-0 bg-gray-50 rounded-md overflow-hidden">
+                            <Image
+                              src={pkg.imageUrl}
+                              alt={pkg.title}
+                              width={40}
+                              height={40}
+                              className="object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 shrink-0 flex items-center justify-center bg-gray-100 rounded-lg">
+                            <Package className="w-5 h-5 text-gray-400" />
+                          </div>
+                        )}
                         <div className="flex-1 text-left">
                           <div className="font-semibold text-gray-900">{pkg.title}</div>
                           <div className="text-sm text-gray-600">
