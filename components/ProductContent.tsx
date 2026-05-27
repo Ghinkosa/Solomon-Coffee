@@ -62,9 +62,7 @@ const ProductContent = ({
   const [selectedGrind, setSelectedGrind] = useState<GrindOption | undefined>(
     (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available)
   );
-  const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption | undefined>(
-    (product as any).packagingOptions?.find((p: any) => p.isDefault)?.packaging
-  );
+  const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption | undefined>(undefined);
 
   // Get actual review data from product
   const averageRating = product?.averageRating || 0;
@@ -80,9 +78,34 @@ const ProductContent = ({
     }
   }, [product]);
 
+  // Transform packaging options from Sanity structure (matching your packagingType schema)
+  const packagingOptions: PackagingOption[] = (product as any).packagingOptions
+    ?.filter((opt: any) => opt.available !== false && opt.packaging)
+    .map((opt: any) => {
+      const packaging = opt.packaging;
+      return {
+        _id: packaging._id,
+        title: packaging.title,
+        price: packaging.price || 0,
+        default: opt.isDefault || packaging.default || false,
+        slug: packaging.slug || { current: "" },
+        description: packaging.description,
+        image: packaging.image,
+      };
+    }) || [];
+
+  // Set default packaging after options are loaded
+  useEffect(() => {
+    if (packagingOptions.length > 0 && !selectedPackaging) {
+      const defaultPkg = packagingOptions.find(p => p.default);
+      if (defaultPkg) {
+        setSelectedPackaging(defaultPkg);
+      }
+    }
+  }, [packagingOptions, selectedPackaging]);
+
   const currentPrice = selectedWeight?.price || product.price || 0;
   const packagingPrice = selectedPackaging?.price || 0;
-  const packagingOptions = (product as any).packagingOptions?.map((opt: any) => opt.packaging).filter(Boolean) || [];
 
   return (
     <ProductAnimationWrapper>
@@ -271,7 +294,7 @@ const ProductContent = ({
               </div>
             )}
 
-            {/* Packaging Selection */}
+            {/* Packaging Selection - Using urlFor for images */}
             {packagingOptions.length > 0 && (
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
@@ -279,41 +302,59 @@ const ProductContent = ({
                   Select Packaging
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {packagingOptions.map((pkg: PackagingOption) => (
-                    <button
-                      key={pkg._id}
-                      onClick={() => setSelectedPackaging(pkg)}
-                      className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
-                        selectedPackaging?._id === pkg._id
-                          ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
-                          : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
-                      }`}
-                    >
-                      {pkg.image && (
-                        <div className="relative w-10 h-10 shrink-0">
-                          <Image
-                            src={urlFor(pkg.image).width(40).height(40).url()}
-                            alt={pkg.title}
-                            width={40}
-                            height={40}
-                            className="object-contain"
-                          />
-                        </div>
-                      )}
-                      <div className="flex-1 text-left">
-                        <div className="font-semibold text-gray-900">{pkg.title}</div>
-                        <div className="text-sm text-gray-600">
-                          {pkg.price === 0 ? "Free" : `+$${pkg.price}`}
-                        </div>
-                      </div>
-                      {selectedPackaging?._id === pkg._id && (
-                        <Check className="w-5 h-5 text-shop_dark_green shrink-0" />
-                      )}
-                    </button>
-                  ))}
+                  {packagingOptions.map((pkg) => {
+                    const isSelected = selectedPackaging?._id === pkg._id;
+                    
+                    // Use urlFor to get the image URL from Sanity
+                    let imgUrl = "";
+                    if (pkg.image) {
+                      try {
+                        imgUrl = urlFor(pkg.image).url();
+                      } catch (e) {
+                        imgUrl = "";
+                      }
+                    }
+                    
+                    return (
+                      <button
+                        key={pkg._id}
+                        onClick={() => setSelectedPackaging(pkg)}
+                        className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                          isSelected
+                            ? "border-shop_dark_green bg-shop_dark_green/5 ring-2 ring-shop_dark_green/20"
+                            : "border-gray-200 hover:border-shop_dark_green/50 hover:bg-gray-50"
+                        }`}
+                      >
+                        {imgUrl ? (
+                          <div className="relative w-10 h-10 shrink-0">
+                            <Image
+                              src={imgUrl}
+                              alt={pkg.title}
+                              width={40}
+                              height={40}
+                              className="object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 shrink-0 flex items-center justify-center bg-gray-100 rounded-lg">
+                              <Package className="w-5 h-5 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="flex-1 text-left">
+                            <div className="font-semibold text-gray-900">{pkg.title}</div>
+                            <div className="text-sm text-gray-600">
+                              {pkg.price === 0 ? "Free" : `+$${pkg.price}`}
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <Check className="w-5 h-5 text-shop_dark_green shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Action Buttons */}
             <ProductActionWrapper delay={0.3}>
