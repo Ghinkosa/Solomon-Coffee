@@ -21,11 +21,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { contactConfig } from "@/config/contact";
 
 interface FormData {
   name: string;
   email: string;
+  businessName: string;
+  phone: string;
+  businessType: string;
+  estimatedOrderQuantity: string;
+  message: string;
 }
 
 interface WholesalersClientProps {
@@ -48,6 +54,16 @@ interface WholesalersClientProps {
         namePlaceholder: string;
         email: string;
         emailPlaceholder: string;
+        businessName: string;
+        businessNamePlaceholder: string;
+        phone: string;
+        phonePlaceholder: string;
+        businessType: string;
+        businessTypePlaceholder: string;
+        estimatedOrderQuantity: string;
+        estimatedOrderQuantityPlaceholder: string;
+        message: string;
+        messagePlaceholder: string;
         sendButton: string;
         sending: string;
         successTitle: string;
@@ -77,9 +93,21 @@ const WholesalersClient = ({ dictionary }: WholesalersClientProps) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState<FormData>({ name: "", email: "" });
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    businessName: "",
+    phone: "",
+    businessType: "",
+    estimatedOrderQuantity: "",
+    message: "",
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError("");
@@ -101,7 +129,15 @@ const WholesalersClient = ({ dictionary }: WholesalersClientProps) => {
 
       if (response.ok) {
         setSuccess(true);
-        setFormData({ name: "", email: "" });
+        setFormData({
+          name: "",
+          email: "",
+          businessName: "",
+          phone: "",
+          businessType: "",
+          estimatedOrderQuantity: "",
+          message: "",
+        });
       } else {
         setError(data.error || "Something went wrong. Please try again.");
       }
@@ -282,6 +318,91 @@ const WholesalersClient = ({ dictionary }: WholesalersClientProps) => {
                       className="h-12 focus:border-shop_light_green focus:ring-shop_light_green/20"
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="businessName" className="text-shop_dark_green font-medium">
+                      {t.form.businessName}
+                    </Label>
+                    <Input
+                      disabled={loading}
+                      type="text"
+                      id="businessName"
+                      name="businessName"
+                      placeholder={t.form.businessNamePlaceholder}
+                      value={formData.businessName}
+                      onChange={handleChange}
+                      className="h-12 focus:border-shop_light_green focus:ring-shop_light_green/20"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-shop_dark_green font-medium">
+                      {t.form.phone}
+                    </Label>
+                    <Input
+                      disabled={loading}
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      placeholder={t.form.phonePlaceholder}
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="h-12 focus:border-shop_light_green focus:ring-shop_light_green/20"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="businessType" className="text-shop_dark_green font-medium">
+                      {t.form.businessType}
+                    </Label>
+                    <select
+                      id="businessType"
+                      name="businessType"
+                      value={formData.businessType}
+                      onChange={handleChange}
+                      disabled={loading}
+                      className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-shop_light_green focus:ring-shop_light_green/20"
+                    >
+                      <option value="">{t.form.businessTypePlaceholder}</option>
+                      <option value="cafe">Café</option>
+                      <option value="restaurant">Restaurant</option>
+                      <option value="hotel">Hotel / Hospitality</option>
+                      <option value="retail">Retail</option>
+                      <option value="office">Office</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="estimatedOrderQuantity" className="text-shop_dark_green font-medium">
+                      {t.form.estimatedOrderQuantity}
+                    </Label>
+                    <Input
+                      disabled={loading}
+                      type="text"
+                      id="estimatedOrderQuantity"
+                      name="estimatedOrderQuantity"
+                      placeholder={t.form.estimatedOrderQuantityPlaceholder}
+                      value={formData.estimatedOrderQuantity}
+                      onChange={handleChange}
+                      className="h-12 focus:border-shop_light_green focus:ring-shop_light_green/20"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="message" className="text-shop_dark_green font-medium">
+                    {t.form.message}
+                  </Label>
+                  <Textarea
+                    disabled={loading}
+                    id="message"
+                    name="message"
+                    placeholder={t.form.messagePlaceholder}
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows={4}
+                    className="focus:border-shop_light_green focus:ring-shop_light_green/20"
+                  />
                 </div>
 
                 <p className="text-xs text-light-text">{t.form.privacyNote}</p>

@@ -1,0 +1,28 @@
+---
+description: Sheba Cup Coffee project map and navigation conventions
+alwaysApply: true
+---
+
+# Sheba Cup Coffee — Navigation
+
+Read `AGENTS.md` at the repo root for the full codebase index.
+
+## Where to edit common features
+
+| Feature | Primary files |
+|---------|----------------|
+| Home page | `app/[lang]/(client)/page.tsx`, `components/ProductGrid.tsx`, `components/ShopFeatures.tsx` |
+| Shop / filters | `components/shopPage/Shop.tsx`, `components/shopPage/CategoryList.tsx` |
+| Wholesale form | `components/shopPage/ShopWholesaleSection.tsx`, `app/api/wholesalers/route.ts` |
+| Nav / header | `constants/index.ts`, `components/layout/HeaderMenu.tsx`, `components/Header.tsx` |
+| Product detail | `components/ProductContent.tsx`, `components/product/` |
+| i18n copy | `dictionaries/en.json`, `lib/dictionary.ts`, `i18n-config.ts` |
+| CMS content | `sanity/schemaTypes/`, `sanity/queries/` |
+| Auth / middleware | `proxy.ts` |
+| Checkout / Stripe | `components/checkout/`, `app/api/checkout/stripe/route.ts` |
+
+## Stack reminders
+
+- Next.js 16 App Router, locales: `en`, `es`, `ar` only
+- Path alias: `@/` → repo root
+- Package manager: **npm** (use `package-lock.json`, not pnpm)

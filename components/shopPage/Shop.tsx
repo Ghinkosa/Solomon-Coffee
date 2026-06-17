@@ -6,10 +6,10 @@ import { AnimatePresence, motion } from "motion/react";
 import Container from "../Container";
 import Title from "../Title";
 import CategoryList from "./CategoryList";
+import ShopWholesaleSection from "./ShopWholesaleSection";
 import { Filter, X } from "lucide-react";
 import ProductCard from "../ProductCard";
 import NoProductAvailable from "../product/NoProductAvailable";
-import PriceList from "./PriceList";
 import { ProductDetailsPanel } from "../product/ProductDetailsPanel";
 import {
   getShopGridColumnCount,
@@ -25,27 +25,14 @@ const Shop = ({ categories, dictionary }: Props) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      // Extract min and max price from selectedPrice
-      let minPrice = 0;
-      let maxPrice = 10000; // Default high value
-
-      if (selectedPrice) {
-        const [min, max] = selectedPrice.split("-").map(Number);
-        minPrice = min;
-        maxPrice = max;
-      }
-
-      // Updated query to include weightOptions, grindOptions, and resolved packagingOptions
       const query = `
         *[_type == 'product' 
           && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
-          && price >= $minPrice && price <= $maxPrice
         ] 
         | order(name asc) {
           ...,
@@ -69,30 +56,21 @@ const Shop = ({ categories, dictionary }: Props) => {
 
       const data = await client.fetch(
         query,
-        {
-          selectedCategory,
-          minPrice,
-          maxPrice,
-        },
+        { selectedCategory },
         { next: { revalidate: 0 } },
       );
-      
-      console.log("✅ Shop fetched products:", data?.length || 0);
-      if (data && data.length > 0) {
-        console.log("📦 Sample product packaging:", data[0].packagingOptions);
-      }
-      
+
       setProducts(data || []);
     } catch (error) {
       console.log("Shop product fetching Error", error);
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, selectedPrice]);
+  }, [selectedCategory]);
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts, selectedCategory, selectedPrice]);
+  }, [fetchProducts, selectedCategory]);
 
   const {
     gridWrapperRef,
@@ -124,12 +102,9 @@ const Shop = ({ categories, dictionary }: Props) => {
                 {dictionary?.shop?.description || "Browse our collection of premium coffee"}
               </p>
             </div>
-            {(selectedCategory !== null || selectedPrice !== null) && (
+            {selectedCategory !== null && (
               <button
-                onClick={() => {
-                  setSelectedCategory(null);
-                  setSelectedPrice(null);
-                }}
+                onClick={() => setSelectedCategory(null)}
                 className="inline-flex items-center px-4 py-2 bg-red-50 text-red-700 border border-red-200 rounded-md hover:bg-red-100 transition-colors duration-200 text-sm font-medium"
               >
                 {dictionary?.shop?.clearFilters || "Clear Filters"}
@@ -137,29 +112,20 @@ const Shop = ({ categories, dictionary }: Props) => {
             )}
           </div>
 
-          {/* Active Filters Display */}
-          {(selectedCategory || selectedPrice) && (
+          {selectedCategory && (
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex flex-wrap gap-2">
                 <span className="text-sm font-medium text-gray-700 mr-2">
                   {dictionary?.shop?.activeFilters || "Active Filters:"}
                 </span>
-                {selectedCategory && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {dictionary?.shop?.category || "Category"}:{" "}
-                    {
-                      categories?.find(
-                        (cat) => cat?.slug?.current === selectedCategory,
-                      )?.title
-                    }
-                  </span>
-                )}
-                {selectedPrice && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                    {dictionary?.shop?.price || "Price"}: $
-                    {selectedPrice.replace("-", " - $")}
-                  </span>
-                )}
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  {dictionary?.shop?.category || "Category"}:{" "}
+                  {
+                    categories?.find(
+                      (cat) => cat?.slug?.current === selectedCategory,
+                    )?.title
+                  }
+                </span>
               </div>
             </div>
           )}
@@ -175,9 +141,9 @@ const Shop = ({ categories, dictionary }: Props) => {
             {showMobileFilters
               ? (dictionary?.shop?.hideFilters || "Hide Filters")
               : (dictionary?.shop?.showFilters || "Show Filters")}
-            {(selectedCategory || selectedPrice) && (
+            {selectedCategory && (
               <span className="ml-2 bg-shop_dark_green text-white text-xs px-2 py-1 rounded-full">
-                {[selectedCategory, selectedPrice].filter(Boolean).length}
+                1
               </span>
             )}
           </button>
@@ -209,10 +175,6 @@ const Shop = ({ categories, dictionary }: Props) => {
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
                   />
-                  <PriceList
-                    setSelectedPrice={setSelectedPrice}
-                    selectedPrice={selectedPrice}
-                  />
                 </div>
                 <div className="p-4 border-t border-gray-200 bg-gray-50">
                   <button
@@ -240,10 +202,6 @@ const Shop = ({ categories, dictionary }: Props) => {
                     categories={categories}
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
-                  />
-                  <PriceList
-                    setSelectedPrice={setSelectedPrice}
-                    selectedPrice={selectedPrice}
                   />
                 </div>
               </div>
@@ -335,6 +293,10 @@ const Shop = ({ categories, dictionary }: Props) => {
           </div>
         </div>
       </Container>
+
+      {dictionary?.wholesalers && (
+        <ShopWholesaleSection dictionary={dictionary.wholesalers} />
+      )}
     </div>
   );
 };

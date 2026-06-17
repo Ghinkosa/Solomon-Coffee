@@ -27,6 +27,7 @@ function getNavLabel(item: NavItem, dictionary: HeaderMenuProps["dictionary"]) {
   if (item.title === "Shop") return dictionary.header.menu.shop;
   if (item.title === "Our Roasting Process" || item.title === "Hot Deal")
     return dictionary.header.menu.deals;
+  if (item.title === "Our Coffee") return dictionary.header.menu.ourCoffee;
   if (item.title === "Contact") return dictionary.header.menu.contact;
   if (item.title === "Blog") return dictionary.header.menu.blog;
   if (item.title === "Education") return dictionary.header.menu.education;

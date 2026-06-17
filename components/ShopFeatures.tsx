@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import Container from "./Container";
 import FeatureModal from "./FeatureModal";
 import {
@@ -12,6 +13,8 @@ import {
   Clock,
   Heart,
   LucideIcon,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 /** Shared Sheba / shop palette for every card (icons, bars, icon wells) */
@@ -37,6 +40,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
     null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    slidesToScroll: 1,
+  });
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   const features: FeatureType[] = [
     {
@@ -223,45 +234,70 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
       </div>
 
       <div className="rounded-3xl border border-[#E4C290]/30 bg-[#1C2329] p-8 shadow-xl lg:p-12">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature, index) => {
-            const IconComponent = feature.icon;
-            return (
-              <button
-                key={feature.title}
-                type="button"
-                onClick={() => handleFeatureClick(feature)}
-                className="group w-full cursor-pointer rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-left shadow-lg hoverEffect transform hover:-translate-y-2 hover:border-[#E4C290]/45 hover:shadow-2xl"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="mb-5 flex justify-center">
-                  <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E4C290]/15 group-hover:shadow-lg hoverEffect">
-                    <IconComponent className="h-8 w-8 text-[#E4C290] group-hover:scale-110 hoverEffect" />
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-[#E4C290]/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-center">
-                  <h3 className="text-lg font-bold text-[#E4C290] group-hover:text-[#E4C290] hoverEffect">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-[#E4C290]/80">
-                    {feature.description}
-                  </p>
-                  <div className="pt-2 text-xs font-medium text-[#E4C290] opacity-0 transition-opacity group-hover:opacity-100">
-                    {dictionary?.learnMore || "Click to learn more →"}
-                  </div>
-                </div>
-
-                <div className="mt-4 h-1.5 w-full rounded-full bg-[#E4C290]/20">
+        <div className="relative">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex gap-4">
+              {features.map((feature, index) => {
+                const IconComponent = feature.icon;
+                return (
                   <div
-                    className="h-1.5 rounded-full bg-[#E4C290] transition-all duration-500 group-hover:w-full hoverEffect"
-                    style={{ width: "40%" }}
-                  ></div>
-                </div>
-              </button>
-            );
-          })}
+                    key={feature.title}
+                    className="min-w-0 flex-[0_0_85%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] xl:flex-[0_0_23%]"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleFeatureClick(feature)}
+                      className="group h-full w-full cursor-pointer rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-left shadow-lg hoverEffect transform hover:-translate-y-2 hover:border-[#E4C290]/45 hover:shadow-2xl"
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <div className="mb-5 flex justify-center">
+                        <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#E4C290]/15 group-hover:shadow-lg hoverEffect">
+                          <IconComponent className="h-8 w-8 text-[#E4C290] group-hover:scale-110 hoverEffect" />
+                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-[#E4C290]/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 text-center">
+                        <h3 className="text-lg font-bold text-[#E4C290] group-hover:text-[#E4C290] hoverEffect">
+                          {feature.title}
+                        </h3>
+                        <p className="text-sm leading-relaxed text-[#E4C290]/80">
+                          {feature.description}
+                        </p>
+                        <div className="pt-2 text-xs font-medium text-[#E4C290] opacity-0 transition-opacity group-hover:opacity-100">
+                          {dictionary?.learnMore || "Click to learn more →"}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 h-1.5 w-full rounded-full bg-[#E4C290]/20">
+                        <div
+                          className="h-1.5 rounded-full bg-[#E4C290] transition-all duration-500 group-hover:w-full hoverEffect"
+                          style={{ width: "40%" }}
+                        ></div>
+                      </div>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={scrollPrev}
+            aria-label="Previous feature"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-[#252D34] text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            type="button"
+            onClick={scrollNext}
+            aria-label="Next feature"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-[#252D34] text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
         </div>
 
         <div className="mt-12 border-t border-[#E4C290]/25 pt-8">

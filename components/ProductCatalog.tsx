@@ -13,6 +13,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import NoProductAvailable from "./product/NoProductAvailable";
+import { toPlainText } from "@/lib/sanity-text";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import {
@@ -75,7 +76,9 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
       filtered = filtered.filter(
         (product) =>
           product.name?.toLowerCase().includes(lowerSearchQuery) ||
-          product.description?.toLowerCase().includes(lowerSearchQuery)
+          toPlainText(product.description)
+            .toLowerCase()
+            .includes(lowerSearchQuery)
       );
     }
 

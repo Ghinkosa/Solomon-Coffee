@@ -20,6 +20,31 @@ export const wholesaleInquiryType = defineType({
       validation: (Rule) => Rule.required().email(),
     }),
     defineField({
+      name: "businessName",
+      title: "Business Name",
+      type: "string",
+    }),
+    defineField({
+      name: "phone",
+      title: "Phone",
+      type: "string",
+    }),
+    defineField({
+      name: "businessType",
+      title: "Business Type",
+      type: "string",
+    }),
+    defineField({
+      name: "estimatedOrderQuantity",
+      title: "Estimated Order Quantity",
+      type: "string",
+    }),
+    defineField({
+      name: "message",
+      title: "Message",
+      type: "text",
+    }),
+    defineField({
       name: "status",
       title: "Status",
       type: "string",

@@ -10,6 +10,7 @@ import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 import ProductSpecs from "@/components/ProductSpecs";
 import ProductReviews from "@/components/ProductReviews";
 import { trackProductView } from "@/lib/analytics";
+import { toPlainText } from "@/lib/sanity-text";
 
 import { Product } from "@/sanity.types";
 import {
@@ -68,6 +69,7 @@ const ProductContent = ({
   // Get actual review data from product
   const averageRating = product?.averageRating || 0;
   const totalReviews = product?.totalReviews || 0;
+  const descriptionText = toPlainText(product?.description);
 
   // Track product view on component mount
   useEffect(() => {
@@ -163,9 +165,11 @@ const ProductContent = ({
               <h1 className="text-3xl lg:text-4xl font-bold text-shop_dark_green leading-tight">
                 {product?.name}
               </h1>
-              <p className="text-lg text-dark-text leading-relaxed">
-                {product?.description}
-              </p>
+              {descriptionText && (
+                <p className="text-lg text-dark-text leading-relaxed">
+                  {descriptionText}
+                </p>
+              )}
 
               {/* Enhanced Rating Display */}
               {totalReviews > 0 ? (

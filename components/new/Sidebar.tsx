@@ -54,11 +54,12 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
     { title: "Blog", href: "/blog", icon: BookOpen },
     { title: "Coffee Education", href: "/education", icon: GraduationCap },
     { title: "Our Roasting Process", href: "/deal", icon: Coffee },
+    { title: "Our Coffee", href: "/our-coffee", icon: Coffee },
   ];
 
   const supportMenuItems = [
     { title: "Help Center", href: "/help", icon: HelpCircle },
-    { title: "Wholesale", href: "/wholesalers", icon: Store },
+    { title: "Wholesale", href: "/shop#wholesale", icon: Store },
     { title: "Customer Service", href: "/support", icon: Phone },
     { title: "About Us", href: "/about", icon: Info },
   ];

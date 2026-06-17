@@ -6,6 +6,7 @@ import {
   getCoffeeDetails,
   getCoffeeOrigin,
 } from "@/lib/product-coffee-details";
+import { toPlainText } from "@/lib/sanity-text";
 
 interface ProductExpandedDetailsProps {
   product: Product;
@@ -100,6 +101,8 @@ export function ProductExpandedDetails({
       )
     : specChips;
 
+  const descriptionText = toPlainText(product.description);
+
   const categoriesLabel = Array.isArray(product.categories)
     ? product.categories.join(", ")
     : typeof product.categories === "string"
@@ -114,13 +117,13 @@ export function ProductExpandedDetails({
         </p>
       )}
 
-      {product.description && (
+      {descriptionText && (
         <p
           className={`leading-relaxed text-[#fdf6e8]/85 ${
             isCompact ? "line-clamp-2 text-xs" : "line-clamp-3 text-xs"
           }`}
         >
-          {product.description}
+          {descriptionText}
         </p>
       )}
 

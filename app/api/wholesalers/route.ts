@@ -4,7 +4,15 @@ import { saveWholesaleInquiry } from "@/sanity/helpers";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email } = body;
+    const {
+      name,
+      email,
+      businessName,
+      phone,
+      businessType,
+      estimatedOrderQuantity,
+      message,
+    } = body;
 
     if (!name?.trim() || !email?.trim()) {
       return NextResponse.json(
@@ -30,6 +38,11 @@ export async function POST(request: NextRequest) {
     const result = await saveWholesaleInquiry({
       name: name.trim(),
       email: email.trim().toLowerCase(),
+      businessName: businessName?.trim() || "",
+      phone: phone?.trim() || "",
+      businessType: businessType?.trim() || "",
+      estimatedOrderQuantity: estimatedOrderQuantity?.trim() || "",
+      message: message?.trim() || "",
       ipAddress,
       userAgent,
     });

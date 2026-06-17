@@ -147,6 +147,11 @@ export const saveContactMessage = async (contactData: {
 export const saveWholesaleInquiry = async (inquiryData: {
   name: string;
   email: string;
+  businessName?: string;
+  phone?: string;
+  businessType?: string;
+  estimatedOrderQuantity?: string;
+  message?: string;
   ipAddress?: string;
   userAgent?: string;
 }) => {
@@ -155,6 +160,11 @@ export const saveWholesaleInquiry = async (inquiryData: {
       _type: "wholesaleInquiry",
       name: inquiryData.name,
       email: inquiryData.email,
+      businessName: inquiryData.businessName || "",
+      phone: inquiryData.phone || "",
+      businessType: inquiryData.businessType || "",
+      estimatedOrderQuantity: inquiryData.estimatedOrderQuantity || "",
+      message: inquiryData.message || "",
       status: "new",
       submittedAt: new Date().toISOString(),
       ipAddress: inquiryData.ipAddress || "",
