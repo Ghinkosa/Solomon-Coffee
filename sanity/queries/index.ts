@@ -20,6 +20,7 @@ import {
   SINGLE_BLOG_QUERY,
 } from "./query";
 import { getOrderById } from "./userQueries";
+import type { Category } from "@/sanity.types";
 
 // ============================================================================
 // CACHED DATA FETCHERS - Next.js 16 Caching Revolution
@@ -289,7 +290,7 @@ const getCategories = unstable_cache(
 /**
  * Get admin categories - not cached (admin data needs to be fresh)
  */
-const getAdminCategories = async () => {
+const getAdminCategories = async (): Promise<Category[]> => {
   try {
     const { data } = await sanityFetch({ query: ADMIN_CATEGORIES_QUERY });
     return data ?? [];

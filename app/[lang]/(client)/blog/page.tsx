@@ -1,5 +1,4 @@
 import Container from "@/components/Container";
-import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,12 +12,15 @@ type BlogListItem = Omit<Blog, "blogcategories"> & {
 import { urlFor } from "@/sanity/lib/image";
 import { getAllBlogs } from "@/sanity/queries";
 import dayjs from "dayjs";
-import { Calendar, Clock, ArrowRight, User, Eye, BookOpen } from "lucide-react";
+import { Calendar, Clock, ArrowRight, BookOpen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
+
+const BLOG_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -73,70 +75,33 @@ const BlogPage = async ({ params }: Props) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-shop_light_bg to-white">
-      {/* Breadcrumb */}
-      <Container className="pt-6">
-        <DynamicBreadcrumb />
-      </Container>
-
       {/* Hero Section */}
-      <Container className="py-8 sm:py-12">
-        <Card className="bg-gradient-to-r from-shop_dark_green to-shop_light_green text-white border-0 shadow-xl overflow-hidden">
-          <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
-            <div className="max-w-3xl mx-auto">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <BookOpen className="w-6 h-6 sm:w-8 sm:h-8" />
-                <Badge
-                  variant="secondary"
-                  className="bg-white/20 text-white hover:bg-white/30"
-                >
-                  {dictionary.blog.hero.badge}
-                </Badge>
-              </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                {dictionary.blog.hero.title}
-              </h1>
-              <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 max-w-2xl mx-auto">
-                {dictionary.blog.hero.description}
-              </p>
-
-              {/* Blog Stats
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-md mx-auto">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
-                  <div className="flex items-center gap-2 text-white/80 mb-1">
-                    <BookOpen className="w-4 h-4" />
-                    <span className="text-xs sm:text-sm">
-                      {dictionary.blog.hero.stats.articles}
-                    </span>
-                  </div>
-                  <p className="text-xl sm:text-2xl font-bold">
-                    {blogs?.length || 0}
-                  </p>
-                </div>
-
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
-                  <div className="flex items-center gap-2 text-white/80 mb-1">
-                    <Eye className="w-4 h-4" />
-                    <span className="text-xs sm:text-sm">
-                      {dictionary.blog.hero.stats.readers}
-                    </span>
-                  </div>
-                  <p className="text-xl sm:text-2xl font-bold">15K+</p>
-                </div>
-
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 col-span-2 sm:col-span-1">
-                  <div className="flex items-center gap-2 text-white/80 mb-1">
-                    <User className="w-4 h-4" />
-                    <span className="text-xs sm:text-sm">
-                      {dictionary.blog.hero.stats.authors}
-                    </span>
-                  </div>
-                  <p className="text-xl sm:text-2xl font-bold">5+</p>
-                </div>
-              </div> */}
-            </div>
-          </CardContent>
-        </Card>
-      </Container>
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-stone-900">
+        <Image
+          src={BLOG_HERO_IMAGE}
+          alt="Coffee journal and stories"
+          fill
+          priority
+          className="object-cover opacity-40"
+        />
+        <Container className="relative z-10 text-center text-white">
+          <div className="max-w-4xl mx-auto">
+            <Badge className="mb-6 bg-amber-600/20 text-amber-400 border-amber-600/50">
+              <span className="inline-flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                {dictionary.blog.hero.badge}
+              </span>
+            </Badge>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              {dictionary.blog.hero.title}
+            </h1>
+            <div className="w-24 h-1 bg-amber-500 mx-auto my-8 rounded-full" />
+            <p className="text-lg md:text-xl text-stone-300 max-w-2xl mx-auto">
+              {dictionary.blog.hero.description}
+            </p>
+          </div>
+        </Container>
+      </section>
 
       {/* Blog Grid */}
       <Container className="py-8 sm:py-12">

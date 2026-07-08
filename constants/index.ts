@@ -2,7 +2,6 @@ export const headerPrimaryNav = [
   { title: "Home", href: "/" },
   { title: "Shop", href: "/shop" },
   { title: "Our Coffee", href: "/our-coffee" },
-  { title: "Our Roasting Process", href: "/deal" },
 ];
 
 export const headerBlogNav = [

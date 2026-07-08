@@ -58,11 +58,11 @@ export default function OurCoffee() {
             <Badge className="mb-6 bg-amber-600/20 text-amber-400 border-amber-600/50">
               From Farm to Cup
             </Badge>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               Our Coffee
             </h1>
             <div className="w-24 h-1 bg-amber-500 mx-auto my-8 rounded-full" />
-            <p className="text-xl md:text-2xl text-stone-300 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-stone-300 max-w-2xl mx-auto">
               Discover the art and science behind every cup — from cherry to roast.
             </p>
           </motion.div>

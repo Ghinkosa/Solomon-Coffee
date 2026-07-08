@@ -19,17 +19,28 @@ import Link from "next/link";
 import Image from "next/image";
 
 const MISSION_IMAGES = {
-  hero: "/sheba-hero-roast.jpg",
-  missionMain: "/sheba-hero-roast.jpg",
-  missionCare: "/roast1.jpg",
-  missionCommunity: "/honey.jpg",
-  farmMain: "/sheba-natural-process.jpg",
-  farmPractice: "/sheba-washed-process.jpg",
-  farmHeritage: "/roast2.jpg",
-  foundation: "/roast3.jpg",
-  impactCare: "/sheba-hero-roast.jpg",
-  impactEducation: "/black_coffee.jpeg",
-  impactSustainable: "/sheba-natural-process.jpg",
+  hero:
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80",
+  missionMain:
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80",
+  missionCare:
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+  missionCommunity:
+    "https://images.unsplash.com/photo-1504630083234-14187a9df0f5?auto=format&fit=crop&w=1200&q=80",
+  farmMain:
+    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1200&q=80",
+  farmPractice:
+    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
+  farmHeritage:
+    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=80",
+  foundation:
+    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80",
+  impactCare:
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80",
+  impactEducation:
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+  impactSustainable:
+    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1200&q=80",
 } as const;
 
 const MissionClient = () => {

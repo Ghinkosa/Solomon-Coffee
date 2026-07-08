@@ -1,5 +1,68 @@
 import { sanityFetch } from "../lib/live";
 
+interface OrderByIdResult {
+  _id: string;
+  orderNumber: string;
+  clerkUserId: string;
+  customerName: string;
+  email: string;
+  products: Array<{
+    product: {
+      _id: string;
+      name: string;
+      slug?: { current?: string };
+      image?: {
+        asset?: {
+          _id: string;
+          url: string;
+        };
+      };
+      images?: unknown[];
+      price: number;
+      currency: string;
+      categories?: Array<{ title?: string }>;
+    };
+    quantity: number;
+    weight?: string;
+    grind?: string;
+    packaging?: string;
+  }>;
+  subtotal: number;
+  tax: number;
+  shipping: number;
+  totalPrice: number;
+  currency: string;
+  amountDiscount?: number;
+  packagingFee?: number;
+  address: {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  status: string;
+  paymentStatus: string;
+  paymentMethod: string;
+  orderDate: string;
+  invoice?: string;
+  stripeCheckoutSessionId?: string;
+  stripePaymentIntentId?: string;
+  paymentCompletedAt?: string;
+  addressConfirmedBy?: string;
+  addressConfirmedAt?: string;
+  orderConfirmedBy?: string;
+  orderConfirmedAt?: string;
+  packedBy?: string;
+  packedAt?: string;
+  assignedDeliverymanName?: string;
+  dispatchedAt?: string;
+  cashCollectedAt?: string;
+  paymentReceivedAt?: string;
+  deliveredBy?: string;
+  deliveredAt?: string;
+}
+
 // User Queries
 export const USER_BY_CLERK_ID_QUERY = `
   *[_type == "user" && clerkUserId == $clerkUserId][0] {
@@ -304,7 +367,9 @@ export const getUserOrders = async (clerkUserId: string) => {
 };
 
 // ✅ UPDATED: getOrderById function
-export const getOrderById = async (orderId: string) => {
+export const getOrderById = async (
+  orderId: string
+): Promise<OrderByIdResult | null> => {
   try {
     const { data } = await sanityFetch({
       query: ORDER_BY_ID_QUERY,

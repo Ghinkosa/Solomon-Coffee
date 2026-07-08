@@ -21,31 +21,49 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
+const ROASTING_IMAGES = {
+  hero:
+    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=2000&auto=format",
+  roast1:
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+  roast2:
+    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=80",
+  roast3:
+    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80",
+  natural:
+    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1200&q=80",
+  washed:
+    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
+  honey:
+    "https://images.unsplash.com/photo-1504630083234-14187a9df0f5?auto=format&fit=crop&w=1200&q=80",
+} as const;
+
 const RoastingClient = () => {
   return (
     <div className="bg-gradient-to-b from-stone-100 to-white min-h-screen">
       {/* HERO SECTION */}
-      <section className="py-32 bg-stone-950 text-white relative overflow-hidden">
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-stone-900">
         <Image
-          src="/sheba-hero-roast.jpg"
+          src={ROASTING_IMAGES.hero}
           alt="Coffee Roasting Hero"
           fill
           priority
           className="object-cover opacity-40"
         />
-        <Container className="max-w-6xl relative z-10">
+        <Container className="relative z-10 text-center text-white">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+            className="max-w-4xl mx-auto"
           >
             <Badge className="mb-6 bg-amber-600/20 border-amber-600/50 text-amber-500 hover:bg-amber-600/30 transition-colors">
               The Art of the Roast
             </Badge>
-            <h1 className="text-6xl lg:text-8xl font-bold mb-8 leading-tight tracking-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               Crafted With Care <br /> <span className="text-amber-500">Roasted With Purpose</span>
             </h1>
-            <p className="text-xl lg:text-2xl text-stone-300 max-w-3xl mx-auto leading-relaxed font-light">
+            <div className="w-24 h-1 bg-amber-500 mx-auto my-8 rounded-full" />
+            <p className="text-lg md:text-xl text-stone-300 max-w-2xl mx-auto">
               At Sheba Cup Coffee, roasting is simple, intentional, and precise. 
               We preserve the soul of 100% Ethiopian specialty coffee through 
               small-batch mastery in Allentown, PA.
@@ -66,7 +84,7 @@ const RoastingClient = () => {
             >
               <div className="col-span-2 relative h-80 rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/roast1.jpg"
+                  src={ROASTING_IMAGES.roast1}
                   alt="Roasting Drum Close Up"
                   fill
                   className="object-cover"
@@ -74,7 +92,7 @@ const RoastingClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="/roast2.jpg"
+                  src={ROASTING_IMAGES.roast2}
                   alt="Green Coffee Beans"
                   fill
                   className="object-cover"
@@ -82,7 +100,7 @@ const RoastingClient = () => {
               </div>
               <div className="relative h-60 rounded-3xl overflow-hidden shadow-xl">
                 <Image
-                  src="/roast3.jpg"
+                  src={ROASTING_IMAGES.roast3}
                   alt="Finished Roast"
                   fill
                   className="object-cover"
@@ -144,7 +162,7 @@ const RoastingClient = () => {
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
               <div className="h-48 relative">
                 <Image 
-                  src="sheba-natural-process.jpg" 
+                  src={ROASTING_IMAGES.natural}
                   alt="Natural Process" 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -167,7 +185,7 @@ const RoastingClient = () => {
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
               <div className="h-48 relative">
                 <Image 
-                  src="/sheba-washed-process.jpg" 
+                  src={ROASTING_IMAGES.washed}
                   alt="Washed Process" 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -190,7 +208,7 @@ const RoastingClient = () => {
             <Card className="border-none shadow-xl bg-white overflow-hidden group">
               <div className="h-48 relative">
                 <Image 
-                  src="/honey.jpg" 
+                  src={ROASTING_IMAGES.honey}
                   alt="Honey Process" 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-500" 

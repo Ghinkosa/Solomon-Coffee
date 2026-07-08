@@ -47,35 +47,28 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
     }
   }, [isSignedIn, user, searchParams, router, isMounted]);
 
-  const getSignInUrl = () => {
-    if (!isMounted || typeof window === "undefined") return "/sign-in";
-    const currentPath = window.location.pathname + window.location.search;
-    return `/sign-in?redirectTo=${encodeURIComponent(currentPath)}`;
-  };
-
-  const getSignUpUrl = () => {
-    if (!isMounted || typeof window === "undefined") return "/sign-up";
-    const currentPath = window.location.pathname + window.location.search;
-    return `/sign-up?redirectTo=${encodeURIComponent(currentPath)}`;
-  };
-
   return (
     <header className="sticky top-0 z-40 py-2 sm:py-3 lg:py-4 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
       <Container className="h-full">
-        <div className="flex items-center h-full min-h-12 sm:min-h-14 lg:min-h-16">
+        <div className="flex items-center gap-3 h-full min-h-12 sm:min-h-14 lg:min-h-16">
           {/* Left Section: Mobile Menu + Logo */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <MobileMenu lang={lang} dictionary={dictionary} />
-            <Logo lang={lang} logoText={dictionary.logo} />
+            <Logo
+              lang={lang}
+              logoText={dictionary.logo}
+              showText={false}
+              imageClassName="h-12 sm:h-14 lg:h-16"
+            />
           </div>
 
           {/* Center Section: Navigation Menu (Desktop Only) */}
-          <div className="hidden lg:flex items-center justify-center flex-1 mx-3 xl:mx-5 min-w-0">
+          <div className="hidden lg:flex items-center justify-center flex-1 px-2 xl:px-4 min-w-0">
             <HeaderMenu dictionary={dictionary} lang={lang} />
           </div>
 
           {/* Right Section: Search + Actions */}
-          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 ml-auto">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 ml-auto shrink-0">
             {/* Search Bar */}
             <div className="shrink-0">
               <SearchBar dictionary={dictionary} />

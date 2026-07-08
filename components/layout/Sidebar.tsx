@@ -45,20 +45,18 @@ interface SidebarProps {
   onClose: () => void;
   lang: string;
   logoText: { first: string; second: string };
-  dealNavLabel?: string;
 }
 
 const Sidebar: FC<SidebarProps> = ({
-  isOpen,
   onClose,
   lang,
   logoText,
-  dealNavLabel,
 }) => {
   const pathname = usePathname();
   const { items, favoriteProduct, openAuthSidebar } = useStore();
-  const { signOut } = useClerk();
   const [mounted, setMounted] = useState(false);
+
+  const localizedHref = (href: string) => `/${lang}${href === "/" ? "" : href}`;
 
   useEffect(() => {
     setMounted(true);
@@ -108,11 +106,6 @@ const Sidebar: FC<SidebarProps> = ({
         { title: "Home", href: "/", icon: Home },
         { title: "Shop", href: "/shop", icon: ShoppingBag },
         { title: "Categories", href: "/category", icon: Grid3X3 },
-        {
-          title: dealNavLabel ?? "Our Roasting Process",
-          href: "/deal",
-          icon: Coffee,
-        },
         { title: "Our Coffee", href: "/our-coffee", icon: Coffee },
         { title: "Blog", href: "/blog", icon: BookOpen },
         { title: "Coffee Education", href: "/education", icon: GraduationCap },
@@ -152,7 +145,12 @@ const Sidebar: FC<SidebarProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
-          <Logo lang={lang} logoText={logoText} />
+          <Logo
+            lang={lang}
+            logoText={logoText}
+            showText={false}
+            imageClassName="h-12 sm:h-14"
+          />
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 text-gray-500 hover:text-shop_dark_green"
@@ -182,7 +180,7 @@ const Sidebar: FC<SidebarProps> = ({
                   <div className="grid grid-cols-2 gap-2 mt-3">
                     <Link
                       onClick={onClose}
-                      href="/user/orders"
+                        href={localizedHref("/user/orders")}
                       className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:border-shop_light_green hover:text-shop_dark_green transition-all text-xs font-medium"
                     >
                       <Package size={14} />
@@ -190,7 +188,7 @@ const Sidebar: FC<SidebarProps> = ({
                     </Link>
                     <Link
                       onClick={onClose}
-                      href="/favorites"
+                        href={localizedHref("/wishlist")}
                       className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:border-shop_light_green hover:text-shop_dark_green transition-all text-xs font-medium"
                     >
                       <Heart size={14} />
@@ -232,7 +230,7 @@ const Sidebar: FC<SidebarProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <Link
                 onClick={onClose}
-                href="/cart"
+                href={localizedHref("/cart")}
                 className="flex flex-col items-center justify-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:border-shop_light_green transition-all group"
               >
                 <div className="relative mb-1">
@@ -247,7 +245,7 @@ const Sidebar: FC<SidebarProps> = ({
               </Link>
               <Link
                 onClick={onClose}
-                href="/wishlist"
+                href={localizedHref("/wishlist")}
                 className="flex flex-col items-center justify-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:border-shop_light_green transition-all group"
               >
                 <div className="relative mb-1">
@@ -276,9 +274,9 @@ const Sidebar: FC<SidebarProps> = ({
                     <motion.div variants={itemVariants} key={item.title}>
                       <Link
                         onClick={onClose}
-                        href={item.href}
+                        href={localizedHref(item.href)}
                         className={`group flex items-center justify-between p-2.5 rounded-lg transition-all duration-200 ${
-                          pathname === item.href
+                          pathname === localizedHref(item.href)
                             ? "bg-shop_dark_green/10 text-shop_dark_green font-medium"
                             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                         }`}
@@ -287,7 +285,7 @@ const Sidebar: FC<SidebarProps> = ({
                           <Icon
                             size={18}
                             className={`${
-                              pathname === item.href
+                              pathname === localizedHref(item.href)
                                 ? "text-shop_dark_green"
                                 : "text-gray-400 group-hover:text-gray-600"
                             }`}
@@ -302,7 +300,7 @@ const Sidebar: FC<SidebarProps> = ({
                         <ChevronRight
                           size={14}
                           className={`text-gray-300 transition-transform ${
-                            pathname === item.href
+                            pathname === localizedHref(item.href)
                               ? "opacity-100"
                               : "opacity-0 group-hover:opacity-100"
                           }`}
@@ -324,7 +322,7 @@ const Sidebar: FC<SidebarProps> = ({
                   <Link
                     key={cat.title}
                     onClick={onClose}
-                    href={`/category/${cat.href}`}
+                    href={localizedHref(`/category/${cat.href}`)}
                     className="text-xs text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full hover:bg-shop_light_green hover:text-white transition-colors border border-transparent hover:border-shop_dark_green/20"
                   >
                     {cat.title}
@@ -332,7 +330,7 @@ const Sidebar: FC<SidebarProps> = ({
                 ))}
                 <Link
                   onClick={onClose}
-                  href="/category"
+                  href={localizedHref("/category")}
                   className="text-xs text-shop_dark_green font-medium bg-shop_dark_green/10 px-3 py-1.5 rounded-full hover:bg-shop_dark_green hover:text-white transition-colors"
                 >
                   View All

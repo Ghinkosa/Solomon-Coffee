@@ -21,6 +21,10 @@ import {
 import { FormEvent, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+
+const CONTACT_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=800&auto=format";
 
 interface FormData {
   name: string;
@@ -135,27 +139,33 @@ const ContactClient = ({ dictionary }: ContactClientProps) => {
   return (
     <div className="bg-linear-to-b from-shop_light_bg to-white min-h-screen">
       {/* Hero Banner Section */}
-      <Container className="py-8 sm:py-12">
-        <Card className="bg-gradient-to-r from-shop_dark_green to-shop_light_green text-white border-0 shadow-xl overflow-hidden">
-          <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-3xl mx-auto"
-            >
-              <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
-                {dictionary.contact.hero.badge}
-              </Badge>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
-                {dictionary.contact.hero.title}
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-                {dictionary.contact.hero.description}
-              </p>
-            </motion.div>
-          </CardContent>
-        </Card>
-      </Container>
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-stone-900">
+        <Image
+          src={CONTACT_HERO_IMAGE}
+          alt="Contact Sheba Cup Coffee"
+          fill
+          priority
+          className="object-cover opacity-40"
+        />
+        <Container className="relative z-10 text-center text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto"
+          >
+            <Badge className="mb-6 bg-amber-600/20 text-amber-400 border-amber-600/50">
+              {dictionary.contact.hero.badge}
+            </Badge>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              {dictionary.contact.hero.title}
+            </h1>
+            <div className="w-24 h-1 bg-amber-500 mx-auto my-8 rounded-full" />
+            <p className="text-lg md:text-xl text-stone-300 max-w-2xl mx-auto">
+              {dictionary.contact.hero.description}
+            </p>
+          </motion.div>
+        </Container>
+      </section>
 
       <Container className="px-4 sm:px-6 lg:px-8 py-6 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">

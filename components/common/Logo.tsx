@@ -8,6 +8,8 @@ interface LogoProps {
   variant?: "default" | "sm";
   lang?: string;
   theme?: "light" | "dark";
+  showText?: boolean;
+  imageClassName?: string;
   logoText?: {
     first: string;
     second: string;
@@ -19,6 +21,8 @@ const Logo = ({
   variant = "default",
   lang = "en",
   theme = "light",
+  showText = true,
+  imageClassName,
   logoText = { first: "Sheba", second: "Cup Coffee" },
 }: LogoProps) => {
   const primaryTextClass =
@@ -41,15 +45,20 @@ const Logo = ({
           <Image
             src={logoImage}
             alt={`${logoText.first} ${logoText.second}`}
-            className="h-8 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90"
+            className={cn(
+              "h-8 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90",
+              imageClassName
+            )}
             priority
           />
-          <p
-            className={`whitespace-nowrap text-sm font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}
-          >
-            {logoText.first}{" "}
-            <span className={secondaryTextClass}>{logoText.second}</span>
-          </p>
+          {showText && (
+            <p
+              className={`whitespace-nowrap text-sm font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}
+            >
+              {logoText.first}{" "}
+              <span className={secondaryTextClass}>{logoText.second}</span>
+            </p>
+          )}
         </div>
       </Link>
     );
@@ -65,15 +74,20 @@ const Logo = ({
         <Image
           src={logoImage}
           alt={`${logoText.first} ${logoText.second}`}
-          className="h-9 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90 sm:h-10 lg:h-11"
+          className={cn(
+            "h-9 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90 sm:h-10 lg:h-11",
+            imageClassName
+          )}
           priority
         />
-        <p
-          className={`whitespace-nowrap text-sm sm:text-base lg:text-lg font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}
-        >
-          {logoText.first}{" "}
-          <span className={secondaryTextClass}>{logoText.second}</span>
-        </p>
+        {showText && (
+          <p
+            className={`whitespace-nowrap text-sm sm:text-base lg:text-lg font-extrabold tracking-wide uppercase hoverEffect ${primaryTextClass}`}
+          >
+            {logoText.first}{" "}
+            <span className={secondaryTextClass}>{logoText.second}</span>
+          </p>
+        )}
       </div>
     </Link>
   );

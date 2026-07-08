@@ -53,7 +53,6 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
     { title: "Categories", href: "/category", icon: Grid3X3 },
     { title: "Blog", href: "/blog", icon: BookOpen },
     { title: "Coffee Education", href: "/education", icon: GraduationCap },
-    { title: "Our Roasting Process", href: "/deal", icon: Coffee },
     { title: "Our Coffee", href: "/our-coffee", icon: Coffee },
   ];
 
@@ -232,16 +231,6 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
           <div className="grid grid-cols-2 gap-2">
             <Link
               onClick={onClose}
-              href="/deal"
-              className="flex flex-col items-center gap-1 p-3 rounded-lg bg-shop_dark_green/30 hover:bg-shop_dark_green/50 transition-colors duration-200 text-center"
-            >
-              <Coffee size={20} className="text-shop_orange" />
-              <span className="text-xs font-medium text-zinc-300">
-                Our Roasting Process
-              </span>
-            </Link>
-            <Link
-              onClick={onClose}
               href="/wishlist"
               className="flex flex-col items-center gap-1 p-3 rounded-lg bg-shop_dark_green/30 hover:bg-shop_dark_green/50 transition-colors duration-200 text-center"
             >
@@ -293,10 +282,10 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, lang, logoText }) => {
           </p>
           <Link
             onClick={onClose}
-            href="/deal"
+            href="/shop"
             className="inline-block text-xs font-semibold text-white bg-shop_orange hover:bg-shop_light_orange px-3 py-1 rounded-full transition-colors duration-200"
           >
-            Shop Now
+            Shop Coffee
           </Link>
         </div>
 
