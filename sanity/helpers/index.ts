@@ -1,6 +1,7 @@
 import { defineQuery } from "next-sanity";
 import { sanityFetch } from "../lib/live";
 import { writeClient } from "../lib/client";
+import type { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 
 export const getProductsByCategory = async (categorySlug: string) => {
   const PRODUCT_BY_CATEGORY_QUERY = defineQuery(
@@ -184,7 +185,14 @@ export const getMyOrders = async (
   userId: string,
   page: number = 1,
   limit: number = 5,
-) => {
+): Promise<{
+  orders: MY_ORDERS_QUERY_RESULT;
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}> => {
   if (!userId) {
     throw new Error("User ID is required");
   }
@@ -241,11 +249,11 @@ export const getMyOrders = async (
     ]);
 
     return {
-      orders: orders?.data || [],
-      totalCount: totalCount?.data || 0,
-      totalPages: Math.ceil((totalCount?.data || 0) / limit),
+      orders: (orders?.data as MY_ORDERS_QUERY_RESULT) || [],
+      totalCount: (totalCount?.data as number) || 0,
+      totalPages: Math.ceil(((totalCount?.data as number) || 0) / limit),
       currentPage: page,
-      hasNextPage: page < Math.ceil((totalCount?.data || 0) / limit),
+      hasNextPage: page < Math.ceil(((totalCount?.data as number) || 0) / limit),
       hasPrevPage: page > 1,
     };
   } catch (error) {

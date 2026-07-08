@@ -10,29 +10,39 @@ interface OrderByIdResult {
     product: {
       _id: string;
       name: string;
-      slug?: { current?: string };
+      slug?: { current: string };
       image?: {
-        asset?: {
-          _id: string;
+        asset: {
           url: string;
+          _id?: string;
         };
       };
       images?: unknown[];
       price: number;
       currency: string;
-      categories?: Array<{ title?: string }>;
+      categories?: Array<{ title: string }>;
     };
     quantity: number;
-    weight?: string;
-    grind?: string;
-    packaging?: string;
+    weight?: {
+      value: string;
+      price: number;
+    };
+    grind?: {
+      type: string;
+      label: string;
+    };
+    packaging?: {
+      id: string;
+      title: string;
+      price: number;
+    };
   }>;
   subtotal: number;
   tax: number;
   shipping: number;
   totalPrice: number;
   currency: string;
-  amountDiscount?: number;
+  amountDiscount: number;
   packagingFee?: number;
   address: {
     name: string;
@@ -45,7 +55,11 @@ interface OrderByIdResult {
   paymentStatus: string;
   paymentMethod: string;
   orderDate: string;
-  invoice?: string;
+  invoice?: {
+    id: string;
+    number: string;
+    hosted_invoice_url: string;
+  };
   stripeCheckoutSessionId?: string;
   stripePaymentIntentId?: string;
   paymentCompletedAt?: string;
@@ -301,65 +315,67 @@ export const ORDER_BY_ID_QUERY = `
 `;
 
 // User Functions
-export const getUserByClerkId = async (clerkUserId: string) => {
+export const getUserByClerkId = async (
+  clerkUserId: string,
+): Promise<any | null> => {
   try {
     const { data } = await sanityFetch({
       query: USER_BY_CLERK_ID_QUERY,
       params: { clerkUserId },
     });
-    return data;
+    return (data as any) || null;
   } catch (error) {
     console.error("Error fetching user by Clerk ID:", error);
     return null;
   }
 };
 
-export const getUserAddresses = async (userId: string) => {
+export const getUserAddresses = async (userId: string): Promise<any[]> => {
   try {
     const { data } = await sanityFetch({
       query: USER_ADDRESSES_QUERY,
       params: { userId },
     });
-    return data ?? [];
+    return (data as any[]) ?? [];
   } catch (error) {
     console.error("Error fetching user addresses:", error);
     return [];
   }
 };
 
-export const getUserCart = async (clerkUserId: string) => {
+export const getUserCart = async (clerkUserId: string): Promise<any[]> => {
   try {
     const { data } = await sanityFetch({
       query: USER_CART_QUERY,
       params: { clerkUserId },
     });
-    return data?.cart ?? [];
+    return (data as any)?.cart ?? [];
   } catch (error) {
     console.error("Error fetching user cart:", error);
     return [];
   }
 };
 
-export const getUserWishlist = async (clerkUserId: string) => {
+export const getUserWishlist = async (clerkUserId: string): Promise<any[]> => {
   try {
     const { data } = await sanityFetch({
       query: USER_WISHLIST_QUERY,
       params: { clerkUserId },
     });
-    return data?.wishlist ?? [];
+    return (data as any)?.wishlist ?? [];
   } catch (error) {
     console.error("Error fetching user wishlist:", error);
     return [];
   }
 };
 
-export const getUserOrders = async (clerkUserId: string) => {
+export const getUserOrders = async (clerkUserId: string): Promise<any[]> => {
   try {
     const { data } = await sanityFetch({
       query: USER_ORDERS_QUERY,
       params: { clerkUserId },
     });
-    return data ?? [];
+    return (data as any[]) ?? [];
   } catch (error) {
     console.error("Error fetching user orders:", error);
     return [];
@@ -375,7 +391,7 @@ export const getOrderById = async (
       query: ORDER_BY_ID_QUERY,
       params: { orderId },
     });
-    return data;
+    return data ? (data as OrderByIdResult) : null;
   } catch (error) {
     console.error("Error fetching order by ID:", error);
     return null;
@@ -406,7 +422,7 @@ export const getUserNotifications = async (clerkUserId: string) => {
       query: USER_NOTIFICATIONS_QUERY,
       params: { clerkUserId },
     });
-    return data?.notifications || [];
+    return (data as any)?.notifications || [];
   } catch (error) {
     console.error("Error fetching user notifications:", error);
     return [];
@@ -434,7 +450,7 @@ export const markNotificationAsRead = async (
       throw new Error("User not found");
     }
 
-    const updatedNotifications = user.data.notifications.map(
+    const updatedNotifications = (user.data as any).notifications.map(
       (notification: any) => {
         if (notification.id === notificationId) {
           return {
@@ -450,7 +466,7 @@ export const markNotificationAsRead = async (
     const { writeClient } = await import("../lib/client");
 
     await writeClient
-      .patch(user.data._id)
+      .patch((user.data as any)._id)
       .set({ notifications: updatedNotifications })
       .commit();
 
@@ -475,14 +491,14 @@ export const deleteUserNotification = async (
       throw new Error("User not found");
     }
 
-    const updatedNotifications = user.data.notifications.filter(
+    const updatedNotifications = (user.data as any).notifications.filter(
       (notification: any) => notification.id !== notificationId
     );
 
     const { writeClient } = await import("../lib/client");
 
     await writeClient
-      .patch(user.data._id)
+      .patch((user.data as any)._id)
       .set({ notifications: updatedNotifications })
       .commit();
 

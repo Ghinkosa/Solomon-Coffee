@@ -20,7 +20,7 @@ import {
   SINGLE_BLOG_QUERY,
 } from "./query";
 import { getOrderById } from "./userQueries";
-import type { Category } from "@/sanity.types";
+import type { Category, Product } from "@/sanity.types";
 
 // ============================================================================
 // CACHED DATA FETCHERS - Next.js 16 Caching Revolution
@@ -53,13 +53,13 @@ const getBanner = unstable_cache(
  * Featured categories are relatively static
  */
 const getFeaturedCategory = unstable_cache(
-  async (quantity: number) => {
+  async (quantity: number): Promise<Category[]> => {
     try {
       const { data } = await sanityFetch({
         query: FEATURED_CATEGORY_QUERY,
         params: { quantity },
       });
-      return data ?? [];
+      return (data ?? []) as Category[];
     } catch (error) {
       console.error("Error fetching featured category:", error);
       return [];
@@ -74,10 +74,10 @@ const getFeaturedCategory = unstable_cache(
  * Product list updates moderately often
  */
 const getAllProducts = unstable_cache(
-  async () => {
+  async (): Promise<Product[]> => {
     try {
       const { data } = await sanityFetch({ query: ALL_PRODUCTS_QUERY });
-      return data ?? [];
+      return (data ?? []) as Product[];
     } catch (error) {
       console.log("Error fetching all products:", error);
       return [];
@@ -260,7 +260,7 @@ const getAddresses = async () => {
  * Category structure is relatively static
  */
 const getCategories = unstable_cache(
-  async (quantity?: number) => {
+  async (quantity?: number): Promise<Category[]> => {
     try {
       const query = quantity
         ? `*[_type == 'category'] | order(name asc) [0...$quantity] {
@@ -277,7 +277,7 @@ const getCategories = unstable_cache(
         params: quantity ? { quantity } : {},
       });
 
-      return data ?? [];
+      return (data ?? []) as Category[];
     } catch (error) {
       console.log("Error fetching categories with product count:", error);
       return [];
@@ -293,7 +293,7 @@ const getCategories = unstable_cache(
 const getAdminCategories = async (): Promise<Category[]> => {
   try {
     const { data } = await sanityFetch({ query: ADMIN_CATEGORIES_QUERY });
-    return data ?? [];
+    return (data ?? []) as Category[];
   } catch (error) {
     console.error("Error fetching admin categories:", error);
     return [];

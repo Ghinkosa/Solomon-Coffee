@@ -21,7 +21,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = (await getProductBySlug(slug)) as Product | null;
 
   if (!product) {
     return {
@@ -54,7 +54,7 @@ const ProductPage = async ({
 };
 
 const ProductPageContent = async ({ slug }: { slug: string }) => {
-  const product = await getProductBySlug(slug);
+  const product = (await getProductBySlug(slug)) as Product | null;
 
   if (!product) {
     return notFound();
@@ -69,6 +69,8 @@ const ProductPageContent = async ({ slug }: { slug: string }) => {
     getRelatedProducts(categoryIds, product?.slug?.current || "", 4),
     getBrand(product?.slug?.current as string),
   ]);
+
+  const brandRows = brand as Array<{ brandName?: string | null }> | null;
 
   // Convert null values to undefined for TypeScript compatibility
   const productWithReviews = {
@@ -106,7 +108,7 @@ const ProductPageContent = async ({ slug }: { slug: string }) => {
       <ProductContent
         product={productWithReviews}
         relatedProducts={(relatedProducts || []) as unknown as Product[]}
-        brand={brand}
+        brand={brandRows}
       />
     </>
   );

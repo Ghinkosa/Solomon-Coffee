@@ -300,12 +300,18 @@ const SingleBlogPage = async ({
                               </code>
                             ),
                             link: ({ value, children }) => (
-                              <Link
-                                href={value.href}
-                                className="font-medium text-shop_light_green hover:text-shop_dark_green underline decoration-shop_light_green underline-offset-4 hover:decoration-shop_dark_green transition-colors"
-                              >
-                                {children}
-                              </Link>
+                              value?.href ? (
+                                <Link
+                                  href={value.href}
+                                  className="font-medium text-shop_light_green hover:text-shop_dark_green underline decoration-shop_light_green underline-offset-4 hover:decoration-shop_dark_green transition-colors"
+                                >
+                                  {children}
+                                </Link>
+                              ) : (
+                                <span className="font-medium text-shop_light_green hover:text-shop_dark_green underline decoration-shop_light_green underline-offset-4 hover:decoration-shop_dark_green transition-colors">
+                                  {children}
+                                </span>
+                              )
                             ),
                           },
                         }}
@@ -343,7 +349,9 @@ const SingleBlogPage = async ({
 
 const BlogSidebar = async ({ slug }: { slug: string }) => {
   const categories = (await getBlogCategories()) as BlogCategorySidebarRow[];
-  const blogs = await getOthersBlog(slug, 5);
+  const blogs = (await getOthersBlog(slug, 5)) as Array<
+    Blog & { publishedAt?: string }
+  >;
 
   return (
     <div className="space-y-6">
@@ -381,7 +389,7 @@ const BlogSidebar = async ({ slug }: { slug: string }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {blogs?.map(
+          {blogs.map(
             (
               blogItem: Blog & { publishedAt?: string },
               index: number,

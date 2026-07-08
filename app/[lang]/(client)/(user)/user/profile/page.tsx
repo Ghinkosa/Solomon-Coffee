@@ -62,7 +62,7 @@ export default async function ProfilePage() {
       query: USER_BY_CLERK_ID_QUERY,
       params: { clerkUserId: userId },
     });
-    sanityUser = data;
+    sanityUser = (data as SanityUser) || null;
   } catch (error) {
     console.error("Error fetching user from Sanity:", error);
   }
