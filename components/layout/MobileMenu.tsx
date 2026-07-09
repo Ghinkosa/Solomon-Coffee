@@ -21,7 +21,7 @@ const MobileMenu = ({ lang, dictionary }: MobileMenuProps) => {
         <button
           onClick={toggleSidebar}
           aria-label="Open menu"
-          className="inline-flex h-10 w-10 items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green lg:hidden"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green lg:hidden"
         >
           <AlignLeft className="h-5 w-5" />
         </button>

@@ -15,6 +15,7 @@ import {
   useProductDetailsPanel,
 } from "@/hooks/useProductDetailsPanel";
 import Link from "next/link";
+import HomeSectionHeader, { homeOutlineButtonClass } from "./HomeSectionHeader";
 
 type SortOption =
   | "name-asc"
@@ -167,15 +168,7 @@ const ProductGrid = ({
 
   return (
     <Container>
-      <div className="mb-10 text-center lg:mb-12">
-        <div className="mb-3 inline-flex items-center gap-3">
-          <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_light_green to-shop_dark_green" />
-          <h2 className="text-3xl lg:text-4xl font-bold text-dark-color">
-            Featured Coffee Selection
-          </h2>
-          <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_light_green to-shop_dark_green" />
-        </div>
-      </div>
+      <HomeSectionHeader title="Featured Coffee Selection" />
 
       <div className="mb-10">
         <HomeTabbar selectedTab={selectedTab} onTabSelect={setSelectedTab} />
@@ -243,7 +236,7 @@ const ProductGrid = ({
       <div className="mt-10 flex justify-center">
         <Link
           href={`/${lang}/shop`}
-          className="border border-dark-color px-4 py-1 rounded-full hover:bg-shop_light_green hover:text-white hover:border-shop_light_green hoverEffect"
+          className={homeOutlineButtonClass}
         >
           {dictionary?.home?.featuredProducts?.seeAll || "See all"}
         </Link>

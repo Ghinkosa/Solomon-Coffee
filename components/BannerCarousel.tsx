@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
 import { useCallback, useEffect, useState } from "react";
-import Container from "./Container";
 
 interface Banner {
   _id: string;
@@ -166,7 +165,7 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
   ]);
 
   return (
-    <div className="relative group">
+    <div className="relative isolate group">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {banners.map((banner, index) => {
@@ -209,128 +208,127 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
               !disableVideoForUser &&
               !(isMobile && banner.disableVideoOnMobile);
 
-  // Inside the banners.map loop...
-return (
-  <div
-    key={banner._id}
-    className="flex-[0_0_100%] min-w-0 relative h-[80vh] md:h-[90vh] flex items-center overflow-hidden bg-stone-900 text-stone-100"
-  >
-    {/* Background media: video (when allowed) with image fallback */}
-    {canPlayVideo && videoUrl ? (
-      <div className="absolute inset-0 opacity-45">
-        <video
-          src={videoUrl}
-          className="h-full w-full object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          onLoadedMetadata={(event) => {
-            const duration = event.currentTarget.duration;
-            if (!duration || !Number.isFinite(duration)) return;
+            return (
+              <div
+                key={banner._id}
+                className="relative flex min-h-[min(720px,80vh)] w-full min-w-0 flex-[0_0_100%] items-center overflow-hidden bg-stone-900 py-14 text-stone-100 sm:py-16 md:min-h-[85vh] md:py-20 lg:py-24"
+              >
+                {/* Background media: video (when allowed) with image fallback */}
+                {canPlayVideo && videoUrl ? (
+                  <div className="absolute inset-0 z-0 opacity-45">
+                    <video
+                      src={videoUrl}
+                      className="h-full w-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="metadata"
+                      onLoadedMetadata={(event) => {
+                        const duration = event.currentTarget.duration;
+                        if (!duration || !Number.isFinite(duration)) return;
 
-            setVideoDurations((prev) => {
-              if (prev[banner._id] === duration) return prev;
-              return { ...prev, [banner._id]: duration };
-            });
-          }}
-          poster={
-            banner.image
-              ? urlFor(banner.image).width(1600).quality(70).url()
-              : undefined
-          }
-        />
-      </div>
-    ) : banner.image ? (
-      <div className="absolute inset-0 opacity-40">
-        <Image
-          src={urlFor(banner.image).width(2000).quality(85).url()}
-          alt={title || "Banner Image"}
-          fill
-          priority={index === 0}
-          className="w-full h-full object-cover"
-        />
-      </div>
-    ) : null}
+                        setVideoDurations((prev) => {
+                          if (prev[banner._id] === duration) return prev;
+                          return { ...prev, [banner._id]: duration };
+                        });
+                      }}
+                      poster={
+                        banner.image
+                          ? urlFor(banner.image).width(1600).quality(70).url()
+                          : undefined
+                      }
+                    />
+                  </div>
+                ) : banner.image ? (
+                  <div className="absolute inset-0 z-0 opacity-40">
+                    <Image
+                      src={urlFor(banner.image).width(2000).quality(85).url()}
+                      alt={title || "Banner Image"}
+                      fill
+                      priority={index === 0}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : null}
 
-    {/* Brand overlay for consistent text contrast */}
-    <div
-      className="absolute inset-0"
-      style={{
-        background: "rgba(9,51,44,0.48)",
-      }}
-    />
+                {/* Brand overlay for consistent text contrast */}
+                <div
+                  className="absolute inset-0 z-[1]"
+                  style={{
+                    background: "rgba(9,51,44,0.48)",
+                  }}
+                />
 
-    {/* Content Container */}
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-      <div className="max-w-3xl">
-        {subtitle && (
-          <span
-            className={`text-sm uppercase tracking-[0.3em] font-medium mb-6 block text-stone-400 ${
-              isActive ? "animate-slideRightFade delay-0" : "opacity-0"
-            }`}
-          >
-            {subtitle}
-          </span>
-        )}
+                {/* Content Container */}
+                <div className="relative z-[2] mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                  <div className="max-w-3xl">
+                    {subtitle && (
+                      <span
+                        className={`mb-4 block text-sm font-medium uppercase tracking-[0.3em] text-stone-400 sm:mb-5 ${
+                          isActive ? "animate-fadeInUp" : "opacity-0"
+                        }`}
+                      >
+                        {subtitle}
+                      </span>
+                    )}
 
-        {title && (
-          <h2
-            className={`text-5xl md:text-8xl font-serif leading-tight mb-8 ${
-              isActive ? "animate-slideRightFade delay-100" : "opacity-0"
-            }`}
-          >
-            {/* Logic to apply italic style to parts of the title if desired, 
-                otherwise standard rendering */}
-            {title}
-          </h2>
-        )}
+                    {title && (
+                      <h2
+                        className={`mb-5 font-serif text-4xl leading-[1.08] sm:mb-6 sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl ${
+                          isActive ? "animate-fadeInUp delay-200" : "opacity-0"
+                        }`}
+                      >
+                        {title}
+                      </h2>
+                    )}
 
-        {description && (
-          <p
-            className={`text-lg md:text-xl text-stone-300 max-w-lg mb-8 font-light leading-relaxed ${
-              isActive ? "animate-slideRightFade delay-200" : "opacity-0"
-            }`}
-          >
-            {description}
-            {price && (
-              <span className="block mt-2 font-semibold text-stone-100">
-                {finalPriceTitle} {price}
-              </span>
-            )}
-          </p>
-        )}
+                    {description && (
+                      <p
+                        className={`mb-6 max-w-lg text-base font-light leading-relaxed text-stone-300 sm:mb-8 sm:text-lg md:text-xl ${
+                          isActive ? "animate-fadeInUp delay-400" : "opacity-0"
+                        }`}
+                      >
+                        {description}
+                        {price && (
+                          <span className="mt-2 block font-semibold text-stone-100">
+                            {finalPriceTitle} {price}
+                          </span>
+                        )}
+                      </p>
+                    )}
 
-        <div
-          className={`flex flex-wrap gap-6 items-center ${
-            isActive ? "animate-slideRightFade delay-300" : "opacity-0"
-          }`}
-        >
-          {banner.link && (
-            <Link
-              href={banner.link}
-              className="bg-stone-100 text-stone-900 px-8 py-4 rounded-full font-medium flex items-center space-x-2 hover:bg-stone-200 transition-all duration-300 shadow-lg hover:-translate-y-1"
-            >
-              <span>{buttonText}</span>
-              <ArrowRight size={18} />
-            </Link>
-          )}
+                    <div
+                      className={`flex flex-wrap items-center gap-4 sm:gap-6 ${
+                        isActive ? "animate-fadeInUp delay-600" : "opacity-0"
+                      }`}
+                    >
+                      {banner.link && (
+                        <Link
+                          href={banner.link}
+                          className="flex items-center space-x-2 rounded-full bg-stone-100 px-8 py-4 font-medium text-stone-900 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-stone-200"
+                        >
+                          <span>{buttonText}</span>
+                          <ArrowRight size={18} />
+                        </Link>
+                      )}
 
-          {/* Optional Secondary Action (The "Watch" button style from your ref) */}
-          <Link href={heroShopLink} className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center group-hover:bg-stone-100 group-hover:text-stone-900 transition-all">
-              <ChevronRight size={16} fill="currentColor" />
-            </div>
-            <span className="text-sm uppercase tracking-widest font-medium text-stone-100">
-              Explore More
-            </span>
-          </Link>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+                      <Link
+                        href={heroShopLink}
+                        className="group flex items-center space-x-3"
+                      >
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-stone-100 transition-all group-hover:bg-stone-100 group-hover:text-stone-900">
+                          <ChevronRight size={16} fill="currentColor" />
+                        </div>
+                        <span className="text-sm font-medium uppercase tracking-widest text-stone-100">
+                          Explore More
+                        </span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
           })}
         </div>
       </div>

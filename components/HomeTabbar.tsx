@@ -11,11 +11,11 @@ const HomeTabbar = ({
 }: Props) => {
   return (
     <div className="flex flex-wrap items-center justify-center gap-5">
-      <div className="flex items-center gap-1.5 text-sm font-semibold">
+      <div className="flex items-center gap-1.5 text-sm font-semibold md:text-base">
         <div className="flex flex-wrap items-center justify-center gap-1.5 md:gap-3">
           <button
             onClick={() => onTabSelect(null)}
-            className={`border border-shop_light_green/30 px-4 py-1.5 md:px-6 md:py-2 rounded-full hover:bg-shop_light_green hover:border-shop_light_green hover:text-white hoverEffect ${selectedTab === null ? "bg-shop_light_green text-white border-shop_light_green" : "bg-shop_light_green/10"}`}
+            className={`border border-shop_light_green/30 px-4 py-2 md:px-6 md:py-2.5 rounded-full hover:bg-shop_light_green hover:border-shop_light_green hover:text-white hoverEffect ${selectedTab === null ? "bg-shop_light_green text-white border-shop_light_green" : "bg-shop_light_green/10"}`}
           >
             All
           </button>
@@ -23,7 +23,7 @@ const HomeTabbar = ({
             <button
               onClick={() => onTabSelect(item?.title)}
               key={item?.title}
-              className={`border border-shop_light_green/30 px-4 py-1.5 md:px-6 md:py-2 rounded-full hover:bg-shop_light_green hover:border-shop_light_green hover:text-white hoverEffect ${selectedTab === item?.title ? "bg-shop_light_green text-white border-shop_light_green" : "bg-shop_light_green/10"}`}
+              className={`border border-shop_light_green/30 px-4 py-2 md:px-6 md:py-2.5 rounded-full hover:bg-shop_light_green hover:border-shop_light_green hover:text-white hoverEffect ${selectedTab === item?.title ? "bg-shop_light_green text-white border-shop_light_green" : "bg-shop_light_green/10"}`}
             >
               {item?.title}
             </button>

@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { ArrowRight, ChevronUp } from "lucide-react";
+import {
+  homeBodyClass,
+  homeEyebrowClass,
+} from "./HomeSectionHeader";
 
 export const STORY_HEADLINE = {
   line1: "From the Farms of Ethiopia",
@@ -23,11 +27,11 @@ const PREVIEW_COUNT = 3;
 export function OurStoryHeader() {
   return (
     <div className="space-y-5">
-      <div className="inline-block rounded-full bg-shop_dark_green px-4 py-1 text-xs font-medium uppercase tracking-widest text-white">
+      <div className={`rounded-full bg-shop_dark_green px-4 py-1 text-white ${homeEyebrowClass}`}>
         Our Story
       </div>
 
-      <h2 className="font-serif text-3xl leading-tight text-shop_dark_green md:text-4xl lg:text-5xl">
+      <h2 className="font-serif text-3xl font-bold leading-tight text-shop_dark_green md:text-4xl">
         {STORY_HEADLINE.line1}
         <br />
         <span className="italic text-shop_orange">{STORY_HEADLINE.line2}</span>
@@ -48,7 +52,7 @@ export function OurStoryBody() {
         {previewParagraphs.map((paragraph) => (
           <p
             key={paragraph}
-            className="text-lg leading-relaxed text-stone-800/70"
+            className={homeBodyClass}
           >
             {paragraph}
           </p>
@@ -60,12 +64,12 @@ export function OurStoryBody() {
           {moreParagraphs.slice(0, -1).map((paragraph) => (
             <p
               key={paragraph}
-              className="text-lg leading-relaxed text-stone-800/70"
+              className={homeBodyClass}
             >
               {paragraph}
             </p>
           ))}
-          <p className="text-lg font-medium leading-relaxed text-shop_dark_green">
+          <p className="text-base font-medium leading-relaxed text-shop_dark_green md:text-lg">
             {moreParagraphs[moreParagraphs.length - 1]}
           </p>
         </div>
@@ -74,7 +78,7 @@ export function OurStoryBody() {
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
+        className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 text-base font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
         aria-expanded={expanded}
       >
         <span>{expanded ? "Read less" : "Read more"}</span>

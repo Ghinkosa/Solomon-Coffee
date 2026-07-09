@@ -105,8 +105,8 @@ const UserDropdown = ({
         <button
           className={
             isDark
-              ? "group flex h-10 items-center gap-2 px-1.5 transition-colors hover:text-shop_orange hoverEffect"
-              : "group flex h-10 items-center gap-2 border border-stone-200 bg-stone-50 px-2 py-1 transition-colors hover:border-shop_light_green/40 hover:bg-white hoverEffect"
+              ? "group flex h-9 w-9 items-center justify-center transition-colors hover:text-shop_orange hoverEffect sm:h-10 sm:w-auto sm:gap-2 sm:px-1.5"
+              : "group flex h-9 w-9 items-center justify-center border-0 bg-transparent p-0 transition-colors hover:text-shop_light_green hoverEffect sm:h-10 sm:w-auto sm:gap-2 sm:border sm:border-stone-200 sm:bg-stone-50 sm:px-2 sm:py-1 sm:hover:border-shop_light_green/40 sm:hover:bg-white"
           }
         >
           <div className="relative">
@@ -114,7 +114,7 @@ const UserDropdown = ({
               <img
                 src={user.imageUrl}
                 alt={user.fullName || "User"}
-                className={`h-8 w-8 rounded-full object-cover transition-colors ${
+                className={`h-7 w-7 rounded-full object-cover transition-colors sm:h-8 sm:w-8 ${
                   isDark
                     ? "border-2 border-shop_orange/40 group-hover:border-shop_orange"
                     : "border-2 border-shop_light_green/20 group-hover:border-shop_light_green/40"
@@ -122,14 +122,14 @@ const UserDropdown = ({
               />
             ) : (
               <UserCircle
-                className={`h-8 w-8 transition-colors ${
+                className={`h-7 w-7 transition-colors sm:h-8 sm:w-8 ${
                   isDark
                     ? "text-shop_light_pink/80 group-hover:text-shop_orange"
                     : "text-gray-500 group-hover:text-shop_light_green"
                 }`}
               />
             )}
-            <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-shop_dark_green bg-green-500 shadow-sm" />
+            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-shop_dark_green bg-green-500 shadow-sm sm:-bottom-1 sm:-right-1 sm:h-3 sm:w-3" />
           </div>
           {!isDark && (
             <div className="hidden flex-col items-start lg:flex">

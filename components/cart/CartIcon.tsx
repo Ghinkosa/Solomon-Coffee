@@ -6,7 +6,13 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
-const CartIcon = ({ variant = "light" }: { variant?: "light" | "dark" }) => {
+const CartIcon = ({
+  variant = "light",
+  compact = false,
+}: {
+  variant?: "light" | "dark";
+  compact?: boolean;
+}) => {
   const { items, openAuthSidebar } = useCartStore();
   const { isSignedIn } = useUser();
   const [isClient, setIsClient] = useState(false);
@@ -26,9 +32,11 @@ const CartIcon = ({ variant = "light" }: { variant?: "light" | "dark" }) => {
     }
   };
 
+  const sizeClass = compact ? "h-9 w-9 sm:h-10 sm:w-10" : "h-10 w-10";
+
   const linkClass = isDark
-    ? "group relative inline-flex h-10 w-10 items-center justify-center text-shop_light_pink/85 transition-colors hover:text-shop_orange hoverEffect"
-    : "group relative inline-flex h-10 w-10 items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green hoverEffect";
+    ? `group relative inline-flex ${sizeClass} items-center justify-center text-shop_light_pink/85 transition-colors hover:text-shop_orange hoverEffect`
+    : `group relative inline-flex ${sizeClass} items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green hoverEffect`;
 
   const iconClass = isDark
     ? "h-[18px] w-[18px] text-shop_light_pink/85 group-hover:text-shop_orange"

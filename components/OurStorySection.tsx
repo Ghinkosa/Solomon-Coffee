@@ -1,5 +1,6 @@
 import Image from "next/image";
 import aboutUsHeadshot from "@/images/about-us-headshot.jpg";
+import { homeEyebrowClass } from "./HomeSectionHeader";
 import { OurStoryBody, OurStoryHeader } from "./OurStoryText";
 
 const OurStorySection = () => {
@@ -31,10 +32,10 @@ const OurStorySection = () => {
               </div>
 
               <div className="absolute -bottom-5 -right-2 max-w-[220px] rounded-xl border border-shop_dark_green/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:-right-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-shop_light_green">
+                <p className={`text-shop_light_green ${homeEyebrowClass}`}>
                   Family Heritage
                 </p>
-                <p className="mt-1 font-serif text-sm leading-snug text-shop_dark_green">
+                <p className="mt-1 font-serif text-base leading-snug text-shop_dark_green">
                   30+ years rooted in Ethiopian coffee
                 </p>
               </div>

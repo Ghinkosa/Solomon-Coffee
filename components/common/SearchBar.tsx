@@ -14,9 +14,11 @@ import { useOutsideClick } from "@/hooks";
 const SearchBar = ({
   dictionary,
   variant = "light",
+  compact = false,
 }: {
   dictionary?: any;
   variant?: "light" | "dark";
+  compact?: boolean;
 }) => {
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
@@ -121,8 +123,8 @@ const SearchBar = ({
           onClick={() => setShowSearch(true)}
           className={
             isDark
-              ? "group inline-flex h-10 items-center gap-2 px-1 text-shop_light_pink/80 transition-colors hover:text-shop_orange sm:px-2"
-              : "group inline-flex h-10 items-center gap-2 px-1 text-stone-400 transition-colors hover:text-shop_dark_green sm:gap-2.5 sm:px-2"
+              ? `group inline-flex items-center justify-center text-shop_light_pink/80 transition-colors hover:text-shop_orange ${compact ? "h-9 w-9 sm:h-10 sm:w-auto sm:gap-2 sm:px-2" : "h-10 gap-2 px-1 sm:px-2"}`
+              : `group inline-flex items-center justify-center text-stone-400 transition-colors hover:text-shop_dark_green ${compact ? "h-9 w-9 sm:h-10 sm:w-auto sm:gap-2.5 sm:px-2" : "h-10 gap-2 px-1 sm:gap-2.5 sm:px-2"}`
           }
           aria-label="Open search"
         >

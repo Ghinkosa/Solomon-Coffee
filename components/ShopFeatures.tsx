@@ -3,6 +3,9 @@
 import { useCallback, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Container from "./Container";
+import HomeSectionHeader, {
+  homeCaptionClass,
+} from "./HomeSectionHeader";
 import FeatureModal from "./FeatureModal";
 import {
   ShieldCheck,
@@ -220,19 +223,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
   return (
     <section className="bg-black py-16 lg:py-20">
       <Container>
-        <div className="mb-10 text-center lg:mb-12">
-          <div className="mb-3 inline-flex items-center gap-3">
-            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-transparent to-[#E4C290]" />
-            <h2 className="text-3xl font-bold uppercase tracking-tight text-[#E4C290] lg:text-4xl">
-              {dictionary?.title || "Why choose Sheba Cup Coffee"}
-            </h2>
-            <div className="h-1 w-12 rounded-full bg-gradient-to-l from-transparent to-[#E4C290]" />
-          </div>
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-[#E4C290]/80">
-            {dictionary?.description ||
-              "Fresh roasting, ethical sourcing, and service built for people who live by their morning cup."}
-          </p>
-        </div>
+        <HomeSectionHeader
+          variant="dark"
+          title={dictionary?.title || "Why choose Sheba Cup Coffee"}
+          description={
+            dictionary?.description ||
+            "Fresh roasting, ethical sourcing, and service built for people who live by their morning cup."
+          }
+        />
 
         <div className="relative pb-4">
           <div className="overflow-hidden py-2 pb-6" ref={emblaRef}>
@@ -258,13 +256,13 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
                       </div>
 
                       <div className="space-y-2 text-center">
-                        <h3 className="text-lg font-bold text-[#E4C290] group-hover:text-[#E4C290] hoverEffect">
+                        <h3 className="font-serif text-lg font-semibold text-[#E4C290] group-hover:text-[#E4C290] hoverEffect md:text-xl">
                           {feature.title}
                         </h3>
-                        <p className="text-sm leading-relaxed text-[#E4C290]/80">
+                        <p className={`text-[#E4C290]/80 ${homeCaptionClass}`}>
                           {feature.description}
                         </p>
-                        <div className="pt-2 text-xs font-medium text-[#E4C290] opacity-0 transition-opacity group-hover:opacity-100">
+                        <div className="pt-2 text-sm font-medium text-[#E4C290] opacity-0 transition-opacity group-hover:opacity-100">
                           {dictionary?.learnMore || "Click to learn more →"}
                         </div>
                       </div>

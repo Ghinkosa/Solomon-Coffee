@@ -38,6 +38,7 @@ import {
 import useStore from "@/store";
 import Logo from "../common/Logo";
 import SocialMedia from "../common/SocialMedia";
+import LanguageSwitcher from "../LanguageSwitcher";
 import { createPortal } from "react-dom";
 
 interface SidebarProps {
@@ -369,6 +370,10 @@ const Sidebar: FC<SidebarProps> = ({
 
         {/* Footer */}
         <div className="p-5 border-t border-gray-100 bg-gray-50 space-y-4">
+          <div className="flex justify-center md:hidden">
+            <LanguageSwitcher lang={lang} />
+          </div>
+
           {/* Socials */}
           <div className="flex justify-center">
             <SocialMedia />

@@ -4,6 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { ArrowRight } from "lucide-react";
+import HomeSectionHeader, {
+  homeActionLinkClass,
+  homeSubheadingClass,
+} from "./HomeSectionHeader";
 
 type CategoryWithCount = Category & { productCount?: number };
 
@@ -28,18 +32,12 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
   return (
     <section className="border-y border-shop_dark_green/10 bg-[#f3ede6] py-16 lg:py-20">
       <Container>
-        <div className="mb-10 text-center lg:mb-12">
-          <div className="mb-3 inline-flex items-center gap-3">
-            <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_light_green to-shop_dark_green" />
-            <h2 className="text-3xl font-bold text-dark-color lg:text-4xl">
-              {dictionary?.title || "Popular Categories"}
-            </h2>
-            <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_light_green to-shop_dark_green" />
-          </div>
-          <p className="mx-auto max-w-2xl text-lg text-light-color">
-            {dictionary?.description || "Browse our core coffee collections."}
-          </p>
-        </div>
+        <HomeSectionHeader
+          title={dictionary?.title || "Popular Categories"}
+          description={
+            dictionary?.description || "Browse our core coffee collections."
+          }
+        />
 
         <ul className="mx-auto grid max-w-3xl gap-0 sm:max-w-4xl sm:grid-cols-2 sm:gap-x-12 lg:gap-x-16">
           {categories.map((category) => {
@@ -69,11 +67,11 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
                   </div>
 
                   <div className="min-w-0 flex-1 text-left">
-                    <h3 className="truncate text-base font-medium text-shop_dark_green transition-colors group-hover:text-shop_light_green sm:text-lg">
+                    <h3 className={`truncate transition-colors group-hover:text-shop_light_green ${homeSubheadingClass}`}>
                       {category.title}
                     </h3>
                     {productCount > 0 && (
-                      <p className="mt-0.5 text-xs text-light-color sm:text-sm">
+                      <p className="mt-0.5 text-sm text-light-color md:text-base">
                         {productCount} {productsLabel}
                       </p>
                     )}
@@ -92,7 +90,7 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
         <div className="mt-10 text-center">
           <Link
             href={`/${lang}/category`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-shop_light_green transition-colors hover:text-shop_dark_green"
+            className={homeActionLinkClass}
           >
             {dictionary?.browseAll || "View all"}
             <ArrowRight size={15} />

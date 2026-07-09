@@ -15,6 +15,12 @@ import productMockup from "@/images/product-mockup.png";
 import OurStorySection from "@/components/OurStorySection";
 import HomeBrewCta from "@/components/HomeBrewCta";
 import Container from "@/components/Container";
+import {
+  homeBodyClass,
+  homeCaptionClass,
+  homeEyebrowClass,
+  homeSubheadingClass,
+} from "@/components/HomeSectionHeader";
 
 export default async function Home({
   params,
@@ -55,52 +61,52 @@ export default async function Home({
         <Container>
           <div className="grid items-center gap-12 md:grid-cols-2 lg:gap-16">
           <div className="space-y-6">
-            <div className="inline-block px-4 py-1 bg-amber-700 text-white text-xs uppercase tracking-widest rounded-full">
+            <div className={`rounded-full bg-shop_dark_green px-4 py-1 text-white ${homeEyebrowClass}`}>
               Behind the Coffee
             </div>
-            <h2 className="text-4xl md:text-5xl font-serif leading-tight">
+            <h2 className="font-serif text-3xl font-bold leading-tight text-shop_dark_green md:text-4xl">
               Our Mission: <br />
-              <span className="italic text-amber-700">Coffee with a Purpose</span>
+              <span className="italic text-shop_orange">Coffee with a Purpose</span>
             </h2>
-            <p className="text-lg text-stone-800/70 leading-relaxed">
+            <p className={homeBodyClass}>
               At Sheba Cup Coffee, our mission goes beyond coffee. Every bag you buy supports 
               lifesaving care for children battling cancer in Ethiopia.
             </p>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-3">
-                <Heart className="text-amber-600" size={32} />
-                <h3 className="font-serif text-xl">Childhood Cancer Care</h3>
-                <p className="text-sm text-stone-600">
+                <Heart className="text-shop_orange" size={32} />
+                <h3 className={homeSubheadingClass}>Childhood Cancer Care</h3>
+                <p className={homeCaptionClass}>
                   Supporting the Mathiwos Wondu Foundation Ethiopia.
                 </p>
               </div>
               <div className="space-y-3">
-                <HandHelping className="text-amber-600" size={32} />
-                <h3 className="font-serif text-xl">Treatment Support</h3>
-                <p className="text-sm text-stone-600">
+                <HandHelping className="text-shop_orange" size={32} />
+                <h3 className={homeSubheadingClass}>Treatment Support</h3>
+                <p className={homeCaptionClass}>
                   Screenings and care for families in need.
                 </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-3">
-                <Coffee className="text-amber-600" size={32} />
-                <h3 className="font-serif text-xl">30+ Years Experience</h3>
-                <p className="text-sm text-stone-600">
+                <Coffee className="text-shop_orange" size={32} />
+                <h3 className={homeSubheadingClass}>30+ Years Experience</h3>
+                <p className={homeCaptionClass}>
                   Direct partnerships with Birbirsa & Shakicha Farms.
                 </p>
               </div>
               <div className="space-y-3">
-                <GraduationCap className="text-amber-600" size={32} />
-                <h3 className="font-serif text-xl">Community Growth</h3>
-                <p className="text-sm text-stone-600">
+                <GraduationCap className="text-shop_orange" size={32} />
+                <h3 className={homeSubheadingClass}>Community Growth</h3>
+                <p className={homeCaptionClass}>
                   Education programs for women and children.
                 </p>
               </div>
             </div>
             <Link
               href="/mission"
-              className="inline-flex items-center space-x-2 text-amber-700 font-medium border-b border-amber-700 pb-1 hover:text-amber-800 hover:border-amber-800 transition-all"
+              className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 text-base font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
             >
               <span>Learn about our mission</span>
               <ArrowRight size={16} />
@@ -129,6 +135,8 @@ export default async function Home({
         <ProductGrid dictionary={dictionary} lang={lang} />
       </section>
 
+      <HomeBrewCta lang={lang} />
+
       {categories.length > 0 && (
         <HomeCategories
           categories={categories}
@@ -136,8 +144,6 @@ export default async function Home({
           lang={lang}
         />
       )}
-
-      <HomeBrewCta lang={lang} />
 
       <ShopFeatures dictionary={dictionary.home.shopFeatures} />
 
