@@ -218,22 +218,22 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
   };
 
   return (
-    <Container className="my-16 lg:my-24">
-      <div className="mb-12 text-center">
-        <div className="mb-4 inline-flex items-center gap-3">
-          <div className="h-1 w-12 rounded-full bg-gradient-to-r from-shop_dark_green/70 to-shop_dark_green"></div>
-          <h2 className="text-3xl font-bold uppercase tracking-tight text-dark-color lg:text-4xl">
-            {dictionary?.title || "Why choose Sheba Cup Coffee"}
-          </h2>
-          <div className="h-1 w-12 rounded-full bg-gradient-to-l from-shop_dark_green/70 to-shop_dark_green"></div>
+    <section className="bg-black py-16 lg:py-24">
+      <Container>
+        <div className="mb-12 text-center">
+          <div className="mb-4 inline-flex items-center gap-3">
+            <div className="h-1 w-12 rounded-full bg-gradient-to-r from-transparent to-[#E4C290]" />
+            <h2 className="text-3xl font-bold uppercase tracking-tight text-[#E4C290] lg:text-4xl">
+              {dictionary?.title || "Why choose Sheba Cup Coffee"}
+            </h2>
+            <div className="h-1 w-12 rounded-full bg-gradient-to-l from-transparent to-[#E4C290]" />
+          </div>
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-[#E4C290]/80">
+            {dictionary?.description ||
+              "Fresh roasting, ethical sourcing, and service built for people who live by their morning cup."}
+          </p>
         </div>
-        <p className="mx-auto max-w-2xl text-lg leading-relaxed text-light-color">
-          {dictionary?.description ||
-            "Fresh roasting, ethical sourcing, and service built for people who live by their morning cup."}
-        </p>
-      </div>
 
-      <div className="rounded-3xl border border-[#E4C290]/30 bg-[#1C2329] p-8 shadow-xl lg:p-12">
         <div className="relative">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-4">
@@ -247,7 +247,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
                     <button
                       type="button"
                       onClick={() => handleFeatureClick(feature)}
-                      className="group h-full w-full cursor-pointer rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-left shadow-lg hoverEffect transform hover:-translate-y-2 hover:border-[#E4C290]/45 hover:shadow-2xl"
+                      className="group h-full w-full cursor-pointer rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-left shadow-lg hoverEffect transform hover:-translate-y-2 hover:border-[#E4C290]/50 hover:shadow-2xl hover:shadow-[#E4C290]/10"
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <div className="mb-5 flex justify-center">
@@ -286,7 +286,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
             type="button"
             onClick={scrollPrev}
             aria-label="Previous feature"
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-[#252D34] text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-black text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -294,7 +294,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
             type="button"
             onClick={scrollNext}
             aria-label="Next feature"
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-[#252D34] text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-black text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -302,25 +302,25 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
 
         <div className="mt-12 border-t border-[#E4C290]/25 pt-8">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
               <div className="mb-2 text-4xl font-bold text-[#E4C290]">50K+</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.happyCustomers || "Happy coffee drinkers"}
               </p>
             </div>
-            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
               <div className="mb-2 text-4xl font-bold text-[#E4C290]">100K+</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.productsSold || "Bags shipped"}
               </p>
             </div>
-            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
               <div className="mb-2 text-4xl font-bold text-[#E4C290]">99%</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.satisfactionRate || "Would recommend us"}
               </p>
             </div>
-            <div className="rounded-2xl border border-[#E4C290]/20 bg-[#252D34] p-6 text-center">
+            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
               <div className="mb-2 text-4xl font-bold text-[#E4C290]">24/7</div>
               <p className="font-medium text-[#E4C290]/80">
                 {dictionary?.stats?.customerSupport || "Order & brew support"}
@@ -330,7 +330,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         </div>
 
         <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-4 rounded-2xl border border-[#E4C290]/30 bg-[#252D34] px-8 py-4 shadow-md">
+          <div className="inline-flex items-center gap-4 rounded-2xl border border-[#E4C290]/30 bg-black px-8 py-4 shadow-md">
             <ShieldCheck className="h-6 w-6 shrink-0 text-[#E4C290]" />
             <span className="font-semibold text-[#E4C290]">
               {dictionary?.trustLine ||
@@ -350,14 +350,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
             </div>
           </div>
         </div>
-      </div>
 
-      <FeatureModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        feature={selectedFeature}
-      />
-    </Container>
+        <FeatureModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          feature={selectedFeature}
+        />
+      </Container>
+    </section>
   );
 };
 

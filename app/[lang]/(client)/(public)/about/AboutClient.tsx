@@ -138,18 +138,41 @@ const AboutClient = () => {
               <Badge className="mb-4 bg-shop_light_green/10 text-shop_dark_green hover:bg-shop_light_green/20">
                 Our Story
               </Badge>
-              <h2 className="text-4xl font-bold text-shop_dark_green mb-6">
-                Building a Better Coffee Experience
-              </h2>
-              <p className="text-lg text-dark-text mb-6 leading-relaxed">
-                Founded with a simple mission: make great coffee approachable,
-                consistent, and enjoyable for everyone. What started as a small
-                team has grown into a trusted destination for coffee lovers.
+              <p className="text-xl font-serif text-shop_dark_green mb-6 leading-relaxed">
+                Coffee has always been at the heart of our family story, from the
+                farms of Ethiopia to our first roastery in the United States.
               </p>
-              <p className="text-lg text-dark-text mb-8 leading-relaxed">
-                We believe every cup should feel intentional, not routine.
-                That&apos;s why we carefully curate beans, partner with
-                responsible producers, and continuously improve how we serve you.
+              <p className="text-lg text-dark-text mb-5 leading-relaxed">
+                Our coffee story began in Ethiopia, where coffee is part of family,
+                culture, and daily life. For more than 30 years, our family has
+                worked with coffee from the farm level, growing, selecting, and
+                protecting the quality of Ethiopian Arabica coffee.
+              </p>
+              <p className="text-lg text-dark-text mb-5 leading-relaxed">
+                Our roots began in Sidamo, continued in Guji, and connect deeply to
+                Yirgacheffe, one of Ethiopia&apos;s most respected coffee regions.
+                These places shaped our family, our work, and our respect for
+                coffee.
+              </p>
+              <p className="text-lg text-dark-text mb-5 leading-relaxed">
+                Sheba Cup Coffee works directly with Birbirsa Coffee Farm. This
+                partnership helps us protect quality, support sustainable farming,
+                and keep our coffee traceable from farm to cup.
+              </p>
+              <p className="text-lg text-dark-text mb-5 leading-relaxed">
+                For many years, our family focused on farming, selecting, and
+                preparing green coffee. Roasting is our next step. From the New
+                York Metro area, Sheba Cup Coffee begins a new chapter by roasting
+                our family&apos;s Ethiopian coffee for the first time.
+              </p>
+              <p className="text-lg text-dark-text mb-5 leading-relaxed">
+                Sheba Cup Coffee was created to share authentic Ethiopian specialty
+                coffee while honoring the people, land, and history behind every
+                bean.
+              </p>
+              <p className="text-lg font-medium text-shop_dark_green mb-8 leading-relaxed">
+                Every bag carries our family story, our Ethiopian roots, and our
+                purpose to give back.
               </p>
               <Button
                 asChild
@@ -178,8 +201,8 @@ const AboutClient = () => {
                   </div>
                 </div>
                 <blockquote className="text-lg italic">
-                  &quot;Great coffee should be simple to discover, brew, and
-                  enjoy every day.&quot;
+                  &quot;Every bag carries our family story, our Ethiopian roots,
+                  and our purpose to give back.&quot;
                 </blockquote>
                 <p className="mt-4 font-semibold">- Sheba Cup Coffee Team</p>
               </div>

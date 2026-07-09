@@ -2,21 +2,13 @@ export const headerPrimaryNav = [
   { title: "Home", href: "/" },
   { title: "Shop", href: "/shop" },
   { title: "Our Coffee", href: "/our-coffee" },
-];
-
-export const headerBlogNav = [
+  { title: "Our Roasting Process", href: "/education" },
   { title: "Blog", href: "/blog" },
-  { title: "Education", href: "/education" },
+  { title: "Contact", href: "/contact" },
 ];
-
-export const headerContactNav = [{ title: "Contact", href: "/contact" }];
 
 /** Full nav list (mobile sidebar, etc.) */
-export const headerData = [
-  ...headerPrimaryNav,
-  ...headerBlogNav,
-  ...headerContactNav,
-];
+export const headerData = [...headerPrimaryNav];
 
 
 export const productType = [

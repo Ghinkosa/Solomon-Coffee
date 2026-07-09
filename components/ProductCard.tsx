@@ -32,15 +32,15 @@ const ProductCard = memo(
 
   return (
     <div
-      className={`text-sm border rounded-md border-dark-blue/20 group bg-white ${
+      className={`text-sm group bg-white ${
         isExpandable
-          ? "transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-          : ""
+          ? "overflow-hidden rounded-lg border border-gray-200 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-shop_light_green/50 hover:shadow-lg"
+          : "rounded-md border border-dark-blue/20"
       }`}
       onMouseEnter={isExpandable ? onHoverStart : undefined}
       onMouseLeave={isExpandable ? onHoverEnd : undefined}
     >
-      <div className="relative group overflow-hidden bg-shop_light_bg">
+      <div className="relative overflow-hidden bg-shop_light_bg">
         {product?.images && (
           <>
             {isExpandable ? (
@@ -93,13 +93,15 @@ const ProductCard = memo(
             Sale!
           </p>
         ) : (
-          <span className="absolute top-2 left-2 z-10 border border-shop_orange/50 p-1 rounded-full group-hover:border-shop_orange hover:text-shop_dark_green hoverEffect">
-            <Flame
-              size={18}
-              fill="#fb6c08"
-              className="text-shop_orange/50 group-hover:text-shop_orange hoverEffect"
-            />
-          </span>
+          !isHomeMode && (
+            <span className="absolute top-2 left-2 z-10 border border-shop_orange/50 p-1 rounded-full group-hover:border-shop_orange hover:text-shop_dark_green hoverEffect">
+              <Flame
+                size={18}
+                fill="#fb6c08"
+                className="text-shop_orange/50 group-hover:text-shop_orange hoverEffect"
+              />
+            </span>
+          )
         )}
       </div>
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { ArrowRight, Coffee, X } from "lucide-react";
+import Link from "next/link";
 import type { Product } from "@/sanity.types";
 import type { DetailPanelPosition } from "@/hooks/useProductDetailsPanel";
 import PriceView from "@/components/PriceView";
@@ -15,6 +16,7 @@ interface ProductDetailsPanelProps {
   clearClosePanelTimeout: () => void;
   schedulePanelClose: () => void;
   variant?: "default" | "compact";
+  lang?: string;
 }
 
 export function ProductDetailsPanel({
@@ -24,8 +26,10 @@ export function ProductDetailsPanel({
   clearClosePanelTimeout,
   schedulePanelClose,
   variant = "default",
+  lang,
 }: ProductDetailsPanelProps) {
   const isCompact = variant === "compact";
+  const isSidePanel = detailPanelPosition?.placement === "side";
 
   return (
     <AnimatePresence>
@@ -33,32 +37,33 @@ export function ProductDetailsPanel({
         <motion.div
           initial={{
             opacity: 0,
-            x: detailPanelPosition.isMobile
-              ? 0
-              : detailPanelPosition.openToRight
-                ? 16
-                : -16,
-            y: detailPanelPosition.isMobile ? 6 : 0,
+            x: isSidePanel
+              ? detailPanelPosition.openToRight
+                ? 20
+                : -20
+              : 0,
+            y: isSidePanel ? 0 : 10,
+            scale: isSidePanel ? 0.97 : 1,
           }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
+          animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
           exit={{
             opacity: 0,
-            x: detailPanelPosition.isMobile
-              ? 0
-              : detailPanelPosition.openToRight
-                ? 16
-                : -16,
-            y: detailPanelPosition.isMobile ? 6 : 0,
+            x: isSidePanel
+              ? detailPanelPosition.openToRight
+                ? 20
+                : -20
+              : 0,
+            y: isSidePanel ? 0 : 10,
+            scale: isSidePanel ? 0.97 : 1,
           }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
           onMouseEnter={clearClosePanelTimeout}
           onMouseLeave={() => {
-            if (!detailPanelPosition.isMobile && window.innerWidth >= 768)
-              return;
+            if (isSidePanel) return;
             schedulePanelClose();
           }}
-          className={`absolute z-30 flex flex-col rounded-xl border border-[#e4c290]/40 bg-[#3a2417] text-[#fdf6e8] shadow-2xl ring-1 ring-[#e4c290]/25 ${
-            isCompact ? "p-4 md:p-5" : "p-5"
+          className={`absolute z-40 flex flex-col overflow-hidden rounded-2xl border border-[#e4c290]/45 bg-[#3a2417] text-[#fdf6e8] shadow-[0_24px_60px_-12px_rgba(20,10,5,0.55)] ring-1 ring-[#e4c290]/20 ${
+            isSidePanel ? "p-4 md:p-5" : "p-4 md:p-5"
           }`}
           style={{
             top: detailPanelPosition.top,
@@ -69,27 +74,43 @@ export function ProductDetailsPanel({
               : {}),
           }}
         >
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#e4c290]">
-              Coffee details
-            </p>
+          {isSidePanel && (
+            <span
+              aria-hidden
+              className={`pointer-events-none absolute top-10 h-4 w-4 rotate-45 border-[#e4c290]/45 bg-[#3a2417] ${
+                detailPanelPosition.openToRight
+                  ? "-left-2 border-b border-l"
+                  : "-right-2 border-r border-t"
+              }`}
+            />
+          )}
+
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#e4c290]/15 text-[#e4c290]">
+                <Coffee size={14} />
+              </span>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#e4c290]">
+                {isSidePanel ? "Quick look" : "Coffee details"}
+              </p>
+            </div>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md p-1 text-[#e4c290]/80 transition-colors hover:bg-[#2a1810]/60 hover:text-[#fdf6e8]"
+              className="rounded-full p-1.5 text-[#e4c290]/80 transition-colors hover:bg-[#2a1810]/70 hover:text-[#fdf6e8]"
               aria-label="Close details"
             >
-              <X size={16} />
+              <X size={15} />
             </button>
           </div>
 
-          <div className="mt-4 flex flex-col gap-4">
+          <div className="mt-4 flex flex-1 flex-col gap-4">
             <ProductExpandedDetails
               product={expandedProduct}
-              variant={variant}
+              variant={isSidePanel && isCompact ? "side" : variant}
             />
 
-            <div className="space-y-3 rounded-lg border border-[#e4c290]/25 bg-[#2a1810]/50 p-3.5">
+            <div className="mt-auto space-y-3 rounded-xl border border-[#e4c290]/30 bg-[#2a1810]/70 p-3.5">
               <PriceView
                 price={expandedProduct.price}
                 discount={expandedProduct.discount}
@@ -98,11 +119,22 @@ export function ProductDetailsPanel({
               <AddToCartButton
                 product={expandedProduct}
                 theme="onDark"
-                className={`rounded-full !bg-[#e4c290] !text-[#3a2417] !border-[#e4c290] hover:!bg-[#fdf6e8] hover:!text-[#3a2417] hover:!border-[#fdf6e8] ${
-                  isCompact ? "w-full" : "w-full max-w-none"
-                }`}
+                className="w-full rounded-full !border-[#e4c290] !bg-[#e4c290] !text-[#3a2417] hover:!border-[#fdf6e8] hover:!bg-[#fdf6e8] hover:!text-[#3a2417]"
               />
             </div>
+
+            {isSidePanel && expandedProduct.slug?.current && (
+              <Link
+                href={`/${lang || "en"}/product/${expandedProduct.slug.current}`}
+                className="group inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-[#e4c290] transition-colors hover:text-[#fdf6e8]"
+              >
+                View full details
+                <ArrowRight
+                  size={14}
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            )}
           </div>
         </motion.div>
       )}

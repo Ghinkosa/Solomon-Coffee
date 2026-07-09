@@ -13,6 +13,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Heart, HandHelping, Users, Coffee, GraduationCap, BookOpen } from "lucide-react";
 import productMockup from "@/images/product-mockup.png";
+import OurStoryText from "@/components/OurStoryText";
 
 export default async function Home({
   params,
@@ -49,38 +50,14 @@ export default async function Home({
 
       {/* Our Story Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="space-y-6">
-            <div className="inline-block px-4 py-1 bg-shop_dark_green text-white text-xs uppercase tracking-widest rounded-full">
-              Our Story
-            </div>
-            <h2 className="text-4xl md:text-5xl font-serif leading-tight text-shop_dark_green">
-              From Ethiopian Farms <br />
-              <span className="italic text-shop_orange">to Your Cup</span>
-            </h2>
-            <p className="text-lg text-stone-800/70 leading-relaxed">
-              Sheba Cup Coffee began with a simple belief: exceptional Ethiopian coffee
-              should be accessible, ethical, and brewed with purpose. We partner directly
-              with Birbirsa and Shakicha farms, bringing decades of expertise to every roast.
-            </p>
-            <p className="text-lg text-stone-800/70 leading-relaxed">
-              What sets us apart is not just the coffee—it is the impact behind every bag.
-              Your purchase supports childhood cancer care, community education, and
-              sustainable farming practices across Ethiopia.
-            </p>
-            <Link
-              href="/mission"
-              className="inline-flex items-center space-x-2 text-shop_orange font-medium border-b border-shop_orange pb-1 hover:text-shop_dark_green hover:border-shop_dark_green transition-all"
-            >
-              <span>Read More</span>
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-shop_light_green to-shop_dark_green">
+        <div className="grid md:grid-cols-2 gap-16 items-start">
+          <OurStoryText />
+          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-shop_light_green to-shop_dark_green md:sticky md:top-24">
             <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-white text-center">
               <BookOpen className="mb-4 text-shop_orange" size={48} />
               <p className="font-serif italic text-2xl leading-relaxed">
-                &quot;Every cup tells a story of heritage, care, and community.&quot;
+                &quot;Every bag carries our family story, our Ethiopian roots,
+                and our purpose to give back.&quot;
               </p>
               <p className="mt-4 text-sm uppercase tracking-widest text-white/80">
                 — Sheba Cup Coffee
@@ -167,10 +144,11 @@ export default async function Home({
         <section className="mt-16 lg:mt-20 bg-shop_light_bg py-8 lg:py-10">
           <ProductGrid dictionary={dictionary} lang={lang} />
         </section>
-        <section className="bg-[#09332C] pt-16 lg:pt-20 pb-8 lg:pb-10">
+        <section className="border-y border-shop_dark_green/10 bg-[#f3ede6] py-16 lg:py-24">
           <HomeCategories
             categories={categories}
             dictionary={dictionary.home.popularCategories}
+            lang={lang}
           />
         </section>
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 lg:mt-20">

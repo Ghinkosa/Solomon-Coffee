@@ -10,7 +10,7 @@ import { toPlainText } from "@/lib/sanity-text";
 
 interface ProductExpandedDetailsProps {
   product: Product;
-  variant?: "default" | "compact";
+  variant?: "default" | "compact" | "side";
 }
 
 interface SpecChipProps {
@@ -18,13 +18,33 @@ interface SpecChipProps {
   value: string;
 }
 
-function SpecChip({ label, value }: SpecChipProps) {
+function SpecChip({
+  label,
+  value,
+  tone = "dark",
+}: SpecChipProps & { tone?: "dark" | "light" }) {
+  const isLight = tone === "light";
+
   return (
-    <div className="flex min-w-0 flex-col rounded-lg border border-[#e4c290]/30 bg-[#2a1810]/80 px-2.5 py-2">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-[#e4c290]">
+    <div
+      className={`flex min-w-0 flex-col rounded-lg border px-2.5 py-2 ${
+        isLight
+          ? "border-shop_light_green/20 bg-white"
+          : "border-[#e4c290]/40 bg-[#2a1810] shadow-inner"
+      }`}
+    >
+      <span
+        className={`text-[10px] font-semibold uppercase tracking-wider ${
+          isLight ? "text-shop_light_green" : "text-[#e4c290]"
+        }`}
+      >
         {label}
       </span>
-      <span className="mt-1 text-xs font-medium leading-snug text-[#fdf6e8] line-clamp-3">
+      <span
+        className={`mt-1 text-xs font-medium leading-snug line-clamp-3 ${
+          isLight ? "text-shop_dark_green" : "text-[#fdf6e8]"
+        }`}
+      >
         {value}
       </span>
     </div>
@@ -43,6 +63,8 @@ export function ProductExpandedDetails({
   variant = "default",
 }: ProductExpandedDetailsProps) {
   const isCompact = variant === "compact";
+  const isSide = variant === "side";
+  const chipTone = "dark";
   const coffeeDetails = getCoffeeDetails(product);
   const origin = getCoffeeOrigin(coffeeDetails);
   const flavorNotes = coffeeDetails?.flavorNotes?.filter(Boolean).join(", ");
@@ -99,7 +121,9 @@ export function ProductExpandedDetails({
           chip.label as (typeof COMPACT_DETAIL_KEYS)[number],
         ),
       )
-    : specChips;
+    : isSide
+      ? specChips.slice(0, 4)
+      : specChips;
 
   const descriptionText = toPlainText(product.description);
 
@@ -110,7 +134,7 @@ export function ProductExpandedDetails({
       : "";
 
   return (
-    <div className={isCompact ? "min-w-0 flex-1 space-y-3" : "space-y-3"}>
+    <div className={isCompact || isSide ? "min-w-0 flex-1 space-y-3" : "space-y-3"}>
       {product.name && (
         <p className="text-base font-semibold leading-snug text-[#fdf6e8]">
           {product.name}
@@ -119,7 +143,7 @@ export function ProductExpandedDetails({
 
       {descriptionText && (
         <p
-          className={`leading-relaxed text-[#fdf6e8]/85 ${
+          className={`leading-relaxed text-[#fdf6e8]/90 ${
             isCompact ? "line-clamp-2 text-xs" : "line-clamp-3 text-xs"
           }`}
         >
@@ -128,7 +152,7 @@ export function ProductExpandedDetails({
       )}
 
       {categoriesLabel && (
-        <p className="inline-block rounded-full border border-[#e4c290]/35 bg-[#3a2417]/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#fdf6e8]">
+        <p className="inline-block rounded-full border border-[#e4c290]/40 bg-[#2a1810]/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#fdf6e8]">
           {categoriesLabel}
         </p>
       )}
@@ -136,13 +160,20 @@ export function ProductExpandedDetails({
       {visibleChips.length > 0 && (
         <div
           className={
-            isCompact
-              ? "grid grid-cols-2 gap-2 sm:grid-cols-4"
-              : "grid grid-cols-2 gap-2 sm:grid-cols-3"
+            isSide
+              ? "grid grid-cols-2 gap-2"
+              : isCompact
+                ? "grid grid-cols-2 gap-2 sm:grid-cols-4"
+                : "grid grid-cols-2 gap-2 sm:grid-cols-3"
           }
         >
           {visibleChips.map((chip) => (
-            <SpecChip key={chip.label} label={chip.label} value={chip.value} />
+            <SpecChip
+              key={chip.label}
+              label={chip.label}
+              value={chip.value}
+              tone={chipTone}
+            />
           ))}
         </div>
       )}

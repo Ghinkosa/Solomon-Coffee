@@ -19,7 +19,7 @@
       "orders": "Orders",
       "contact": "Contact",
       "blog": "Blog",
-      "education": "Coffee Education",
+      "education": "Our Roasting Process",
       "ourCoffee": "Our Coffee",
       "wholesalers": "Wholesale",
       "contactUs": "Contact Us"
@@ -78,16 +78,9 @@
     },
     "popularCategories": {
       "title": "Popular Categories",
-      "description": "Explore our most popular coffee categories and find your perfect cup",
-      "browseAll": "Browse All Categories",
-      "explore": "Explore",
-      "thisCategory": "this category",
-      "shopNow": "Shop Now",
-      "stats": {
-        "categories": "Categories",
-        "products": "Coffee Lots",
-        "support": "Brew Support"
-      }
+      "description": "Browse our core coffee collections.",
+      "browseAll": "View all",
+      "productsLabel": "coffees"
     },
     "shopFeatures": {
       "title": "Why choose Sheba Cup Coffee",

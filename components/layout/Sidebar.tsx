@@ -108,7 +108,8 @@ const Sidebar: FC<SidebarProps> = ({
         { title: "Categories", href: "/category", icon: Grid3X3 },
         { title: "Our Coffee", href: "/our-coffee", icon: Coffee },
         { title: "Blog", href: "/blog", icon: BookOpen },
-        { title: "Coffee Education", href: "/education", icon: GraduationCap },
+        { title: "Our Roasting Process", href: "/education", icon: GraduationCap },
+        { title: "Contact", href: "/contact", icon: Phone },
       ],
     },
     {
@@ -116,7 +117,6 @@ const Sidebar: FC<SidebarProps> = ({
       items: [
         { title: "Help Center", href: "/help", icon: HelpCircle },
         { title: "Wholesale", href: "/shop#wholesale", icon: Store },
-        { title: "Contact Us", href: "/contact", icon: Phone },
         { title: "About Us", href: "/about", icon: Info },
       ],
     },

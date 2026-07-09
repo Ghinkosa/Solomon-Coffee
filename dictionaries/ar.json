@@ -19,7 +19,7 @@
       "orders": "الطلبات",
       "contact": "اتصل بنا",
       "blog": "مدونة",
-      "education": "تعليم القهوة",
+      "education": "عملية التحميص لدينا",
       "wholesalers": "تجار الجملة",
       "contactUs": "اتصل بنا"
     },
@@ -77,16 +77,9 @@
     },
     "popularCategories": {
       "title": "الفئات الشائعة",
-      "description": "استكشف فئات منتجاتنا الأكثر شهرة وجد ما تحتاجه",
-      "browseAll": "تصفح جميع الفئات",
-      "explore": "استكشف",
-      "thisCategory": "هذه الفئة",
-      "shopNow": "تسوق الآن",
-      "stats": {
-        "categories": "فئات",
-        "products": "منتجات",
-        "support": "دعم"
-      }
+      "description": "تصفح مجموعات القهوة الأساسية لدينا.",
+      "browseAll": "عرض الكل",
+      "productsLabel": "قهوة"
     },
     "shopFeatures": {
       "title": "لماذا تختار قهوة شيبا",

@@ -1,163 +1,105 @@
 import { Category } from "@/sanity.types";
 import Container from "./Container";
-import Title from "./Title";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
+import { ArrowRight } from "lucide-react";
 
-interface Props {
-  categories: Category[];
-  dictionary?: any;
+type CategoryWithCount = Category & { productCount?: number };
+
+interface HomeCategoriesDictionary {
+  title?: string;
+  description?: string;
+  browseAll?: string;
+  productsLabel?: string;
 }
 
-const HomeCategories = ({ categories, dictionary }: Props) => {
+interface Props {
+  categories: CategoryWithCount[];
+  dictionary?: HomeCategoriesDictionary;
+  lang?: string;
+}
+
+const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
+  if (!categories?.length) return null;
+
+  const productsLabel = dictionary?.productsLabel || "coffees";
+
   return (
-    <Container>
-      {/* Header Section */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-3 mb-4">
-          <div className="h-1 w-12 bg-linear-to-r from-shop_orange to-shop_light_pink rounded-full"></div>
-          <Title className="text-3xl lg:text-4xl font-bold text-shop_light_pink">
-            {dictionary?.title || "Popular Categories"}
-          </Title>
-          <div className="h-1 w-12 bg-linear-to-l from-shop_orange to-shop_light_pink rounded-full"></div>
+    <section>
+      <Container>
+        <div className="mb-10 text-center">
+          <div className="mb-2 inline-flex items-center gap-3">
+            <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_light_green to-shop_dark_green" />
+            <h2 className="text-3xl font-bold text-dark-color lg:text-4xl">
+              {dictionary?.title || "Popular Categories"}
+            </h2>
+            <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_light_green to-shop_dark_green" />
+          </div>
+          <p className="mx-auto max-w-2xl text-lg text-light-color">
+            {dictionary?.description || "Browse our core coffee collections."}
+          </p>
         </div>
-        <p className="text-shop_light_pink/85 text-lg max-w-2xl mx-auto">
-          {dictionary?.description ||
-            "Explore our most popular product categories and find what you need"}
-        </p>
-        <Link
-          href={"/category"}
-          className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-shop_orange text-shop_dark_green font-semibold rounded-full hover:bg-shop_light_pink hover:text-shop_dark_green border-2 border-shop_orange hoverEffect"
-        >
-          {dictionary?.browseAll || "Browse All Categories"}
-          <svg
-            className="w-4 h-4 hoverEffect group-hover:translate-x-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+
+        <ul className="mx-auto grid max-w-3xl gap-0 sm:max-w-4xl sm:grid-cols-2 sm:gap-x-12 lg:gap-x-16">
+          {categories.map((category) => {
+            const productCount = category.productCount ?? 0;
+            const initial = category.title?.charAt(0)?.toUpperCase() || "C";
+
+            return (
+              <li key={category._id} className="border-b border-shop_dark_green/10">
+                <Link
+                  href={`/${lang}/category/${category.slug?.current || ""}`}
+                  className="group flex items-center gap-4 py-4 sm:py-5"
+                >
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-shop_dark_green/5 sm:h-16 sm:w-16">
+                    {category.image ? (
+                      <Image
+                        src={urlFor(category.image).width(128).height(128).url()}
+                        alt={category.title || "Coffee category"}
+                        fill
+                        sizes="64px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center text-sm font-semibold text-shop_light_green">
+                        {initial}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1 text-left">
+                    <h3 className="truncate text-base font-medium text-shop_dark_green transition-colors group-hover:text-shop_light_green sm:text-lg">
+                      {category.title}
+                    </h3>
+                    {productCount > 0 && (
+                      <p className="mt-0.5 text-xs text-light-color sm:text-sm">
+                        {productCount} {productsLabel}
+                      </p>
+                    )}
+                  </div>
+
+                  <ArrowRight
+                    size={16}
+                    className="shrink-0 text-shop_dark_green/25 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-shop_light_green"
+                  />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="mt-8 text-center">
+          <Link
+            href={`/${lang}/category`}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-shop_light_green transition-colors hover:text-shop_dark_green"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17 8l4 4m0 0l-4 4m4-4H3"
-            />
-          </svg>
-        </Link>
-      </div>
-
-      {/* Categories Grid */}
-      <div className="bg-[#09332C] p-8 lg:p-12 rounded-3xl shadow-xl border border-shop_light_green/25">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {categories?.map((category, index) => (
-            <Link
-              key={category?._id}
-              href={`/category/${category?.slug?.current}`}
-              className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl border border-gray-100 hover:border-shop_light_green hoverEffect transform hover:-translate-y-2 cursor-pointer block"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {/* Image Container */}
-              <div className="flex justify-center mb-5">
-                {category?.image && (
-                  <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-linear-to-br from-shop_light_pink to-shop_light_bg p-3 group-hover:shadow-lg hoverEffect">
-                    <Image
-                      src={urlFor(category?.image).width(200).url()}
-                      alt={`${category?.title} category`}
-                      width={80}
-                      height={80}
-                      className="w-full h-full object-contain group-hover:scale-110 hoverEffect"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-shop_light_green/10 to-transparent opacity-0 group-hover:opacity-100 hoverEffect rounded-xl"></div>
-                  </div>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="text-center space-y-3">
-                <h3 className="text-lg font-bold text-dark-color group-hover:text-shop_dark_green hoverEffect line-clamp-1">
-                  {category?.title}
-                </h3>
-
-                <div className="flex items-center justify-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-shop_light_green rounded-full"></div>
-                    <span className="text-sm font-semibold text-shop_dark_green">
-                      {dictionary?.explore || "Explore"}
-                    </span>
-                  </div>
-                  <span className="text-sm text-light-color">
-                    {dictionary?.thisCategory || "this category"}
-                  </span>
-                </div>
-
-                {/* Decorative Bar */}
-                <div className="w-full bg-gray-100 rounded-full h-2 mt-3">
-                  <div
-                    className="bg-linear-to-r from-shop_light_green to-shop_dark_green h-2 rounded-full hoverEffect"
-                    style={{ width: `${Math.random() * 60 + 40}%` }}
-                  ></div>
-                </div>
-
-                {/* Shop Now Button */}
-                <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-linear-to-r from-shop_light_pink to-shop_light_bg text-shop_dark_green font-medium rounded-full group-hover:from-shop_light_green group-hover:to-shop_dark_green group-hover:text-white text-sm hoverEffect">
-                  {dictionary?.shopNow || "Shop Now"}
-                  <svg
-                    className="w-3 h-3 hoverEffect group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </Link>
-          ))}
+            {dictionary?.browseAll || "View all"}
+            <ArrowRight size={15} />
+          </Link>
         </div>
-
-        {/* Categories Stats */}
-        <div className="flex flex-wrap items-center justify-center gap-8 mt-12 pt-8 border-t border-shop_light_pink/25">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-shop_light_pink">
-              {categories?.length}+
-            </div>
-            <div className="text-sm text-shop_light_pink/80">
-              {dictionary?.stats?.categories || "Categories"}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-shop_light_pink">1000+</div>
-            <div className="text-sm text-shop_light_pink/80">
-              {dictionary?.stats?.products || "Products"}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-shop_light_pink">24/7</div>
-            <div className="text-sm text-shop_light_pink/80">
-              {dictionary?.stats?.support || "Support"}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-8">
-          <div className="inline-flex items-center gap-4 px-8 py-4 bg-white/10 rounded-2xl border border-shop_light_pink/30">
-            <div className="w-2 h-2 bg-shop_orange rounded-full animate-pulse"></div>
-            <span className="text-shop_light_pink font-medium">
-              {dictionary?.discoverAmazing ||
-                "Discover amazing products in every category"}
-            </span>
-            <div className="w-2 h-2 bg-shop_orange rounded-full animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </section>
   );
 };
 

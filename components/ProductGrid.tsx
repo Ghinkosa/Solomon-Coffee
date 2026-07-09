@@ -37,7 +37,20 @@ const ProductGrid = ({
   const [selectedTab, setSelectedTab] = useState<string | null>(null);
 
   const sortBy: SortOption = "name-asc";
-  const [productsPerPage] = useState(20);
+
+  const [visibleCount, setVisibleCount] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth >= 768 ? 3 : 4,
+  );
+
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      setVisibleCount(window.innerWidth < 768 ? 4 : 3);
+    };
+
+    updateVisibleCount();
+    window.addEventListener("resize", updateVisibleCount);
+    return () => window.removeEventListener("resize", updateVisibleCount);
+  }, []);
 
   function getSortQuery(sort: SortOption): string {
     switch (sort) {
@@ -125,8 +138,8 @@ const ProductGrid = ({
   }, [applyFilters]);
 
   const visibleProducts = useMemo(
-    () => filteredProducts.slice(0, productsPerPage),
-    [filteredProducts, productsPerPage],
+    () => filteredProducts.slice(0, visibleCount),
+    [filteredProducts, visibleCount],
   );
 
   const {
@@ -150,7 +163,7 @@ const ProductGrid = ({
     closePanel();
   }, [selectedTab, closePanel]);
 
-  const gridClasses = "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3";
+  const gridClasses = "grid-cols-2 md:grid-cols-3 gap-3";
 
   return (
     <Container className="flex flex-col lg:px-0">
@@ -162,9 +175,6 @@ const ProductGrid = ({
           </h2>
           <div className="h-1 w-12 rounded-full bg-linear-to-l from-shop_light_green to-shop_dark_green" />
         </div>
-        <p className="text-light-color text-lg max-w-2xl mx-auto">
-          Freshly roasted picks and customer favorites from Sheba Cup Coffee
-        </p>
       </div>
 
       <div className="mb-8">
@@ -177,7 +187,9 @@ const ProductGrid = ({
         <div
           ref={gridWrapperRef}
           className={`relative overflow-visible transition-[padding] duration-200 ${
-            expandedProduct ? "pb-72 md:pb-64" : ""
+            expandedProduct && detailPanelPosition?.placement === "below"
+              ? "pb-72 md:pb-64"
+              : ""
           }`}
         >
           <div className={`grid ${gridClasses}`}>
@@ -190,6 +202,9 @@ const ProductGrid = ({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   ref={(node) => registerCardRef(product._id, node)}
+                  className={
+                    expandedCardId === product._id ? "relative z-20" : undefined
+                  }
                 >
                   <ProductCard
                     product={product}
@@ -218,6 +233,7 @@ const ProductGrid = ({
             clearClosePanelTimeout={clearClosePanelTimeout}
             schedulePanelClose={schedulePanelClose}
             variant="compact"
+            lang={lang}
           />
         </div>
       ) : (

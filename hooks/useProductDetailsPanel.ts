@@ -10,6 +10,7 @@ export interface DetailPanelPosition {
   minHeight: number;
   openToRight: boolean;
   isMobile: boolean;
+  placement: "side" | "below";
 }
 
 export type ProductDetailsPanelLayout = "home" | "shop";
@@ -18,6 +19,104 @@ interface UseProductDetailsPanelOptions {
   products: Product[];
   getColumnCount: () => number;
   layout?: ProductDetailsPanelLayout;
+}
+
+function getSidePanelPosition({
+  cardRect,
+  wrapperRect,
+  cardWidth,
+  cardHeight,
+  gap,
+  columnIndex,
+  columns,
+  isHomeLayout,
+}: {
+  cardRect: DOMRect;
+  wrapperRect: DOMRect;
+  cardWidth: number;
+  cardHeight: number;
+  gap: number;
+  columnIndex: number;
+  columns: number;
+  isHomeLayout: boolean;
+}) {
+  const panelWidth = isHomeLayout
+    ? Math.min(Math.max(cardWidth * 1.55, 280), 340)
+    : Math.max(cardWidth * 1.25, 300);
+
+  let openToRight = columnIndex < columns - 1;
+  const spaceRight = wrapperRect.right - cardRect.right;
+  const spaceLeft = cardRect.left - wrapperRect.left;
+
+  if (openToRight && spaceRight < panelWidth + gap) {
+    openToRight = false;
+  } else if (!openToRight && spaceLeft < panelWidth + gap) {
+    openToRight = true;
+  }
+
+  const rawLeft = openToRight
+    ? cardRect.left - wrapperRect.left + cardWidth + gap
+    : cardRect.left - wrapperRect.left - panelWidth - gap;
+
+  const left = Math.max(
+    0,
+    Math.min(rawLeft, Math.max(0, wrapperRect.width - panelWidth)),
+  );
+
+  const panelMinHeight = Math.max(cardHeight, isHomeLayout ? 400 : 360);
+  const rawTop = cardRect.top - wrapperRect.top;
+  const maxTop = Math.max(0, wrapperRect.height - panelMinHeight);
+  const top = Math.min(rawTop, maxTop);
+
+  return {
+    top,
+    left,
+    width: panelWidth,
+    minHeight: panelMinHeight,
+    openToRight,
+    placement: "side" as const,
+    isMobile: false,
+  };
+}
+
+function getBelowPanelPosition({
+  cardRect,
+  wrapperRect,
+  index,
+  columns,
+  products,
+  cardRefs,
+  gap,
+}: {
+  cardRect: DOMRect;
+  wrapperRect: DOMRect;
+  index: number;
+  columns: number;
+  products: Product[];
+  cardRefs: Record<string, HTMLDivElement | null>;
+  gap: number;
+}) {
+  const rowIndex = Math.floor(index / columns);
+  const rowStart = rowIndex * columns;
+  const rowEnd = Math.min(rowStart + columns, products.length);
+  let rowBottom = cardRect.bottom;
+
+  for (let i = rowStart; i < rowEnd; i++) {
+    const rowProduct = products[i];
+    const rowNode = cardRefs[rowProduct._id];
+    if (!rowNode) continue;
+    rowBottom = Math.max(rowBottom, rowNode.getBoundingClientRect().bottom);
+  }
+
+  return {
+    top: rowBottom - wrapperRect.top + gap,
+    left: 0,
+    width: wrapperRect.width,
+    minHeight: 0,
+    openToRight: true,
+    placement: "below" as const,
+    isMobile: true,
+  };
 }
 
 export function useProductDetailsPanel({
@@ -59,58 +158,37 @@ export function useProductDetailsPanel({
       const cardRect = cardNode.getBoundingClientRect();
       const wrapperRect = wrapperNode.getBoundingClientRect();
       const cardWidth = cardRect.width;
+      const cardHeight = cardRect.height;
       const gap = 12;
       const isMobile = window.innerWidth < 768;
       const isHomeLayout = layout === "home";
       const columns = getColumnCount();
       const columnIndex = index % columns;
-      const openToRight = columnIndex < columns - 1;
 
-      let top: number;
-      let left: number;
-      let panelWidth: number;
-      let panelMinHeight: number;
-
-      if (isHomeLayout || isMobile) {
-        const rowIndex = Math.floor(index / columns);
-        const rowStart = rowIndex * columns;
-        const rowEnd = Math.min(rowStart + columns, products.length);
-        let rowBottom = cardRect.bottom;
-
-        for (let i = rowStart; i < rowEnd; i++) {
-          const rowProduct = products[i];
-          const rowNode = cardRefs.current[rowProduct._id];
-          if (!rowNode) continue;
-          rowBottom = Math.max(rowBottom, rowNode.getBoundingClientRect().bottom);
-        }
-
-        top = rowBottom - wrapperRect.top + gap;
-        left = 0;
-        panelWidth = wrapperRect.width;
-        panelMinHeight = 0;
-      } else {
-        const rawLeft = openToRight
-          ? cardRect.left - wrapperRect.left + cardWidth + gap
-          : cardRect.left - wrapperRect.left - cardWidth - gap;
-        panelWidth = Math.max(cardWidth * 1.2, 280);
-        panelMinHeight = Math.max(cardRect.height, 360);
-        left = Math.max(
-          0,
-          Math.min(rawLeft, Math.max(0, wrapperRect.width - panelWidth)),
-        );
-        top = cardRect.top - wrapperRect.top;
-      }
+      const position = isMobile
+        ? getBelowPanelPosition({
+            cardRect,
+            wrapperRect,
+            index,
+            columns,
+            products,
+            cardRefs: cardRefs.current,
+            gap,
+          })
+        : getSidePanelPosition({
+            cardRect,
+            wrapperRect,
+            cardWidth,
+            cardHeight,
+            gap,
+            columnIndex,
+            columns,
+            isHomeLayout,
+          });
 
       setExpandedCardId(product._id);
       setExpandedProduct(product);
-      setDetailPanelPosition({
-        top,
-        left,
-        width: panelWidth,
-        minHeight: panelMinHeight,
-        openToRight: isHomeLayout || isMobile ? true : openToRight,
-        isMobile: isHomeLayout || isMobile,
-      });
+      setDetailPanelPosition(position);
     },
     [getColumnCount, layout, products],
   );
@@ -166,10 +244,8 @@ export function useProductDetailsPanel({
 }
 
 export function getHomeGridColumnCount(): number {
-  if (typeof window === "undefined") return 1;
-  if (window.innerWidth >= 1024) return 5;
-  if (window.innerWidth >= 768) return 4;
-  if (window.innerWidth >= 640) return 3;
+  if (typeof window === "undefined") return 2;
+  if (window.innerWidth >= 768) return 3;
   return 2;
 }
 

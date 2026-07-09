@@ -11,7 +11,7 @@
       "orders": "Pedidos",
       "contact": "Contacto",
       "blog": "Blog",
-      "education": "Educación del café",
+      "education": "Nuestro proceso de tostado",
       "wholesalers": "Mayoristas",
       "contactUs": "Contáctanos"
     },
@@ -38,14 +38,9 @@
     },
     "popularCategories": {
       "title": "Categorías Populares",
-      "description": "Explora nuestras categorías de café más populares y encuentra tu taza ideal",
-      "browseAll": "Ver todas las categorías",
-      "shopNow": "Comprar ahora",
-      "stats": {
-        "categories": "Categorías",
-        "products": "Lotes de café",
-        "support": "Soporte de preparación"
-      }
+      "description": "Explora nuestras colecciones principales de café.",
+      "browseAll": "Ver todo",
+      "productsLabel": "cafés"
     },
     "shopFeatures": {
       "title": "Por qué elegir Sheba Cup Coffee",
