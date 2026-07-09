@@ -12,41 +12,41 @@ interface FooterProps {
 }
 
 const Footer = ({ lang, dictionary }: FooterProps) => {
+  const hasCategories = categoriesData.length > 0;
+
   return (
-    <footer className="bg-shop_dark_green border-t border-shop_light_green/30">
+    <footer className="border-t border-shop_orange/25 bg-shop_dark_green text-shop_light_pink/85">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Top section with contact info */}
         <FooterTop />
 
-        {/* Main footer content */}
-        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <div className="mb-2">
-              <Logo
-                variant="sm"
-                lang={lang}
-                logoText={dictionary.logo}
-                theme="dark"
-              />
-            </div>
-            <p className="text-shop_light_pink/85 text-sm">
+        <div
+          className={`grid grid-cols-1 gap-10 py-12 md:grid-cols-2 ${
+            hasCategories ? "lg:grid-cols-4" : "lg:grid-cols-3"
+          } lg:gap-12 lg:py-14`}
+        >
+          <div className="space-y-5">
+            <Logo
+              variant="sm"
+              lang={lang}
+              logoText={dictionary.logo}
+              theme="dark"
+            />
+            <p className="max-w-xs text-sm leading-relaxed text-shop_light_pink/75">
               {contactConfig.company.description}
             </p>
-            <SocialMedia
-              className="text-shop_light_pink/80"
-              iconClassName="border-shop_orange/50 text-shop_light_pink hover:bg-shop_btn_dark_green"
-              tooltipClassName="bg-shop_light_pink text-shop_dark_green"
-            />
+            <SocialMedia variant="footer" />
           </div>
 
           <div>
-            <h3 className="font-semibold text-shop_orange mb-4">Quick Links</h3>
+            <h3 className="mb-5 font-serif text-sm font-semibold uppercase tracking-[0.16em] text-shop_orange">
+              Quick Links
+            </h3>
             <ul className="space-y-3">
               {quickLinksData?.map((item) => (
                 <li key={item?.title}>
                   <Link
                     href={`/${lang}${item?.href}`}
-                    className="text-shop_light_pink/85 hover:text-shop_orange text-sm font-medium hoverEffect"
+                    className="text-sm font-medium text-shop_light_pink/80 transition-colors hover:text-shop_orange hoverEffect"
                   >
                     {item?.title}
                   </Link>
@@ -55,15 +55,17 @@ const Footer = ({ lang, dictionary }: FooterProps) => {
             </ul>
           </div>
 
-          {categoriesData.length > 0 ? (
+          {hasCategories ? (
             <div>
-              <h3 className="font-semibold text-shop_orange mb-4">Categories</h3>
+              <h3 className="mb-5 font-serif text-sm font-semibold uppercase tracking-[0.16em] text-shop_orange">
+                Categories
+              </h3>
               <ul className="space-y-3">
                 {categoriesData.map((item) => (
                   <li key={item?.title}>
                     <Link
                       href={`/${lang}/category/${item?.href}`}
-                      className="text-shop_light_pink/85 hover:text-shop_orange text-sm font-medium hoverEffect capitalize"
+                      className="text-sm font-medium capitalize text-shop_light_pink/80 transition-colors hover:text-shop_orange hoverEffect"
                     >
                       {item?.title}
                     </Link>
@@ -74,20 +76,20 @@ const Footer = ({ lang, dictionary }: FooterProps) => {
           ) : null}
 
           <div>
-            <h3 className="font-semibold text-shop_orange mb-4">Newsletter</h3>
-            <p className="text-shop_light_pink/85 text-sm mb-4">
-              Subscribe to our newsletter to receive updates and exclusive
-              offers.
+            <h3 className="mb-5 font-serif text-sm font-semibold uppercase tracking-[0.16em] text-shop_orange">
+              Newsletter
+            </h3>
+            <p className="mb-4 text-sm leading-relaxed text-shop_light_pink/75">
+              Subscribe for roast updates, brewing tips, and exclusive offers.
             </p>
-            <NewsletterForm />
+            <NewsletterForm variant="footer" />
           </div>
         </div>
 
-        {/* Bottom copyright section */}
-        <div className="py-6 border-t border-shop_light_green/25 text-center text-sm text-shop_light_pink/80">
+        <div className="border-t border-shop_orange/20 py-6 text-center text-sm text-shop_light_pink/60 lg:py-8">
           <p>
             © {new Date().getFullYear()}{" "}
-            <span className="text-shop_orange font-black tracking-wider uppercase hover:text-shop_light_pink hoverEffect group font-sans">
+            <span className="font-semibold tracking-wide text-shop_orange">
               Sheba Cup Coffee
             </span>
             . All rights reserved.

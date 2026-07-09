@@ -14,6 +14,7 @@ import { useState } from "react";
 
 interface LanguageSwitcherProps {
   lang: string;
+  variant?: "light" | "dark";
 }
 
 const localeNames: Record<Locale, string> = {
@@ -34,7 +35,10 @@ const localeFlags: Record<Locale, string> = {
 // User asked for "language initial".
 // I'll use a neat button with the language code and a small flag if I had them, but distinct text is safer.
 
-const LanguageSwitcher = ({ lang }: LanguageSwitcherProps) => {
+const LanguageSwitcher = ({
+  lang,
+  variant = "light",
+}: LanguageSwitcherProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [failedFlagLocales, setFailedFlagLocales] = useState<
@@ -72,16 +76,25 @@ const LanguageSwitcher = ({ lang }: LanguageSwitcherProps) => {
     );
   }
 
+  const isDark = variant === "dark";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2 border md:h-[38px]"
+          className={
+            isDark
+              ? "h-10 gap-1.5 border-0 bg-transparent px-2 text-shop_light_pink/85 shadow-none hover:bg-transparent hover:text-shop_orange"
+              : "h-10 gap-1.5 border-0 bg-transparent px-2 text-shop_dark_green shadow-none hover:bg-transparent hover:text-shop_light_green"
+          }
         >
           {renderLocaleFlag(currentLocale)}
-          <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+          <span className="text-xs font-semibold uppercase">{currentLocale}</span>
+          <ChevronDown
+            className={`h-3 w-3 opacity-60 ${isDark ? "text-shop_light_pink/70" : "text-stone-500"}`}
+          />
           <span className="sr-only">Switch Language</span>
         </Button>
       </DropdownMenuTrigger>

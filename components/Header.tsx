@@ -12,7 +12,7 @@ const Header = async ({ lang }: { lang: Locale }) => {
       <AuthSidebar dictionary={dictionary} lang={lang} />
       <Suspense
         fallback={
-          <div className="h-20 bg-white border-b border-gray-100 animate-pulse" />
+          <div className="h-[4.25rem] animate-pulse border-b border-stone-200 bg-white lg:h-[4.75rem]" />
         }
       >
         <ClientHeader dictionary={dictionary} lang={lang} />

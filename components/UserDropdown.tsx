@@ -31,6 +31,7 @@ import { i18n, Locale } from "@/i18n-config";
 interface UserDropdownProps {
   dictionary: any;
   lang: string;
+  variant?: "light" | "dark";
 }
 
 const localeNames: Record<Locale, string> = {
@@ -39,7 +40,11 @@ const localeNames: Record<Locale, string> = {
   ar: "Arabic",
 };
 
-const UserDropdown = ({ dictionary, lang }: UserDropdownProps) => {
+const UserDropdown = ({
+  dictionary,
+  lang,
+  variant = "light",
+}: UserDropdownProps) => {
   const { user } = useUser();
   const { signOut } = useClerk();
   const [open, setOpen] = useState(false);
@@ -86,6 +91,8 @@ const UserDropdown = ({ dictionary, lang }: UserDropdownProps) => {
   // so t.key should always have his English value if translation is missing.
   const t = dictionary?.userDropdown || {};
 
+  const isDark = variant === "dark";
+
   return (
     <Popover
       open={open}
@@ -95,24 +102,42 @@ const UserDropdown = ({ dictionary, lang }: UserDropdownProps) => {
       }}
     >
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-shop_light_bg group border border-shop_dark_green/20 hover:border-shop_dark_green hoverEffect">
+        <button
+          className={
+            isDark
+              ? "group flex h-10 items-center gap-2 px-1.5 transition-colors hover:text-shop_orange hoverEffect"
+              : "group flex h-10 items-center gap-2 border border-stone-200 bg-stone-50 px-2 py-1 transition-colors hover:border-shop_light_green/40 hover:bg-white hoverEffect"
+          }
+        >
           <div className="relative">
             {user.imageUrl ? (
               <img
                 src={user.imageUrl}
                 alt={user.fullName || "User"}
-                className="w-8 h-8 rounded-full object-cover border-2 border-shop_light_green/20 group-hover:border-shop_light_green/40 transition-colors"
+                className={`h-8 w-8 rounded-full object-cover transition-colors ${
+                  isDark
+                    ? "border-2 border-shop_orange/40 group-hover:border-shop_orange"
+                    : "border-2 border-shop_light_green/20 group-hover:border-shop_light_green/40"
+                }`}
               />
             ) : (
-              <UserCircle className="w-8 h-8 text-gray-500 group-hover:text-shop_light_green transition-colors" />
+              <UserCircle
+                className={`h-8 w-8 transition-colors ${
+                  isDark
+                    ? "text-shop_light_pink/80 group-hover:text-shop_orange"
+                    : "text-gray-500 group-hover:text-shop_light_green"
+                }`}
+              />
             )}
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+            <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-shop_dark_green bg-green-500 shadow-sm" />
           </div>
-          <div className="hidden lg:flex flex-col items-start">
-            <span className="text-sm font-medium text-gray-800 group-hover:text-shop_light_green transition-colors">
-              {user.firstName || "User"}
-            </span>
-          </div>
+          {!isDark && (
+            <div className="hidden flex-col items-start lg:flex">
+              <span className="text-sm font-medium text-gray-800 transition-colors group-hover:text-shop_light_green">
+                {user.firstName || "User"}
+              </span>
+            </div>
+          )}
         </button>
       </PopoverTrigger>
 

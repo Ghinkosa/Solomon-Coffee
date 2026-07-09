@@ -11,7 +11,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useOutsideClick } from "@/hooks";
 
-const SearchBar = ({ dictionary }: { dictionary?: any }) => {
+const SearchBar = ({
+  dictionary,
+  variant = "light",
+}: {
+  dictionary?: any;
+  variant?: "light" | "dark";
+}) => {
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,9 +60,8 @@ const SearchBar = ({ dictionary }: { dictionary?: any }) => {
         return;
       }
 
-      // Handle Ctrl+K (or Cmd+K on Mac) to open search modal
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-        e.preventDefault(); // Prevent browser's default search behavior
+        e.preventDefault();
         setShowSearch(true);
         return;
       }
@@ -106,34 +111,35 @@ const SearchBar = ({ dictionary }: { dictionary?: any }) => {
 
     return () => clearTimeout(debounceTimer); // Cleanup the timer
   }, [fetchProducts]);
+  const isDark = variant === "dark";
+
   return (
     <>
-      {/* Search Trigger Button - Modern Input Style */}
-      <div className="flex">
-        {/* Desktop Version - Full Input Style */}
+      <div className="flex items-center">
         <button
+          type="button"
           onClick={() => setShowSearch(true)}
-          className="group hidden sm:flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-shop_light_green rounded-lg px-3 h-[38px] w-[130px] lg:w-[140px] xl:w-[160px] transition-all duration-200"
+          className={
+            isDark
+              ? "group inline-flex h-10 items-center gap-2 px-1 text-shop_light_pink/80 transition-colors hover:text-shop_orange sm:px-2"
+              : "group inline-flex h-10 items-center gap-2 px-1 text-stone-400 transition-colors hover:text-shop_dark_green sm:gap-2.5 sm:px-2"
+          }
           aria-label="Open search"
         >
-          {/* Search Icon */}
-          <Search className="w-4 h-4 text-gray-400 group-hover:text-shop_dark_green transition-colors duration-200 shrink-0" />
-
-          {/* Placeholder Text */}
+          <Search
+            className={
+              isDark
+                ? "h-[18px] w-[18px] shrink-0"
+                : "h-[18px] w-[18px] shrink-0 transition-transform duration-200 group-hover:scale-110"
+            }
+          />
           <span
-            className={`text-sm text-gray-500 group-hover:text-gray-700 transition-colors duration-200 flex-1 text-left ${isRtl ? "text-right" : ""}`}
+            className={`hidden text-sm font-medium sm:inline ${isRtl ? "text-right" : ""} ${
+              isDark ? "text-shop_light_pink/80" : "text-stone-500 group-hover:text-shop_dark_green"
+            }`}
           >
             {placeholder}
           </span>
-        </button>
-
-        {/* Mobile Version - Icon Only */}
-        <button
-          onClick={() => setShowSearch(true)}
-          className="group flex sm:hidden items-center justify-center p-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-shop_btn_dark_green rounded-lg hoverEffect"
-          aria-label="Open search"
-        >
-          <Search className="w-4 h-4 text-gray-400 group-hover:text-shop_dark_green transition-colors duration-200" />
         </button>
       </div>
 

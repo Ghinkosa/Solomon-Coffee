@@ -1,11 +1,12 @@
 "use client";
+
 import useCartStore from "@/store";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
-const CartIcon = () => {
+const CartIcon = ({ variant = "light" }: { variant?: "light" | "dark" }) => {
   const { items, openAuthSidebar } = useCartStore();
   const { isSignedIn } = useUser();
   const [isClient, setIsClient] = useState(false);
@@ -16,6 +17,7 @@ const CartIcon = () => {
 
   const itemCount = items?.length || 0;
   const displayCount = itemCount > 9 ? "9+" : itemCount;
+  const isDark = variant === "dark";
 
   const handleClick = (e: React.MouseEvent) => {
     if (!isSignedIn) {
@@ -24,17 +26,22 @@ const CartIcon = () => {
     }
   };
 
+  const linkClass = isDark
+    ? "group relative inline-flex h-10 w-10 items-center justify-center text-shop_light_pink/85 transition-colors hover:text-shop_orange hoverEffect"
+    : "group relative inline-flex h-10 w-10 items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green hoverEffect";
+
+  const iconClass = isDark
+    ? "h-[18px] w-[18px] text-shop_light_pink/85 group-hover:text-shop_orange"
+    : "h-[18px] w-[18px] group-hover:text-shop_light_green";
+
+  const badgeClass = isDark
+    ? "absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-shop_orange px-0.5 text-[10px] font-bold text-shop_dark_green"
+    : "absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-shop_dark_green px-0.5 text-[10px] font-bold text-white";
+
   if (!isClient) {
     return (
-      <Link
-        href={"/cart"}
-        className="group relative"
-        aria-label="Shopping cart"
-      >
-        <ShoppingBag className="group-hover:text-shop_light_green hoverEffect" />
-        <span className="absolute -top-1 -right-1 bg-shop_btn_dark_green text-white rounded-full text-xs font-semibold flex items-center justify-center min-w-[14px]">
-          0
-        </span>
+      <Link href={"/cart"} className={linkClass} aria-label="Shopping cart">
+        <ShoppingBag className={iconClass} />
       </Link>
     );
   }
@@ -43,22 +50,12 @@ const CartIcon = () => {
     <Link
       href={"/cart"}
       onClick={handleClick}
-      className="group relative"
+      className={linkClass}
       aria-label="Shopping cart"
     >
-      <ShoppingBag className="group-hover:text-shop_light_green hoverEffect" />
-      {itemCount > 0 ? (
-        <span
-          className={`absolute -top-1 -right-1 bg-shop_btn_dark_green text-white rounded-full text-xs font-semibold flex items-center justify-center min-w-[14px] h-[14px] ${
-            itemCount > 9 ? "px-1" : ""
-          }`}
-        >
-          {displayCount}
-        </span>
-      ) : (
-        <span className="absolute -top-1 -right-1 bg-shop_btn_dark_green text-white rounded-full text-xs font-semibold flex items-center justify-center min-w-[14px]">
-          0
-        </span>
+      <ShoppingBag className={iconClass} />
+      {itemCount > 0 && (
+        <span className={badgeClass}>{displayCount}</span>
       )}
     </Link>
   );

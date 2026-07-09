@@ -166,9 +166,9 @@ const ProductGrid = ({
   const gridClasses = "grid-cols-2 md:grid-cols-3 gap-3";
 
   return (
-    <Container className="flex flex-col lg:px-0">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-3 mb-2">
+    <Container>
+      <div className="mb-10 text-center lg:mb-12">
+        <div className="mb-3 inline-flex items-center gap-3">
           <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_light_green to-shop_dark_green" />
           <h2 className="text-3xl lg:text-4xl font-bold text-dark-color">
             Featured Coffee Selection
@@ -177,7 +177,7 @@ const ProductGrid = ({
         </div>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-10">
         <HomeTabbar selectedTab={selectedTab} onTabSelect={setSelectedTab} />
       </div>
 
@@ -240,7 +240,7 @@ const ProductGrid = ({
         <NoProductAvailable selectedTab={selectedTab || undefined} />
       )}
 
-      <div className="mt-8 pb-6 flex justify-center">
+      <div className="mt-10 flex justify-center">
         <Link
           href={`/${lang}/shop`}
           className="border border-dark-color px-4 py-1 rounded-full hover:bg-shop_light_green hover:text-white hover:border-shop_light_green hoverEffect"

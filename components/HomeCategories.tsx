@@ -26,10 +26,10 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
   const productsLabel = dictionary?.productsLabel || "coffees";
 
   return (
-    <section>
+    <section className="border-y border-shop_dark_green/10 bg-[#f3ede6] py-16 lg:py-20">
       <Container>
-        <div className="mb-10 text-center">
-          <div className="mb-2 inline-flex items-center gap-3">
+        <div className="mb-10 text-center lg:mb-12">
+          <div className="mb-3 inline-flex items-center gap-3">
             <div className="h-1 w-12 rounded-full bg-linear-to-r from-shop_light_green to-shop_dark_green" />
             <h2 className="text-3xl font-bold text-dark-color lg:text-4xl">
               {dictionary?.title || "Popular Categories"}
@@ -89,7 +89,7 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
           })}
         </ul>
 
-        <div className="mt-8 text-center">
+        <div className="mt-10 text-center">
           <Link
             href={`/${lang}/category`}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-shop_light_green transition-colors hover:text-shop_dark_green"

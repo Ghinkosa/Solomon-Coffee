@@ -18,9 +18,13 @@ const MobileMenu = ({ lang, dictionary }: MobileMenuProps) => {
   };
   return (
     <>
-      <button onClick={toggleSidebar}>
-        <AlignLeft className="w-6 h-6 hover:text-hoverColor hoverEffect md:hidden" />
-      </button>
+        <button
+          onClick={toggleSidebar}
+          aria-label="Open menu"
+          className="inline-flex h-10 w-10 items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green lg:hidden"
+        >
+          <AlignLeft className="h-5 w-5" />
+        </button>
       <div className="md:hidden">
         <AnimatePresence>
           {isSidebarOpen && (

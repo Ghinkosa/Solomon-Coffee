@@ -82,7 +82,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                   {/* Quick Actions */}
                   <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="bg-white/90 rounded-full p-1 hover:bg-white transition-colors">
-                      <FavoriteButton product={product} />
+                      <FavoriteButton showProduct product={product} />
                     </div>
                   </div>
                 </div>

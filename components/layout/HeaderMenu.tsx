@@ -29,38 +29,36 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
 
   function isActive(href: string) {
     const localized = `/${lang}${href === "/" ? "" : href}`;
-    return pathname === localized || pathname === href;
+    if (href === "/") {
+      return pathname === localized;
+    }
+    return pathname === localized || pathname.startsWith(`${localized}/`);
   }
 
   return (
-    <nav className="hidden lg:inline-flex w-full items-center justify-center gap-5 xl:gap-6 text-sm capitalize font-semibold text-shop_dark_green">
-      {headerPrimaryNav.map((item) => {
-        const label = getNavLabel(item, dictionary);
-        const href = `/${lang}${item.href === "/" ? "" : item.href}`;
-        const active = isActive(item.href);
+    <nav aria-label="Main navigation">
+      <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 xl:gap-x-7">
+        {headerPrimaryNav.map((item) => {
+          const label = getNavLabel(item, dictionary);
+          const href = `/${lang}${item.href === "/" ? "" : item.href}`;
+          const active = isActive(item.href);
 
-        return (
-          <Link
-            key={item.title}
-            href={href}
-            className={`hover:text-shop_orange hoverEffect relative group whitespace-nowrap ${
-              active ? "text-shop_orange" : "text-shop_dark_green"
-            }`}
-          >
-            {label}
-            <span
-              className={`absolute -bottom-0.5 left-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:left-0 ${
-                active && "w-1/2"
-              }`}
-            />
-            <span
-              className={`absolute -bottom-0.5 right-1/2 w-0 h-0.5 bg-shop_orange transition-all duration-300 group-hover:w-1/2 group-hover:right-0 ${
-                active && "w-1/2"
-              }`}
-            />
-          </Link>
-        );
-      })}
+          return (
+            <li key={item.title} className="shrink-0">
+              <Link
+                href={href}
+                className={`whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] transition-colors duration-200 xl:text-[13px] xl:tracking-[0.12em] ${
+                  active
+                    ? "text-shop_dark_green"
+                    : "text-stone-500 hover:text-shop_light_green"
+                }`}
+              >
+                {label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 };

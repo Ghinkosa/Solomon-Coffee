@@ -13,9 +13,11 @@ import { trackWishlistAdd, trackWishlistRemove } from "@/lib/analytics";
 const FavoriteButton = ({
   showProduct = false,
   product,
+  variant = "light",
 }: {
   showProduct?: boolean;
   product?: Product;
+  variant?: "light" | "dark";
 }) => {
   const { favoriteProduct, addToFavorite, openAuthSidebar } = useCartStore();
   const { isSignedIn } = useUser();
@@ -75,29 +77,40 @@ const FavoriteButton = ({
     }
   };
 
+  const isProductMode = showProduct || !!product;
+
+  if (!isProductMode && !isSignedIn) {
+    return null;
+  }
+
+  const isDark = variant === "dark";
+  const navIconClass = isDark
+    ? "h-[18px] w-[18px] text-shop_light_pink/85 group-hover:text-shop_orange"
+    : "h-[18px] w-[18px] text-shop_dark_green group-hover:text-shop_light_green";
+  const navLinkClass = isDark
+    ? "group relative inline-flex h-10 w-10 items-center justify-center text-shop_light_pink/85 transition-colors hover:text-shop_orange hoverEffect"
+    : "group relative inline-flex h-10 w-10 items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green hoverEffect";
+
   return (
     <>
-      {!showProduct ? (
+      {!isProductMode ? (
         <BreadcrumbLink
           href={"/wishlist"}
           onClick={handleWishlistClick}
-          className="group relative hover:text-shop_light_green hoverEffect"
+          className={navLinkClass}
         >
-          <Heart className="group-hover:text-shop_light_green hoverEffect mt-.5" />
-          {/* {isArray(favoriteProduct) && favoriteProduct.length > 0 && ( */}
+          <Heart className={`hoverEffect ${navIconClass}`} />
+          {isArray(favoriteProduct) && favoriteProduct.length > 0 && (
           <span
-            className={`absolute -top-1 -right-1 bg-shop_btn_dark_green text-white rounded-full text-xs font-semibold flex items-center justify-center min-w-[14px] h-[14px] ${
-              favoriteProduct.length > 9 ? "px-1" : ""
-            }`}
+            className={`absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-0.5 text-[10px] font-bold ${
+              isDark
+                ? "bg-shop_orange text-shop_dark_green"
+                : "bg-shop_dark_green text-white"
+            } ${favoriteProduct.length > 9 ? "px-1" : ""}`}
           >
-            {/* {favoriteProduct.length > 9 ? "9+" : favoriteProduct.length} */}
-            {isArray(favoriteProduct) && favoriteProduct.length > 0
-              ? favoriteProduct.length > 9
-                ? "9+"
-                : favoriteProduct.length
-              : 0}
+            {favoriteProduct.length > 9 ? "9+" : favoriteProduct.length}
           </span>
-          {/* )} */}
+          )}
         </BreadcrumbLink>
       ) : (
         <button

@@ -11,6 +11,7 @@ interface Props {
   className?: string;
   iconClassName?: string;
   tooltipClassName?: string;
+  variant?: "light" | "dark" | "footer";
 }
 
 const socialLink = [
@@ -34,10 +35,18 @@ const socialLink = [
   },
 ];
 
-const SocialMedia = ({ className, iconClassName, tooltipClassName }: Props) => {
+const SocialMedia = ({
+  className,
+  iconClassName,
+  tooltipClassName,
+  variant = "light",
+}: Props) => {
+  const isDark = variant === "dark";
+  const isFooter = variant === "footer";
+
   return (
     <TooltipProvider>
-      <div className={cn("flex items-center gap-3.5 text-zinc-400", className)}>
+      <div className={cn("flex items-center gap-3.5", className)}>
         {socialLink.map((item) => (
           <Tooltip key={item.title}>
             <TooltipTrigger asChild>
@@ -46,8 +55,13 @@ const SocialMedia = ({ className, iconClassName, tooltipClassName }: Props) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  "p-2 border rounded-full hover:bg-white hoverEffect",
-                  item.color,
+                  "rounded-md border p-2 hoverEffect",
+                  isFooter
+                    ? "border-shop_orange/35 text-shop_light_pink/80 hover:border-shop_orange hover:bg-shop_btn_dark_green hover:text-shop_orange"
+                    : isDark
+                      ? "border-brand-gold-light/30 text-brand-gold-light/80 hover:border-brand-gold-light/50 hover:bg-brand-gold-light/10 hover:text-brand-gold-light"
+                      : "border-gray-200 text-zinc-500 hover:bg-shop_light_bg hover:text-shop_dark_green",
+                  !isDark && !isFooter && item.color,
                   iconClassName,
                 )}
               >
@@ -56,7 +70,11 @@ const SocialMedia = ({ className, iconClassName, tooltipClassName }: Props) => {
             </TooltipTrigger>
             <TooltipContent
               className={cn(
-                "bg-white text-dark-color font-semibold",
+                isFooter
+                  ? "bg-shop_orange font-semibold text-shop_dark_green"
+                  : isDark
+                    ? "bg-brand-gold-light font-semibold text-shop_dark_green"
+                    : "bg-white font-semibold text-dark-color",
                 tooltipClassName,
               )}
             >

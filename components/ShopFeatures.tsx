@@ -218,10 +218,10 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
   };
 
   return (
-    <section className="bg-black py-16 lg:py-24">
+    <section className="bg-black py-16 lg:py-20">
       <Container>
-        <div className="mb-12 text-center">
-          <div className="mb-4 inline-flex items-center gap-3">
+        <div className="mb-10 text-center lg:mb-12">
+          <div className="mb-3 inline-flex items-center gap-3">
             <div className="h-1 w-12 rounded-full bg-gradient-to-r from-transparent to-[#E4C290]" />
             <h2 className="text-3xl font-bold uppercase tracking-tight text-[#E4C290] lg:text-4xl">
               {dictionary?.title || "Why choose Sheba Cup Coffee"}
@@ -234,8 +234,8 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           </p>
         </div>
 
-        <div className="relative">
-          <div className="overflow-hidden" ref={emblaRef}>
+        <div className="relative pb-4">
+          <div className="overflow-hidden py-2 pb-6" ref={emblaRef}>
             <div className="flex gap-4">
               {features.map((feature, index) => {
                 const IconComponent = feature.icon;
@@ -298,57 +298,6 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           >
             <ChevronRight className="h-5 w-5" />
           </button>
-        </div>
-
-        <div className="mt-12 border-t border-[#E4C290]/25 pt-8">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">50K+</div>
-              <p className="font-medium text-[#E4C290]/80">
-                {dictionary?.stats?.happyCustomers || "Happy coffee drinkers"}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">100K+</div>
-              <p className="font-medium text-[#E4C290]/80">
-                {dictionary?.stats?.productsSold || "Bags shipped"}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">99%</div>
-              <p className="font-medium text-[#E4C290]/80">
-                {dictionary?.stats?.satisfactionRate || "Would recommend us"}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-[#E4C290]/25 bg-black p-6 text-center">
-              <div className="mb-2 text-4xl font-bold text-[#E4C290]">24/7</div>
-              <p className="font-medium text-[#E4C290]/80">
-                {dictionary?.stats?.customerSupport || "Order & brew support"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-4 rounded-2xl border border-[#E4C290]/30 bg-black px-8 py-4 shadow-md">
-            <ShieldCheck className="h-6 w-6 shrink-0 text-[#E4C290]" />
-            <span className="font-semibold text-[#E4C290]">
-              {dictionary?.trustLine ||
-                "Trusted by home brewers and cafés who care about the cup."}
-            </span>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <svg
-                  key={star}
-                  className="h-5 w-5 fill-current text-[#E4C290]"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-              ))}
-            </div>
-          </div>
         </div>
 
         <FeatureModal

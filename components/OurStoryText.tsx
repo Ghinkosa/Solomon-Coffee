@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowRight, ChevronUp } from "lucide-react";
 
-const STORY_HEADLINE = {
+export const STORY_HEADLINE = {
   line1: "From the Farms of Ethiopia",
   line2: "to Our First Roastery in the United States",
 };
@@ -20,7 +20,23 @@ const STORY_PARAGRAPHS = [
 
 const PREVIEW_COUNT = 3;
 
-const OurStoryText = () => {
+export function OurStoryHeader() {
+  return (
+    <div className="space-y-5">
+      <div className="inline-block rounded-full bg-shop_dark_green px-4 py-1 text-xs font-medium uppercase tracking-widest text-white">
+        Our Story
+      </div>
+
+      <h2 className="font-serif text-3xl leading-tight text-shop_dark_green md:text-4xl lg:text-5xl">
+        {STORY_HEADLINE.line1}
+        <br />
+        <span className="italic text-shop_orange">{STORY_HEADLINE.line2}</span>
+      </h2>
+    </div>
+  );
+}
+
+export function OurStoryBody() {
   const [expanded, setExpanded] = useState(false);
 
   const previewParagraphs = STORY_PARAGRAPHS.slice(0, PREVIEW_COUNT);
@@ -28,21 +44,11 @@ const OurStoryText = () => {
 
   return (
     <div className="space-y-5">
-      <div className="inline-block px-4 py-1 bg-shop_dark_green text-white text-xs uppercase tracking-widest rounded-full">
-        Our Story
-      </div>
-
-      <h2 className="text-3xl font-serif leading-tight text-shop_dark_green md:text-4xl lg:text-5xl">
-        {STORY_HEADLINE.line1}
-        <br />
-        <span className="italic text-shop_orange">{STORY_HEADLINE.line2}</span>
-      </h2>
-
       <div className="space-y-5">
         {previewParagraphs.map((paragraph) => (
           <p
             key={paragraph}
-            className="text-lg text-stone-800/70 leading-relaxed"
+            className="text-lg leading-relaxed text-stone-800/70"
           >
             {paragraph}
           </p>
@@ -54,12 +60,12 @@ const OurStoryText = () => {
           {moreParagraphs.slice(0, -1).map((paragraph) => (
             <p
               key={paragraph}
-              className="text-lg text-stone-800/70 leading-relaxed"
+              className="text-lg leading-relaxed text-stone-800/70"
             >
               {paragraph}
             </p>
           ))}
-          <p className="text-lg font-medium text-shop_dark_green leading-relaxed">
+          <p className="text-lg font-medium leading-relaxed text-shop_dark_green">
             {moreParagraphs[moreParagraphs.length - 1]}
           </p>
         </div>
@@ -68,12 +74,21 @@ const OurStoryText = () => {
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="inline-flex items-center gap-2 text-shop_orange font-medium border-b border-shop_orange pb-1 hover:text-shop_dark_green hover:border-shop_dark_green transition-all"
+        className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
         aria-expanded={expanded}
       >
         <span>{expanded ? "Read less" : "Read more"}</span>
         {expanded ? <ChevronUp size={16} /> : <ArrowRight size={16} />}
       </button>
+    </div>
+  );
+}
+
+const OurStoryText = () => {
+  return (
+    <div className="space-y-5">
+      <OurStoryHeader />
+      <OurStoryBody />
     </div>
   );
 };

@@ -12,42 +12,34 @@ const data: ContactItemData[] = [
   {
     title: "Visit Us",
     subtitle: `${contactConfig.company.address}, ${contactConfig.company.city}`,
-    icon: (
-      <MapPin className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
-    ),
+    icon: <MapPin className="h-5 w-5" />,
     href: `https://maps.google.com/?q=${encodeURIComponent(`${contactConfig.company.address}, ${contactConfig.company.city}`)}`,
   },
   {
     title: "Call Us",
     subtitle: contactConfig.company.phone,
-    icon: (
-      <Phone className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
-    ),
+    icon: <Phone className="h-5 w-5" />,
     href: `tel:${contactConfig.company.phone.replace(/\D/g, "")}`,
   },
   {
     title: "Working Hours",
     subtitle: contactConfig.businessHours.weekday,
-    icon: (
-      <Clock className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
-    ),
+    icon: <Clock className="h-5 w-5" />,
   },
   {
     title: "Email Us",
     subtitle: contactConfig.emails.support,
-    icon: (
-      <Mail className="h-6 w-6 text-shop_orange group-hover:text-shop_light_pink transition-colors" />
-    ),
+    icon: <Mail className="h-5 w-5" />,
     href: `mailto:${contactConfig.emails.support}`,
   },
 ];
 
 const FooterTop = () => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b border-shop_light_green/30">
-      {data.map((item, index) => (
+    <div className="grid grid-cols-1 gap-4 border-b border-shop_orange/20 py-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5 lg:py-10">
+      {data.map((item) => (
         <ContactItem
-          key={index}
+          key={item.title}
           icon={item.icon}
           title={item.title}
           content={item.subtitle}
@@ -78,14 +70,16 @@ const ContactItem = ({ icon, title, content, href }: ContactItemProps) => {
   return (
     <Component
       {...props}
-      className="flex items-center gap-3 group hover:bg-shop_btn_dark_green/60 p-4 transition-colors cursor-pointer rounded-lg"
+      className="group flex items-start gap-3 rounded-xl border border-shop_orange/10 bg-shop_btn_dark_green/30 p-4 transition-colors hover:border-shop_orange/35 hover:bg-shop_btn_dark_green/50"
     >
-      <div className="text-shop_orange">{icon}</div>
-      <div>
-        <h3 className="font-semibold text-shop_light_pink group-hover:text-shop_orange transition-colors">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-shop_dark_green text-shop_orange ring-1 ring-shop_orange/30 transition-colors group-hover:bg-shop_orange group-hover:text-shop_dark_green">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-sm font-semibold text-shop_light_pink transition-colors group-hover:text-shop_orange">
           {title}
         </h3>
-        <p className="text-shop_light_pink/80 text-sm mt-1 group-hover:text-shop_light_pink transition-colors">
+        <p className="mt-1 text-sm leading-relaxed text-shop_light_pink/70 transition-colors group-hover:text-shop_light_pink/90">
           {content}
         </p>
       </div>

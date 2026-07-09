@@ -17,17 +17,17 @@ const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
   const blogs = (await getLatestBlogs()) as LatestBlogItem[];
 
   return (
-    <Container className="mt-16 lg:mt-24">
+    <Container>
       {/* Header Section */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-3 mb-4">
+      <div className="mb-10 text-center lg:mb-12">
+        <div className="mb-3 inline-flex items-center gap-3">
           <div className="h-1 w-12 bg-linear-to-r from-shop_light_green to-shop_dark_green rounded-full"></div>
           <h2 className="text-3xl lg:text-4xl font-bold text-dark-color">
             {dictionary?.title || "Latest Blog Posts"}
           </h2>
           <div className="h-1 w-12 bg-linear-to-l from-shop_light_green to-shop_dark_green rounded-full"></div>
         </div>
-        <p className="text-light-color text-lg max-w-2xl mx-auto">
+        <p className="mx-auto mb-6 max-w-2xl text-lg text-light-color">
           {dictionary?.description ||
             "Stay updated with our latest insights, tips, and industry news"}
         </p>
@@ -111,7 +111,7 @@ const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
 
       {/* Bottom CTA */}
       {blogs && blogs.length > 0 && (
-        <div className="text-center mt-12">
+        <div className="mt-10 text-center">
           <div className="inline-flex items-center gap-4 px-8 py-4 bg-linear-to-r from-shop_light_pink to-shop_light_bg rounded-2xl border border-shop_light_green/20 shadow-sm">
             <div className="w-2 h-2 bg-shop_light_green rounded-full animate-pulse"></div>
             <span className="text-dark-color font-semibold text-sm sm:text-base">

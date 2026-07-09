@@ -64,7 +64,7 @@ const HomeBanner = async ({
   }
 
   return (
-    <div className="mb-10 lg:mb-12">
+    <div>
       <BannerCarousel
         banners={banners as any}
         lang={lang}

@@ -227,39 +227,66 @@ const Sidebar: FC<SidebarProps> = ({
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              <Link
-                onClick={onClose}
-                href={localizedHref("/cart")}
-                className="flex flex-col items-center justify-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:border-shop_light_green transition-all group"
-              >
-                <div className="relative mb-1">
-                  <ShoppingBag className="w-6 h-6 text-gray-600 group-hover:text-shop_dark_green transition-colors" />
-                  {items?.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-shop_orange text-white text-[10px] font-bold flex items-center justify-center rounded-full">
-                      {items.length}
+            <div className="grid gap-3">
+              <ClerkLoaded>
+                <SignedIn>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link
+                      onClick={onClose}
+                      href={localizedHref("/cart")}
+                      className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
+                    >
+                      <div className="relative mb-1">
+                        <ShoppingBag className="h-6 w-6 text-gray-600 transition-colors group-hover:text-shop_dark_green" />
+                        {items?.length > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-shop_orange text-[10px] font-bold text-white">
+                            {items.length}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs font-medium text-gray-700">
+                        Cart
+                      </span>
+                    </Link>
+                    <Link
+                      onClick={onClose}
+                      href={localizedHref("/wishlist")}
+                      className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
+                    >
+                      <div className="relative mb-1">
+                        <Heart className="h-6 w-6 text-gray-600 transition-colors group-hover:text-pink-500" />
+                        {favoriteProduct?.length > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-pink-500 text-[10px] font-bold text-white">
+                            {favoriteProduct.length}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs font-medium text-gray-700">
+                        Wishlist
+                      </span>
+                    </Link>
+                  </div>
+                </SignedIn>
+                <SignedOut>
+                  <Link
+                    onClick={onClose}
+                    href={localizedHref("/cart")}
+                    className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
+                  >
+                    <div className="relative mb-1">
+                      <ShoppingBag className="h-6 w-6 text-gray-600 transition-colors group-hover:text-shop_dark_green" />
+                      {items?.length > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-shop_orange text-[10px] font-bold text-white">
+                          {items.length}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs font-medium text-gray-700">
+                      Cart
                     </span>
-                  )}
-                </div>
-                <span className="text-xs font-medium text-gray-700">Cart</span>
-              </Link>
-              <Link
-                onClick={onClose}
-                href={localizedHref("/wishlist")}
-                className="flex flex-col items-center justify-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:border-shop_light_green transition-all group"
-              >
-                <div className="relative mb-1">
-                  <Heart className="w-6 h-6 text-gray-600 group-hover:text-pink-500 transition-colors" />
-                  {favoriteProduct?.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-pink-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
-                      {favoriteProduct.length}
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs font-medium text-gray-700">
-                  Wishlist
-                </span>
-              </Link>
+                  </Link>
+                </SignedOut>
+              </ClerkLoaded>
             </div>
 
             {/* Menu Sections */}

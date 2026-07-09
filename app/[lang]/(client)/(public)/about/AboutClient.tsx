@@ -10,7 +10,6 @@ import {
   Globe,
   Zap,
   Shield,
-  Star,
   ArrowRight,
 } from "lucide-react";
 import Container from "@/components/Container";
@@ -18,6 +17,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
+import aboutUsHeadshot from "@/images/about-us-headshot.jpg";
 
 const AboutClient = () => {
   const stats = [
@@ -127,85 +128,105 @@ const AboutClient = () => {
       </section>
 
       {/* Story Section */}
-      <section className="py-20">
-        <Container className="max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="relative overflow-hidden bg-[#faf8f5] py-20 lg:py-28">
+        <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-shop_orange/5 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-shop_light_green/5 blur-3xl" />
+
+        <Container className="relative max-w-6xl">
+          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              className="lg:col-span-5"
             >
-              <Badge className="mb-4 bg-shop_light_green/10 text-shop_dark_green hover:bg-shop_light_green/20">
-                Our Story
-              </Badge>
-              <p className="text-xl font-serif text-shop_dark_green mb-6 leading-relaxed">
-                Coffee has always been at the heart of our family story, from the
-                farms of Ethiopia to our first roastery in the United States.
-              </p>
-              <p className="text-lg text-dark-text mb-5 leading-relaxed">
-                Our coffee story began in Ethiopia, where coffee is part of family,
-                culture, and daily life. For more than 30 years, our family has
-                worked with coffee from the farm level, growing, selecting, and
-                protecting the quality of Ethiopian Arabica coffee.
-              </p>
-              <p className="text-lg text-dark-text mb-5 leading-relaxed">
-                Our roots began in Sidamo, continued in Guji, and connect deeply to
-                Yirgacheffe, one of Ethiopia&apos;s most respected coffee regions.
-                These places shaped our family, our work, and our respect for
-                coffee.
-              </p>
-              <p className="text-lg text-dark-text mb-5 leading-relaxed">
-                Sheba Cup Coffee works directly with Birbirsa Coffee Farm. This
-                partnership helps us protect quality, support sustainable farming,
-                and keep our coffee traceable from farm to cup.
-              </p>
-              <p className="text-lg text-dark-text mb-5 leading-relaxed">
-                For many years, our family focused on farming, selecting, and
-                preparing green coffee. Roasting is our next step. From the New
-                York Metro area, Sheba Cup Coffee begins a new chapter by roasting
-                our family&apos;s Ethiopian coffee for the first time.
-              </p>
-              <p className="text-lg text-dark-text mb-5 leading-relaxed">
-                Sheba Cup Coffee was created to share authentic Ethiopian specialty
-                coffee while honoring the people, land, and history behind every
-                bean.
-              </p>
-              <p className="text-lg font-medium text-shop_dark_green mb-8 leading-relaxed">
-                Every bag carries our family story, our Ethiopian roots, and our
-                purpose to give back.
-              </p>
-              <Button
-                asChild
-                className="bg-shop_dark_green hover:bg-shop_btn_dark_green"
-              >
-                <Link href="/contact">
-                  Get in Touch <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
+              <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+                <div className="absolute -inset-3 rounded-[1.75rem] bg-linear-to-br from-brand-gold/25 via-transparent to-shop_light_green/20" />
+
+                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-shop_dark_green/10 bg-white shadow-[0_24px_60px_-20px_rgba(61,43,31,0.35)]">
+                  <Image
+                    src={aboutUsHeadshot}
+                    alt="Sheba Cup Coffee founder"
+                    fill
+                    sizes="(max-width: 1024px) 90vw, 40vw"
+                    className="object-cover object-top"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-shop_dark_green/35 via-transparent to-transparent" />
+                </div>
+
+                <div className="absolute -bottom-5 -right-2 max-w-[220px] rounded-xl border border-shop_dark_green/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:-right-5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-shop_light_green">
+                    Family Heritage
+                  </p>
+                  <p className="mt-1 font-serif text-sm leading-snug text-shop_dark_green">
+                    30+ years rooted in Ethiopian coffee
+                  </p>
+                </div>
+              </div>
             </motion.div>
+
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative"
+              className="lg:col-span-7"
             >
-              <div className="bg-gradient-to-br from-shop_light_green to-shop_dark_green rounded-2xl p-8 text-white">
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white/20 rounded-lg p-4 text-center">
-                    <Star className="w-6 h-6 mx-auto mb-2" />
-                    <p className="font-semibold">Freshly Roasted</p>
-                  </div>
-                  <div className="bg-white/20 rounded-lg p-4 text-center">
-                    <Shield className="w-6 h-6 mx-auto mb-2" />
-                    <p className="font-semibold">Trusted Service</p>
-                  </div>
-                </div>
-                <blockquote className="text-lg italic">
-                  &quot;Every bag carries our family story, our Ethiopian roots,
-                  and our purpose to give back.&quot;
-                </blockquote>
-                <p className="mt-4 font-semibold">- Sheba Cup Coffee Team</p>
+              <Badge className="mb-4 bg-shop_dark_green text-white hover:bg-shop_btn_dark_green">
+                Our Story
+              </Badge>
+
+              <h2 className="mb-6 font-serif text-3xl leading-tight text-shop_dark_green md:text-4xl lg:text-5xl">
+                From the Farms of Ethiopia
+                <br />
+                <span className="italic text-shop_orange">
+                  to Our First Roastery in the United States
+                </span>
+              </h2>
+
+              <div className="space-y-5 text-lg leading-relaxed text-dark-text">
+                <p>Coffee has always been at the heart of our family story.</p>
+                <p>
+                  Our coffee story began in Ethiopia, where coffee is part of family,
+                  culture, and daily life. For more than 30 years, our family has
+                  worked with coffee from the farm level, growing, selecting, and
+                  protecting the quality of Ethiopian Arabica coffee.
+                </p>
+                <p>
+                  Our roots began in Sidamo, continued in Guji, and connect deeply to
+                  Yirgacheffe, one of Ethiopia&apos;s most respected coffee regions.
+                  These places shaped our family, our work, and our respect for
+                  coffee.
+                </p>
+                <p>
+                  Sheba Cup Coffee works directly with Birbirsa Coffee Farm. This
+                  partnership helps us protect quality, support sustainable farming,
+                  and keep our coffee traceable from farm to cup.
+                </p>
+                <p>
+                  For many years, our family focused on farming, selecting, and
+                  preparing green coffee. Roasting is our next step. From the New
+                  York Metro area, Sheba Cup Coffee begins a new chapter by roasting
+                  our family&apos;s Ethiopian coffee for the first time.
+                </p>
+                <p>
+                  Sheba Cup Coffee was created to share authentic Ethiopian specialty
+                  coffee while honoring the people, land, and history behind every
+                  bean.
+                </p>
+                <p className="font-medium text-shop_dark_green">
+                  Every bag carries our family story, our Ethiopian roots, and our
+                  purpose to give back.
+                </p>
               </div>
+
+              <Button
+                asChild
+                className="mt-8 rounded-full bg-shop_dark_green px-6 hover:bg-shop_btn_dark_green"
+              >
+                <Link href="/contact">
+                  Get in Touch <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </motion.div>
           </div>
         </Container>
