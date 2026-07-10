@@ -52,6 +52,8 @@ import {
   buildCheckoutPricingItems,
   calculateCheckoutTotals,
 } from "@/lib/checkout-pricing";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface OrderAddress {
   _id: string;
@@ -103,6 +105,8 @@ function resolveCheckoutLine(
 }
 
 export function CheckoutContent() {
+  const dictionary = useDictionary();
+  const checkoutCopy = (dictionary?.checkout ?? {}) as Record<string, unknown>;
   const { user, isLoaded } = useUser();
   const searchParams = useSearchParams();
   const {
@@ -464,12 +468,12 @@ export function CheckoutContent() {
     return (
       <div className="text-center py-10 animate-in fade-in-0 duration-500">
         <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-        <h2 className="text-2xl font-semibold mb-2">Your cart is empty</h2>
+        <h2 className="text-2xl font-semibold mb-2">{String((checkoutCopy.empty as Record<string,string>)?.title ?? t(dictionary, "checkout.empty.title", "Your cart is empty"))}</h2>
         <p className="text-muted-foreground mb-4">
           Add some products to continue with checkout
         </p>
         <Button asChild className="bg-primary hover:bg-primary/90">
-          <a href={toLocalizedPath("/shop")}>Continue Shopping</a>
+          <a href={toLocalizedPath("/shop")}>{String((checkoutCopy.empty as Record<string,string>)?.cta ?? t(dictionary, "checkout.empty.cta", "Continue Shopping"))}</a>
         </Button>
       </div>
     );
@@ -484,10 +488,10 @@ export function CheckoutContent() {
             <CardContent className="pt-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Already have an account? Sign in for faster checkout and order history.
+                  {String(checkoutCopy.signInPrompt ?? t(dictionary, "checkout.signInPrompt", "Already have an account? Sign in for faster checkout and order history."))}
                 </p>
                 <Button variant="outline" onClick={() => openAuthSidebar("signIn")}>
-                  Sign in
+                  {String(checkoutCopy.signIn ?? t(dictionary, "checkout.signIn", "Sign in"))}
                 </Button>
               </div>
             </CardContent>
@@ -499,7 +503,7 @@ export function CheckoutContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
-              Payment Method
+              {String(checkoutCopy.paymentMethod ?? t(dictionary, "checkout.paymentMethod", "Payment Method"))}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -520,7 +524,7 @@ export function CheckoutContent() {
                   <Label htmlFor="cod" className="cursor-pointer">
                     <div className="flex items-center gap-2 font-medium">
                       <Truck className="w-4 h-4" />
-                      Cash on Delivery
+                      {String(checkoutCopy.cod ?? t(dictionary, "checkout.cod", "Cash on Delivery (Pay Later)"))}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       Pay when your order is delivered to your doorstep
@@ -556,7 +560,7 @@ export function CheckoutContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="w-5 h-5" />
-              Shipping Address
+              {String(checkoutCopy.shippingAddress ?? t(dictionary, "checkout.shippingAddress", "Shipping Address"))}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -611,7 +615,7 @@ export function CheckoutContent() {
         {/* Order Items */}
         <Card>
           <CardHeader>
-            <CardTitle>Order Items ({cart.length})</CardTitle>
+            <CardTitle>{String(checkoutCopy.orderItems ?? t(dictionary, "checkout.orderItems", "Order Items"))} ({cart.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {cart.map((item: CartItem) => {
@@ -685,7 +689,7 @@ export function CheckoutContent() {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Order Summary</CardTitle>
+            <CardTitle>{t(dictionary, "cart.summary.title", "Order Summary")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
@@ -755,7 +759,7 @@ export function CheckoutContent() {
             ) : (
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5" />
-                Pay Now
+                {String(checkoutCopy.payNow ?? t(dictionary, "checkout.payNow", "Pay Now"))}
                 {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}
@@ -776,7 +780,7 @@ export function CheckoutContent() {
             ) : (
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Place Order (Pay Later)
+                {String(checkoutCopy.placeOrder ?? t(dictionary, "checkout.placeOrder", "Place Order (Pay Later)"))}
                 {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}

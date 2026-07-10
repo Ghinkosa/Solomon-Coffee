@@ -39,6 +39,7 @@ import useStore from "@/store";
 import Logo from "../common/Logo";
 import SocialMedia from "../common/SocialMedia";
 import LanguageSwitcher from "../LanguageSwitcher";
+import { getSidebarNav } from "@/lib/i18n-nav";
 import { localizedPath } from "@/lib/localized-path";
 import { createPortal } from "react-dom";
 
@@ -47,12 +48,14 @@ interface SidebarProps {
   onClose: () => void;
   lang: string;
   logoText: { first: string; second: string };
+  dictionary: any;
 }
 
 const Sidebar: FC<SidebarProps> = ({
   onClose,
   lang,
   logoText,
+  dictionary,
 }) => {
   const pathname = usePathname();
   const { items, favoriteProduct, openAuthSidebar } = useStore();
@@ -101,28 +104,32 @@ const Sidebar: FC<SidebarProps> = ({
     badge?: string;
   }
 
-  const menuSections: { title: string; items: SidebarNavItem[] }[] = [
-    {
-      title: "Navigation",
-      items: [
-        { title: "Home", href: "/", icon: Home },
-        { title: "Shop", href: "/shop", icon: ShoppingBag },
-        { title: "Categories", href: "/category", icon: Grid3X3 },
-        { title: "Our Coffee", href: "/our-coffee", icon: Coffee },
-        { title: "Blog", href: "/blog", icon: BookOpen },
-        { title: "Our Roasting Process", href: "/education", icon: GraduationCap },
-        { title: "Contact", href: "/contact", icon: Phone },
-      ],
-    },
-    {
-      title: "Support",
-      items: [
-        { title: "Help Center", href: "/help", icon: HelpCircle },
-        { title: "Wholesale", href: "/shop#wholesale", icon: Store },
-        { title: "About Us", href: "/about", icon: Info },
-      ],
-    },
-  ];
+  const menuSections: { title: string; items: SidebarNavItem[] }[] = (() => {
+    const nav = getSidebarNav(dictionary);
+    const sections = dictionary?.sidebar?.sections ?? {};
+    return [
+      {
+        title: sections.navigation ?? "Navigation",
+        items: [
+          { title: nav.navigation[0]?.title ?? "Home", href: "/", icon: Home },
+          { title: nav.navigation[1]?.title ?? "Shop", href: "/shop", icon: ShoppingBag },
+          { title: nav.navigation[2]?.title ?? "Categories", href: "/category", icon: Grid3X3 },
+          { title: nav.navigation[3]?.title ?? "Our Coffee", href: "/our-coffee", icon: Coffee },
+          { title: nav.navigation[4]?.title ?? "Blog", href: "/blog", icon: BookOpen },
+          { title: nav.navigation[5]?.title ?? "Our Roasting Process", href: "/education", icon: GraduationCap },
+          { title: nav.navigation[6]?.title ?? "Contact", href: "/contact", icon: Phone },
+        ],
+      },
+      {
+        title: sections.support ?? "Support",
+        items: [
+          { title: nav.support[0]?.title ?? "Help Center", href: "/help", icon: HelpCircle },
+          { title: nav.support[1]?.title ?? "Wholesale", href: "/wholesalers", icon: Store },
+          { title: nav.support[2]?.title ?? "About Us", href: "/about", icon: Info },
+        ],
+      },
+    ];
+  })();
 
   if (!mounted) return null;
 
@@ -172,10 +179,10 @@ const Sidebar: FC<SidebarProps> = ({
                     <UserButton afterSignOutUrl="/" />
                     <div>
                       <p className="text-sm font-semibold text-gray-900">
-                        My Account
+                        {dictionary?.sidebar?.sections?.account ?? "My Account"}
                       </p>
                       <p className="text-xs text-gray-500">
-                        Manage your profile
+                        {dictionary?.sidebar?.account?.manageProfile ?? "Manage your profile"}
                       </p>
                     </div>
                   </div>
@@ -186,7 +193,7 @@ const Sidebar: FC<SidebarProps> = ({
                       className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:border-shop_light_green hover:text-shop_dark_green transition-all text-xs font-medium"
                     >
                       <Package size={14} />
-                      <span>Orders</span>
+                      <span>{dictionary?.sidebar?.account?.orders ?? "Orders"}</span>
                     </Link>
                     <Link
                       onClick={onClose}
@@ -194,7 +201,7 @@ const Sidebar: FC<SidebarProps> = ({
                       className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:border-shop_light_green hover:text-shop_dark_green transition-all text-xs font-medium"
                     >
                       <Heart size={14} />
-                      <span>Wishlist</span>
+                      <span>{dictionary?.userDropdown?.wishlist ?? dictionary?.sidebar?.account?.wishlist ?? "Wishlist"}</span>
                     </Link>
                   </div>
                 </SignedIn>
@@ -208,7 +215,7 @@ const Sidebar: FC<SidebarProps> = ({
                         }}
                         className="w-full bg-shop_dark_green text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-shop_light_green transition-colors shadow-sm"
                       >
-                        Sign In
+                        {dictionary?.sidebar?.auth?.signIn ?? dictionary?.header?.auth?.signIn ?? "Sign In"}
                       </button>
                       <button
                         onClick={() => {
@@ -217,11 +224,11 @@ const Sidebar: FC<SidebarProps> = ({
                         }}
                         className="w-full bg-white border border-shop_dark_green text-shop_dark_green py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
                       >
-                        Sign Up
+                        {dictionary?.sidebar?.auth?.signUp ?? dictionary?.header?.auth?.signUp ?? "Sign Up"}
                       </button>
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
-                      Sign in to access your orders and wishlist
+                      {dictionary?.sidebar?.auth?.signInPrompt ?? "Sign in to access your orders and wishlist"}
                     </p>
                   </div>
                 </SignedOut>
@@ -247,7 +254,7 @@ const Sidebar: FC<SidebarProps> = ({
                         )}
                       </div>
                       <span className="text-xs font-medium text-gray-700">
-                        Cart
+                        {dictionary?.sidebar?.stats?.cart ?? "Cart"}
                       </span>
                     </Link>
                     <Link
@@ -264,7 +271,7 @@ const Sidebar: FC<SidebarProps> = ({
                         )}
                       </div>
                       <span className="text-xs font-medium text-gray-700">
-                        Wishlist
+                        {dictionary?.sidebar?.stats?.wishlist ?? "Wishlist"}
                       </span>
                     </Link>
                   </div>
@@ -284,7 +291,7 @@ const Sidebar: FC<SidebarProps> = ({
                       )}
                     </div>
                     <span className="text-xs font-medium text-gray-700">
-                      Cart
+                      {dictionary?.sidebar?.stats?.cart ?? "Cart"}
                     </span>
                   </Link>
                 </SignedOut>
@@ -344,7 +351,7 @@ const Sidebar: FC<SidebarProps> = ({
             {/* Popular Categories Chips */}
             <div>
               <h3 className="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-                Quick Categories
+                {dictionary?.sidebar?.sections?.quickCategories ?? "Quick Categories"}
               </h3>
               <div className="flex flex-wrap gap-2 px-1">
                 {categoriesData.slice(0, 5).map((cat) => (
@@ -362,7 +369,7 @@ const Sidebar: FC<SidebarProps> = ({
                   href={localizedHref("/category")}
                   className="text-xs text-shop_dark_green font-medium bg-shop_dark_green/10 px-3 py-1.5 rounded-full hover:bg-shop_dark_green hover:text-white transition-colors"
                 >
-                  View All
+                  {dictionary?.sidebar?.viewAll ?? "View All"}
                 </Link>
               </div>
             </div>
@@ -383,7 +390,7 @@ const Sidebar: FC<SidebarProps> = ({
           <div className="text-center">
             <p className="text-[10px] text-gray-400">
               © 2024 {logoText.first}
-              {logoText.second}. All rights reserved.
+              . {dictionary?.footer?.copyright ?? "All rights reserved."}
             </p>
           </div>
         </div>

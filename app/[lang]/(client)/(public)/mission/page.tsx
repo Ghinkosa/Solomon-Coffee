@@ -1,14 +1,27 @@
 import { Metadata } from "next";
 import MissionClient from "./MissionClient";
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
 
-export const metadata: Metadata = {
-  title: "Our Mission | Sheba Cup Coffee - Coffee with a Purpose",
-  description:
-    "Every bag of Sheba Cup Coffee supports childhood cancer care in Ethiopia through the Mathiwos Wondu Foundation. Your purchase helps provide screenings, treatment support, and care for families.",
-};
+interface Props {
+  params: Promise<{ lang: Locale }>;
+}
 
-const MissionPage = () => {
-  return <MissionClient />;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  return {
+    title: dictionary.missionPage?.meta?.title ?? "Our Mission",
+    description:
+      dictionary.missionPage?.meta?.description ??
+      "Discover how Sheba Cup Coffee supports childhood cancer care in Ethiopia with every bag sold.",
+  };
+}
+
+const MissionPage = async ({ params }: Props) => {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  return <MissionClient dictionary={dictionary} />;
 };
 
 export default MissionPage;

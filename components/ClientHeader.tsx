@@ -88,7 +88,7 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
                   type="button"
                   onClick={() => openAuthSidebar("signIn")}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-shop_dark_green bg-shop_dark_green text-white transition-colors hover:border-shop_light_green hover:bg-shop_light_green sm:hidden"
-                  aria-label="Sign in"
+                  aria-label={dictionary?.header?.auth?.signIn || "Sign in"}
                 >
                   <User className="h-4 w-4" />
                 </button>
@@ -97,7 +97,7 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
                   onClick={() => openAuthSidebar("signIn")}
                   className="ml-1 hidden whitespace-nowrap rounded-full border border-shop_dark_green bg-shop_dark_green px-5 py-2 text-sm font-medium text-white transition-colors hover:border-shop_light_green hover:bg-shop_light_green sm:inline-flex"
                 >
-                  Sign in
+                  {dictionary?.header?.auth?.signIn || "Sign in"}
                 </button>
               </SignedOut>
             </ClerkLoaded>

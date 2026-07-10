@@ -7,65 +7,54 @@ import {
   homeEyebrowClass,
 } from "./HomeSectionHeader";
 
-export const STORY_HEADLINE = {
-  line1: "From the Farms of Ethiopia",
-  line2: "to Our First Roastery in the United States",
+export type OurStoryDictionary = {
+  eyebrow: string;
+  headline: { line1: string; line2: string };
+  paragraphs: string[];
+  readMore: string;
+  readLess: string;
+  badge: { title: string; subtitle: string };
+  imageAlt: string;
 };
-
-const STORY_PARAGRAPHS = [
-  "Coffee has always been at the heart of our family story.",
-  "Our coffee story began in Ethiopia, where coffee is part of family, culture, and daily life. For more than 30 years, our family has worked with coffee from the farm level, growing, selecting, and protecting the quality of Ethiopian Arabica coffee.",
-  "Our roots began in Sidamo, continued in Guji, and connect deeply to Yirgacheffe, one of Ethiopia's most respected coffee regions. These places shaped our family, our work, and our respect for coffee.",
-  "Sheba Cup Coffee works directly with Birbirsa Coffee Farm. This partnership helps us protect quality, support sustainable farming, and keep our coffee traceable from farm to cup.",
-  "For many years, our family focused on farming, selecting, and preparing green coffee. Roasting is our next step. From the New York Metro area, Sheba Cup Coffee begins a new chapter by roasting our family's Ethiopian coffee for the first time.",
-  "Sheba Cup Coffee was created to share authentic Ethiopian specialty coffee while honoring the people, land, and history behind every bean.",
-  "Every bag carries our family story, our Ethiopian roots, and our purpose to give back.",
-];
 
 const PREVIEW_COUNT = 3;
 
-export function OurStoryHeader() {
+export function OurStoryHeader({ story }: { story: OurStoryDictionary }) {
   return (
     <div className="space-y-5">
       <div className={`rounded-full bg-shop_dark_green px-4 py-1 text-white ${homeEyebrowClass}`}>
-        Our Story
+        {story.eyebrow}
       </div>
 
       <h2 className="font-serif text-3xl font-bold leading-tight text-shop_dark_green md:text-4xl">
-        {STORY_HEADLINE.line1}
+        {story.headline.line1}
         <br />
-        <span className="italic text-shop_orange">{STORY_HEADLINE.line2}</span>
+        <span className="italic text-shop_orange">{story.headline.line2}</span>
       </h2>
     </div>
   );
 }
 
-export function OurStoryBody() {
+export function OurStoryBody({ story }: { story: OurStoryDictionary }) {
   const [expanded, setExpanded] = useState(false);
-
-  const previewParagraphs = STORY_PARAGRAPHS.slice(0, PREVIEW_COUNT);
-  const moreParagraphs = STORY_PARAGRAPHS.slice(PREVIEW_COUNT);
+  const paragraphs = story.paragraphs ?? [];
+  const previewParagraphs = paragraphs.slice(0, PREVIEW_COUNT);
+  const moreParagraphs = paragraphs.slice(PREVIEW_COUNT);
 
   return (
     <div className="space-y-5">
       <div className="space-y-5">
         {previewParagraphs.map((paragraph) => (
-          <p
-            key={paragraph}
-            className={homeBodyClass}
-          >
+          <p key={paragraph} className={homeBodyClass}>
             {paragraph}
           </p>
         ))}
       </div>
 
-      {expanded && (
+      {expanded && moreParagraphs.length > 0 && (
         <div className="space-y-5">
           {moreParagraphs.slice(0, -1).map((paragraph) => (
-            <p
-              key={paragraph}
-              className={homeBodyClass}
-            >
+            <p key={paragraph} className={homeBodyClass}>
               {paragraph}
             </p>
           ))}
@@ -75,26 +64,17 @@ export function OurStoryBody() {
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => setExpanded((prev) => !prev)}
-        className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 text-base font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
-        aria-expanded={expanded}
-      >
-        <span>{expanded ? "Read less" : "Read more"}</span>
-        {expanded ? <ChevronUp size={16} /> : <ArrowRight size={16} />}
-      </button>
+      {moreParagraphs.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded((prev) => !prev)}
+          className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 text-base font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
+          aria-expanded={expanded}
+        >
+          <span>{expanded ? story.readLess : story.readMore}</span>
+          {expanded ? <ChevronUp size={16} /> : <ArrowRight size={16} />}
+        </button>
+      )}
     </div>
   );
 }
-
-const OurStoryText = () => {
-  return (
-    <div className="space-y-5">
-      <OurStoryHeader />
-      <OurStoryBody />
-    </div>
-  );
-};
-
-export default OurStoryText;

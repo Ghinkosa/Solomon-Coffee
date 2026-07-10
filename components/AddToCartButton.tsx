@@ -9,6 +9,8 @@ import QuantityButtons from "./QuantityButtons";
 import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 import { trackAddToCart } from "@/lib/analytics";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface Props {
   product: Product;
@@ -54,6 +56,10 @@ const AddToCartButton = memo(({
   selectedGrind,
   selectedPackaging,
 }: Props) => {
+  const dictionary = useDictionary();
+  const productDict = (dictionary?.product ?? {}) as Record<string, Record<string, string>>;
+  const productCopy = productDict.addToCart ?? {};
+  const stockCopy = productDict.stock ?? {};
   const isOnDark = theme === "onDark";
   const { addItem, getItemCount, openCartDrawer } = useCartStore();
   const [isClient, setIsClient] = useState(false);
@@ -258,7 +264,10 @@ const AddToCartButton = memo(({
             className
           )}
         >
-          <ShoppingBag /> {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+          <ShoppingBag />{" "}
+          {isOutOfStock
+            ? (stockCopy.outOfStock ?? t(dictionary, "product.stock.outOfStock", "Out of Stock"))
+            : (productCopy.add ?? t(dictionary, "product.addToCart.add", "Add to Cart"))}
         </Button>
       )}
     </div>

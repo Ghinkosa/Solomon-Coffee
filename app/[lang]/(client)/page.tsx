@@ -55,7 +55,7 @@ export default async function Home({
 
       <HomeBanner lang={lang} dictionary={dictionary} />
 
-      <OurStorySection />
+      <OurStorySection story={dictionary.home.ourStory} />
 
       {/* Mission & Vision Section */}
       <section className="py-16 lg:py-20">
@@ -63,45 +63,44 @@ export default async function Home({
           <div className="grid items-center gap-12 md:grid-cols-2 lg:gap-16">
           <div className="space-y-6">
             <div className={`rounded-full bg-shop_dark_green px-4 py-1 text-white ${homeEyebrowClass}`}>
-              Behind the Coffee
+              {dictionary.home.mission.eyebrow}
             </div>
             <h2 className="font-serif text-3xl font-bold leading-tight text-shop_dark_green md:text-4xl">
-              Our Mission: <br />
-              <span className="italic text-shop_orange">Coffee with a Purpose</span>
+              {dictionary.home.mission.title} <br />
+              <span className="italic text-shop_orange">{dictionary.home.mission.titleAccent}</span>
             </h2>
             <p className={homeBodyClass}>
-              At Sheba Cup Coffee, our mission goes beyond coffee. Every bag you buy supports 
-              lifesaving care for children battling cancer in Ethiopia.
+              {dictionary.home.mission.description}
             </p>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-3">
                 <Heart className="text-shop_orange" size={32} />
-                <h3 className={homeSubheadingClass}>Childhood Cancer Care</h3>
+                <h3 className={homeSubheadingClass}>{dictionary.home.mission.pillars.cancerCare.title}</h3>
                 <p className={homeCaptionClass}>
-                  Supporting the Mathiwos Wondu Foundation Ethiopia.
+                  {dictionary.home.mission.pillars.cancerCare.description}
                 </p>
               </div>
               <div className="space-y-3">
                 <HandHelping className="text-shop_orange" size={32} />
-                <h3 className={homeSubheadingClass}>Treatment Support</h3>
+                <h3 className={homeSubheadingClass}>{dictionary.home.mission.pillars.treatment.title}</h3>
                 <p className={homeCaptionClass}>
-                  Screenings and care for families in need.
+                  {dictionary.home.mission.pillars.treatment.description}
                 </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-3">
                 <Coffee className="text-shop_orange" size={32} />
-                <h3 className={homeSubheadingClass}>30+ Years Experience</h3>
+                <h3 className={homeSubheadingClass}>{dictionary.home.mission.pillars.experience.title}</h3>
                 <p className={homeCaptionClass}>
-                  Direct partnerships with Birbirsa & Shakicha Farms.
+                  {dictionary.home.mission.pillars.experience.description}
                 </p>
               </div>
               <div className="space-y-3">
                 <GraduationCap className="text-shop_orange" size={32} />
-                <h3 className={homeSubheadingClass}>Community Growth</h3>
+                <h3 className={homeSubheadingClass}>{dictionary.home.mission.pillars.community.title}</h3>
                 <p className={homeCaptionClass}>
-                  Education programs for women and children.
+                  {dictionary.home.mission.pillars.community.description}
                 </p>
               </div>
             </div>
@@ -109,14 +108,14 @@ export default async function Home({
               href={localizedPath("/mission", lang)}
               className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 text-base font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
             >
-              <span>Learn about our mission</span>
+              <span>{dictionary.home.mission.cta}</span>
               <ArrowRight size={16} />
             </Link>
           </div>
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
             <Image
               src={productMockup}
-              alt="Sheba Cup Coffee - Coffee with a Purpose"
+              alt={dictionary.home.mission.imageAlt}
               className="w-full h-full object-cover"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -124,7 +123,7 @@ export default async function Home({
             />
             <div className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur p-6 rounded-xl shadow-lg">
               <p className="font-serif italic text-xl text-amber-800 text-center">
-                "One bag of coffee helps fund lifesaving support."
+                &ldquo;{dictionary.home.mission.quote}&rdquo;
               </p>
             </div>
           </div>
@@ -136,7 +135,7 @@ export default async function Home({
         <ProductGrid dictionary={dictionary} lang={lang} />
       </section>
 
-      <HomeBrewCta lang={lang} />
+      <HomeBrewCta lang={lang} copy={dictionary.home.brewCta} />
 
       {categories.length > 0 && (
         <HomeCategories

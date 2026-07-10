@@ -1,4 +1,9 @@
 {
+  "wishlist": {
+    "title": "Mi lista de deseos",
+    "subtitle": "Guarda tus cafés y accesorios favoritos para más tarde",
+    "loginDetails": "Inicia sesión para guardar y ver tus cafés favoritos. No te pierdas los lotes que más te gustan."
+  },
   "logo": {
     "first": "Sheba",
     "second": "Cup Coffee"
@@ -12,13 +17,23 @@
       "contact": "Contacto",
       "blog": "Blog",
       "education": "Nuestro proceso de tostado",
+      "ourCoffee": "Nuestro café",
       "wholesalers": "Mayoristas",
-      "contactUs": "Contáctanos"
+      "contactUs": "Contáctanos",
+      "openMenu": "Abrir menú"
     },
     "auth": {
       "welcome": "Bienvenido",
       "signIn": "Iniciar sesión",
-      "signUp": "Crear cuenta"
+      "signUp": "Crear cuenta",
+      "welcomeBack": "¡Bienvenido de nuevo!",
+      "createAccount": "Crear cuenta",
+      "signInDescription": "Inicia sesión para acceder a tu cuenta",
+      "signUpDescription": "Únete para empezar a explorar café",
+      "noAccount": "¿No tienes una cuenta?",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signUpLink": "Regístrate",
+      "signInLink": "Inicia sesión"
     },
     "search": {
       "placeholder": "Buscar cafés y accesorios..."
@@ -27,14 +42,153 @@
       "select": "Seleccionar idioma",
       "en": "Inglés",
       "es": "Español",
-      "ar": "Árabe"
+      "it": "Italiano",
+      "fr": "Francés",
+      "hi": "Hindi",
+      "ar": "Árabe",
+      "am": "Amárico"
     }
+  },
+  "common": {
+    "home": "Inicio",
+    "tryAgain": "Intentar de nuevo",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "featured": "Destacado",
+    "loading": "Cargando...",
+    "free": "Gratis"
+  },
+  "footer": {
+    "tagline": "Tu destino de confianza para compras en línea.",
+    "quickLinks": "Enlaces rápidos",
+    "categories": "Categorías",
+    "newsletter": {
+      "title": "Boletín",
+      "description": "Suscríbete para novedades de tueste, consejos de preparación y ofertas exclusivas."
+    },
+    "copyright": "Todos los derechos reservados.",
+    "contact": {
+      "visitUs": "Visítanos",
+      "callUs": "Llámanos",
+      "workingHours": "Horario de atención",
+      "emailUs": "Escríbenos"
+    },
+    "quickLinksItems": {
+      "about": "Sobre nosotros",
+      "wholesale": "Mayoristas",
+      "contact": "Contáctanos",
+      "terms": "Términos y condiciones",
+      "privacy": "Política de privacidad",
+      "faqs": "Preguntas frecuentes",
+      "help": "Ayuda"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "navigation": "Navegación",
+      "support": "Soporte",
+      "quickCategories": "Categorías rápidas",
+      "account": "Mi cuenta"
+    },
+    "nav": {
+      "categories": "Categorías",
+      "helpCenter": "Centro de ayuda",
+      "wholesale": "Mayoristas",
+      "aboutUs": "Sobre nosotros"
+    },
+    "account": {
+      "manageProfile": "Administrar tu perfil",
+      "orders": "Pedidos",
+      "wishlist": "Lista de deseos",
+      "settings": "Configuración",
+      "signOut": "Cerrar sesión"
+    },
+    "auth": {
+      "signInPrompt": "Inicia sesión para acceder a tus pedidos y lista de deseos",
+      "signIn": "Iniciar sesión",
+      "signUp": "Crear cuenta"
+    },
+    "stats": {
+      "cart": "Carrito",
+      "wishlist": "Lista de deseos"
+    },
+    "viewAll": "Ver todo"
   },
   "home": {
     "featuredProducts": {
       "title": "Selección Destacada de Café",
       "description": "Tostados frescos y favoritos de clientes de Sheba Cup Coffee",
-      "loadMore": "Ver más cafés"
+      "loadMore": "Ver más cafés",
+      "seeAll": "Ver todo"
+    },
+    "banner": {
+      "exploreMore": "Explorar más",
+      "shopNow": "Comprar ahora",
+      "startingAt": "Desde",
+      "imageAlt": "Imagen del banner"
+    },
+    "productTabs": {
+      "all": "Todos",
+      "lightRoast": "Tueste claro",
+      "mediumRoast": "Tueste medio",
+      "darkRoast": "Tueste oscuro",
+      "extraDark": "Extra oscuro"
+    },
+    "mission": {
+      "eyebrow": "Detrás del café",
+      "title": "Nuestra misión:",
+      "titleAccent": "Café con propósito",
+      "description": "En Sheba Cup Coffee, nuestra misión va más allá del café. Cada bolsa que compras apoya la atención que salva vidas de niños con cáncer en Etiopía.",
+      "pillars": {
+        "cancerCare": {
+          "title": "Cuidado infantil contra el cáncer",
+          "description": "Apoyo a la Fundación Mathiwos Wondu en Etiopía."
+        },
+        "treatment": {
+          "title": "Apoyo al tratamiento",
+          "description": "Detecciones y atención para familias necesitadas."
+        },
+        "experience": {
+          "title": "Más de 30 años de experiencia",
+          "description": "Alianzas directas con las fincas Birbirsa y Shakicha."
+        },
+        "community": {
+          "title": "Crecimiento comunitario",
+          "description": "Programas de educación para mujeres y niños."
+        }
+      },
+      "cta": "Conoce nuestra misión",
+      "imageAlt": "Sheba Cup Coffee - Café con propósito",
+      "quote": "Una bolsa de café ayuda a financiar apoyo que salva vidas."
+    },
+    "ourStory": {
+      "eyebrow": "Nuestra historia",
+      "headline": {
+        "line1": "De las fincas de Etiopía",
+        "line2": "a nuestra primera tostadora en Estados Unidos"
+      },
+      "paragraphs": [
+        "El café siempre ha estado en el corazón de la historia de nuestra familia.",
+        "Nuestra historia comenzó en Etiopía, donde el café forma parte de la familia, la cultura y la vida diaria. Durante más de 30 años, nuestra familia ha trabajado con el café desde la finca, cultivando, seleccionando y protegiendo la calidad del café arábica etíope.",
+        "Nuestras raíces comenzaron en Sidamo, continuaron en Guji y se conectan profundamente con Yirgacheffe, una de las regiones cafetaleras más respetadas de Etiopía. Estos lugares moldearon nuestra familia, nuestro trabajo y nuestro respeto por el café.",
+        "Sheba Cup Coffee trabaja directamente con la finca Birbirsa. Esta alianza nos ayuda a proteger la calidad, apoyar la agricultura sostenible y mantener nuestro café trazable de la finca a la taza.",
+        "Durante muchos años, nuestra familia se centró en cultivar, seleccionar y preparar café verde. El tueste es nuestro siguiente paso. Desde el área metropolitana de Nueva York, Sheba Cup Coffee inicia un nuevo capítulo tostando el café etíope de nuestra familia por primera vez.",
+        "Sheba Cup Coffee fue creada para compartir café etíope de especialidad auténtico mientras honramos a las personas, la tierra y la historia detrás de cada grano.",
+        "Cada bolsa lleva la historia de nuestra familia, nuestras raíces etíopes y nuestro propósito de retribuir."
+      ],
+      "readMore": "Leer más",
+      "readLess": "Leer menos",
+      "badge": {
+        "title": "Herencia familiar",
+        "subtitle": "Más de 30 años arraigados en el café etíope"
+      },
+      "imageAlt": "Fundador de Sheba Cup Coffee"
+    },
+    "brewCta": {
+      "title": "Prepara mejor café en casa con Sheba Cup Coffee",
+      "description": "Explora tostados frescos, esenciales de preparación y selecciones limitadas para tu ritual diario.",
+      "cta": "Comprar café",
+      "imageAlt": "Granos de café recién tostados"
     },
     "popularCategories": {
       "title": "Categorías Populares",
@@ -52,7 +206,54 @@
         "productsSold": "Bolsas enviadas",
         "satisfactionRate": "Nos recomendarían",
         "customerSupport": "Soporte de pedidos y preparación"
+      },
+      "secureShopping": {
+        "title": "Pago seguro para tu pedido",
+        "description": "Pagos cifrados para que tu compra de café se mantenga privada y protegida."
+      },
+      "freeDelivery": {
+        "title": "Café en tu puerta",
+        "description": "Envío confiable de granos, equipos y regalos—gratis por encima de nuestro umbral."
+      },
+      "easyPayments": {
+        "title": "Formas sencillas de pagar",
+        "description": "Tarjetas, monederos digitales y opciones familiares para un pago rápido."
+      },
+      "support247": {
+        "title": "Ayuda con pedidos y preparación",
+        "description": "Contáctanos para consejos de molienda, cambios de pedido o ayuda con la entrega."
+      },
+      "qualityAssured": {
+        "title": "Calidad que se nota",
+        "description": "Lotes cuidadosamente seleccionados, disciplina de fecha de tueste y etiquetado honesto."
+      },
+      "fastProcessing": {
+        "title": "Del tueste al envío sin demora",
+        "description": "Pedidos preparados y enviados rápido para que tus granos esperen menos."
+      },
+      "bestPrices": {
+        "title": "Valor justo en cada bolsa",
+        "description": "Precios claros en lotes especiales, packs y ediciones limitadas."
+      },
+      "modal": {
+        "howItWorks": "Cómo funciona",
+        "benefitsTitle": "Beneficios para ti",
+        "priority": "Tu satisfacción es nuestra prioridad",
+        "dismiss": "¡Entendido, gracias!",
+        "close": "Cerrar ventana"
+      },
+      "carousel": {
+        "prev": "Característica anterior",
+        "next": "Característica siguiente"
       }
+    },
+    "latestBlog": {
+      "title": "Últimas publicaciones del blog",
+      "description": "Mantente al día con nuestras últimas ideas, consejos y noticias del sector",
+      "viewAll": "Ver todas las publicaciones",
+      "readMore": "Leer más",
+      "discoverMore": "Descubre más ideas de nuestra tostadora y guías de preparación.",
+      "imageAlt": "Imagen del blog"
     }
   },
   "deals": {
@@ -83,6 +284,53 @@
       "badge": "Estamos para ayudarte",
       "title": "Contáctanos",
       "description": "¿Tienes dudas sobre nuestro café o tu pedido? Estamos aquí para ayudarte."
+    },
+    "info": {
+      "title": "Información de contacto",
+      "visitUs": "Visita nuestro coffee bar",
+      "callUs": "Llámanos",
+      "emailUs": "Soporte por correo",
+      "businessHours": "Horario de atención",
+      "quickResponse": "Respuesta rápida",
+      "quickResponseText": "Respondemos a todas las consultas en un plazo de 24 horas."
+    },
+    "form": {
+      "title": "Envíanos un mensaje",
+      "name": "Nombre completo",
+      "namePlaceholder": "Ingresa tu nombre completo",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu.correo@ejemplo.com",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Breve descripción de tu consulta",
+      "message": "Mensaje",
+      "messagePlaceholder": "Cuéntanos cómo podemos ayudarte con la selección de café, preparación o tu pedido...",
+      "sendButton": "Enviar mensaje",
+      "sending": "Enviando mensaje...",
+      "successTitle": "¡Mensaje enviado con éxito!",
+      "successMessage": "Gracias por contactarnos. Hemos recibido tu mensaje y te responderemos en un plazo de 24 horas.",
+      "close": "Cerrar"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "description": "Encuentra respuestas rápidas sobre pedidos de café, preparación y envíos.",
+      "questions": [
+        {
+          "q": "¿Cómo se envía el café?",
+          "a": "Empacamos el café tostado con cuidado para preservar la frescura en tránsito. Los plazos y tarifas de envío se muestran claramente al pagar."
+        },
+        {
+          "q": "¿Cómo puedo rastrear mi pedido?",
+          "a": "Una vez enviado tu pedido, recibirás un número de seguimiento por correo. También puedes rastrearlo desde el panel de tu cuenta."
+        },
+        {
+          "q": "¿Aceptan devoluciones?",
+          "a": "No ofrecemos devoluciones generales. Si hay un problema de calidad o un error en el pedido, contáctanos y lo resolveremos."
+        },
+        {
+          "q": "¿Ofrecen atención al cliente?",
+          "a": "Sí. Nuestro equipo de soporte está disponible de lunes a viernes, 9:00–18:00 EST, para ayuda con pedidos y preparación."
+        }
+      ]
     }
   },
   "wholesalers": {
@@ -154,7 +402,437 @@
       ]
     }
   },
+  "shop": {
+    "title": "Tienda de café",
+    "description": "Descubre tostados frescos, mezclas exclusivas y esenciales de preparación",
+    "clearFilters": "Borrar todos los filtros",
+    "activeFilters": "Filtros activos:",
+    "category": "Categoría:",
+    "brand": "Marca:",
+    "price": "Precio:",
+    "showFilters": "Mostrar filtros",
+    "hideFilters": "Ocultar filtros",
+    "filters": "Filtros",
+    "applyFilters": "Aplicar filtros",
+    "productsFound": "opción(es) de café encontrada(s)",
+    "showingAll": "Mostrando todas las opciones de café disponibles"
+  },
+  "blog": {
+    "hero": {
+      "badge": "Nuestro blog",
+      "title": "Historias, consejos e ideas",
+      "description": "Descubre las últimas tendencias, consejos de expertos e historias detrás de escena de nuestro equipo. Mantente informado con nuestra colección de artículos.",
+      "stats": {
+        "articles": "Artículos",
+        "readers": "Lectores",
+        "authors": "Autores"
+      }
+    },
+    "list": {
+      "title": "Últimos artículos",
+      "description": "Mantente al día con nuestras publicaciones e ideas",
+      "readMore": "Leer más",
+      "minRead": "min de lectura",
+      "noPosts": {
+        "title": "Aún no hay publicaciones",
+        "description": "Estamos preparando contenido increíble. ¡Vuelve pronto!",
+        "button": "Volver al inicio"
+      }
+    },
+    "newsletter": {
+      "title": "Mantente informado",
+      "description": "Suscríbete a nuestro boletín y no te pierdas ninguna novedad. Recibe los últimos artículos, consejos e ideas directamente en tu bandeja de entrada.",
+      "subscribe": "Suscribirse al boletín",
+      "browse": "Explorar categorías"
+    }
+  },
+  "product": {
+    "grind": {
+      "wholeBean": "Grano entero",
+      "cafetiere": "Cafetera de émbolo",
+      "filter": "Filtro",
+      "espresso": "Espresso"
+    },
+    "select": {
+      "weight": "Seleccionar peso",
+      "grind": "Seleccionar molienda",
+      "packaging": "Seleccionar empaque",
+      "noOptions": "No hay opciones disponibles"
+    },
+    "stock": {
+      "inStock": "En stock",
+      "outOfStock": "Agotado"
+    },
+    "addToCart": {
+      "loading": "Cargando...",
+      "inCart": "En el carrito",
+      "quantity": "Cantidad",
+      "subtotal": "Subtotal",
+      "add": "Añadir al carrito",
+      "weight": "Peso",
+      "grind": "Molienda",
+      "packaging": "Empaque"
+    },
+    "reviews": {
+      "review": "reseña",
+      "reviews": "reseñas",
+      "signInToReview": "Inicia sesión para escribir una reseña"
+    },
+    "delivery": {
+      "title": "Envío y devoluciones",
+      "share": "Compartir",
+      "freeDelivery": "Envío gratis",
+      "returnDelivery": "Devolución de envío"
+    },
+    "related": {
+      "title": "También te puede gustar",
+      "description": "Productos similares de la misma categoría"
+    },
+    "meta": {
+      "notFoundTitle": "Producto no encontrado",
+      "notFoundDescription": "El producto que buscas no existe."
+    }
+  },
+  "checkout": {
+    "title": "Pago",
+    "completePayment": "Completar pago",
+    "empty": {
+      "title": "Tu carrito está vacío",
+      "description": "Añade algunos artículos a tu carrito antes de pagar.",
+      "cta": "Seguir comprando"
+    },
+    "signInPrompt": "¿Ya tienes una cuenta? Inicia sesión para un pago más rápido y ver tu historial de pedidos.",
+    "signIn": "Iniciar sesión",
+    "paymentMethod": "Método de pago",
+    "cod": "Pago contra entrega (pagar después)",
+    "card": "Tarjeta de crédito / débito",
+    "shippingAddress": "Dirección de envío",
+    "orderItems": "Artículos del pedido",
+    "qty": "Cant.",
+    "each": "cada uno",
+    "payNow": "Pagar ahora",
+    "placeOrder": "Realizar pedido (pagar después)",
+    "processing": "Procesando...",
+    "guest": {
+      "title": "Pago como invitado",
+      "description": "Completa tu pedido sin crear una cuenta.",
+      "fullName": "Nombre completo",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "streetAddress": "Dirección",
+      "city": "Ciudad",
+      "state": "Estado",
+      "zip": "Código postal",
+      "selectState": "Seleccionar estado"
+    }
+  },
+  "breadcrumb": {
+    "home": "Inicio",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "myAccount": "Mi cuenta",
+    "cart": "Carrito",
+    "checkout": "Pago",
+    "orders": "Pedidos",
+    "payment": "Pago",
+    "categories": "Categorías",
+    "dashboard": "Panel"
+  },
+  "newsletterForm": {
+    "placeholder": "Introduce tu correo",
+    "subscribe": "Suscribirse",
+    "subscribing": "Suscribiendo...",
+    "success": "¡Suscripción exitosa!",
+    "alreadySubscribed": "Ya estás suscrito.",
+    "failed": "La suscripción falló. Inténtalo de nuevo.",
+    "invalidEmail": "Introduce una dirección de correo válida."
+  },
+  "shopNoProducts": {
+    "title": "No se encontraron productos",
+    "browseAll": "Ver todos los productos",
+    "whatToDo": "¿Qué te gustaría hacer?"
+  },
+  "categoryPage": {
+    "title": "Explorar categorías de café",
+    "description": "Descubre nuestra gama de café organizada por categoría, desde niveles de tueste hasta esenciales de preparación.",
+    "viewAllProducts": "Ver todos los productos",
+    "featured": "Destacado",
+    "backToCategories": "Volver a categorías",
+    "allCategories": "Todas las categorías",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbCategories": "Categorías",
+    "categoryAlt": "Categoría",
+    "ctaTitle": "Explora nuestra gama completa de café",
+    "ctaDescription": "¿No encuentras lo que buscas? Explora nuestra colección completa de café y preparación.",
+    "emptyTitle": "No hay categorías disponibles",
+    "emptyDescription": "Parece que aún no hay categorías configuradas. ¡Vuelve pronto para ver nuestras categorías de productos!",
+    "browseAllProducts": "Ver todos los productos",
+    "infoTitle": "¿No encuentras lo que buscas?",
+    "infoDescription": "Explora todos nuestros productos o usa la búsqueda para encontrar artículos específicos.",
+    "allProducts": "Todos los productos",
+    "shopByRoasters": "Comprar por tostadores"
+  },
+  "brandsPage": {
+    "title": "Comprar por tostadores",
+    "description": "Próximamente - Explora café de tus tostadores favoritos",
+    "comingSoon": "Próximamente...",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbRoasters": "Tostadores"
+  },
+  "ordersTrack": {
+    "title": "Rastrea tu pedido",
+    "subtitle": "Introduce tu número de pedido y correo para ver el estado.",
+    "lookupTitle": "Buscar pedido",
+    "orderNumber": "Número de pedido",
+    "orderNumberPlaceholder": "PEDIDO-...",
+    "email": "Correo electrónico",
+    "findOrder": "Buscar pedido",
+    "lookingUp": "Buscando pedido...",
+    "customer": "Cliente",
+    "placed": "Realizado",
+    "total": "Total",
+    "shipTo": "Enviar a",
+    "items": "Artículos",
+    "product": "Producto",
+    "notAvailable": "N/D",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbTrack": "Rastrear pedido",
+    "orderNotFound": "Pedido no encontrado",
+    "lookupFailed": "No se pudo buscar el pedido. Inténtalo de nuevo."
+  },
+  "aboutPage": {
+    "meta": {
+      "title": "Sobre nosotros",
+      "description": "Conoce más sobre Sheba Cup Coffee, nuestra historia, valores y el equipo detrás de tu destino de café favorito."
+    }
+  },
+  "missionPage": {
+    "meta": {
+      "title": "Nuestra misión | Sheba Cup Coffee - Café con propósito",
+      "description": "Cada bolsa de Sheba Cup Coffee apoya la atención infantil contra el cáncer en Etiopía a través de la Fundación Mathiwos Wondu. Tu compra ayuda a proporcionar detecciones, apoyo al tratamiento y cuidado para las familias."
+    }
+  },
+  "educationPage": {
+    "meta": {
+      "title": "El arte del tueste | Sheba Cup Coffee",
+      "description": "Descubre la precisión, la pasión y el legado detrás de nuestro proceso de tostado. Aprende cómo llevamos el auténtico sabor de la finca etíope a cada taza."
+    },
+    "hero": {
+      "badge": "El arte del tueste",
+      "titleLine1": "Elaborado con cuidado",
+      "titleAccent": "Tostado con propósito",
+      "description": "En Sheba Cup Coffee, el tueste es simple, intencional y preciso. Preservamos el alma del café etíope 100% especialidad mediante lotes pequeños en Allentown, PA."
+    },
+    "process": {
+      "titleLine1": "Nuestro proceso de tueste",
+      "titleLine2": "En Sheba Cup",
+      "paragraph1": "Cada tueste de café especial comienza lento y deliberadamente. Aplicamos calor suavemente para que los granos se desarrollen de forma uniforme y limpia. A medida que avanza el tueste, emergen los azúcares naturales y la dulzura crece de forma natural.",
+      "paragraph2": "Terminamos el tueste en el momento exacto en que los granos se vuelven equilibrados, expresivos y vivos—donde claridad, dulzura y acidez se unen en perfecta armonía.",
+      "highlights": [
+        "Perfiles claro a medio",
+        "Nunca ahumado ni amargo",
+        "Nunca apresurado",
+        "100% origen etíope"
+      ],
+      "imageAlts": {
+        "drum": "Primer plano del tambor de tueste",
+        "green": "Granos de café verde",
+        "finished": "Tueste terminado",
+        "hero": "Héroe del tueste de café"
+      }
+    },
+    "processing": {
+      "badge": "Más allá del tueste",
+      "title": "Nuestros métodos de procesamiento",
+      "description": "El viaje de la cereza al grano define el perfil de sabor mucho antes de llegar a nuestro tostador.",
+      "methods": [
+        {
+          "title": "Proceso natural",
+          "description": "Seleccionamos cuidadosamente las cerezas de café varias veces, eligiendo solo las de madurez óptima. Las cerezas intactas se extienden en camas elevadas para secarse al sol durante aproximadamente 34 días. Esto permite que la fruta infusione el grano, creando notas afrutadas como arándano, mango y fresa madura.",
+          "imageAlt": "Proceso natural"
+        },
+        {
+          "title": "Proceso lavado",
+          "description": "Las cerezas se despulpan y fermentan de 12 a 48 horas, luego se lavan en canales controlados donde los granos densos de alta calidad se asientan. Se secan lentamente en 1.700 camas elevadas para una consistencia y claridad excepcionales. Espera una taza limpia y refinada que resalta la elegante acidez del grano.",
+          "imageAlt": "Proceso lavado"
+        },
+        {
+          "title": "Proceso honey",
+          "description": "Se retira la piel de la cereza pero permanece la dulce \"mucílago\" durante el secado. Según cuánta mucílago quede, producimos variedades desde white y yellow hasta black honey. Esto da un café de cuerpo más completo con una dulzura distintiva y melosa.",
+          "imageAlt": "Proceso honey"
+        }
+      ]
+    },
+    "cta": {
+      "titleLine1": "Porque un gran café",
+      "titleLine2": "debe hablar con claridad",
+      "description": "El tueste oscuro enmascara el origen. Nuestro enfoque permite que la verdadera identidad del café permanezca intacta—desde la tierra donde creció hasta la taza en tu mano. Brillante, floral y aromático.",
+      "button": "Explorar la colección"
+    }
+  },
+  "ourCoffeePage": {
+    "meta": {
+      "title": "Nuestro café | Sheba Cup Coffee",
+      "description": "Descubre nuestros métodos de procesamiento del café: procesos natural, lavado y honey que crean sabores excepcionales."
+    },
+    "hero": {
+      "badge": "De la finca a la taza",
+      "title": "Nuestro café",
+      "description": "Descubre el arte y la ciencia detrás de cada taza — de la cereza al tueste."
+    },
+    "intro": {
+      "title": "Nuestros métodos de procesamiento",
+      "description": "Cada café que obtenemos pasa por un procesamiento meticuloso para revelar su carácter único. Desde las camas de secado al sol hasta los tanques de fermentación controlada, cada paso está diseñado para sacar lo mejor del grano."
+    },
+    "natural": {
+      "title": "Proceso natural",
+      "paragraphs": [
+        "Seleccionamos cuidadosamente las cerezas de café varias veces, eligiendo solo las de madurez óptima. Las cerezas intactas se transportan rápidamente en cajas ventiladas y se extienden en camas elevadas para secarse al sol.",
+        "Las cerezas se voltean regularmente para asegurar un secado uniforme y calidad consistente. Este proceso natural permite que la fruta de la cereza infusione el grano, creando mayor complejidad y sabor vibrante.",
+        "Los clientes pueden esperar notas afrutadas desde arándano y mango hasta fresa madura. El secado al sol toma aproximadamente 34 días, resultando en un café audaz y expresivo con un perfil naturalmente rico."
+      ],
+      "learnMore": "Saber más",
+      "imageAlts": {
+        "drying": "Cerezas de café secándose al sol",
+        "beds": "Camas elevadas de secado"
+      }
+    },
+    "washed": {
+      "title": "Proceso lavado",
+      "paragraphs": [
+        "Solo se seleccionan a mano las cerezas más maduras, luego se colocan en canales con agua donde los defectos flotan y se eliminan.",
+        "Las cerezas pasan por un despulpador, separando suavemente la fruta de los granos. Los granos fermentan de 12 a 48 horas con su capa melosa natural intacta, permitiendo que se desarrollen sabores limpios y refinados.",
+        "Después de la fermentación, el café se lava a fondo en canales controlados donde los granos ligeros e imperfectos flotan mientras los granos densos de alta calidad se asientan.",
+        "El café se transfiere luego a nuestro molino seco y se seca lentamente en 1.700 camas elevadas construidas para garantizar consistencia, claridad y calidad excepcional."
+      ],
+      "learnMore": "Saber más",
+      "imageAlts": {
+        "channels": "Canales de lavado de café",
+        "equipment": "Equipo de procesamiento de café"
+      }
+    },
+    "honey": {
+      "title": "Proceso honey",
+      "paragraphs": [
+        "En el proceso honey, se retira la piel de la cereza mientras parte de la pulpa permanece adherida. Esta capa pegajosa, conocida como mucílago, permanece en los granos durante el secado.",
+        "La cantidad de mucílago retenida después del procesamiento crea diferentes variedades honey. Un mayor contenido de mucílago produce un café de cuerpo más completo con perfiles de sabor más ricos."
+      ],
+      "varietiesTitle": "Variedades honey:",
+      "varieties": ["White Honey", "Yellow Honey", "Gold Honey", "Red Honey", "Black Honey"],
+      "learnMore": "Saber más",
+      "imageAlts": {
+        "workflow": "Flujo de procesamiento honey",
+        "closeup": "Primer plano del procesamiento del grano"
+      }
+    },
+    "commitment": {
+      "title": "Nuestro compromiso",
+      "items": [
+        {
+          "title": "Calidad garantizada",
+          "description": "Cada lote se prueba para consistencia y excelencia de sabor"
+        },
+        {
+          "title": "Comercio directo",
+          "description": "Alianzas sostenibles con agricultores y cooperativas"
+        },
+        {
+          "title": "Tostado fresco",
+          "description": "Tueste en lotes pequeños para preservar el carácter de origen"
+        }
+      ]
+    },
+    "cta": {
+      "badge": "¿Listo para probar?",
+      "title": "Prueba nuestro café",
+      "description": "¿Listo para notar la diferencia? Explora nuestra colección de cafés de origen único, cada uno con su propia historia de procesamiento.",
+      "shopNow": "Comprar ahora",
+      "learnMore": "Saber más"
+    },
+    "heroImageAlt": "Finca de café y procesamiento"
+  },
+  "helpPage": {
+    "meta": {
+      "title": "Centro de ayuda",
+      "description": "Encuentra respuestas y soporte para pedidos, envíos, pagos y preparación."
+    }
+  },
+  "faqsPage": {
+    "meta": {
+      "title": "Preguntas frecuentes",
+      "description": "Preguntas frecuentes sobre pedidos, envíos y calidad de Sheba Cup Coffee."
+    }
+  },
+  "faqPage": {
+    "meta": {
+      "title": "Preguntas frecuentes",
+      "description": "Busca en nuestra base de conocimientos respuestas sobre compras, pagos, envíos y tu cuenta."
+    }
+  },
+  "privacyPage": {
+    "meta": {
+      "title": "Política de privacidad",
+      "description": "Conoce cómo Sheba Cup Coffee recopila, usa y protege tu información personal."
+    }
+  },
+  "termsPage": {
+    "meta": {
+      "title": "Términos de servicio",
+      "description": "Lee los términos y condiciones para usar los servicios de Sheba Cup Coffee."
+    }
+  },
   "cart": {
-    "title": "Carrito"
+    "title": "Carrito",
+    "drawer": {
+      "title": "Tu carrito",
+      "item": "artículo",
+      "items": "artículos",
+      "description": "Revisa los artículos de tu carrito y procede al pago",
+      "emptyTitle": "Tu carrito está vacío",
+      "emptyDescription": "Descubre nuestros cafés y añade tus favoritos aquí.",
+      "browseShop": "Explorar tienda",
+      "addedToCart": "Añadido a tu carrito",
+      "freeShippingAdd": "Añade {amount} más para envío gratis",
+      "freeShippingQualified": "Calificas para envío gratis",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "estimatedTotal": "Total estimado",
+      "checkout": "Pagar",
+      "continueShopping": "Seguir comprando",
+      "viewCart": "Ver carrito"
+    },
+    "empty": {
+      "title": "Tu carrito se siente solo",
+      "description": "Parece que aún no has añadido nada a tu carrito. ¡Cambiemos eso y encontremos productos increíbles para ti!",
+      "cta": "Descubrir productos",
+      "imageAlt": "Carrito de compras vacío"
+    },
+    "options": {
+      "weight": "Peso",
+      "grind": "Molienda",
+      "packaging": "Empaque"
+    },
+    "summary": {
+      "title": "Resumen del pedido",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "packagingFee": "Tarifa de empaque",
+      "shipping": "Envío",
+      "free": "Gratis",
+      "tax": "Impuesto",
+      "total": "Total"
+    },
+    "actions": {
+      "continueShopping": "Seguir comprando",
+      "clearCart": "Vaciar carrito",
+      "cancel": "Cancelar"
+    },
+    "clearModal": {
+      "title": "¿Vaciar carrito?",
+      "description": "¿Estás seguro de que quieres eliminar todos los artículos de tu carrito? Esta acción no se puede deshacer.",
+      "confirm": "Vaciar carrito"
+    },
+    "guestNote": "Estás pagando como invitado. Inicia sesión para guardar tu dirección y rastrear pedidos.",
+    "cleared": "Carrito vaciado correctamente"
   }
 }

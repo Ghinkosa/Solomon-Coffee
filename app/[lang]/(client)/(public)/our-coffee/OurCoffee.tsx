@@ -34,8 +34,18 @@ const fadeInRight = {
   visible: { opacity: 1, x: 0, transition: { duration: 0.6 } }
 };
 
-export default function OurCoffee() {
+export default function OurCoffee({ dictionary }: { dictionary: any }) {
   const toLocalizedPath = useLocalizedPath();
+  const page = dictionary?.ourCoffeePage ?? {};
+  const hero = page.hero ?? {};
+  const intro = page.intro ?? {};
+  const natural = page.natural ?? {};
+  const washed = page.washed ?? {};
+  const honey = page.honey ?? {};
+  const commitment = page.commitment ?? {};
+  const cta = page.cta ?? {};
+  const commitmentItems = commitment.items ?? [];
+  const honeyVarieties = honey.varieties ?? [];
 
   return (
     <div className="bg-white overflow-hidden">
@@ -44,7 +54,7 @@ export default function OurCoffee() {
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=2000&auto=format"
-            alt="Coffee farm and processing"
+            alt={page.heroImageAlt ?? "Coffee farm and processing"}
             fill
             className="object-cover opacity-40"
             priority
@@ -59,14 +69,15 @@ export default function OurCoffee() {
             className="max-w-4xl mx-auto"
           >
             <Badge className="mb-6 bg-amber-600/20 text-amber-400 border-amber-600/50">
-              From Farm to Cup
+              {hero.badge ?? "From Farm to Cup"}
             </Badge>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              Our Coffee
+              {hero.title ?? "Our Coffee"}
             </h1>
             <div className="w-24 h-1 bg-amber-500 mx-auto my-8 rounded-full" />
             <p className="text-lg md:text-xl text-stone-300 max-w-2xl mx-auto">
-              Discover the art and science behind every cup — from cherry to roast.
+              {hero.description ??
+                "Discover the art and science behind every cup — from cherry to roast."}
             </p>
           </motion.div>
         </Container>
@@ -86,12 +97,11 @@ export default function OurCoffee() {
               <div className="h-1 w-16 bg-gradient-to-r from-amber-600 to-amber-800 rounded-full" />
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-stone-900 mb-6">
-              Our Processing Methods
+              {intro.title ?? "Our Processing Methods"}
             </h2>
             <p className="text-lg text-stone-600 leading-relaxed">
-              Each coffee we source undergoes meticulous processing to unlock its unique character. 
-              From the sun-drenched drying beds to the controlled fermentation tanks, every step is 
-              designed to bring out the very best in the bean.
+              {intro.description ??
+                "Each coffee we source undergoes meticulous processing to unlock its unique character. From the sun-drenched drying beds to the controlled fermentation tanks, every step is designed to bring out the very best in the bean."}
             </p>
           </motion.div>
         </Container>
@@ -111,27 +121,17 @@ export default function OurCoffee() {
               <div className="p-3 rounded-2xl bg-amber-100">
                 <Sun className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-stone-900">Natural Process</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-stone-900">
+                {natural.title ?? "Natural Process"}
+              </h3>
             </div>
             <div className="space-y-4 text-stone-600 leading-relaxed">
-              <p>
-                We carefully sort coffee cherries multiple times, selecting only those at peak ripeness. 
-                Fully intact cherries are quickly transported in ventilated boxes and laid on raised drying 
-                beds to dry naturally under the sun.
-              </p>
-              <p>
-                The cherries are turned regularly to ensure even drying and consistent quality. This natural 
-                process allows the fruit of the cherry to infuse the bean, creating deeper complexity and 
-                vibrant flavor.
-              </p>
-              <p>
-                Customers can expect fruit-forward tasting notes ranging from blueberry and mango to ripe 
-                strawberry. The sun-drying process takes approximately 34 days, resulting in a bold, 
-                expressive coffee with a naturally rich profile.
-              </p>
+              {(natural.paragraphs ?? []).map((paragraph: string, index: number) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
             <Badge variant="outline" className="bg-white/50">
-              Learn More <ChevronRight className="w-3 h-3 ml-1" />
+              {natural.learnMore ?? "Learn More"} <ChevronRight className="w-3 h-3 ml-1" />
             </Badge>
           </motion.div>
 
@@ -146,7 +146,7 @@ export default function OurCoffee() {
               <div className="aspect-video relative">
                 <Image
                   src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format"
-                  alt="Coffee cherries drying under sunlight"
+                  alt={natural.imageAlts?.drying ?? "Coffee cherries drying under sunlight"}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -156,7 +156,7 @@ export default function OurCoffee() {
               <div className="aspect-video relative">
                 <Image
                   src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=800&auto=format"
-                  alt="Raised drying beds"
+                  alt={natural.imageAlts?.beds ?? "Raised drying beds"}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -210,29 +210,17 @@ export default function OurCoffee() {
                 <div className="p-3 rounded-2xl bg-blue-100">
                   <Droplets className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-stone-900">Washed Process</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-stone-900">
+                  {washed.title ?? "Washed Process"}
+                </h3>
               </div>
               <div className="space-y-4 text-stone-600 leading-relaxed">
-                <p>
-                  Only the ripest coffee cherries are hand-selected, then placed into water-filled channels 
-                  where defects naturally rise and are removed.
-                </p>
-                <p>
-                  The cherries are guided through a depulper, gently separating the fruit from the beans. 
-                  The beans are fermented for 12–48 hours with their naturally occurring honey-like layer 
-                  intact, allowing clean and refined flavors to develop.
-                </p>
-                <p>
-                  After fermentation, the coffee is thoroughly washed in controlled channels where lighter, 
-                  imperfect beans float away while dense, high-quality beans settle.
-                </p>
-                <p>
-                  The coffee is then transferred to our dry mill and slowly dried on 1,700 raised drying beds 
-                  built to ensure consistency, clarity, and exceptional quality.
-                </p>
+                {(washed.paragraphs ?? []).map((paragraph: string, index: number) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
               </div>
               <Badge variant="outline" className="bg-white/50">
-                Learn More <ChevronRight className="w-3 h-3 ml-1" />
+                {washed.learnMore ?? "Learn More"} <ChevronRight className="w-3 h-3 ml-1" />
               </Badge>
             </motion.div>
           </div>
@@ -253,24 +241,22 @@ export default function OurCoffee() {
               <div className="p-3 rounded-2xl bg-amber-100">
                 <Droplet className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-stone-900">Honey Process</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-stone-900">
+                {honey.title ?? "Honey Process"}
+              </h3>
             </div>
             <div className="space-y-4 text-stone-600 leading-relaxed">
-              <p>
-                In the honey process, the cherry peel is removed while some of the fruit flesh remains 
-                attached. This sticky layer, known as mucilage, remains on the beans while drying.
-              </p>
-              <p>
-                The amount of mucilage retained after processing creates different honey varieties. 
-                Higher mucilage content creates fuller-bodied coffee with richer flavor profiles.
-              </p>
+              {(honey.paragraphs ?? []).map((paragraph: string, index: number) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
             
-            {/* Honey Varieties */}
             <div className="mt-6">
-              <h4 className="font-semibold text-stone-900 mb-3 text-lg">Honey Varieties:</h4>
+              <h4 className="font-semibold text-stone-900 mb-3 text-lg">
+                {honey.varietiesTitle ?? "Honey Varieties:"}
+              </h4>
               <div className="flex flex-wrap gap-2">
-                {["White Honey", "Yellow Honey", "Gold Honey", "Red Honey", "Black Honey"].map((variety, idx) => {
+                {honeyVarieties.map((variety: string, idx: number) => {
                   const colors = [
                     "bg-white text-gray-700 border-gray-200",
                     "bg-yellow-50 text-yellow-700 border-yellow-200",
@@ -288,7 +274,7 @@ export default function OurCoffee() {
             </div>
             
             <Badge variant="outline" className="bg-white/50">
-              Learn More <ChevronRight className="w-3 h-3 ml-1" />
+              {honey.learnMore ?? "Learn More"} <ChevronRight className="w-3 h-3 ml-1" />
             </Badge>
           </motion.div>
 
@@ -303,7 +289,7 @@ export default function OurCoffee() {
               <div className="aspect-video relative">
                 <Image
                   src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format"
-                  alt="Honey processing workflow"
+                  alt={honey.imageAlts?.workflow ?? "Honey processing workflow"}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -313,7 +299,7 @@ export default function OurCoffee() {
               <div className="aspect-video relative">
                 <Image
                   src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=800&auto=format"
-                  alt="Close up coffee bean processing"
+                  alt={honey.imageAlts?.closeup ?? "Close up coffee bean processing"}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -333,55 +319,34 @@ export default function OurCoffee() {
             variants={fadeInUp}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Commitment</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {commitment.title ?? "Our Commitment"}
+            </h2>
             <div className="w-20 h-1 bg-amber-500 mx-auto rounded-full" />
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-10 text-center">
+            {commitmentItems.map((item: { title: string; description: string }, index: number) => {
+              const icons = [Award, TrendingUp, Sparkles];
+              const ItemIcon = icons[index] ?? Award;
+              return (
             <motion.div
+              key={index}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              transition={{ delay: 0 }}
+              transition={{ delay: index * 0.1 }}
               className="space-y-4 group"
             >
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/20 group-hover:bg-amber-500/30 transition-all mx-auto">
-                <Award className="w-10 h-10 text-amber-400" />
+                <ItemIcon className="w-10 h-10 text-amber-400" />
               </div>
-              <h3 className="text-xl font-bold">Quality Assured</h3>
-              <p className="text-amber-100/80">Every batch is tested for consistency and flavor excellence</p>
+              <h3 className="text-xl font-bold">{item.title}</h3>
+              <p className="text-amber-100/80">{item.description}</p>
             </motion.div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              transition={{ delay: 0.1 }}
-              className="space-y-4 group"
-            >
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/20 group-hover:bg-amber-500/30 transition-all mx-auto">
-                <TrendingUp className="w-10 h-10 text-amber-400" />
-              </div>
-              <h3 className="text-xl font-bold">Direct Trade</h3>
-              <p className="text-amber-100/80">Sustainable partnerships with farmers and cooperatives</p>
-            </motion.div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              transition={{ delay: 0.2 }}
-              className="space-y-4 group"
-            >
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/20 group-hover:bg-amber-500/30 transition-all mx-auto">
-                <Sparkles className="w-10 h-10 text-amber-400" />
-              </div>
-              <h3 className="text-xl font-bold">Fresh Roasted</h3>
-              <p className="text-amber-100/80">Small-batch roasting to preserve origin character</p>
-            </motion.div>
+            );
+            })}
           </div>
         </Container>
       </section>
@@ -397,24 +362,24 @@ export default function OurCoffee() {
             className="text-center max-w-3xl mx-auto"
           >
             <Badge className="mb-6 bg-stone-900/10 text-stone-900 border-stone-900/20">
-              Ready to Taste?
+              {cta.badge ?? "Ready to Taste?"}
             </Badge>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-stone-900 mb-6">
-              Experience Our Coffee
+              {cta.title ?? "Experience Our Coffee"}
             </h2>
             <p className="text-lg text-stone-600 mb-10 leading-relaxed">
-              Ready to taste the difference? Explore our collection of single-origin coffees, 
-              each with its own unique processing story.
+              {cta.description ??
+                "Ready to taste the difference? Explore our collection of single-origin coffees, each with its own unique processing story."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-stone-900 hover:bg-stone-800 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
                 <Link href={toLocalizedPath("/shop")}>
-                  Shop Now <ArrowRight className="ml-2 w-5 h-5" />
+                  {cta.shopNow ?? "Shop Now"} <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-stone-900 text-stone-900 hover:bg-stone-900/5 px-8 py-6 text-lg rounded-full">
                 <Link href={toLocalizedPath("/contact")}>
-                  Learn More
+                  {cta.learnMore ?? "Learn More"}
                 </Link>
               </Button>
             </div>

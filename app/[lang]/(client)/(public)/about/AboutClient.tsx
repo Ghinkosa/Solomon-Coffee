@@ -21,63 +21,43 @@ import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
 import aboutUsHeadshot from "@/images/about-us-headshot.jpg";
 
-const AboutClient = () => {
+interface AboutClientProps {
+  dictionary: any;
+}
+
+const AboutClient = ({ dictionary }: AboutClientProps) => {
   const toLocalizedPath = useLocalizedPath();
-  const stats = [
-    { number: "10K+", label: "Happy Customers", icon: Users },
-    { number: "500+", label: "Coffee Products", icon: ShoppingBag },
-    { number: "50+", label: "Partner Producers", icon: Award },
-    { number: "99%", label: "Satisfaction", icon: Heart },
-  ];
+  const page = dictionary?.aboutPage ?? {};
+  const hero = page.hero ?? {};
+  const values = page.values ?? {};
+  const team = page.team ?? {};
+  const cta = page.cta ?? {};
+  const ourStory = dictionary?.home?.ourStory ?? {};
 
-  const values = [
-    {
-      icon: Target,
-      title: "Customer First",
-      description: "Every decision we make starts with coffee lovers in mind.",
-      color: "text-shop_light_green",
-    },
-    {
-      icon: Shield,
-      title: "Coffee Quality",
-      description: "Every roast is selected and tested to meet our standards.",
-      color: "text-shop_dark_green",
-    },
-    {
-      icon: Zap,
-      title: "Craft & Innovation",
-      description: "We blend tradition and modern brewing for better coffee.",
-      color: "text-shop_orange",
-    },
-    {
-      icon: Globe,
-      title: "Sustainability",
-      description:
-        "Committed to responsible sourcing and eco-friendly packaging.",
-      color: "text-shop_light_green",
-    },
-  ];
+  const stats = (page.stats ?? [
+    { number: "10K+", label: "Happy Customers" },
+    { number: "500+", label: "Coffee Products" },
+    { number: "50+", label: "Partner Producers" },
+    { number: "99%", label: "Satisfaction" },
+  ]).map((stat: { label: string }, index: number) => ({
+    ...stat,
+    icon: [Users, ShoppingBag, Award, Heart][index],
+  }));
 
-  const team = [
-    {
-      name: "Roastery Team",
-      role: "Roast & Quality",
-      image: "/images/team/ceo.jpg",
-      description: "Crafting balanced roasts and consistent flavor profiles.",
-    },
-    {
-      name: "Brew Education Team",
-      role: "Brew Guidance",
-      image: "/images/team/cto.jpg",
-      description: "Helping customers brew better coffee at home and work.",
-    },
-    {
-      name: "Customer Care Team",
-      role: "Customer Support",
-      image: "/images/team/design.jpg",
-      description: "Providing friendly support from order to first sip.",
-    },
-  ];
+  const valueItems = (values.items ?? []).map(
+    (value: { title: string; description: string }, index: number) => ({
+      ...value,
+      icon: [Target, Shield, Zap, Globe][index],
+      color: [
+        "text-shop_light_green",
+        "text-shop_dark_green",
+        "text-shop_orange",
+        "text-shop_light_green",
+      ][index],
+    })
+  );
+
+  const teamMembers = team.members ?? [];
 
   return (
     <div className="bg-gradient-to-b from-shop_light_bg to-white min-h-screen">
@@ -90,14 +70,14 @@ const AboutClient = () => {
             className="text-center"
           >
             <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
-              Est. 2025
+              {hero.badge ?? "Est. 2025"}
             </Badge>
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-              About Sheba Cup Coffee
+              {hero.title ?? "About Sheba Cup Coffee"}
             </h1>
             <p className="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              We source, roast, and deliver premium coffee with exceptional
-              service, practical brew education, and a deep focus on quality.
+              {hero.description ??
+                "We source, roast, and deliver premium coffee with exceptional service, practical brew education, and a deep focus on quality."}
             </p>
           </motion.div>
         </Container>
@@ -107,7 +87,7 @@ const AboutClient = () => {
       <section className="py-16 -mt-10">
         <Container className="max-w-6xl">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
+            {stats.map((stat: { number: string; label: string; icon: typeof Users }, index: number) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -148,7 +128,7 @@ const AboutClient = () => {
                 <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-shop_dark_green/10 bg-white shadow-[0_24px_60px_-20px_rgba(61,43,31,0.35)]">
                   <Image
                     src={aboutUsHeadshot}
-                    alt="Sheba Cup Coffee founder"
+                    alt={ourStory.imageAlt ?? "Sheba Cup Coffee founder"}
                     fill
                     sizes="(max-width: 1024px) 90vw, 40vw"
                     className="object-cover object-top"
@@ -158,10 +138,11 @@ const AboutClient = () => {
 
                 <div className="absolute -bottom-5 -right-2 max-w-[220px] rounded-xl border border-shop_dark_green/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:-right-5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-shop_light_green">
-                    Family Heritage
+                    {ourStory.badge?.title ?? "Family Heritage"}
                   </p>
                   <p className="mt-1 font-serif text-sm leading-snug text-shop_dark_green">
-                    30+ years rooted in Ethiopian coffee
+                    {ourStory.badge?.subtitle ??
+                      "30+ years rooted in Ethiopian coffee"}
                   </p>
                 </div>
               </div>
@@ -174,51 +155,33 @@ const AboutClient = () => {
               className="lg:col-span-7"
             >
               <Badge className="mb-4 bg-shop_dark_green text-white hover:bg-shop_btn_dark_green">
-                Our Story
+                {ourStory.eyebrow ?? "Our Story"}
               </Badge>
 
               <h2 className="mb-6 font-serif text-3xl leading-tight text-shop_dark_green md:text-4xl lg:text-5xl">
-                From the Farms of Ethiopia
+                {ourStory.headline?.line1 ?? "From the Farms of Ethiopia"}
                 <br />
                 <span className="italic text-shop_orange">
-                  to Our First Roastery in the United States
+                  {ourStory.headline?.line2 ??
+                    "to Our First Roastery in the United States"}
                 </span>
               </h2>
 
               <div className="space-y-5 text-lg leading-relaxed text-dark-text">
-                <p>Coffee has always been at the heart of our family story.</p>
-                <p>
-                  Our coffee story began in Ethiopia, where coffee is part of family,
-                  culture, and daily life. For more than 30 years, our family has
-                  worked with coffee from the farm level, growing, selecting, and
-                  protecting the quality of Ethiopian Arabica coffee.
-                </p>
-                <p>
-                  Our roots began in Sidamo, continued in Guji, and connect deeply to
-                  Yirgacheffe, one of Ethiopia&apos;s most respected coffee regions.
-                  These places shaped our family, our work, and our respect for
-                  coffee.
-                </p>
-                <p>
-                  Sheba Cup Coffee works directly with Birbirsa Coffee Farm. This
-                  partnership helps us protect quality, support sustainable farming,
-                  and keep our coffee traceable from farm to cup.
-                </p>
-                <p>
-                  For many years, our family focused on farming, selecting, and
-                  preparing green coffee. Roasting is our next step. From the New
-                  York Metro area, Sheba Cup Coffee begins a new chapter by roasting
-                  our family&apos;s Ethiopian coffee for the first time.
-                </p>
-                <p>
-                  Sheba Cup Coffee was created to share authentic Ethiopian specialty
-                  coffee while honoring the people, land, and history behind every
-                  bean.
-                </p>
-                <p className="font-medium text-shop_dark_green">
-                  Every bag carries our family story, our Ethiopian roots, and our
-                  purpose to give back.
-                </p>
+                {(ourStory.paragraphs ?? []).map(
+                  (paragraph: string, index: number) => (
+                    <p
+                      key={index}
+                      className={
+                        index === (ourStory.paragraphs?.length ?? 0) - 1
+                          ? "font-medium text-shop_dark_green"
+                          : undefined
+                      }
+                    >
+                      {paragraph}
+                    </p>
+                  )
+                )}
               </div>
 
               <Button
@@ -226,7 +189,8 @@ const AboutClient = () => {
                 className="mt-8 rounded-full bg-shop_dark_green px-6 hover:bg-shop_btn_dark_green"
               >
                 <Link href={toLocalizedPath("/contact")}>
-                  Get in Touch <ArrowRight className="ml-2 h-4 w-4" />
+                  {cta.getInTouch ?? "Get in Touch"}{" "}
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </motion.div>
@@ -244,19 +208,19 @@ const AboutClient = () => {
             className="text-center mb-16"
           >
             <Badge className="mb-4 bg-shop_orange/10 text-shop_orange hover:bg-shop_orange/20">
-              Our Values
+              {values.badge ?? "Our Values"}
             </Badge>
             <h2 className="text-4xl font-bold text-shop_dark_green mb-4">
-              What We Stand For
+              {values.title ?? "What We Stand For"}
             </h2>
             <p className="text-lg text-dark-text max-w-2xl mx-auto">
-              These values guide how we source, roast, and serve coffee every
-              day.
+              {values.description ??
+                "These values guide how we source, roast, and serve coffee every day."}
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
+            {valueItems.map((value: { icon: typeof Target; title: string; description: string; color: string }, index: number) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -293,19 +257,19 @@ const AboutClient = () => {
             className="text-center mb-16"
           >
             <Badge className="mb-4 bg-shop_light_green/10 text-shop_dark_green hover:bg-shop_light_green/20">
-              Leadership Team
+              {team.badge ?? "Leadership Team"}
             </Badge>
             <h2 className="text-4xl font-bold text-shop_dark_green mb-4">
-              Meet the Minds Behind Sheba Cup Coffee
+              {team.title ?? "Meet the Minds Behind Sheba Cup Coffee"}
             </h2>
             <p className="text-lg text-dark-text max-w-2xl mx-auto">
-              Our coffee-focused team works every day to deliver quality,
-              consistency, and excellent support.
+              {team.description ??
+                "Our coffee-focused team works every day to deliver quality, consistency, and excellent support."}
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
+            {teamMembers.map((member: { name: string; role: string; description: string }, index: number) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -348,11 +312,11 @@ const AboutClient = () => {
             className="text-center"
           >
             <h2 className="text-4xl font-bold mb-4">
-              Ready to Experience the Difference?
+              {cta.title ?? "Ready to Experience the Difference?"}
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join thousands of satisfied customers who trust Sheba&apos;s
-              Coffee for their daily brews and essentials.
+              {cta.description ??
+                "Join thousands of satisfied customers who trust Sheba's Coffee for their daily brews and essentials."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -361,7 +325,8 @@ const AboutClient = () => {
                 className="bg-white text-shop_dark_green hover:bg-white/90"
               >
                 <Link href={toLocalizedPath("/shop")}>
-                  Start Shopping <ShoppingBag className="w-5 h-5 ml-2" />
+                  {cta.startShopping ?? "Start Shopping"}{" "}
+                  <ShoppingBag className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
               <Button
@@ -370,7 +335,8 @@ const AboutClient = () => {
                 className="bg-white text-shop_dark_green hover:bg-white/90"
               >
                 <Link href={toLocalizedPath("/contact")}>
-                  Contact Us <ArrowRight className="w-5 h-5 ml-2" />
+                  {cta.contactUs ?? "Contact Us"}{" "}
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
             </div>

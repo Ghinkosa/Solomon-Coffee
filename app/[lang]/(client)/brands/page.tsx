@@ -9,13 +9,18 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { localizedPath } from "@/lib/localized-path";
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
 
 const BrandsPage = async ({
   params,
 }: {
-  params: Promise<{ lang: string }>;
+  params: Promise<{ lang: Locale }>;
 }) => {
   const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  const t = dictionary?.brandsPage ?? {};
+  const common = dictionary?.common ?? {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-shop_light_bg via-white to-shop_light_pink">
@@ -25,22 +30,26 @@ const BrandsPage = async ({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={localizedPath("/", lang)}>Home</Link>
+                  <Link href={localizedPath("/", lang)}>
+                    {t.breadcrumbHome ?? common.home ?? "Home"}
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Roasters</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {t.breadcrumbRoasters ?? "Roasters"}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
         <div className="text-center">
           <h1 className="text-4xl font-bold text-shop_dark_green mb-4">
-            Shop by Roasters
+            {t.title ?? "Shop by Roasters"}
           </h1>
           <p className="text-lg text-dark-text">
-            Coming soon - Explore coffee from your favorite roasters
+            {t.description ?? t.comingSoon ?? "Coming soon - Explore coffee from your favorite roasters"}
           </p>
         </div>
       </Container>

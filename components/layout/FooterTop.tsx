@@ -1,5 +1,6 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { contactConfig } from "@/config/contact";
+import { t } from "@/lib/dictionary-utils";
 
 interface ContactItemData {
   title: string;
@@ -8,33 +9,33 @@ interface ContactItemData {
   href?: string;
 }
 
-const data: ContactItemData[] = [
-  {
-    title: "Visit Us",
-    subtitle: `${contactConfig.company.address}, ${contactConfig.company.city}`,
-    icon: <MapPin className="h-5 w-5" />,
-    href: `https://maps.google.com/?q=${encodeURIComponent(`${contactConfig.company.address}, ${contactConfig.company.city}`)}`,
-  },
-  {
-    title: "Call Us",
-    subtitle: contactConfig.company.phone,
-    icon: <Phone className="h-5 w-5" />,
-    href: `tel:${contactConfig.company.phone.replace(/\D/g, "")}`,
-  },
-  {
-    title: "Working Hours",
-    subtitle: contactConfig.businessHours.weekday,
-    icon: <Clock className="h-5 w-5" />,
-  },
-  {
-    title: "Email Us",
-    subtitle: contactConfig.emails.support,
-    icon: <Mail className="h-5 w-5" />,
-    href: `mailto:${contactConfig.emails.support}`,
-  },
-];
+const FooterTop = ({ dictionary }: { dictionary?: any }) => {
+  const data: ContactItemData[] = [
+    {
+      title: t(dictionary, "footer.contact.visitUs", "Visit Us"),
+      subtitle: `${contactConfig.company.address}, ${contactConfig.company.city}`,
+      icon: <MapPin className="h-5 w-5" />,
+      href: `https://maps.google.com/?q=${encodeURIComponent(`${contactConfig.company.address}, ${contactConfig.company.city}`)}`,
+    },
+    {
+      title: t(dictionary, "footer.contact.callUs", "Call Us"),
+      subtitle: contactConfig.company.phone,
+      icon: <Phone className="h-5 w-5" />,
+      href: `tel:${contactConfig.company.phone.replace(/\D/g, "")}`,
+    },
+    {
+      title: t(dictionary, "footer.contact.workingHours", "Working Hours"),
+      subtitle: contactConfig.businessHours.weekday,
+      icon: <Clock className="h-5 w-5" />,
+    },
+    {
+      title: t(dictionary, "footer.contact.emailUs", "Email Us"),
+      subtitle: contactConfig.emails.support,
+      icon: <Mail className="h-5 w-5" />,
+      href: `mailto:${contactConfig.emails.support}`,
+    },
+  ];
 
-const FooterTop = () => {
   return (
     <div className="grid grid-cols-1 gap-4 border-b border-shop_orange/20 py-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5 lg:py-10">
       {data.map((item) => (

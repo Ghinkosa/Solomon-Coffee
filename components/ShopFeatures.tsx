@@ -283,7 +283,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           <button
             type="button"
             onClick={scrollPrev}
-            aria-label="Previous feature"
+            aria-label={dictionary?.carousel?.prev || "Previous feature"}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-black text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -291,7 +291,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           <button
             type="button"
             onClick={scrollNext}
-            aria-label="Next feature"
+            aria-label={dictionary?.carousel?.next || "Next feature"}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-black text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
           >
             <ChevronRight className="h-5 w-5" />
@@ -302,6 +302,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           feature={selectedFeature}
+          labels={dictionary?.modal}
         />
       </Container>
     </section>

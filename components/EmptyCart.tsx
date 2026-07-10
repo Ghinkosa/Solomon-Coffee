@@ -5,9 +5,13 @@ import { useLocalizedPath } from "@/hooks/useLocale";
 import { motion } from "framer-motion";
 import { emptyCart } from "@/images";
 import Image from "next/image";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 export default function EmptyCart() {
   const toLocalizedPath = useLocalizedPath();
+  const dictionary = useDictionary();
+  const empty = (dictionary.cart as { empty?: Record<string, string> })?.empty;
 
   return (
     <div className="py-10 md:py-20 bg-linear-to-b from-blue-50 to-white flex items-center justify-center p-4">
@@ -31,10 +35,9 @@ export default function EmptyCart() {
         >
           <Image
             src={emptyCart}
-            alt="Empty shopping cart"
-            layout="fill"
-            objectFit="contain"
-            className="drop-shadow-lg"
+            alt={empty?.imageAlt ?? t(dictionary, "cart.empty.imageAlt", "Empty shopping cart")}
+            fill
+            className="object-contain drop-shadow-lg"
           />
           <motion.div
             animate={{
@@ -54,20 +57,24 @@ export default function EmptyCart() {
 
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold text-gray-800">
-            Your cart is feeling lonely
+            {empty?.title ?? t(dictionary, "cart.empty.title", "Your cart is feeling lonely")}
           </h2>
           <p className="text-gray-600">
-            It looks like you haven&apos;t added anything to your cart yet.
-            Let&apos;s change that and find some amazing products for you!
+            {empty?.description ??
+              t(
+                dictionary,
+                "cart.empty.description",
+                "It looks like you haven't added anything to your cart yet.",
+              )}
           </p>
         </div>
 
         <div>
           <Link
-            href={toLocalizedPath("/")}
+            href={toLocalizedPath("/shop")}
             className="block bg-dark-color/5 border border-dark-color/20 text-center py-2.5 rounded-full text-sm font-semibold tracking-wide hover:border-dark-color hover:bg-dark-color hover:text-white hoverEffect"
           >
-            Discover Products
+            {empty?.cta ?? t(dictionary, "cart.empty.cta", "Discover Products")}
           </Link>
         </div>
       </motion.div>

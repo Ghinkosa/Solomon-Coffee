@@ -2,6 +2,10 @@ import { Product } from "./sanity.types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import _ from "lodash";
+import {
+  buildCheckoutPricingItems,
+  calculateCheckoutTotals,
+} from "./lib/checkout-pricing";
 
 export interface PackagingOption {
   _id: string;
@@ -93,6 +97,18 @@ const getItemCurrentPrice = (item: CartItem): number => {
   const defaultWeight = getDefaultWeight(item.product);
   return defaultWeight?.price || item.product.price || 0;
 };
+
+const getCartPricingTotals = (items: CartItem[]) =>
+  calculateCheckoutTotals({
+    items: buildCheckoutPricingItems(
+      items.map((item) => ({
+        product: item.product,
+        quantity: item.quantity,
+        unitPrice: getItemCurrentPrice(item),
+        packagingPrice: item.selectedPackaging?.price ?? 0,
+      })),
+    ),
+  });
 
 export const matchesCartItem = (
   item: CartItem,
@@ -323,34 +339,19 @@ const useCartStore = create<StoreState>()(
       resetCart: () => set({ items: [] }),
 
       getTotalPrice: () => {
-        return _.reduce(get().items, (total, item) => {
-          const itemPrice = getItemCurrentPrice(item);
-          const packagingPrice = item.selectedPackaging?.price || 0;
-          return total + (itemPrice + packagingPrice) * item.quantity;
-        }, 0);
+        const totals = getCartPricingTotals(get().items);
+        return (
+          totals.subtotal - totals.productDiscount + totals.packagingFee
+        );
       },
 
       getSubTotalPrice: () => {
-        return _.reduce(get().items, (total, item) => {
-          const currentPrice = getItemCurrentPrice(item);
-          const packagingPrice = item.selectedPackaging?.price || 0;
-          const totalItemPrice = currentPrice + packagingPrice;
-          const discount = item.product.discount ?? 0;
-          const discountAmount = (discount * totalItemPrice) / 100;
-          const grossPrice = totalItemPrice + discountAmount;
-          return total + grossPrice * item.quantity;
-        }, 0);
+        const totals = getCartPricingTotals(get().items);
+        return totals.subtotal - totals.productDiscount;
       },
 
       getTotalDiscount: () => {
-        return _.reduce(get().items, (total, item) => {
-          const currentPrice = getItemCurrentPrice(item);
-          const packagingPrice = item.selectedPackaging?.price || 0;
-          const totalItemPrice = currentPrice + packagingPrice;
-          const discount = item.product.discount ?? 0;
-          const discountAmount = (discount * totalItemPrice) / 100;
-          return total + discountAmount * item.quantity;
-        }, 0);
+        return getCartPricingTotals(get().items).productDiscount;
       },
 
       getItemCount: (productId, selectedWeight, selectedGrind, selectedPackaging) => {

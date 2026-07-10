@@ -55,22 +55,22 @@ const AuthSidebar = ({ dictionary, lang }: Props) => {
           <div className="mt-6 text-center text-sm text-gray-600">
             {authMode === "signIn" ? (
               <p>
-                Don&apos;t have an account?{" "}
+                {dictionary.header.auth.noAccount ?? "Don't have an account?"}{" "}
                 <button
                   onClick={() => openAuthSidebar("signUp")}
                   className="font-semibold text-shop_dark_green hover:underline"
                 >
-                  Sign up
+                  {dictionary.header.auth.signUpLink ?? "Sign up"}
                 </button>
               </p>
             ) : (
               <p>
-                Already have an account?{" "}
+                {dictionary.header.auth.hasAccount ?? "Already have an account?"}{" "}
                 <button
                   onClick={() => openAuthSidebar("signIn")}
                   className="font-semibold text-shop_dark_green hover:underline"
                 >
-                  Sign in
+                  {dictionary.header.auth.signInLink ?? "Sign in"}
                 </button>
               </p>
             )}

@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface NewsletterFormProps {
   variant?: "light" | "dark" | "footer";
 }
 
 const NewsletterForm = ({ variant = "footer" }: NewsletterFormProps) => {
+  const dictionary = useDictionary();
+  const copy = (dictionary.newsletterForm ?? {}) as Record<string, string>;
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -17,25 +21,33 @@ const NewsletterForm = ({ variant = "footer" }: NewsletterFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Reset message
     setMessage(null);
 
-    // Basic validation
     if (!email.trim()) {
       setMessage({
         type: "error",
-        text: "Please enter your email address",
+        text:
+          copy.invalidEmail ??
+          t(
+            dictionary,
+            "newsletterForm.invalidEmail",
+            "Please enter a valid email address",
+          ),
       });
       return;
     }
 
-    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setMessage({
         type: "error",
-        text: "Please enter a valid email address",
+        text:
+          copy.invalidEmail ??
+          t(
+            dictionary,
+            "newsletterForm.invalidEmail",
+            "Please enter a valid email address",
+          ),
       });
       return;
     }
@@ -45,9 +57,7 @@ const NewsletterForm = ({ variant = "footer" }: NewsletterFormProps) => {
     try {
       const response = await fetch("/api/newsletter/subscribe", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
@@ -57,31 +67,47 @@ const NewsletterForm = ({ variant = "footer" }: NewsletterFormProps) => {
         setMessage({
           type: "success",
           text:
-            data.message ||
-            "Thank you for subscribing! Check your email for a welcome message.",
+            data.message ??
+            copy.success ??
+            t(dictionary, "newsletterForm.success", "Successfully subscribed!"),
         });
-        setEmail(""); // Clear input on success
+        setEmail("");
+      } else if (data.alreadySubscribed) {
+        setMessage({
+          type: "info",
+          text:
+            data.error ??
+            copy.alreadySubscribed ??
+            t(
+              dictionary,
+              "newsletterForm.alreadySubscribed",
+              "You're already subscribed.",
+            ),
+        });
       } else {
-        // Check if already subscribed
-        if (data.alreadySubscribed) {
-          setMessage({
-            type: "info",
-            text:
-              data.error ||
-              "You're already subscribed to our newsletter! Check your inbox for our latest updates.",
-          });
-        } else {
-          setMessage({
-            type: "error",
-            text: data.error || "Failed to subscribe. Please try again.",
-          });
-        }
+        setMessage({
+          type: "error",
+          text:
+            data.error ??
+            copy.failed ??
+            t(
+              dictionary,
+              "newsletterForm.failed",
+              "Subscription failed. Please try again.",
+            ),
+        });
       }
     } catch (error) {
       console.error("Newsletter subscription error:", error);
       setMessage({
         type: "error",
-        text: "Something went wrong. Please try again later.",
+        text:
+          copy.failed ??
+          t(
+            dictionary,
+            "newsletterForm.failed",
+            "Subscription failed. Please try again.",
+          ),
       });
     } finally {
       setIsLoading(false);
@@ -96,7 +122,10 @@ const NewsletterForm = ({ variant = "footer" }: NewsletterFormProps) => {
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           type="email"
-          placeholder="Enter your email"
+          placeholder={
+            copy.placeholder ??
+            t(dictionary, "newsletterForm.placeholder", "Enter your email")
+          }
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading}
@@ -122,15 +151,16 @@ const NewsletterForm = ({ variant = "footer" }: NewsletterFormProps) => {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Subscribing...
+              {copy.subscribing ??
+                t(dictionary, "newsletterForm.subscribing", "Subscribing...")}
             </>
           ) : (
-            "Subscribe"
+            copy.subscribe ??
+            t(dictionary, "newsletterForm.subscribe", "Subscribe")
           )}
         </button>
       </form>
 
-      {/* Message Display */}
       {message && (
         <div
           className={`flex animate-in items-start gap-2 rounded-lg p-3 text-sm duration-300 fade-in slide-in-from-top-2 ${

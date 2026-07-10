@@ -19,9 +19,21 @@ interface FeatureModalProps {
   isOpen: boolean;
   onClose: () => void;
   feature: FeatureDetail | null;
+  labels?: {
+    howItWorks?: string;
+    benefitsTitle?: string;
+    priority?: string;
+    dismiss?: string;
+    close?: string;
+  };
 }
 
-const FeatureModal = ({ isOpen, onClose, feature }: FeatureModalProps) => {
+const FeatureModal = ({
+  isOpen,
+  onClose,
+  feature,
+  labels,
+}: FeatureModalProps) => {
   // Close on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -70,7 +82,7 @@ const FeatureModal = ({ isOpen, onClose, feature }: FeatureModalProps) => {
                 <button
                   onClick={onClose}
                   className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white text-dark-color hover:text-shop_dark_green hoverEffect shadow-lg"
-                  aria-label="Close modal"
+                  aria-label={labels?.close || "Close modal"}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -102,7 +114,7 @@ const FeatureModal = ({ isOpen, onClose, feature }: FeatureModalProps) => {
                     <div
                       className={`w-1.5 h-6 rounded-full bg-linear-to-b ${feature.color}`}
                     ></div>
-                    How It Works
+                    {labels?.howItWorks || "How It Works"}
                   </h3>
                   <div className="space-y-3">
                     {feature.details.map((detail, index) => (
@@ -134,7 +146,7 @@ const FeatureModal = ({ isOpen, onClose, feature }: FeatureModalProps) => {
                     <div
                       className={`w-1.5 h-6 rounded-full bg-linear-to-b ${feature.color}`}
                     ></div>
-                    Benefits For You
+                    {labels?.benefitsTitle || "Benefits For You"}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {feature.benefits.map((benefit, index) => (
@@ -162,14 +174,14 @@ const FeatureModal = ({ isOpen, onClose, feature }: FeatureModalProps) => {
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-2 text-sm text-light-color">
                     <div className="w-2 h-2 bg-shop_light_green rounded-full animate-pulse"></div>
-                    <span>Your satisfaction is our priority</span>
+                    <span>{labels?.priority || "Your satisfaction is our priority"}</span>
                   </div>
 
                   <button
                     onClick={onClose}
                     className="px-6 py-2 text-sm bg-linear-to-r from-shop_btn_dark_green to-shop_orange hover:from-shop_orange hover:to-shop_btn_dark_green text-white/80 hover:text-white font-semibold rounded-full hover:shadow-lg hoverEffect"
                   >
-                    Got it, thanks!
+                    {labels?.dismiss || "Got it, thanks!"}
                   </button>
                 </div>
               </div>

@@ -15,14 +15,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Package, Tag } from "lucide-react";
 import { localizedPath } from "@/lib/localized-path";
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
 
 const CategoryPage = async ({
   params,
 }: {
-  params: Promise<{ lang: string }>;
+  params: Promise<{ lang: Locale }>;
 }) => {
   const { lang } = await params;
-  const categories: Category[] = await getCategories();
+  const [categories, dictionary] = await Promise.all([
+    getCategories(),
+    getDictionary(lang),
+  ]);
+  const t = dictionary?.categoryPage ?? {};
+  const common = dictionary?.common ?? {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-shop_light_bg via-white to-shop_light_pink">
@@ -33,12 +40,16 @@ const CategoryPage = async ({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={localizedPath("/", lang)}>Home</Link>
+                  <Link href={localizedPath("/", lang)}>
+                    {t.breadcrumbHome ?? common.home ?? "Home"}
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Categories</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {t.breadcrumbCategories ?? t.allCategories ?? "Categories"}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -46,11 +57,11 @@ const CategoryPage = async ({
 
         <div className="text-center mb-10">
           <Title className="text-3xl lg:text-4xl font-bold text-shop_dark_green mb-3">
-            Explore Coffee Categories
+            {t.title ?? "Explore Coffee Categories"}
           </Title>
           <p className="text-base lg:text-lg text-dark-text max-w-2xl mx-auto mb-6">
-            Discover our coffee range organized by category, from roast levels
-            to brewing essentials.
+            {t.description ??
+              "Discover our coffee range organized by category, from roast levels to brewing essentials."}
           </p>
 
           {/* View All Products Button */}
@@ -60,7 +71,7 @@ const CategoryPage = async ({
               className="inline-flex items-center justify-center gap-2 bg-shop_dark_green hover:bg-shop_light_green text-white px-8 py-3 rounded-full font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
               <Package className="w-5 h-5" />
-              View All Products
+              {t.viewAllProducts ?? "View All Products"}
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -80,7 +91,7 @@ const CategoryPage = async ({
                     {category.image ? (
                       <Image
                         src={urlFor(category.image).url()}
-                        alt={category.title || "Category"}
+                        alt={category.title || t.categoryAlt || "Category"}
                         fill
                         className="object-contain group-hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
@@ -99,7 +110,7 @@ const CategoryPage = async ({
                       <div className="absolute top-1.5 left-1.5 bg-shop_orange text-white px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1">
                         <Tag className="w-2 h-2" />
                         <span className="hidden sm:inline text-xs">
-                          Featured
+                          {t.featured ?? "Featured"}
                         </span>
                       </div>
                     )}
@@ -144,18 +155,18 @@ const CategoryPage = async ({
             <div className="mt-10 text-center">
               <div className="bg-gradient-to-r from-shop_light_green/10 via-shop_orange/5 to-shop_light_green/10 rounded-xl p-6 border border-shop_light_green/20">
                 <h3 className="text-lg lg:text-xl font-semibold text-shop_dark_green mb-2">
-                  Explore Our Complete Coffee Range
+                  {t.ctaTitle ?? "Explore Our Complete Coffee Range"}
                 </h3>
                 <p className="text-dark-text text-sm mb-4">
-                  Don&apos;t see what you&apos;re looking for? Browse our full
-                  coffee and brewing collection.
+                  {t.ctaDescription ??
+                    "Don't see what you're looking for? Browse our full coffee and brewing collection."}
                 </p>
                 <Link
                   href={localizedPath("/shop", lang)}
                   className="inline-flex items-center justify-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
                 >
                   <Package className="w-4 h-4" />
-                  View All Products
+                  {t.viewAllProducts ?? "View All Products"}
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -166,18 +177,18 @@ const CategoryPage = async ({
             <div className="bg-white/70 backdrop-blur-sm rounded-xl p-8 shadow-md border border-gray-100/50 max-w-md mx-auto">
               <Package className="w-16 h-16 text-light-text mx-auto mb-4" />
               <h3 className="text-xl font-bold text-shop_dark_green mb-3">
-                No Categories Available
+                {t.emptyTitle ?? "No Categories Available"}
               </h3>
               <p className="text-dark-text text-sm mb-6">
-                It looks like there are no categories set up yet. Check back
-                soon for our product categories!
+                {t.emptyDescription ??
+                  "It looks like there are no categories set up yet. Check back soon for our product categories!"}
               </p>
               <Link
                 href={localizedPath("/shop", lang)}
                 className="inline-flex items-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
               >
                 <Package className="w-4 h-4" />
-                Browse All Products
+                {t.browseAllProducts ?? "Browse All Products"}
               </Link>
             </div>
           </div>
@@ -188,11 +199,11 @@ const CategoryPage = async ({
           <div className="mt-12 bg-white/70 backdrop-blur-sm rounded-xl p-6 lg:p-8 shadow-md border border-gray-100/50">
             <div className="text-center">
               <h3 className="text-xl lg:text-2xl font-bold text-shop_dark_green mb-3">
-                Can&apos;t Find What You&apos;re Looking For?
+                {t.infoTitle ?? "Can't Find What You're Looking For?"}
               </h3>
               <p className="text-dark-text mb-6 text-sm lg:text-base">
-                Browse all our products or use our search feature to find
-                specific items.
+                {t.infoDescription ??
+                  "Browse all our products or use our search feature to find specific items."}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
@@ -200,14 +211,14 @@ const CategoryPage = async ({
                   className="inline-flex items-center justify-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
                 >
                   <Package className="w-4 h-4" />
-                  All Products
+                  {t.allProducts ?? "All Products"}
                 </Link>
                 <Link
                   href={localizedPath("/brands", lang)}
                   className="inline-flex items-center justify-center gap-2 border-2 border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
                 >
                   <Tag className="w-4 h-4" />
-                  Shop by Roasters
+                  {t.shopByRoasters ?? "Shop by Roasters"}
                 </Link>
               </div>
             </div>

@@ -177,7 +177,7 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
             const priceTitle = getLocalizedValue(banner.priceTitle);
             const buttonText =
               getLocalizedValue(banner.buttonText) ||
-              dictionary?.home?.popularCategories?.shopNow ||
+              dictionary?.home?.banner?.shopNow ||
               "Shop Now";
 
             const formatPrice = (value: number) => {
@@ -191,14 +191,10 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
 
             const price = banner.price ? formatPrice(banner.price) : null;
 
-            const defaultPriceLabels: Record<string, string> = {
-              en: "Starting at",
-              es: "Desde",
-              ar: "تبدأ من",
-            };
+            const startingAtLabel =
+              dictionary?.home?.banner?.startingAt || "Starting at";
 
-            const finalPriceTitle =
-              priceTitle || defaultPriceLabels[lang] || defaultPriceLabels.en;
+            const finalPriceTitle = priceTitle || startingAtLabel;
 
             const videoUrl =
               banner.backgroundVideoUrl || banner.backgroundVideo?.asset?.url;
@@ -322,7 +318,7 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
                           <ChevronRight size={16} fill="currentColor" />
                         </div>
                         <span className="text-sm font-medium uppercase tracking-widest text-stone-100">
-                          Explore More
+                          {dictionary?.home?.banner?.exploreMore || "Explore More"}
                         </span>
                       </Link>
                     </div>

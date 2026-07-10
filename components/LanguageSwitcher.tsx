@@ -61,7 +61,7 @@ const LanguageSwitcher = ({
     ? (lang as Locale)
     : "en") as Locale;
 
-  function renderLocaleFlag(locale: Locale, className = "h-4 w-5 object-cover") {
+  function renderLocaleFlag(locale: Locale, className = "h-4 w-5 rounded-[1px] object-cover border border-stone-200/70") {
     if (failedFlagLocales[locale]) {
       return (
         <span className="text-xs font-semibold uppercase" aria-hidden>
@@ -98,7 +98,7 @@ const LanguageSwitcher = ({
           }
           aria-label={`Switch language (${localeNames[currentLocale]})`}
         >
-          {renderLocaleFlag(currentLocale, "h-5 w-7 object-cover")}
+          {renderLocaleFlag(currentLocale, "h-[18px] w-[26px] rounded-[1px] object-cover border border-stone-200/70")}
           <ChevronDown
             className={`h-3.5 w-3.5 opacity-60 ${isDark ? "text-shop_light_pink/70" : "text-stone-500"}`}
           />
@@ -114,7 +114,7 @@ const LanguageSwitcher = ({
               lang === locale ? "bg-gray-50" : ""
             }`}
           >
-            {renderLocaleFlag(locale, "h-5 w-7 object-cover")}
+            {renderLocaleFlag(locale, "h-[18px] w-[26px] rounded-[1px] object-cover border border-stone-200/70")}
             <span className="sr-only">{localeNames[locale]}</span>
           </DropdownMenuItem>
         ))}

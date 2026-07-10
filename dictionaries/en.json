@@ -5,7 +5,123 @@
     "loginDetails": "Log in to save and view your favorite coffees. Don’t miss out on the lots you love."
   },
   "cart": {
-    "title": "Cart"
+    "title": "Cart",
+    "drawer": {
+      "title": "Your cart",
+      "item": "item",
+      "items": "items",
+      "description": "Review items in your cart and proceed to checkout",
+      "emptyTitle": "Your cart is empty",
+      "emptyDescription": "Discover our coffees and add your favorites here.",
+      "browseShop": "Browse shop",
+      "addedToCart": "Added to your cart",
+      "freeShippingAdd": "Add {amount} more for free shipping",
+      "freeShippingQualified": "You qualify for free shipping",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "estimatedTotal": "Estimated total",
+      "checkout": "Checkout",
+      "continueShopping": "Continue shopping",
+      "viewCart": "View cart"
+    },
+    "empty": {
+      "title": "Your cart is feeling lonely",
+      "description": "It looks like you haven't added anything to your cart yet. Let's change that and find some amazing products for you!",
+      "cta": "Discover Products",
+      "imageAlt": "Empty shopping cart"
+    },
+    "options": {
+      "weight": "Weight",
+      "grind": "Grind",
+      "packaging": "Packaging"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "packagingFee": "Packaging Fee",
+      "shipping": "Shipping",
+      "free": "Free",
+      "tax": "Tax",
+      "total": "Total"
+    },
+    "actions": {
+      "continueShopping": "Continue Shopping",
+      "clearCart": "Clear Cart",
+      "cancel": "Cancel"
+    },
+    "clearModal": {
+      "title": "Clear Cart?",
+      "description": "Are you sure you want to remove all items from your cart? This action cannot be undone.",
+      "confirm": "Clear Cart"
+    },
+    "guestNote": "You're checking out as a guest. Sign in to save your address and track orders.",
+    "cleared": "Cart cleared successfully"
+  },
+  "common": {
+    "home": "Home",
+    "tryAgain": "Try again",
+    "cancel": "Cancel",
+    "close": "Close",
+    "featured": "Featured",
+    "loading": "Loading...",
+    "free": "Free"
+  },
+  "footer": {
+    "tagline": "Your trusted online shopping destination.",
+    "quickLinks": "Quick Links",
+    "categories": "Categories",
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "Subscribe for roast updates, brewing tips, and exclusive offers."
+    },
+    "copyright": "All rights reserved.",
+    "contact": {
+      "visitUs": "Visit Us",
+      "callUs": "Call Us",
+      "workingHours": "Working Hours",
+      "emailUs": "Email Us"
+    },
+    "quickLinksItems": {
+      "about": "About us",
+      "wholesale": "Wholesale",
+      "contact": "Contact us",
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy",
+      "faqs": "FAQs",
+      "help": "Help"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "navigation": "Navigation",
+      "support": "Support",
+      "quickCategories": "Quick Categories",
+      "account": "My Account"
+    },
+    "nav": {
+      "categories": "Categories",
+      "helpCenter": "Help Center",
+      "wholesale": "Wholesale",
+      "aboutUs": "About Us"
+    },
+    "account": {
+      "manageProfile": "Manage your profile",
+      "orders": "Orders",
+      "wishlist": "Wishlist",
+      "settings": "Settings",
+      "signOut": "Sign Out"
+    },
+    "auth": {
+      "signInPrompt": "Sign in to access your orders and wishlist",
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
+    },
+    "stats": {
+      "cart": "Cart",
+      "wishlist": "Wishlist"
+    },
+    "viewAll": "View All"
   },
   "logo": {
     "first": "Sheba",
@@ -22,7 +138,8 @@
       "education": "Our Roasting Process",
       "ourCoffee": "Our Coffee",
       "wholesalers": "Wholesale",
-      "contactUs": "Contact Us"
+      "contactUs": "Contact Us",
+      "openMenu": "Open menu"
     },
     "auth": {
       "welcome": "Welcome",
@@ -31,7 +148,11 @@
       "welcomeBack": "Welcome Back!",
       "createAccount": "Create Account",
       "signInDescription": "Sign in to access your account",
-      "signUpDescription": "Join us to start exploring coffee"
+      "signUpDescription": "Join us to start exploring coffee",
+      "noAccount": "Don't have an account?",
+      "hasAccount": "Already have an account?",
+      "signUpLink": "Sign up",
+      "signInLink": "Sign in"
     },
     "search": {
       "placeholder": "Search coffees and brewing gear..."
@@ -39,6 +160,7 @@
     "language": {
       "select": "Select Language",
       "en": "English",
+      "es": "Spanish",
       "it": "Italian",
       "fr": "French",
       "hi": "Hindi",
@@ -74,7 +196,77 @@
       "quality": "Roast Quality",
       "apply": "Apply Filters",
       "clear": "Clear Filters",
-      "loadMore": "Load More Coffees"
+      "loadMore": "Load More Coffees",
+      "seeAll": "See all"
+    },
+    "banner": {
+      "exploreMore": "Explore More",
+      "shopNow": "Shop Now",
+      "startingAt": "Starting at",
+      "imageAlt": "Banner image"
+    },
+    "productTabs": {
+      "all": "All",
+      "lightRoast": "Light Roast",
+      "mediumRoast": "Medium Roast",
+      "darkRoast": "Dark Roast",
+      "extraDark": "Extra Dark"
+    },
+    "mission": {
+      "eyebrow": "Behind the Coffee",
+      "title": "Our Mission:",
+      "titleAccent": "Coffee with a Purpose",
+      "description": "At Sheba Cup Coffee, our mission goes beyond coffee. Every bag you buy supports lifesaving care for children battling cancer in Ethiopia.",
+      "pillars": {
+        "cancerCare": {
+          "title": "Childhood Cancer Care",
+          "description": "Supporting the Mathiwos Wondu Foundation Ethiopia."
+        },
+        "treatment": {
+          "title": "Treatment Support",
+          "description": "Screenings and care for families in need."
+        },
+        "experience": {
+          "title": "30+ Years Experience",
+          "description": "Direct partnerships with Birbirsa & Shakicha Farms."
+        },
+        "community": {
+          "title": "Community Growth",
+          "description": "Education programs for women and children."
+        }
+      },
+      "cta": "Learn about our mission",
+      "imageAlt": "Sheba Cup Coffee - Coffee with a Purpose",
+      "quote": "One bag of coffee helps fund lifesaving support."
+    },
+    "ourStory": {
+      "eyebrow": "Our Story",
+      "headline": {
+        "line1": "From the Farms of Ethiopia",
+        "line2": "to Our First Roastery in the United States"
+      },
+      "paragraphs": [
+        "Coffee has always been at the heart of our family story.",
+        "Our coffee story began in Ethiopia, where coffee is part of family, culture, and daily life. For more than 30 years, our family has worked with coffee from the farm level, growing, selecting, and protecting the quality of Ethiopian Arabica coffee.",
+        "Our roots began in Sidamo, continued in Guji, and connect deeply to Yirgacheffe, one of Ethiopia's most respected coffee regions. These places shaped our family, our work, and our respect for coffee.",
+        "Sheba Cup Coffee works directly with Birbirsa Coffee Farm. This partnership helps us protect quality, support sustainable farming, and keep our coffee traceable from farm to cup.",
+        "For many years, our family focused on farming, selecting, and preparing green coffee. Roasting is our next step. From the New York Metro area, Sheba Cup Coffee begins a new chapter by roasting our family's Ethiopian coffee for the first time.",
+        "Sheba Cup Coffee was created to share authentic Ethiopian specialty coffee while honoring the people, land, and history behind every bean.",
+        "Every bag carries our family story, our Ethiopian roots, and our purpose to give back."
+      ],
+      "readMore": "Read more",
+      "readLess": "Read less",
+      "badge": {
+        "title": "Family Heritage",
+        "subtitle": "30+ years rooted in Ethiopian coffee"
+      },
+      "imageAlt": "Sheba Cup Coffee founder"
+    },
+    "brewCta": {
+      "title": "Brew Better at Home with Sheba Cup Coffee",
+      "description": "Explore fresh roasts, brewing essentials, and limited selections crafted for your daily ritual.",
+      "cta": "Shop Coffee",
+      "imageAlt": "Fresh roasted coffee beans"
     },
     "popularCategories": {
       "title": "Popular Categories",
@@ -120,13 +312,26 @@
       "bestPrices": {
         "title": "Fair value on every bag",
         "description": "Straightforward pricing on specialty lots, bundles, and limited releases."
+      },
+      "modal": {
+        "howItWorks": "How It Works",
+        "benefitsTitle": "Benefits For You",
+        "priority": "Your satisfaction is our priority",
+        "dismiss": "Got it, thanks!",
+        "close": "Close modal"
+      },
+      "carousel": {
+        "prev": "Previous feature",
+        "next": "Next feature"
       }
     },
     "latestBlog": {
       "title": "Latest Blog Posts",
       "description": "Stay updated with our latest insights, tips, and industry news",
       "viewAll": "View All Posts",
-      "readMore": "Read More"
+      "readMore": "Read More",
+      "discoverMore": "Discover more insights from our roastery and brewing guides.",
+      "imageAlt": "Blog image"
     },
     "shopByBrands": {
       "title": "Shop By Brands",
@@ -434,6 +639,1075 @@
       "description": "Subscribe to our newsletter and never miss an update. Get the latest articles, tips, and insights delivered straight to your inbox.",
       "subscribe": "Subscribe Newsletter",
       "browse": "Browse Categories"
+    }
+  },
+  "product": {
+    "grind": {
+      "wholeBean": "Whole Bean",
+      "cafetiere": "Cafetiere",
+      "filter": "Filter",
+      "espresso": "Espresso"
+    },
+    "select": {
+      "weight": "Select Weight",
+      "grind": "Select Grind",
+      "packaging": "Select Packaging",
+      "noOptions": "No options available"
+    },
+    "stock": {
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock"
+    },
+    "addToCart": {
+      "loading": "Loading...",
+      "inCart": "In cart",
+      "quantity": "Quantity",
+      "subtotal": "Subtotal",
+      "add": "Add to Cart",
+      "weight": "Weight",
+      "grind": "Grind",
+      "packaging": "Packaging"
+    },
+    "reviews": {
+      "review": "review",
+      "reviews": "reviews",
+      "signInToReview": "Sign in to write a review"
+    },
+    "delivery": {
+      "title": "Delivery & Return",
+      "share": "Share",
+      "freeDelivery": "Free Delivery",
+      "returnDelivery": "Return Delivery"
+    },
+    "related": {
+      "title": "You Might Also Like",
+      "description": "Similar products from the same category"
+    },
+    "meta": {
+      "notFoundTitle": "Product Not Found",
+      "notFoundDescription": "The product you are looking for does not exist."
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "completePayment": "Complete Payment",
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "Add some items to your cart before checking out.",
+      "cta": "Continue Shopping"
+    },
+    "signInPrompt": "Already have an account? Sign in for faster checkout and order history.",
+    "signIn": "Sign in",
+    "paymentMethod": "Payment Method",
+    "cod": "Cash on Delivery (Pay Later)",
+    "card": "Credit / Debit Card",
+    "shippingAddress": "Shipping Address",
+    "orderItems": "Order Items",
+    "qty": "Qty",
+    "each": "each",
+    "payNow": "Pay Now",
+    "placeOrder": "Place Order (Pay Later)",
+    "processing": "Processing...",
+    "guest": {
+      "title": "Guest checkout",
+      "description": "Complete your order without creating an account.",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "streetAddress": "Street address",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP code",
+      "selectState": "Select state"
+    }
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "myAccount": "My Account",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "orders": "Orders",
+    "payment": "Payment",
+    "categories": "Categories",
+    "dashboard": "Dashboard"
+  },
+  "newsletterForm": {
+    "placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing...",
+    "success": "Successfully subscribed!",
+    "alreadySubscribed": "You're already subscribed.",
+    "failed": "Subscription failed. Please try again.",
+    "invalidEmail": "Please enter a valid email address."
+  },
+  "shopNoProducts": {
+    "title": "No Products Found",
+    "browseAll": "Browse All Products",
+    "whatToDo": "What would you like to do?"
+  },
+  "categoryPage": {
+    "title": "Explore Coffee Categories",
+    "description": "Discover our coffee range organized by category, from roast levels to brewing essentials.",
+    "viewAllProducts": "View All Products",
+    "featured": "Featured",
+    "backToCategories": "Back to Categories",
+    "allCategories": "All Categories",
+    "breadcrumbHome": "Home",
+    "breadcrumbCategories": "Categories",
+    "categoryAlt": "Category",
+    "ctaTitle": "Explore Our Complete Coffee Range",
+    "ctaDescription": "Don't see what you're looking for? Browse our full coffee and brewing collection.",
+    "emptyTitle": "No Categories Available",
+    "emptyDescription": "It looks like there are no categories set up yet. Check back soon for our product categories!",
+    "browseAllProducts": "Browse All Products",
+    "infoTitle": "Can't Find What You're Looking For?",
+    "infoDescription": "Browse all our products or use our search feature to find specific items.",
+    "allProducts": "All Products",
+    "shopByRoasters": "Shop by Roasters"
+  },
+  "brandsPage": {
+    "title": "Shop by Roasters",
+    "description": "Coming soon - Explore coffee from your favorite roasters",
+    "comingSoon": "Coming soon...",
+    "breadcrumbHome": "Home",
+    "breadcrumbRoasters": "Roasters"
+  },
+  "ordersTrack": {
+    "title": "Track your order",
+    "subtitle": "Enter your order number and email to view your order status.",
+    "lookupTitle": "Order lookup",
+    "orderNumber": "Order number",
+    "orderNumberPlaceholder": "ORDER-...",
+    "email": "Email address",
+    "findOrder": "Find order",
+    "lookingUp": "Looking up order...",
+    "customer": "Customer",
+    "placed": "Placed",
+    "total": "Total",
+    "shipTo": "Ship to",
+    "items": "Items",
+    "product": "Product",
+    "notAvailable": "N/A",
+    "breadcrumbHome": "Home",
+    "breadcrumbTrack": "Track Order",
+    "orderNotFound": "Order not found",
+    "lookupFailed": "Failed to look up order. Please try again."
+  },
+  "aboutPage": {
+    "meta": {
+      "title": "About Us",
+      "description": "Learn more about Sheba Cup Coffee, our story, values, and the team behind your favorite coffee destination."
+    },
+    "hero": {
+      "badge": "Est. 2025",
+      "title": "About Sheba Cup Coffee",
+      "description": "We source, roast, and deliver premium coffee with exceptional service, practical brew education, and a deep focus on quality."
+    },
+    "stats": [
+      { "number": "10K+", "label": "Happy Customers" },
+      { "number": "500+", "label": "Coffee Products" },
+      { "number": "50+", "label": "Partner Producers" },
+      { "number": "99%", "label": "Satisfaction" }
+    ],
+    "values": {
+      "badge": "Our Values",
+      "title": "What We Stand For",
+      "description": "These values guide how we source, roast, and serve coffee every day.",
+      "items": [
+        {
+          "title": "Customer First",
+          "description": "Every decision we make starts with coffee lovers in mind."
+        },
+        {
+          "title": "Coffee Quality",
+          "description": "Every roast is selected and tested to meet our standards."
+        },
+        {
+          "title": "Craft & Innovation",
+          "description": "We blend tradition and modern brewing for better coffee."
+        },
+        {
+          "title": "Sustainability",
+          "description": "Committed to responsible sourcing and eco-friendly packaging."
+        }
+      ]
+    },
+    "team": {
+      "badge": "Leadership Team",
+      "title": "Meet the Minds Behind Sheba Cup Coffee",
+      "description": "Our coffee-focused team works every day to deliver quality, consistency, and excellent support.",
+      "members": [
+        {
+          "name": "Roastery Team",
+          "role": "Roast & Quality",
+          "description": "Crafting balanced roasts and consistent flavor profiles."
+        },
+        {
+          "name": "Brew Education Team",
+          "role": "Brew Guidance",
+          "description": "Helping customers brew better coffee at home and work."
+        },
+        {
+          "name": "Customer Care Team",
+          "role": "Customer Support",
+          "description": "Providing friendly support from order to first sip."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to Experience the Difference?",
+      "description": "Join thousands of satisfied customers who trust Sheba's Coffee for their daily brews and essentials.",
+      "getInTouch": "Get in Touch",
+      "startShopping": "Start Shopping",
+      "contactUs": "Contact Us"
+    }
+  },
+  "missionPage": {
+    "meta": {
+      "title": "Our Mission | Sheba Cup Coffee - Coffee with a Purpose",
+      "description": "Every bag of Sheba Cup Coffee supports childhood cancer care in Ethiopia through the Mathiwos Wondu Foundation. Your purchase helps provide screenings, treatment support, and care for families."
+    },
+    "hero": {
+      "titleLine1": "Coffee With",
+      "titleAccent": "A Purpose"
+    },
+    "mission": {
+      "title": "Our Mission:",
+      "titleAccent": "Lifesaving Care",
+      "paragraph1Before": "Every bag you buy supports lifesaving care. A portion of each sale goes to the",
+      "foundationName": "Mathiwos Wondu Foundation Ethiopia",
+      "paragraph1After": ", an organization focused on childhood cancer care.",
+      "paragraph2": "Your purchase helps provide screenings, treatment support, and care for families.",
+      "closing": "Sheba Cup Coffee stands for great coffee with a purpose.",
+      "tags": [
+        { "text": "Childhood Cancer Care" },
+        { "text": "Treatment Support" },
+        { "text": "Family Care" }
+      ],
+      "imageAlts": {
+        "main": "Supporting childhood cancer care in Ethiopia",
+        "care": "Fresh roasted coffee supporting our mission",
+        "community": "Community and care through every purchase"
+      }
+    },
+    "vision": {
+      "badge": "Behind the Name",
+      "title": "Our Vision:",
+      "titleAccent": "From Farm to Cup",
+      "paragraph1": "Sheba Cup Coffee brings authentic organic Ethiopian specialty Arabica coffee from farm to cup across the world.",
+      "paragraph2Before": "Our family holds more than 30 years of coffee farming experience. We work directly with",
+      "birbirsaFarm": "Birbirsa Coffee Farm",
+      "and": "and",
+      "shakichaFarm": "Shakicha Coffee Farm",
+      "paragraph2After": "These partnerships support quality, sustainable farming, and Ethiopia's coffee heritage.",
+      "organicTitle": "Organic & Sustainable",
+      "organicDescription": "Authentic Ethiopian specialty Arabica",
+      "communityTitle": "Community Growth",
+      "communityDescription": "Education & development programs",
+      "quote": "Our goal reaches beyond coffee. Growth from our business supports education and development programs for women and children, helping build stronger communities for the next generation.",
+      "badges": ["30+ Years", "Birbirsa Farm", "Shakicha Farm"],
+      "imageAlts": {
+        "farm": "Birbirsa Coffee Farm - Ethiopian coffee farming",
+        "practice": "Sustainable coffee farming practices",
+        "heritage": "Ethiopian coffee heritage"
+      }
+    },
+    "impact": {
+      "badge": "Our Impact",
+      "title": "Making a Difference Together",
+      "description": "Every purchase directly supports vital programs in Ethiopia",
+      "cards": [
+        {
+          "title": "Childhood Cancer Care",
+          "description": "Supporting the Mathiwos Wondu Foundation Ethiopia in providing critical screenings, treatment support, and care for children and their families battling cancer.",
+          "imageAlt": "Sheba Cup Coffee supporting childhood cancer care"
+        },
+        {
+          "title": "Education for All",
+          "description": "Funding development programs that provide educational opportunities for women and children, helping build stronger communities for the next generation.",
+          "imageAlt": "Education and community development"
+        },
+        {
+          "title": "Sustainable Future",
+          "description": "Direct partnerships with Birbirsa and Shakicha Coffee Farms ensure quality, sustainable farming practices that honor Ethiopia's rich coffee heritage.",
+          "imageAlt": "Sustainable Ethiopian coffee farming"
+        }
+      ]
+    },
+    "foundation": {
+      "title": "About Mathiwos Wondu Foundation",
+      "overlayTitle": "Mathiwos Wondu Foundation Ethiopia",
+      "paragraph1": "The Mathiwos Wondu Foundation is dedicated to improving childhood cancer care in Ethiopia. Through screenings, treatment support, and family care programs, they provide critical assistance to children and families battling cancer.",
+      "paragraph2": "Sheba Cup Coffee is proud to partner with this incredible organization, donating a portion of every sale to support their lifesaving work.",
+      "cta": "Learn More About Mathiwos Wondu Foundation",
+      "imageAlt": "Mathiwos Wondu Foundation Ethiopia"
+    },
+    "cta": {
+      "titleLine1": "Great Coffee",
+      "titleLine2": "With an Even Greater Purpose",
+      "description": "Every cup you enjoy helps provide lifesaving care, education, and hope for communities in Ethiopia. Join us in making a difference, one bag at a time.",
+      "shopCoffee": "Shop Coffee, Make an Impact",
+      "discoverRoasting": "Discover Our Roasting Process →",
+      "footnote": "Learn how we bring authentic Ethiopian farm flavor into every cup"
+    }
+  },
+  "educationPage": {
+    "meta": {
+      "title": "The Art of the Roast | Sheba Cup Coffee",
+      "description": "Discover the precision, passion, and heritage behind our roasting process. Learn how we bring the authentic Ethiopian farm flavor into every cup."
+    },
+    "hero": {
+      "badge": "The Art of the Roast",
+      "titleLine1": "Crafted With Care",
+      "titleAccent": "Roasted With Purpose",
+      "description": "At Sheba Cup Coffee, roasting is simple, intentional, and precise. We preserve the soul of 100% Ethiopian specialty coffee through small-batch mastery in Allentown, PA."
+    },
+    "process": {
+      "titleLine1": "Our Roasting Process",
+      "titleLine2": "At Sheba Cup",
+      "paragraph1": "Every specialty coffee roast begins slowly and deliberately. We gently apply heat so the beans develop evenly and cleanly. As the roast progresses, natural sugars emerge and sweetness builds naturally.",
+      "paragraph2": "We finish the roast at the exact moment the beans become balanced, expressive, and alive—where clarity, sweetness, and acidity come together in perfect harmony.",
+      "highlights": [
+        "Light to medium profiles",
+        "Never smoky or bitter",
+        "Never rushed",
+        "100% Ethiopian origin"
+      ],
+      "imageAlts": {
+        "drum": "Roasting Drum Close Up",
+        "green": "Green Coffee Beans",
+        "finished": "Finished Roast",
+        "hero": "Coffee Roasting Hero"
+      }
+    },
+    "processing": {
+      "badge": "Beyond the Roast",
+      "title": "Our Processing Methods",
+      "description": "The journey from cherry to bean defines the flavor profile long before it hits our roaster.",
+      "methods": [
+        {
+          "title": "Natural Process",
+          "description": "We carefully sort coffee cherries multiple times, selecting only those at peak ripeness. Intact cherries are laid on raised drying beds to dry naturally under the sun for approximately 34 days. This allows the fruit to infuse the bean, creating fruit-forward notes like blueberry, mango, and ripe strawberry.",
+          "imageAlt": "Natural Process"
+        },
+        {
+          "title": "Washed Process",
+          "description": "Cherries are depulped and fermented for 12–48 hours, then washed in controlled channels where high-quality dense beans settle. They dry slowly on 1,700 raised beds for exceptional consistency and clarity. Expect a clean, refined cup that highlights the bean's elegant acidity.",
+          "imageAlt": "Washed Process"
+        },
+        {
+          "title": "Honey Process",
+          "description": "The cherry peel is removed but the sweet \"mucilage\" remains while drying. Depending on how much mucilage is left, we produce varieties from white and yellow to black honey coffees. This results in a fuller-bodied coffee with a distinctive, syrupy sweetness reminiscent of honey.",
+          "imageAlt": "Honey Process"
+        }
+      ]
+    },
+    "cta": {
+      "titleLine1": "Because Great Coffee",
+      "titleLine2": "Should Speak Clearly",
+      "description": "Dark roasting masks origin. Our approach allows the coffee's true identity to remain intact—from the land it was grown on to the cup in your hand. Bright, floral, and aromatic.",
+      "button": "Explore the Collection"
+    }
+  },
+  "ourCoffeePage": {
+    "meta": {
+      "title": "Our Coffee | Sheba Cup Coffee",
+      "description": "Discover our coffee processing methods - Natural, Washed, and Honey processes that create exceptional flavors."
+    },
+    "hero": {
+      "badge": "From Farm to Cup",
+      "title": "Our Coffee",
+      "description": "Discover the art and science behind every cup — from cherry to roast."
+    },
+    "intro": {
+      "title": "Our Processing Methods",
+      "description": "Each coffee we source undergoes meticulous processing to unlock its unique character. From the sun-drenched drying beds to the controlled fermentation tanks, every step is designed to bring out the very best in the bean."
+    },
+    "natural": {
+      "title": "Natural Process",
+      "paragraphs": [
+        "We carefully sort coffee cherries multiple times, selecting only those at peak ripeness. Fully intact cherries are quickly transported in ventilated boxes and laid on raised drying beds to dry naturally under the sun.",
+        "The cherries are turned regularly to ensure even drying and consistent quality. This natural process allows the fruit of the cherry to infuse the bean, creating deeper complexity and vibrant flavor.",
+        "Customers can expect fruit-forward tasting notes ranging from blueberry and mango to ripe strawberry. The sun-drying process takes approximately 34 days, resulting in a bold, expressive coffee with a naturally rich profile."
+      ],
+      "learnMore": "Learn More",
+      "imageAlts": {
+        "drying": "Coffee cherries drying under sunlight",
+        "beds": "Raised drying beds"
+      }
+    },
+    "washed": {
+      "title": "Washed Process",
+      "paragraphs": [
+        "Only the ripest coffee cherries are hand-selected, then placed into water-filled channels where defects naturally rise and are removed.",
+        "The cherries are guided through a depulper, gently separating the fruit from the beans. The beans are fermented for 12–48 hours with their naturally occurring honey-like layer intact, allowing clean and refined flavors to develop.",
+        "After fermentation, the coffee is thoroughly washed in controlled channels where lighter, imperfect beans float away while dense, high-quality beans settle.",
+        "The coffee is then transferred to our dry mill and slowly dried on 1,700 raised drying beds built to ensure consistency, clarity, and exceptional quality."
+      ],
+      "learnMore": "Learn More",
+      "imageAlts": {
+        "channels": "Coffee washing channels",
+        "equipment": "Coffee processing equipment"
+      }
+    },
+    "honey": {
+      "title": "Honey Process",
+      "paragraphs": [
+        "In the honey process, the cherry peel is removed while some of the fruit flesh remains attached. This sticky layer, known as mucilage, remains on the beans while drying.",
+        "The amount of mucilage retained after processing creates different honey varieties. Higher mucilage content creates fuller-bodied coffee with richer flavor profiles."
+      ],
+      "varietiesTitle": "Honey Varieties:",
+      "varieties": ["White Honey", "Yellow Honey", "Gold Honey", "Red Honey", "Black Honey"],
+      "learnMore": "Learn More",
+      "imageAlts": {
+        "workflow": "Honey processing workflow",
+        "closeup": "Close up coffee bean processing"
+      }
+    },
+    "commitment": {
+      "title": "Our Commitment",
+      "items": [
+        {
+          "title": "Quality Assured",
+          "description": "Every batch is tested for consistency and flavor excellence"
+        },
+        {
+          "title": "Direct Trade",
+          "description": "Sustainable partnerships with farmers and cooperatives"
+        },
+        {
+          "title": "Fresh Roasted",
+          "description": "Small-batch roasting to preserve origin character"
+        }
+      ]
+    },
+    "cta": {
+      "badge": "Ready to Taste?",
+      "title": "Experience Our Coffee",
+      "description": "Ready to taste the difference? Explore our collection of single-origin coffees, each with its own unique processing story.",
+      "shopNow": "Shop Now",
+      "learnMore": "Learn More"
+    },
+    "heroImageAlt": "Coffee farm and processing"
+  },
+  "helpPage": {
+    "meta": {
+      "title": "Help Center",
+      "description": "Find answers and support for orders, shipping, payments, and brewing."
+    },
+    "hero": {
+      "badge": "24/7 Support",
+      "title": "Help Center",
+      "description": "Find answers, get support, and resolve issues quickly. We're here to help you enjoy the best coffee experience."
+    },
+    "search": {
+      "placeholder": "Search for help topics, orders, or issues...",
+      "button": "Search"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "items": [
+        {
+          "title": "Track Your Order",
+          "description": "Check the status of your recent purchases",
+          "action": "Track Order"
+        },
+        {
+          "title": "Contact Support",
+          "description": "Get help from our customer service team",
+          "action": "Contact Us"
+        },
+        {
+          "title": "Report an Order Issue",
+          "description": "Tell us if your order arrived damaged, incorrect, or below quality standards",
+          "action": "Report Issue"
+        }
+      ]
+    },
+    "categories": {
+      "title": "Browse Help Topics",
+      "items": [
+        {
+          "title": "Getting Started",
+          "description": "Learn the basics of ordering coffee with us",
+          "links": [
+            "How to Create an Account",
+            "Placing Your First Coffee Order",
+            "Setting Up Payment Methods",
+            "Managing Your Profile"
+          ]
+        },
+        {
+          "title": "Orders & Coffee",
+          "description": "Everything about placing and managing orders",
+          "links": [
+            "How to Place an Order",
+            "Modifying Your Order",
+            "Order Tracking",
+            "Out of Stock Items"
+          ]
+        },
+        {
+          "title": "Payments & Billing",
+          "description": "Payment methods, billing, and refunds",
+          "links": [
+            "Accepted Payment Methods",
+            "Payment Security",
+            "When You'll Be Charged",
+            "Refunds & Returns"
+          ]
+        },
+        {
+          "title": "Shipping & Delivery",
+          "description": "Shipping options, costs, and delivery info",
+          "links": [
+            "Shipping Costs",
+            "Delivery Times",
+            "International Shipping",
+            "Lost or Damaged Packages"
+          ]
+        },
+        {
+          "title": "Quality & Issue Resolution",
+          "description": "How we handle damaged, incorrect, or quality-related coffee issues",
+          "links": [
+            "Quality Promise",
+            "Report an Order Issue",
+            "Resolution Timeline",
+            "Replacement Requests"
+          ]
+        },
+        {
+          "title": "Account & Security",
+          "description": "Account management and security features",
+          "links": [
+            "Account Security",
+            "Password Reset",
+            "Update Information",
+            "Delete Account"
+          ]
+        }
+      ]
+    },
+    "support": {
+      "title": "Get Personal Support",
+      "responseLabel": "Response:",
+      "channels": [
+        {
+          "title": "Live Chat",
+          "description": "Chat with our support team in real-time",
+          "availability": "24/7 Available",
+          "response": "Instant response",
+          "action": "Start Chat"
+        },
+        {
+          "title": "Email Support",
+          "description": "Send us a detailed message about your issue",
+          "availability": "Always Open",
+          "response": "Within 2 hours",
+          "action": "Send Email"
+        },
+        {
+          "title": "Phone Support",
+          "description": "Speak directly with a support representative",
+          "availability": "Mon-Fri 9AM-6PM EST",
+          "response": "Immediate",
+          "action": "Call Now"
+        }
+      ]
+    },
+    "resources": {
+      "title": "Need More Help?",
+      "description": "Explore our comprehensive resources and documentation",
+      "viewFaq": "View FAQ",
+      "contactUs": "Contact Us",
+      "videoGuides": "Video Guides"
+    }
+  },
+  "faqsPage": {
+    "meta": {
+      "title": "FAQs",
+      "description": "Frequently asked questions about Sheba Cup Coffee orders, shipping, and quality."
+    },
+    "hero": {
+      "title": "FAQs",
+      "description": "Quick answers to the most commonly asked questions about Sheba's Coffee.",
+      "badge": "Essential Information"
+    },
+    "content": {
+      "title": "Common Questions & Answers"
+    },
+    "questions": [
+      {
+        "question": "What does Sheba Cup Coffee offer?",
+        "answer": "Sheba Cup Coffee offers premium roasted coffee, brewing essentials, and curated accessories for everyday coffee lovers."
+      },
+      {
+        "question": "How can I get support for Sheba Cup Coffee products?",
+        "answer": "You can reach our support team through our contact page or by emailing support@shebascoffee.com."
+      },
+      {
+        "question": "Does Sheba Cup Coffee provide brewing guidance?",
+        "answer": "Yes, we share practical brewing tips and guidance for our coffee products to help you get the best cup every time."
+      },
+      {
+        "question": "Who is Sheba Cup Coffee for?",
+        "answer": "Sheba Cup Coffee serves individual customers, offices, and hospitality teams looking for quality coffee and reliable service."
+      },
+      {
+        "question": "How does Sheba Cup Coffee protect customer data?",
+        "answer": "We employ industry-standard security measures and comply with all relevant data protection regulations to ensure the security of our clients' data."
+      }
+    ],
+    "cta": {
+      "title": "Need More Help?",
+      "description": "Can't find the answer you're looking for? Check out our comprehensive FAQ section or contact our support team.",
+      "detailedFaq": "Detailed FAQ",
+      "contactSupport": "Contact Support"
+    }
+  },
+  "faqPage": {
+    "meta": {
+      "title": "Frequently Asked Questions",
+      "description": "Find answers to common questions about Sheba Cup Coffee, shipping, payments, and more."
+    },
+    "hero": {
+      "title": "Frequently Asked Questions",
+      "description": "Find answers to common questions about coffee orders, payments, shipping, and more. Can't find what you're looking for? Contact our support team.",
+      "badge": "Updated Daily"
+    },
+    "search": {
+      "placeholder": "Search for answers...",
+      "resultsFound": "Found {count} result for \"{term}\"",
+      "resultsFoundPlural": "Found {count} results for \"{term}\""
+    },
+    "sidebar": {
+      "title": "Categories",
+      "description": "Browse by topic"
+    },
+    "categories": [
+      { "id": "all", "label": "All Questions" },
+      { "id": "shopping", "label": "Shopping" },
+      { "id": "payment", "label": "Payment" },
+      { "id": "shipping", "label": "Shipping" },
+      { "id": "returns", "label": "Quality Issues" },
+      { "id": "account", "label": "Account" }
+    ],
+    "questions": [
+      {
+        "id": "shopping-1",
+        "category": "shopping",
+        "question": "How do I place an order?",
+        "answer": "To place an order, browse our coffee collection, add items to your cart, and proceed to checkout. You can create an account or sign in, then add your delivery details and payment method to complete your purchase."
+      },
+      {
+        "id": "shopping-2",
+        "category": "shopping",
+        "question": "Can I modify or cancel my order after placing it?",
+        "answer": "You can modify or cancel your order within 30 minutes of placing it. After that, contact support right away. Once roasting, packing, or shipping has started, changes may not be possible."
+      },
+      {
+        "id": "shopping-3",
+        "category": "shopping",
+        "question": "How do I track my order?",
+        "answer": "Once your order ships, you'll receive a tracking number via email. You can also track your order by logging into your account and visiting the 'My Orders' section. Real-time tracking information will be available there."
+      },
+      {
+        "id": "shopping-4",
+        "category": "shopping",
+        "question": "What if an item I want is out of stock?",
+        "answer": "If an item is out of stock, you can sign up for restock notifications on the product page. We'll email you as soon as it becomes available again."
+      },
+      {
+        "id": "payment-1",
+        "category": "payment",
+        "question": "What payment methods do you accept?",
+        "answer": "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and bank transfers. All payments are processed securely through our encrypted payment system."
+      },
+      {
+        "id": "payment-2",
+        "category": "payment",
+        "question": "Is my payment information secure?",
+        "answer": "Yes, absolutely. We use industry-standard SSL encryption and are PCI DSS compliant. Your payment information is never stored on our servers and is processed securely through trusted payment gateways like Stripe."
+      },
+      {
+        "id": "payment-3",
+        "category": "payment",
+        "question": "When will I be charged for my order?",
+        "answer": "Your payment method will be charged immediately upon placing your order. For pre-orders, you'll be charged when the item ships. If there are any issues with payment processing, we'll contact you within 24 hours."
+      },
+      {
+        "id": "payment-4",
+        "category": "payment",
+        "question": "Can I get a refund if I'm not satisfied?",
+        "answer": "If your order arrives damaged, incorrect, or has a quality issue, contact us within 7 days of delivery and we'll make it right."
+      },
+      {
+        "id": "shipping-1",
+        "category": "shipping",
+        "question": "How much does shipping cost?",
+        "answer": "Shipping costs vary based on your location and the shipping method you choose. Standard shipping is free for orders over $50. Express shipping options are available at checkout with their respective costs displayed."
+      },
+      {
+        "id": "shipping-2",
+        "category": "shipping",
+        "question": "How long does delivery take?",
+        "answer": "Standard shipping typically takes 3-7 business days within the continental US. Express shipping takes 1-3 business days. International shipping may take 7-14 business days depending on the destination country."
+      },
+      {
+        "id": "shipping-3",
+        "category": "shipping",
+        "question": "Do you ship internationally?",
+        "answer": "Yes, we ship to most countries worldwide. International shipping costs and delivery times vary by destination. Customs duties and taxes may apply and are the responsibility of the recipient."
+      },
+      {
+        "id": "shipping-4",
+        "category": "shipping",
+        "question": "What if my package is damaged or lost?",
+        "answer": "If your package arrives damaged or goes missing, please contact us immediately with your order number. We'll work with the shipping carrier to resolve the issue and either replace your items or provide a full refund."
+      },
+      {
+        "id": "returns-1",
+        "category": "returns",
+        "question": "Do you accept returns?",
+        "answer": "We do not offer general returns. If your coffee arrives damaged, incorrect, or has a quality issue, contact us and we'll review and resolve it quickly."
+      },
+      {
+        "id": "returns-2",
+        "category": "returns",
+        "question": "How do I report an order issue?",
+        "answer": "Log into your account, open the order, and submit an issue with photos and details. Our team will assess and guide you through the next step."
+      },
+      {
+        "id": "returns-3",
+        "category": "returns",
+        "question": "How long does issue resolution take?",
+        "answer": "Most cases are reviewed within 1-2 business days. If approved, replacement or refund timelines depend on payment provider and shipping location."
+      },
+      {
+        "id": "returns-4",
+        "category": "returns",
+        "question": "Can I request a replacement?",
+        "answer": "Yes. For damaged, incorrect, or confirmed quality issues, share your order details and photos. We'll provide a replacement when eligible."
+      },
+      {
+        "id": "account-1",
+        "category": "account",
+        "question": "How do I create an account?",
+        "answer": "Click 'Sign Up' at the top of any page and provide your email address and create a password. You can also sign up using your Google or Facebook account for faster registration. Account creation is free and gives you access to order tracking, wishlists, and exclusive offers."
+      },
+      {
+        "id": "account-2",
+        "category": "account",
+        "question": "I forgot my password. How do I reset it?",
+        "answer": "Click 'Sign In' and then 'Forgot Password'. Enter your email address and we'll send you a password reset link. Follow the instructions in the email to create a new password. If you don't receive the email, check your spam folder."
+      },
+      {
+        "id": "account-3",
+        "category": "account",
+        "question": "How do I update my account information?",
+        "answer": "Log into your account and go to 'Account Settings' or 'Profile'. Here you can update your personal information, shipping addresses, payment methods, and communication preferences. Changes are saved automatically."
+      },
+      {
+        "id": "account-4",
+        "category": "account",
+        "question": "Can I delete my account?",
+        "answer": "Yes, you can delete your account at any time from your account settings. Please note that this action is permanent and will remove all your order history, wishlists, and saved information. Contact support if you need assistance."
+      }
+    ],
+    "empty": {
+      "title": "No results found",
+      "description": "Try adjusting your search terms or browse different categories.",
+      "clearSearch": "Clear Search"
+    },
+    "support": {
+      "title": "Still need help?",
+      "description": "Our support team is here to assist you with any questions not covered in our FAQ.",
+      "contactSupport": "Contact Support",
+      "helpCenter": "Help Center"
+    }
+  },
+  "privacyPage": {
+    "meta": {
+      "title": "Privacy Policy",
+      "description": "Learn how Sheba Cup Coffee collects, uses, and protects your personal information."
+    },
+    "hero": {
+      "title": "Privacy Policy",
+      "description": "Your privacy is fundamental to how we operate. Learn how we collect, use, and protect your personal information.",
+      "lastUpdated": "Last updated: January 2024"
+    },
+    "highlights": {
+      "title": "Our Privacy Commitments",
+      "items": [
+        {
+          "title": "Data Protection",
+          "description": "Your information is encrypted and securely stored"
+        },
+        {
+          "title": "Transparency",
+          "description": "Clear visibility into how your data is used"
+        },
+        {
+          "title": "Your Control",
+          "description": "Manage your privacy settings and preferences"
+        },
+        {
+          "title": "Secure Processing",
+          "description": "Industry-standard security for all transactions"
+        }
+      ]
+    },
+    "dataCollection": {
+      "badge": "Data We Collect",
+      "title": "Types of Information We Process",
+      "description": "We collect different types of information to provide you with the best coffee shopping experience while respecting your privacy.",
+      "categories": [
+        {
+          "category": "Account Information",
+          "items": [
+            "Name and contact details",
+            "Account credentials",
+            "Profile preferences",
+            "Communication history"
+          ]
+        },
+        {
+          "category": "Purchase Data",
+          "items": [
+            "Order history",
+            "Payment information",
+            "Shipping addresses",
+            "Product reviews"
+          ]
+        },
+        {
+          "category": "Usage Analytics",
+          "items": [
+            "Website interactions",
+            "Feature usage patterns",
+            "Performance metrics",
+            "Error logs"
+          ]
+        },
+        {
+          "category": "Device Information",
+          "items": [
+            "Browser and device type",
+            "IP address",
+            "Operating system",
+            "Cookies and tracking"
+          ]
+        }
+      ]
+    },
+    "policy": {
+      "title": "Detailed Privacy Policy",
+      "description": "Complete information about how we handle your data",
+      "sections": [
+        {
+          "id": "collection",
+          "title": "Information Collection & Use",
+          "intro": "We collect information to provide better services to all users. The information we collect falls into several categories:",
+          "items": [
+            "Information you provide when creating an account or making purchases",
+            "Automatic information collected through cookies and similar technologies",
+            "Communication data when you contact our support team",
+            "Usage analytics to improve our website and services"
+          ]
+        },
+        {
+          "id": "sharing",
+          "title": "Information Sharing & Disclosure",
+          "intro": "We do not sell, trade, or rent your personal information to third parties. We may share information only in these limited circumstances:",
+          "items": [
+            "With service providers who assist in our operations (payment processing, shipping)",
+            "When required by law or to protect our rights and safety",
+            "With your explicit consent for specific purposes",
+            "In connection with a business transfer or merger"
+          ]
+        },
+        {
+          "id": "security",
+          "title": "Data Security & Protection",
+          "intro": "We implement industry-standard security measures to protect your information:",
+          "items": [
+            "SSL encryption for all data transmission",
+            "Secure data storage with regular security audits",
+            "Access controls limiting who can view your information",
+            "Regular security training for our team members",
+            "Incident response procedures for potential breaches"
+          ]
+        },
+        {
+          "id": "cookies",
+          "title": "Cookies & Tracking Technologies",
+          "intro": "We use cookies and similar technologies to enhance your browsing experience:",
+          "items": [
+            "Essential cookies for website functionality",
+            "Analytics cookies to understand usage patterns",
+            "Marketing cookies for personalized advertising (with consent)",
+            "Preference cookies to remember your settings"
+          ],
+          "footer": "You can control cookie preferences through your browser settings or our cookie preference center."
+        }
+      ]
+    },
+    "rights": {
+      "badge": "Your Privacy Rights",
+      "title": "Control Your Data",
+      "description": "You have the right to control how your personal information is collected, used, and shared. Here's what you can do:",
+      "items": [
+        {
+          "right": "Access Your Data",
+          "description": "Request a copy of all personal information we have about you",
+          "action": "Request Data Export"
+        },
+        {
+          "right": "Update Information",
+          "description": "Correct or update any inaccurate personal information",
+          "action": "Manage Profile"
+        },
+        {
+          "right": "Delete Account",
+          "description": "Request complete removal of your account and associated data",
+          "action": "Delete Account"
+        },
+        {
+          "right": "Control Communications",
+          "description": "Manage email preferences and marketing communications",
+          "action": "Email Settings"
+        }
+      ]
+    },
+    "contact": {
+      "title": "Privacy Questions or Concerns?",
+      "description": "Our privacy team is here to help you understand your rights and assist with any data-related requests or concerns.",
+      "contactTeam": "Contact Privacy Team",
+      "privacyFaq": "Privacy FAQ",
+      "emailPrefix": "Email us directly at",
+      "email": "privacy@shebascoffee.com"
+    },
+    "footer": {
+      "lastUpdated": "This privacy policy was last updated on January 15, 2024",
+      "notice": "We may update this policy periodically. We'll notify you of significant changes via email or website notice."
+    }
+  },
+  "termsPage": {
+    "meta": {
+      "title": "Terms of Service",
+      "description": "Read the terms and conditions for using Sheba Cup Coffee services."
+    },
+    "hero": {
+      "title": "Terms of Service",
+      "description": "Please read these terms carefully before using our services. They outline your rights and responsibilities as a Sheba Cup Coffee user.",
+      "lastUpdated": "Last updated: January 2024"
+    },
+    "quickNav": {
+      "title": "Quick Navigation",
+      "links": [
+        { "title": "Orders & Purchases", "href": "#orders" },
+        { "title": "Payment Terms", "href": "#payment" },
+        { "title": "Shipping & Returns", "href": "#shipping" },
+        { "title": "Privacy & Data", "href": "#privacy" },
+        { "title": "Legal & Disputes", "href": "#legal" }
+      ]
+    },
+    "sections": [
+      {
+        "id": "acceptance",
+        "title": "Acceptance of Terms",
+        "content": [
+          "By accessing and using Sheba Cup Coffee's website and services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
+          "These terms constitute a legally binding agreement between you and Sheba Cup Coffee. If you do not agree with any part of these terms, you must not use our services.",
+          "We may update these terms from time to time. Continued use of our services after changes indicates your acceptance of the modified terms.",
+          "These terms apply to all users, including browsers, customers, and contributors of content."
+        ]
+      },
+      {
+        "id": "orders",
+        "title": "Orders & Purchases",
+        "content": [
+          "All orders are subject to availability and confirmation. We reserve the right to refuse or cancel any order at our discretion.",
+          "Prices are subject to change without notice. The price charged will be the price displayed at the time of purchase.",
+          "We strive to display accurate product information, but we do not warrant that product descriptions or pricing is error-free.",
+          "By placing an order, you warrant that you are at least 18 years old and legally capable of entering into binding contracts."
+        ]
+      },
+      {
+        "id": "payment",
+        "title": "Payment Terms",
+        "content": [
+          "We accept major credit cards, debit cards, PayPal, and other payment methods as displayed at checkout.",
+          "All payments must be received before order processing and shipment. Payment authorization may be obtained prior to shipping.",
+          "You are responsible for all charges incurred on your account, including applicable taxes and shipping fees.",
+          "In case of payment disputes, we will work with you and payment processors to resolve issues fairly and promptly."
+        ]
+      },
+      {
+        "id": "shipping",
+        "title": "Shipping & Returns",
+        "content": [
+          "We offer various shipping options with different delivery timeframes. Shipping costs and times vary by location and service selected.",
+          "Risk of loss and title for items pass to you upon delivery to the shipping carrier. We are not responsible for lost or damaged packages once shipped.",
+          "Returns are accepted within 30 days of purchase for unused items in original packaging. Customer is responsible for return shipping costs unless the item was defective.",
+          "Refunds will be processed within 5-10 business days after we receive and inspect returned items."
+        ]
+      },
+      {
+        "id": "privacy",
+        "title": "Privacy & Data Protection",
+        "content": [
+          "Your privacy is important to us. Please review our Privacy Policy to understand how we collect, use, and protect your personal information.",
+          "We implement industry-standard security measures to protect your data, but cannot guarantee absolute security of information transmitted over the internet.",
+          "You have the right to access, update, or delete your personal information. Contact our support team for assistance with data requests.",
+          "We may use cookies and similar technologies to improve your coffee shopping experience and analyze website usage patterns."
+        ]
+      },
+      {
+        "id": "conduct",
+        "title": "User Conduct & Responsibilities",
+        "content": [
+          "You agree to use our services only for lawful purposes and in accordance with these terms and applicable laws.",
+          "You must not attempt to interfere with, disrupt, or gain unauthorized access to our systems or networks.",
+          "Providing false information during registration or checkout is prohibited and may result in account suspension or termination.",
+          "You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account."
+        ]
+      },
+      {
+        "id": "intellectual",
+        "title": "Intellectual Property Rights",
+        "content": [
+          "All content, trademarks, logos, and intellectual property on our website are owned by Sheba Cup Coffee or our licensors and are protected by copyright and trademark laws.",
+          "You may not reproduce, distribute, modify, or create derivative works from our content without explicit written permission.",
+          "Product images, descriptions, and reviews are provided for informational purposes and may be subject to third-party intellectual property rights.",
+          "If you believe your intellectual property rights have been infringed, please contact us with detailed information about the alleged infringement."
+        ]
+      },
+      {
+        "id": "legal",
+        "title": "Legal & Liability",
+        "content": [
+          "These terms are governed by and construed in accordance with applicable laws. Any disputes will be resolved through binding arbitration where permitted by law.",
+          "Our liability is limited to the maximum extent permitted by law. We are not liable for indirect, consequential, or punitive damages.",
+          "In no event shall our total liability exceed the amount you paid for the specific product or service that is the subject of the claim.",
+          "We disclaim all warranties except as expressly stated in these terms or as required by law."
+        ]
+      }
+    ],
+    "contact": {
+      "title": "Questions About Our Terms?",
+      "description": "If you have any questions about these Terms of Service or need clarification on any section, our legal team is here to help.",
+      "contactLegal": "Contact Legal Team",
+      "viewFaq": "View FAQ",
+      "emailPrefix": "For immediate assistance, email us at",
+      "email": "legal@shebascoffee.com"
+    },
+    "footer": {
+      "lastUpdated": "These terms were last updated on January 15, 2024",
+      "notice": "By continuing to use Sheba Cup Coffee, you agree to the most current version of these terms."
     }
   }
 }

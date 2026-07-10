@@ -1,14 +1,27 @@
 import { Metadata } from "next";
 import RoastingClient from "./RoastingClient";
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
 
-export const metadata: Metadata = {
-  title: "The Art of the Roast | Sheba Cup Coffee",
-  description:
-    "Discover the precision, passion, and heritage behind our roasting process. Learn how we bring the authentic Ethiopian farm flavor into every cup.",
-};
+interface Props {
+  params: Promise<{ lang: Locale }>;
+}
 
-const RoastingPage = () => {
-  return <RoastingClient />;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  return {
+    title: dictionary.educationPage?.meta?.title ?? "Our Roasting Process",
+    description:
+      dictionary.educationPage?.meta?.description ??
+      "Learn how we roast Ethiopian specialty coffee with care from green bean to cup.",
+  };
+}
+
+const RoastingPage = async ({ params }: Props) => {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  return <RoastingClient dictionary={dictionary} />;
 };
 
 export default RoastingPage;

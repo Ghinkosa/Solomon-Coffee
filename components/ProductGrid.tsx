@@ -168,10 +168,19 @@ const ProductGrid = ({
 
   return (
     <Container>
-      <HomeSectionHeader title="Featured Coffee Selection" />
+      <HomeSectionHeader
+        title={
+          dictionary?.home?.featuredProducts?.title ||
+          "Featured Coffee Selection"
+        }
+      />
 
       <div className="mb-10">
-        <HomeTabbar selectedTab={selectedTab} onTabSelect={setSelectedTab} />
+        <HomeTabbar
+          selectedTab={selectedTab}
+          onTabSelect={setSelectedTab}
+          tabs={dictionary?.home?.productTabs}
+        />
       </div>
 
       {loading ? (

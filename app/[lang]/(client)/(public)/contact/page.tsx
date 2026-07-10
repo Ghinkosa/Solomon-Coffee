@@ -3,14 +3,19 @@ import ContactClient from "./ContactClient";
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
 
-export const metadata: Metadata = {
-  title: "Contact Us",
-  description:
-    "Get in touch with Sheba Cup Coffee. We're here to help with your questions and inquiries.",
-};
-
 interface Props {
   params: Promise<{ lang: Locale }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  return {
+    title: dictionary.contact?.hero?.title ?? "Contact Us",
+    description:
+      dictionary.contact?.hero?.description ??
+      "Get in touch with Sheba Cup Coffee. We're here to help with your questions and inquiries.",
+  };
 }
 
 const ContactPage = async ({ params }: Props) => {

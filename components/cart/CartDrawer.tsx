@@ -26,29 +26,11 @@ import {
   buildCheckoutPricingItems,
   calculateCheckoutTotals,
 } from "@/lib/checkout-pricing";
-
-interface CartDrawerProps {
-  lang?: string;
-}
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
 
 const FREE_SHIPPING_THRESHOLD = 100;
-
-function formatGrindLabel(grind?: GrindOption): string | null {
-  if (!grind) return null;
-
-  switch (grind.grindType) {
-    case "whole-bean":
-      return "Whole Bean";
-    case "cafetiere":
-      return "Cafetiere";
-    case "filter":
-      return "Filter";
-    case "espresso":
-      return "Espresso";
-    default:
-      return grind.grindType;
-  }
-}
 
 function getItemUnitPrice(item: CartItem): number {
   return item.selectedWeight?.price ?? item.product.price ?? 0;
@@ -63,12 +45,19 @@ function getItemLineTotal(item: CartItem): number {
 function CartDrawerItem({
   item,
   highlighted,
+  dictionary,
 }: {
   item: CartItem;
   highlighted: boolean;
+  dictionary: ReturnType<typeof useDictionary>;
 }) {
   const toLocalizedPath = useLocalizedPath();
-  const grindLabel = formatGrindLabel(item.selectedGrind);
+  const grindLabel = item.selectedGrind
+    ? getGrindLabel(
+        dictionary,
+        item.selectedGrind.grindType ?? "",
+      )
+    : null;
   const lineTotal = getItemLineTotal(item);
   const productImage = item.product.images?.[0];
 
@@ -109,11 +98,21 @@ function CartDrawerItem({
 
           <div className="space-y-0.5 text-xs text-muted-foreground">
             {item.selectedWeight && (
-              <p>Weight: {item.selectedWeight.weight}</p>
+              <p>
+                {t(dictionary, "cart.options.weight", "Weight")}:{" "}
+                {item.selectedWeight.weight}
+              </p>
             )}
-            {grindLabel && <p>Grind: {grindLabel}</p>}
+            {grindLabel && (
+              <p>
+                {t(dictionary, "cart.options.grind", "Grind")}: {grindLabel}
+              </p>
+            )}
             {item.selectedPackaging && (
-              <p>Packaging: {item.selectedPackaging.title}</p>
+              <p>
+                {t(dictionary, "cart.options.packaging", "Packaging")}:{" "}
+                {item.selectedPackaging.title}
+              </p>
             )}
           </div>
         </div>
@@ -135,7 +134,8 @@ function CartDrawerItem({
   );
 }
 
-export default function CartDrawer(_props: CartDrawerProps) {
+export default function CartDrawer() {
+  const dictionary = useDictionary();
   const pathname = usePathname();
   const toLocalizedPath = useLocalizedPath();
   const {
@@ -181,6 +181,9 @@ export default function CartDrawer(_props: CartDrawerProps) {
     }
   };
 
+  const drawer = dictionary.cart as Record<string, unknown> | undefined;
+  const drawerCopy = (drawer?.drawer ?? {}) as Record<string, string>;
+
   return (
     <Sheet open={isCartDrawerOpen} onOpenChange={handleOpenChange}>
       <SheetContent
@@ -190,15 +193,20 @@ export default function CartDrawer(_props: CartDrawerProps) {
         <SheetHeader className="border-b border-stone-100 px-5 py-4 text-left">
           <SheetTitle className="flex items-center gap-2 text-lg text-shop_dark_green">
             <ShoppingBag className="h-5 w-5" />
-            Your cart
+            {drawerCopy.title ?? "Your cart"}
             {itemQuantity > 0 && (
               <span className="text-sm font-normal text-muted-foreground">
-                ({itemQuantity} {itemQuantity === 1 ? "item" : "items"})
+                ({itemQuantity}{" "}
+                {itemQuantity === 1
+                  ? (drawerCopy.item ?? "item")
+                  : (drawerCopy.items ?? "items")}
+                )
               </span>
             )}
           </SheetTitle>
           <SheetDescription className="sr-only">
-            Review items in your cart and proceed to checkout
+            {drawerCopy.description ??
+              "Review items in your cart and proceed to checkout"}
           </SheetDescription>
         </SheetHeader>
 
@@ -209,10 +217,11 @@ export default function CartDrawer(_props: CartDrawerProps) {
             </div>
             <div className="space-y-1">
               <p className="text-lg font-semibold text-shop_dark_green">
-                Your cart is empty
+                {drawerCopy.emptyTitle ?? "Your cart is empty"}
               </p>
               <p className="text-sm text-muted-foreground">
-                Discover our coffees and add your favorites here.
+                {drawerCopy.emptyDescription ??
+                  "Discover our coffees and add your favorites here."}
               </p>
             </div>
             <Button
@@ -220,7 +229,7 @@ export default function CartDrawer(_props: CartDrawerProps) {
               className="bg-shop_dark_green hover:bg-shop_light_green"
             >
               <Link href={toLocalizedPath("/shop")} onClick={closeCartDrawer}>
-                Browse shop
+                {drawerCopy.browseShop ?? "Browse shop"}
               </Link>
             </Button>
           </div>
@@ -229,7 +238,7 @@ export default function CartDrawer(_props: CartDrawerProps) {
             {cartDrawerHighlightKey && (
               <div className="flex items-center gap-2 border-b border-shop_light_green/20 bg-shop_light_bg/70 px-5 py-3 text-sm text-shop_dark_green">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-shop_light_green" />
-                <span>Added to your cart</span>
+                <span>{drawerCopy.addedToCart ?? "Added to your cart"}</span>
               </div>
             )}
 
@@ -239,6 +248,7 @@ export default function CartDrawer(_props: CartDrawerProps) {
                   key={getCartItemKey(item)}
                   item={item}
                   highlighted={getCartItemKey(item) === cartDrawerHighlightKey}
+                  dictionary={dictionary}
                 />
               ))}
             </div>
@@ -246,21 +256,33 @@ export default function CartDrawer(_props: CartDrawerProps) {
             <div className="mt-auto border-t border-stone-100 bg-stone-50/80 px-5 py-4">
               {amountToFreeShipping > 0 ? (
                 <p className="mb-3 text-center text-xs text-muted-foreground">
-                  Add{" "}
-                  <span className="font-semibold text-shop_dark_green">
-                    <PriceFormatter amount={amountToFreeShipping} />
-                  </span>{" "}
-                  more for free shipping
+                  {(drawerCopy.freeShippingAdd ?? "Add {amount} more for free shipping")
+                    .split("{amount}")
+                    .map((part, i, arr) =>
+                      i < arr.length - 1 ? (
+                        <span key={i}>
+                          {part}
+                          <span className="font-semibold text-shop_dark_green">
+                            <PriceFormatter amount={amountToFreeShipping} />
+                          </span>
+                        </span>
+                      ) : (
+                        part
+                      ),
+                    )}
                 </p>
               ) : (
                 <p className="mb-3 text-center text-xs font-medium text-shop_light_green">
-                  You qualify for free shipping
+                  {drawerCopy.freeShippingQualified ??
+                    "You qualify for free shipping"}
                 </p>
               )}
 
               <div className="mb-4 space-y-2 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">
+                    {drawerCopy.subtotal ?? "Subtotal"}
+                  </span>
                   <PriceFormatter
                     amount={
                       checkoutTotals.subtotal -
@@ -271,14 +293,14 @@ export default function CartDrawer(_props: CartDrawerProps) {
                 </div>
                 {checkoutTotals.productDiscount > 0 && (
                   <div className="flex items-center justify-between text-shop_light_green">
-                    <span>Discount</span>
+                    <span>{drawerCopy.discount ?? "Discount"}</span>
                     <span>
                       -<PriceFormatter amount={checkoutTotals.productDiscount} />
                     </span>
                   </div>
                 )}
                 <div className="flex items-center justify-between font-semibold text-shop_dark_green">
-                  <span>Estimated total</span>
+                  <span>{drawerCopy.estimatedTotal ?? "Estimated total"}</span>
                   <PriceFormatter amount={checkoutTotals.total} />
                 </div>
               </div>
@@ -292,7 +314,7 @@ export default function CartDrawer(_props: CartDrawerProps) {
                     href={toLocalizedPath("/checkout")}
                     onClick={closeCartDrawer}
                   >
-                    Checkout
+                    {drawerCopy.checkout ?? "Checkout"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -302,14 +324,17 @@ export default function CartDrawer(_props: CartDrawerProps) {
                     className="h-10 border-2 border-shop_dark_green/20 bg-white font-medium text-shop_dark_green shadow-none transition-all duration-200 hover:border-shop_dark_green hover:bg-shop_dark_green hover:text-shop_light_pink"
                     onClick={closeCartDrawer}
                   >
-                    Continue shopping
+                    {drawerCopy.continueShopping ?? "Continue shopping"}
                   </Button>
                   <Button
                     asChild
                     className="h-10 border-2 border-shop_dark_green/20 bg-white font-medium text-shop_dark_green shadow-none transition-all duration-200 hover:border-shop_dark_green hover:bg-shop_dark_green hover:text-shop_light_pink"
                   >
-                    <Link href={toLocalizedPath("/cart")} onClick={closeCartDrawer}>
-                      View cart
+                    <Link
+                      href={toLocalizedPath("/cart")}
+                      onClick={closeCartDrawer}
+                    >
+                      {drawerCopy.viewCart ?? "View cart"}
                     </Link>
                   </Button>
                 </div>

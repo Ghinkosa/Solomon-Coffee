@@ -8,14 +8,20 @@ const CTA_IMAGE =
 
 interface HomeBrewCtaProps {
   lang: string;
+  copy: {
+    title: string;
+    description: string;
+    cta: string;
+    imageAlt: string;
+  };
 }
 
-const HomeBrewCta = ({ lang }: HomeBrewCtaProps) => {
+const HomeBrewCta = ({ lang, copy }: HomeBrewCtaProps) => {
   return (
     <section className="relative min-h-[320px] w-full overflow-hidden sm:min-h-[380px]">
       <Image
         src={CTA_IMAGE}
-        alt="Fresh roasted coffee beans"
+        alt={copy.imageAlt}
         fill
         sizes="100vw"
         className="object-cover"
@@ -26,17 +32,16 @@ const HomeBrewCta = ({ lang }: HomeBrewCtaProps) => {
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
         <h2 className="mb-4 font-serif text-3xl font-bold leading-tight text-shop_light_pink md:text-4xl">
-          Brew Better at Home with Sheba Cup Coffee
+          {copy.title}
         </h2>
         <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-shop_light_pink/90 md:text-lg">
-          Explore fresh roasts, brewing essentials, and limited selections
-          crafted for your daily ritual.
+          {copy.description}
         </p>
         <Link
           href={`/${lang}/shop`}
           className={`${homeOutlineButtonClass} border-shop_orange bg-shop_orange text-shop_dark_green hover:border-shop_light_pink hover:bg-shop_light_pink hover:text-shop_dark_green`}
         >
-          Shop Coffee
+          {copy.cta}
           <ArrowRight size={16} />
         </Link>
       </div>

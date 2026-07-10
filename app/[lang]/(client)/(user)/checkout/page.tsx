@@ -8,13 +8,21 @@ import { currentUser } from "@clerk/nextjs/server";
 import { OrderCheckoutContent } from "@/components/checkout/OrderCheckoutContent";
 import { Suspense } from "react";
 
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
+
 interface Props {
+  params: Promise<{ lang: string }>;
   searchParams: Promise<{
     orderId?: string;
   }>;
 }
 
-export default async function CheckoutPage({ searchParams }: Props) {
+export default async function CheckoutPage({ params, searchParams }: Props) {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang as Locale);
+  const bc = (dictionary?.breadcrumb ?? {}) as Record<string, string>;
+  const checkoutMeta = (dictionary?.checkout ?? {}) as Record<string, string>;
   const { orderId } = await searchParams;
   const user = await currentUser();
 
@@ -34,9 +42,9 @@ export default async function CheckoutPage({ searchParams }: Props) {
         {/* Breadcrumb with custom items for payment flow */}
         <DynamicBreadcrumb
           customItems={[
-            { label: "Home", href: "/" },
-            { label: "Orders", href: "/orders" },
-            { label: "Payment" },
+            { label: bc.home ?? "Home", href: "/" },
+            { label: bc.orders ?? "Orders", href: "/orders" },
+            { label: bc.payment ?? "Payment" },
           ]}
           className="mb-6"
         />
@@ -44,7 +52,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
         {/* Checkout Header */}
         <div className="flex items-center gap-2 mb-6">
           <ShoppingBag className="w-6 h-6" />
-          <h1 className="text-2xl font-bold">Complete Payment</h1>
+          <h1 className="text-2xl font-bold">{checkoutMeta.completePayment ?? "Complete Payment"}</h1>
         </div>
 
         {/* Order Checkout Content */}
@@ -65,10 +73,10 @@ export default async function CheckoutPage({ searchParams }: Props) {
       {/* Breadcrumb with parent context showing "Home > Dashboard > Cart > Checkout" */}
       <DynamicBreadcrumb
         customItems={[
-          { label: "Home", href: "/" },
-          { label: "Dashboard", href: "/user" },
-          { label: "Cart", href: "/cart" },
-          { label: "Checkout" },
+          { label: bc.home ?? "Home", href: "/" },
+          { label: bc.dashboard ?? "Dashboard", href: "/user" },
+          { label: bc.cart ?? "Cart", href: "/cart" },
+          { label: bc.checkout ?? "Checkout" },
         ]}
         className="mb-6"
       />
@@ -76,7 +84,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
       {/* Checkout Header */}
       <div className="flex items-center gap-2 mb-6">
         <ShoppingBag className="w-6 h-6" />
-        <h1 className="text-2xl font-bold">Checkout</h1>
+        <h1 className="text-2xl font-bold">{checkoutMeta.title ?? "Checkout"}</h1>
       </div>
 
       {/* Checkout Content */}

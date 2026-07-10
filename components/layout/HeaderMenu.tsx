@@ -37,7 +37,7 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
 
   return (
     <nav aria-label="Main navigation">
-      <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 xl:gap-x-7">
+      <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 xl:gap-x-5">
         {headerPrimaryNav.map((item) => {
           const label = getNavLabel(item, dictionary);
           const href = `/${lang}${item.href === "/" ? "" : item.href}`;
@@ -47,10 +47,10 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
             <li key={item.title} className="shrink-0">
               <Link
                 href={href}
-                className={`whitespace-nowrap text-sm font-semibold uppercase tracking-[0.08em] transition-colors duration-200 xl:text-base xl:tracking-[0.1em] ${
+                className={`relative inline-block whitespace-nowrap px-1 py-1.5 text-[13px] font-bold leading-none transition-colors duration-200 ${
                   active
-                    ? "text-shop_dark_green"
-                    : "text-stone-500 hover:text-shop_light_green"
+                    ? "text-shop_dark_green after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:rounded-sm after:bg-shop_light_green"
+                    : "text-stone-600 hover:text-shop_light_green"
                 }`}
               >
                 {label}

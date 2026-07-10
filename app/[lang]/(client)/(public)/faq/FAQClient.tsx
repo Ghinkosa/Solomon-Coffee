@@ -39,194 +39,41 @@ interface FAQ {
   category: string;
 }
 
-const faqs: FAQ[] = [
-  // Ordering FAQs
-  {
-    id: "shopping-1",
-    question: "How do I place an order?",
-    answer:
-      "To place an order, browse our coffee collection, add items to your cart, and proceed to checkout. You can create an account or sign in, then add your delivery details and payment method to complete your purchase.",
-    category: "shopping",
-  },
-  {
-    id: "shopping-2",
-    question: "Can I modify or cancel my order after placing it?",
-    answer:
-      "You can modify or cancel your order within 30 minutes of placing it. After that, contact support right away. Once roasting, packing, or shipping has started, changes may not be possible.",
-    category: "shopping",
-  },
-  {
-    id: "shopping-3",
-    question: "How do I track my order?",
-    answer:
-      "Once your order ships, you'll receive a tracking number via email. You can also track your order by logging into your account and visiting the 'My Orders' section. Real-time tracking information will be available there.",
-    category: "shopping",
-  },
-  {
-    id: "shopping-4",
-    question: "What if an item I want is out of stock?",
-    answer:
-      "If an item is out of stock, you can sign up for restock notifications on the product page. We&apos;ll email you as soon as it becomes available again.",
-    category: "shopping",
-  },
+const categoryIcons: Record<string, typeof HelpCircle> = {
+  all: HelpCircle,
+  shopping: ShoppingBag,
+  payment: CreditCard,
+  shipping: Truck,
+  returns: RotateCcw,
+  account: User,
+};
 
-  // Payment FAQs
-  {
-    id: "payment-1",
-    question: "What payment methods do you accept?",
-    answer:
-      "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and bank transfers. All payments are processed securely through our encrypted payment system.",
-    category: "payment",
-  },
-  {
-    id: "payment-2",
-    question: "Is my payment information secure?",
-    answer:
-      "Yes, absolutely. We use industry-standard SSL encryption and are PCI DSS compliant. Your payment information is never stored on our servers and is processed securely through trusted payment gateways like Stripe.",
-    category: "payment",
-  },
-  {
-    id: "payment-3",
-    question: "When will I be charged for my order?",
-    answer:
-      "Your payment method will be charged immediately upon placing your order. For pre-orders, you'll be charged when the item ships. If there are any issues with payment processing, we'll contact you within 24 hours.",
-    category: "payment",
-  },
-  {
-    id: "payment-4",
-    question: "Can I get a refund if I'm not satisfied?",
-    answer:
-      "If your order arrives damaged, incorrect, or has a quality issue, contact us within 7 days of delivery and we&apos;ll make it right.",
-    category: "payment",
-  },
+interface FAQClientProps {
+  dictionary: any;
+}
 
-  // Shipping FAQs
-  {
-    id: "shipping-1",
-    question: "How much does shipping cost?",
-    answer:
-      "Shipping costs vary based on your location and the shipping method you choose. Standard shipping is free for orders over $50. Express shipping options are available at checkout with their respective costs displayed.",
-    category: "shipping",
-  },
-  {
-    id: "shipping-2",
-    question: "How long does delivery take?",
-    answer:
-      "Standard shipping typically takes 3-7 business days within the continental US. Express shipping takes 1-3 business days. International shipping may take 7-14 business days depending on the destination country.",
-    category: "shipping",
-  },
-  {
-    id: "shipping-3",
-    question: "Do you ship internationally?",
-    answer:
-      "Yes, we ship to most countries worldwide. International shipping costs and delivery times vary by destination. Customs duties and taxes may apply and are the responsibility of the recipient.",
-    category: "shipping",
-  },
-  {
-    id: "shipping-4",
-    question: "What if my package is damaged or lost?",
-    answer:
-      "If your package arrives damaged or goes missing, please contact us immediately with your order number. We'll work with the shipping carrier to resolve the issue and either replace your items or provide a full refund.",
-    category: "shipping",
-  },
-
-  // Quality & issue resolution FAQs
-  {
-    id: "returns-1",
-    question: "Do you accept returns?",
-    answer:
-      "We do not offer general returns. If your coffee arrives damaged, incorrect, or has a quality issue, contact us and we’ll review and resolve it quickly.",
-    category: "returns",
-  },
-  {
-    id: "returns-2",
-    question: "How do I report an order issue?",
-    answer:
-      "Log into your account, open the order, and submit an issue with photos and details. Our team will assess and guide you through the next step.",
-    category: "returns",
-  },
-  {
-    id: "returns-3",
-    question: "How long does issue resolution take?",
-    answer:
-      "Most cases are reviewed within 1-2 business days. If approved, replacement or refund timelines depend on payment provider and shipping location.",
-    category: "returns",
-  },
-  {
-    id: "returns-4",
-    question: "Can I request a replacement?",
-    answer:
-      "Yes. For damaged, incorrect, or confirmed quality issues, share your order details and photos. We’ll provide a replacement when eligible.",
-    category: "returns",
-  },
-
-  // Account FAQs
-  {
-    id: "account-1",
-    question: "How do I create an account?",
-    answer:
-      "Click 'Sign Up' at the top of any page and provide your email address and create a password. You can also sign up using your Google or Facebook account for faster registration. Account creation is free and gives you access to order tracking, wishlists, and exclusive offers.",
-    category: "account",
-  },
-  {
-    id: "account-2",
-    question: "I forgot my password. How do I reset it?",
-    answer:
-      "Click 'Sign In' and then 'Forgot Password'. Enter your email address and we'll send you a password reset link. Follow the instructions in the email to create a new password. If you don't receive the email, check your spam folder.",
-    category: "account",
-  },
-  {
-    id: "account-3",
-    question: "How do I update my account information?",
-    answer:
-      "Log into your account and go to 'Account Settings' or 'Profile'. Here you can update your personal information, shipping addresses, payment methods, and communication preferences. Changes are saved automatically.",
-    category: "account",
-  },
-  {
-    id: "account-4",
-    question: "Can I delete my account?",
-    answer:
-      "Yes, you can delete your account at any time from your account settings. Please note that this action is permanent and will remove all your order history, wishlists, and saved information. Contact support if you need assistance.",
-    category: "account",
-  },
-];
-
-const categories = [
-  { id: "all", label: "All Questions", icon: HelpCircle, count: faqs.length },
-  {
-    id: "shopping",
-    label: "Shopping",
-    icon: ShoppingBag,
-    count: faqs.filter((faq) => faq.category === "shopping").length,
-  },
-  {
-    id: "payment",
-    label: "Payment",
-    icon: CreditCard,
-    count: faqs.filter((faq) => faq.category === "payment").length,
-  },
-  {
-    id: "shipping",
-    label: "Shipping",
-    icon: Truck,
-    count: faqs.filter((faq) => faq.category === "shipping").length,
-  },
-  {
-    id: "returns",
-    label: "Quality Issues",
-    icon: RotateCcw,
-    count: faqs.filter((faq) => faq.category === "returns").length,
-  },
-  {
-    id: "account",
-    label: "Account",
-    icon: User,
-    count: faqs.filter((faq) => faq.category === "account").length,
-  },
-];
-
-const FAQClient = () => {
+const FAQClient = ({ dictionary }: FAQClientProps) => {
   const toLocalizedPath = useLocalizedPath();
+  const page = dictionary?.faqPage ?? {};
+  const hero = page.hero ?? {};
+  const search = page.search ?? {};
+  const sidebar = page.sidebar ?? {};
+  const empty = page.empty ?? {};
+  const support = page.support ?? {};
+
+  const faqs: FAQ[] = (page.questions ?? []).map((q: FAQ) => ({
+    ...q,
+    answer: q.answer?.replace(/&apos;/g, "'") ?? q.answer,
+  }));
+
+  const categories = (page.categories ?? []).map((cat: { id: string; label: string }) => ({
+    ...cat,
+    icon: categoryIcons[cat.id] ?? HelpCircle,
+    count:
+      cat.id === "all"
+        ? faqs.length
+        : faqs.filter((faq) => faq.category === cat.id).length,
+  }));
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
@@ -251,15 +98,14 @@ const FAQClient = () => {
           >
             <HelpCircle className="w-16 h-16 mx-auto mb-6 opacity-90" />
             <h1 className="text-4xl lg:text-5xl font-bold mb-4">
-              Frequently Asked Questions
+              {hero.title ?? "Frequently Asked Questions"}
             </h1>
             <p className="text-xl text-white/90 max-w-3xl mx-auto mb-6">
-              Find answers to common questions about coffee orders, payments,
-              shipping, and more. Can&apos;t find what you&apos;re looking for?
-              Contact our support team.
+              {hero.description ??
+                "Find answers to common questions about coffee orders, payments, shipping, and more. Can't find what you're looking for? Contact our support team."}
             </p>
             <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30">
-              Updated Daily
+              {hero.badge ?? "Updated Daily"}
             </Badge>
           </motion.div>
         </Container>
@@ -278,7 +124,7 @@ const FAQClient = () => {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
               type="text"
-              placeholder="Search for answers..."
+              placeholder={search.placeholder ?? "Search for answers..."}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-12 py-4 text-lg border-2 border-gray-200 focus:border-shop_light_green rounded-xl shadow-sm"
@@ -290,9 +136,13 @@ const FAQClient = () => {
               animate={{ opacity: 1 }}
               className="text-sm text-gray-600 mt-2"
             >
-              Found {filteredFAQs.length} result
-              {filteredFAQs.length !== 1 ? "s" : ""} for &quot;{searchTerm}
-              &quot;
+              {filteredFAQs.length !== 1
+                ? (search.resultsFoundPlural ?? "Found {count} results for \"{term}\"")
+                    .replace("{count}", String(filteredFAQs.length))
+                    .replace("{term}", searchTerm)
+                : (search.resultsFound ?? "Found {count} result for \"{term}\"")
+                    .replace("{count}", String(filteredFAQs.length))
+                    .replace("{term}", searchTerm)}
             </motion.p>
           )}
         </motion.div>
@@ -309,12 +159,12 @@ const FAQClient = () => {
               <CardHeader>
                 <CardTitle className="text-shop_dark_green flex items-center gap-2">
                   <HelpCircle className="w-5 h-5" />
-                  Categories
+                  {sidebar.title ?? "Categories"}
                 </CardTitle>
-                <CardDescription>Browse by topic</CardDescription>
+                <CardDescription>{sidebar.description ?? "Browse by topic"}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {categories.map((category) => {
+                {categories.map((category: { id: string; label: string; icon: typeof HelpCircle; count: number }) => {
                   const Icon = category.icon;
                   return (
                     <button
@@ -384,11 +234,11 @@ const FAQClient = () => {
                 >
                   <HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                    No results found
+                    {empty.title ?? "No results found"}
                   </h3>
                   <p className="text-gray-500 mb-6">
-                    Try adjusting your search terms or browse different
-                    categories.
+                    {empty.description ??
+                      "Try adjusting your search terms or browse different categories."}
                   </p>
                   <Button
                     onClick={() => {
@@ -398,7 +248,7 @@ const FAQClient = () => {
                     variant="outline"
                     className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white"
                   >
-                    Clear Search
+                    {empty.clearSearch ?? "Clear Search"}
                   </Button>
                 </motion.div>
               )}
@@ -417,11 +267,11 @@ const FAQClient = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-2 flex items-center justify-center gap-2">
                 <MessageCircle className="w-6 h-6" />
-                Still need help?
+                {support.title ?? "Still need help?"}
               </CardTitle>
               <CardDescription className="text-white/80">
-                Our support team is here to assist you with any questions not
-                covered in our FAQ.
+                {support.description ??
+                  "Our support team is here to assist you with any questions not covered in our FAQ."}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center pb-8">
@@ -433,7 +283,7 @@ const FAQClient = () => {
                     className="bg-white text-shop_dark_green hover:bg-gray-100"
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
-                    Contact Support
+                    {support.contactSupport ?? "Contact Support"}
                   </Button>
                 </Link>
                 <Link href={toLocalizedPath("/help")}>
@@ -443,7 +293,7 @@ const FAQClient = () => {
                     className="border-white text-white hover:bg-white/10"
                   >
                     <HelpCircle className="w-4 h-4 mr-2" />
-                    Help Center
+                    {support.helpCenter ?? "Help Center"}
                   </Button>
                 </Link>
               </div>

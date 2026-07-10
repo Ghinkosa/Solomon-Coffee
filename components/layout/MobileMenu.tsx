@@ -20,7 +20,7 @@ const MobileMenu = ({ lang, dictionary }: MobileMenuProps) => {
     <>
         <button
           onClick={toggleSidebar}
-          aria-label="Open menu"
+          aria-label={dictionary?.header?.menu?.openMenu ?? "Open menu"}
           className="inline-flex h-9 w-9 shrink-0 items-center justify-center text-shop_dark_green transition-colors hover:text-shop_light_green lg:hidden"
         >
           <AlignLeft className="h-5 w-5" />
@@ -33,6 +33,7 @@ const MobileMenu = ({ lang, dictionary }: MobileMenuProps) => {
               onClose={() => setIsSidebarOpen(false)}
               lang={lang}
               logoText={dictionary.logo}
+              dictionary={dictionary}
             />
           )}
         </AnimatePresence>
