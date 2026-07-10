@@ -1,7 +1,7 @@
 import { Button } from "./ui/button";
 import { HiMinus, HiPlus } from "react-icons/hi2";
 import { toast } from "sonner";
-import useCartStore from "@/store";
+import useCartStore, { GrindOption, PackagingOption, WeightOption } from "@/store";
 import { Product } from "@/sanity.types";
 import { twMerge } from "tailwind-merge";
 import { trackAddToCart, trackRemoveFromCart } from "@/lib/analytics";
@@ -12,6 +12,9 @@ interface Props {
   borderStyle?: string;
   countClassName?: string;
   buttonClassName?: string;
+  selectedWeight?: WeightOption;
+  selectedGrind?: GrindOption;
+  selectedPackaging?: PackagingOption;
 }
 
 const QuantityButtons = ({
@@ -20,13 +23,21 @@ const QuantityButtons = ({
   borderStyle,
   countClassName,
   buttonClassName,
+  selectedWeight,
+  selectedGrind,
+  selectedPackaging,
 }: Props) => {
   const { addItem, removeItem, getItemCount } = useCartStore();
-  const itemCount = getItemCount(product?._id);
+  const itemCount = getItemCount(
+    product?._id,
+    selectedWeight,
+    selectedGrind,
+    selectedPackaging,
+  );
   const isOutOfStock = product?.stock === 0;
 
   const handleRemoveProduct = () => {
-    removeItem(product?._id);
+    removeItem(product?._id, selectedWeight, selectedGrind, selectedPackaging);
     if (itemCount > 1) {
       toast.success("Quantity Decreased successfully!");
     } else {
@@ -43,7 +54,7 @@ const QuantityButtons = ({
 
   const handleAddToCart = () => {
     if ((product?.stock as number) > itemCount) {
-      addItem(product);
+      addItem(product, selectedWeight, selectedGrind, selectedPackaging);
       toast.success("Quantity Increased successfully!");
       // Firebase Analytics event
       trackAddToCart({

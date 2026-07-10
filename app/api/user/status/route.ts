@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
-import { backendClient } from "@/sanity/lib/backendClient";
-import { writeClient } from "@/sanity/lib/client";
+import { readClient, writeClient } from "@/sanity/lib/client";
 
 export async function GET() {
   try {
@@ -16,7 +15,7 @@ export async function GET() {
 
     // Check if user exists in Sanity
     const userEmail = user.emailAddresses[0]?.emailAddress;
-    const sanityUser = await backendClient.fetch(
+    const sanityUser = await readClient.fetch(
       `*[_type == "userType" && email == $email][0]{
         _id,
         email,
@@ -72,7 +71,7 @@ export async function POST() {
     }
 
     // Check if user already exists in Sanity
-    const existingSanityUser = await backendClient.fetch(
+    const existingSanityUser = await readClient.fetch(
       `*[_type == "userType" && email == $email][0]`,
       { email: userEmail }
     );

@@ -35,21 +35,28 @@ export interface CartItem {
   selectedGrind?: GrindOption;
 }
 
+export interface CartLineSelection {
+  productId: string;
+  selectedWeight?: WeightOption;
+  selectedGrind?: GrindOption;
+  selectedPackaging?: PackagingOption;
+}
+
 interface StoreState {
   items: CartItem[];
   addItem: (product: Product, selectedWeight?: WeightOption, selectedGrind?: GrindOption, selectedPackaging?: PackagingOption) => void;
   addMultipleItems: (products: Array<{ product: Product; quantity: number; selectedWeight?: WeightOption; selectedGrind?: GrindOption; selectedPackaging?: PackagingOption }>) => void;
-  removeItem: (productId: string) => void;
-  deleteCartProduct: (productId: string) => void;
+  removeItem: (productId: string, selectedWeight?: WeightOption, selectedGrind?: GrindOption, selectedPackaging?: PackagingOption) => void;
+  deleteCartProduct: (productId: string, selectedWeight?: WeightOption, selectedGrind?: GrindOption, selectedPackaging?: PackagingOption) => void;
   resetCart: () => void;
   getTotalPrice: () => number;
   getSubTotalPrice: () => number;
   getTotalDiscount: () => number;
-  getItemCount: (productId: string) => number;
+  getItemCount: (productId: string, selectedWeight?: WeightOption, selectedGrind?: GrindOption, selectedPackaging?: PackagingOption) => number;
   getGroupedItems: () => CartItem[];
-  updateCartItemPackaging: (productId: string, packaging: PackagingOption) => void;
-  updateCartItemWeight: (productId: string, weight: WeightOption) => void;
-  updateCartItemGrind: (productId: string, grind: GrindOption) => void;
+  updateCartItemPackaging: (productId: string, packaging: PackagingOption, selectedWeight?: WeightOption, selectedGrind?: GrindOption, currentPackaging?: PackagingOption) => void;
+  updateCartItemWeight: (productId: string, weight: WeightOption, currentWeight?: WeightOption, selectedGrind?: GrindOption, selectedPackaging?: PackagingOption) => void;
+  updateCartItemGrind: (productId: string, grind: GrindOption, selectedWeight?: WeightOption, currentGrind?: GrindOption, selectedPackaging?: PackagingOption) => void;
   favoriteProduct: Product[];
   addToFavorite: (product: Product) => Promise<void>;
   removeFromFavorite: (productId: string) => void;
@@ -82,6 +89,39 @@ const getItemCurrentPrice = (item: CartItem): number => {
   const defaultWeight = getDefaultWeight(item.product);
   return defaultWeight?.price || item.product.price || 0;
 };
+
+export const matchesCartItem = (
+  item: CartItem,
+  productId: string,
+  selectedWeight?: WeightOption,
+  selectedGrind?: GrindOption,
+  selectedPackaging?: PackagingOption,
+): boolean => {
+  if (item.product._id !== productId) return false;
+
+  const product = item.product;
+  const weightToMatch = selectedWeight ?? getDefaultWeight(product);
+  const grindToMatch = selectedGrind ?? getDefaultGrind(product);
+  const itemWeight = item.selectedWeight ?? getDefaultWeight(product);
+  const itemGrind = item.selectedGrind ?? getDefaultGrind(product);
+
+  const sameWeight = itemWeight?.weight === weightToMatch?.weight;
+  const sameGrind = itemGrind?.grindType === grindToMatch?.grindType;
+  const samePackaging = item.selectedPackaging?._id === selectedPackaging?._id;
+
+  return sameWeight && sameGrind && samePackaging;
+};
+
+const findMatchingCartItem = (
+  items: CartItem[],
+  productId: string,
+  selectedWeight?: WeightOption,
+  selectedGrind?: GrindOption,
+  selectedPackaging?: PackagingOption,
+) =>
+  _.find(items, (item) =>
+    matchesCartItem(item, productId, selectedWeight, selectedGrind, selectedPackaging),
+  );
 
 const useCartStore = create<StoreState>()(
   persist(
@@ -158,10 +198,18 @@ const useCartStore = create<StoreState>()(
           return { items: updatedItems };
         }),
 
-      removeItem: (productId) =>
+      removeItem: (productId, selectedWeight, selectedGrind, selectedPackaging) =>
         set((state) => ({
           items: _.reduce(state.items, (acc: CartItem[], item) => {
-            if (item.product._id === productId) {
+            if (
+              matchesCartItem(
+                item,
+                productId,
+                selectedWeight,
+                selectedGrind,
+                selectedPackaging,
+              )
+            ) {
               if (item.quantity > 1) {
                 acc.push({ ...item, quantity: item.quantity - 1 });
               }
@@ -172,29 +220,81 @@ const useCartStore = create<StoreState>()(
           }, [] as CartItem[]),
         })),
 
-      deleteCartProduct: (productId) =>
+      deleteCartProduct: (productId, selectedWeight, selectedGrind, selectedPackaging) =>
         set((state) => ({
-          items: _.filter(state.items, ({ product }) => product?._id !== productId),
-        })),
-
-      updateCartItemPackaging: (productId, packaging) =>
-        set((state) => ({
-          items: _.map(state.items, (item) =>
-            item.product._id === productId ? { ...item, selectedPackaging: packaging } : item
+          items: _.filter(
+            state.items,
+            (item) =>
+              !matchesCartItem(
+                item,
+                productId,
+                selectedWeight,
+                selectedGrind,
+                selectedPackaging,
+              ),
           ),
         })),
 
-      updateCartItemWeight: (productId, weight) =>
+      updateCartItemPackaging: (
+        productId,
+        packaging,
+        selectedWeight,
+        selectedGrind,
+        currentPackaging,
+      ) =>
         set((state) => ({
           items: _.map(state.items, (item) =>
-            item.product._id === productId ? { ...item, selectedWeight: weight } : item
+            matchesCartItem(
+              item,
+              productId,
+              selectedWeight,
+              selectedGrind,
+              currentPackaging,
+            )
+              ? { ...item, selectedPackaging: packaging }
+              : item,
           ),
         })),
 
-      updateCartItemGrind: (productId, grind) =>
+      updateCartItemWeight: (
+        productId,
+        weight,
+        currentWeight,
+        selectedGrind,
+        selectedPackaging,
+      ) =>
         set((state) => ({
           items: _.map(state.items, (item) =>
-            item.product._id === productId ? { ...item, selectedGrind: grind } : item
+            matchesCartItem(
+              item,
+              productId,
+              currentWeight,
+              selectedGrind,
+              selectedPackaging,
+            )
+              ? { ...item, selectedWeight: weight }
+              : item,
+          ),
+        })),
+
+      updateCartItemGrind: (
+        productId,
+        grind,
+        selectedWeight,
+        currentGrind,
+        selectedPackaging,
+      ) =>
+        set((state) => ({
+          items: _.map(state.items, (item) =>
+            matchesCartItem(
+              item,
+              productId,
+              selectedWeight,
+              currentGrind,
+              selectedPackaging,
+            )
+              ? { ...item, selectedGrind: grind }
+              : item,
           ),
         })),
 
@@ -231,9 +331,15 @@ const useCartStore = create<StoreState>()(
         }, 0);
       },
 
-      getItemCount: (productId) => {
-        const items = _.filter(get().items, (item) => item.product._id === productId);
-        return _.sumBy(items, 'quantity');
+      getItemCount: (productId, selectedWeight, selectedGrind, selectedPackaging) => {
+        const item = findMatchingCartItem(
+          get().items,
+          productId,
+          selectedWeight,
+          selectedGrind,
+          selectedPackaging,
+        );
+        return item?.quantity ?? 0;
       },
 
       getGroupedItems: () => get().items,

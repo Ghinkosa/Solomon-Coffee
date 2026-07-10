@@ -160,7 +160,7 @@ export default function EmployeeNav({ employee }: EmployeeNavProps) {
             const isActive = pathname.startsWith(item.href);
 
             return (
-              <Link key={item.href} href={item.href}>
+              <Link key={item.href} href={toLocalizedPath(item.href)}>
                 <Button
                   variant={isActive ? "default" : "ghost"}
                   size="sm"

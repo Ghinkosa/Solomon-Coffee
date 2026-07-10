@@ -3,25 +3,38 @@
 import { Button } from "@/components/ui/button";
 import QuantityButtons from "@/components/QuantityButtons";
 import { Trash2 } from "lucide-react";
-import useCartStore from "@/store";
+import useCartStore, { GrindOption, PackagingOption, WeightOption } from "@/store";
 import { Product } from "@/sanity.types";
 import { toast } from "sonner";
 
 interface CartItemControlsProps {
   product: Product;
+  selectedWeight?: WeightOption;
+  selectedGrind?: GrindOption;
+  selectedPackaging?: PackagingOption;
 }
 
-export function CartItemControls({ product }: CartItemControlsProps) {
+export function CartItemControls({
+  product,
+  selectedWeight,
+  selectedGrind,
+  selectedPackaging,
+}: CartItemControlsProps) {
   const { deleteCartProduct } = useCartStore();
 
   const handleRemove = () => {
-    deleteCartProduct(product._id);
+    deleteCartProduct(product._id, selectedWeight, selectedGrind, selectedPackaging);
     toast.success("Item removed from cart");
   };
 
   return (
     <div className="flex items-center gap-4">
-      <QuantityButtons product={product} />
+      <QuantityButtons
+        product={product}
+        selectedWeight={selectedWeight}
+        selectedGrind={selectedGrind}
+        selectedPackaging={selectedPackaging}
+      />
       <Button
         variant="ghost"
         size="sm"

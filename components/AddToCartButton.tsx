@@ -65,7 +65,12 @@ const AddToCartButton = memo(({
   const itemPackagingPrice = getItemPackagingPrice(effectivePackaging);
   const totalItemPrice = itemCurrentPrice + itemPackagingPrice;
   
-  const itemCount = getItemCount(product?._id);
+  const itemCount = getItemCount(
+    product?._id,
+    effectiveWeight,
+    effectiveGrind,
+    effectivePackaging,
+  );
   const isOutOfStock = product?.stock === 0;
 
   useEffect(() => {
@@ -136,6 +141,9 @@ const AddToCartButton = memo(({
             </span>
             <QuantityButtons
               product={product}
+              selectedWeight={effectiveWeight}
+              selectedGrind={effectiveGrind}
+              selectedPackaging={effectivePackaging}
               countClassName={isOnDark ? "text-[#fdf6e8]" : undefined}
               buttonClassName={
                 isOnDark

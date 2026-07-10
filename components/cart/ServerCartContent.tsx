@@ -252,7 +252,12 @@ export function ServerCartContent({
                     </div>
                     
                     <div className="flex justify-between items-center mt-4">
-                      <CartItemControls product={item.product} />
+                      <CartItemControls
+                        product={item.product}
+                        selectedWeight={item.selectedWeight}
+                        selectedGrind={item.selectedGrind}
+                        selectedPackaging={item.selectedPackaging}
+                      />
                       <PriceFormatter 
                         amount={(getItemCurrentPrice(item) + (item.selectedPackaging?.price || 0)) * item.quantity} 
                         className="font-bold" 
@@ -293,15 +298,33 @@ export function ServerCartContent({
                         selectedPackaging={item.selectedPackaging}
                         onWeightChange={(weight) => {
                           console.log("Weight changed:", weight);
-                          updateCartItemWeight(item.product._id, weight);
+                          updateCartItemWeight(
+                            item.product._id,
+                            weight,
+                            item.selectedWeight,
+                            item.selectedGrind,
+                            item.selectedPackaging,
+                          );
                         }}
                         onGrindChange={(grind) => {
                           console.log("Grind changed:", grind);
-                          updateCartItemGrind(item.product._id, grind);
+                          updateCartItemGrind(
+                            item.product._id,
+                            grind,
+                            item.selectedWeight,
+                            item.selectedGrind,
+                            item.selectedPackaging,
+                          );
                         }}
                         onPackagingChange={(packaging) => {
                           console.log("Packaging changed:", packaging);
-                          updateCartItemPackaging(item.product._id, packaging);
+                          updateCartItemPackaging(
+                            item.product._id,
+                            packaging,
+                            item.selectedWeight,
+                            item.selectedGrind,
+                            item.selectedPackaging,
+                          );
                         }}
                       />
                     </div>

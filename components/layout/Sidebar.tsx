@@ -371,7 +371,7 @@ const Sidebar: FC<SidebarProps> = ({
 
         {/* Footer */}
         <div className="p-5 border-t border-gray-100 bg-gray-50 space-y-4">
-          <div className="flex justify-center md:hidden">
+          <div className="flex justify-center lg:hidden">
             <LanguageSwitcher lang={lang} />
           </div>
 

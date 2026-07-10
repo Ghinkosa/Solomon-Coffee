@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { getMyOrders } from "@/sanity/helpers";
-import { writeClient } from "@/sanity/lib/client";
+import { getSanityAuthErrorMessage, writeClient } from "@/sanity/lib/client";
 import {
   ORDER_STATUSES,
   PAYMENT_STATUSES,
@@ -311,6 +311,7 @@ export const POST = async (request: NextRequest) => {
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+    const sanityAuthError = getSanityAuthErrorMessage(error);
     console.error("Order creation error:", error);
     console.error("Error details:", {
       message: errorMessage,
@@ -318,10 +319,10 @@ export const POST = async (request: NextRequest) => {
     });
     return NextResponse.json(
       {
-        error: errorMessage || "Failed to create order",
+        error: sanityAuthError || errorMessage || "Failed to create order",
         details: error instanceof Error ? error.stack : null,
       },
-      { status: 500 },
+      { status: sanityAuthError ? 503 : 500 },
     );
   }
 };
