@@ -27,40 +27,40 @@ const BRAND_CARD = {
   iconColor: "text-shop_dark_green",
 } as const;
 
-interface FeatureType {
-  icon: LucideIcon;
+interface FeatureCopy {
   title: string;
   description: string;
-  color: string;
-  bgColor: string;
-  iconColor: string;
   details: string[];
   benefits: string[];
 }
 
-const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
-  const [selectedFeature, setSelectedFeature] = useState<FeatureType | null>(
-    null,
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    align: "start",
-    slidesToScroll: 1,
-  });
+interface FeatureType extends FeatureCopy {
+  icon: LucideIcon;
+  color: string;
+  bgColor: string;
+  iconColor: string;
+}
 
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+type ShopFeaturesDictionary = Record<
+  string,
+  | string
+  | FeatureCopy
+  | Record<string, string>
+  | undefined
+>;
 
-  const features: FeatureType[] = [
-    {
-      icon: ShieldCheck,
-      title:
-        dictionary?.secureShopping?.title || "Secure checkout for your orders",
+const FEATURE_DEFINITIONS: {
+  key: string;
+  icon: LucideIcon;
+  fallback: FeatureCopy;
+}[] = [
+  {
+    key: "secureShopping",
+    icon: ShieldCheck,
+    fallback: {
+      title: "Secure checkout for your orders",
       description:
-        dictionary?.secureShopping?.description ||
         "Encrypted payments so your coffee order stays private and protected.",
-      ...BRAND_CARD,
       details: [
         "Industry-standard encryption on every checkout step",
         "Trusted processors (cards, wallets) with PCI-aligned handling",
@@ -76,13 +76,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Safer high-value orders",
       ],
     },
-    {
-      icon: Truck,
-      title: dictionary?.freeDelivery?.title || "Coffee delivered to your door",
+  },
+  {
+    key: "freeDelivery",
+    icon: Truck,
+    fallback: {
+      title: "Coffee delivered to your door",
       description:
-        dictionary?.freeDelivery?.description ||
         "Reliable shipping on beans, gear, and gifts—free over our threshold.",
-      ...BRAND_CARD,
       details: [
         "Whole-bean and ground coffee packed to preserve aroma in transit",
         "Tracking on every shipment so you know when your roast arrives",
@@ -98,13 +99,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Clear delivery expectations",
       ],
     },
-    {
-      icon: CreditCard,
-      title: dictionary?.easyPayments?.title || "Simple ways to pay",
+  },
+  {
+    key: "easyPayments",
+    icon: CreditCard,
+    fallback: {
+      title: "Simple ways to pay",
       description:
-        dictionary?.easyPayments?.description ||
         "Cards, wallets, and familiar options so checking out is quick.",
-      ...BRAND_CARD,
       details: [
         "Major credit and debit cards supported at checkout",
         "Digital wallets where available for one-tap payment",
@@ -120,13 +122,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Straightforward checkout",
       ],
     },
-    {
-      icon: Headphones,
-      title: dictionary?.support247?.title || "Help with orders & brewing",
+  },
+  {
+    key: "support247",
+    icon: Headphones,
+    fallback: {
+      title: "Help with orders & brewing",
       description:
-        dictionary?.support247?.description ||
         "Reach us when you need grind advice, order changes, or delivery help.",
-      ...BRAND_CARD,
       details: [
         "Support for order status, address updates, and subscription questions",
         "Guidance on grind size, brew ratio, and storage for your lot",
@@ -142,13 +145,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Your choice of channel",
       ],
     },
-    {
-      icon: Award,
-      title: dictionary?.qualityAssured?.title || "Quality you can taste",
+  },
+  {
+    key: "qualityAssured",
+    icon: Award,
+    fallback: {
+      title: "Quality you can taste",
       description:
-        dictionary?.qualityAssured?.description ||
         "Carefully sourced lots, roast-date discipline, and honest labeling.",
-      ...BRAND_CARD,
       details: [
         "Relationships with growers and importers we trust",
         "Roast profiles dialed for sweetness, clarity, and balance",
@@ -164,13 +168,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Accountability to you",
       ],
     },
-    {
-      icon: Clock,
-      title: dictionary?.fastProcessing?.title || "Roast-to-ship without delay",
+  },
+  {
+    key: "fastProcessing",
+    icon: Clock,
+    fallback: {
+      title: "Roast-to-ship without delay",
       description:
-        dictionary?.fastProcessing?.description ||
         "Orders picked and dispatched quickly so coffee spends less time waiting.",
-      ...BRAND_CARD,
       details: [
         "Cut-off times posted so you know when same-day packing applies",
         "Inventory synced to avoid selling beans we cannot ship immediately",
@@ -186,13 +191,14 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Careful packing standards",
       ],
     },
-    {
-      icon: Heart,
-      title: dictionary?.bestPrices?.title || "Fair value on every bag",
+  },
+  {
+    key: "bestPrices",
+    icon: Heart,
+    fallback: {
+      title: "Fair value on every bag",
       description:
-        dictionary?.bestPrices?.description ||
         "Direct-style pricing on specialty lots, bundles, and limited releases.",
-      ...BRAND_CARD,
       details: [
         "Competitive pricing on single-origin and signature blends",
         "Bundle savings when you stock up on household or office coffee",
@@ -208,7 +214,62 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
         "Rewards for loyal drinkers",
       ],
     },
-  ];
+  },
+];
+
+function resolveFeatureCopy(
+  dictionary: ShopFeaturesDictionary | undefined,
+  key: string,
+  fallback: FeatureCopy,
+): FeatureCopy {
+  const copy = dictionary?.[key];
+  if (!copy || typeof copy !== "object" || Array.isArray(copy)) {
+    return fallback;
+  }
+
+  const localized = copy as Partial<FeatureCopy>;
+  return {
+    title: localized.title || fallback.title,
+    description: localized.description || fallback.description,
+    details:
+      Array.isArray(localized.details) && localized.details.length > 0
+        ? localized.details
+        : fallback.details,
+    benefits:
+      Array.isArray(localized.benefits) && localized.benefits.length > 0
+        ? localized.benefits
+        : fallback.benefits,
+  };
+}
+
+const ShopFeatures = ({
+  dictionary,
+}: {
+  dictionary?: ShopFeaturesDictionary;
+}) => {
+  const [selectedFeature, setSelectedFeature] = useState<FeatureType | null>(
+    null,
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    slidesToScroll: 1,
+  });
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  const features: FeatureType[] = FEATURE_DEFINITIONS.map(
+    ({ key, icon, fallback }) => {
+      const copy = resolveFeatureCopy(dictionary, key, fallback);
+      return {
+        icon,
+        ...copy,
+        ...BRAND_CARD,
+      };
+    },
+  );
 
   const handleFeatureClick = (feature: FeatureType) => {
     setSelectedFeature(feature);
@@ -220,16 +281,29 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
     setTimeout(() => setSelectedFeature(null), 300);
   };
 
+  const carousel = dictionary?.carousel as Record<string, string> | undefined;
+  const modal = dictionary?.modal as Record<string, string> | undefined;
+
+  const sectionTitle =
+    typeof dictionary?.title === "string"
+      ? dictionary.title
+      : "Why choose Sheba Cup Coffee";
+  const sectionDescription =
+    typeof dictionary?.description === "string"
+      ? dictionary.description
+      : "Fresh roasting, ethical sourcing, and service built for people who live by their morning cup.";
+  const learnMore =
+    typeof dictionary?.learnMore === "string"
+      ? dictionary.learnMore
+      : "Click to learn more →";
+
   return (
     <section className="bg-black py-16 lg:py-20">
       <Container>
         <HomeSectionHeader
           variant="dark"
-          title={dictionary?.title || "Why choose Sheba Cup Coffee"}
-          description={
-            dictionary?.description ||
-            "Fresh roasting, ethical sourcing, and service built for people who live by their morning cup."
-          }
+          title={sectionTitle}
+          description={sectionDescription}
         />
 
         <div className="relative pb-4">
@@ -263,7 +337,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
                           {feature.description}
                         </p>
                         <div className="pt-2 text-sm font-medium text-[#E4C290] opacity-0 transition-opacity group-hover:opacity-100">
-                          {dictionary?.learnMore || "Click to learn more →"}
+                          {learnMore}
                         </div>
                       </div>
 
@@ -283,7 +357,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           <button
             type="button"
             onClick={scrollPrev}
-            aria-label={dictionary?.carousel?.prev || "Previous feature"}
+            aria-label={carousel?.prev || "Previous feature"}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-black text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -291,7 +365,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           <button
             type="button"
             onClick={scrollNext}
-            aria-label={dictionary?.carousel?.next || "Next feature"}
+            aria-label={carousel?.next || "Next feature"}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 hidden sm:flex h-10 w-10 items-center justify-center rounded-full border border-[#E4C290]/30 bg-black text-[#E4C290] shadow-lg hover:bg-[#E4C290]/10 hoverEffect"
           >
             <ChevronRight className="h-5 w-5" />
@@ -302,7 +376,7 @@ const ShopFeatures = ({ dictionary }: { dictionary?: any }) => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           feature={selectedFeature}
-          labels={dictionary?.modal}
+          labels={modal}
         />
       </Container>
     </section>

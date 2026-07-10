@@ -244,31 +244,129 @@
       },
       "secureShopping": {
         "title": "Pago seguro para tu pedido",
-        "description": "Pagos cifrados para que tu compra de café se mantenga privada y protegida."
+        "description": "Pagos cifrados para que tu compra de café se mantenga privada y protegida.",
+        "details": [
+          "Cifrado estándar en cada paso del pago",
+          "Procesadores de confianza (tarjetas, monederos) con manejo alineado a PCI",
+          "Nunca almacenamos números completos de tarjeta en nuestros servidores",
+          "Confirmaciones y recibos claros en cada compra de café",
+          "Monitoreo antifraude en pedidos de equipos de alto valor y regalos"
+        ],
+        "benefits": [
+          "Compra con confianza",
+          "Datos de pago privados",
+          "Socios de pago reconocidos",
+          "Recibos transparentes",
+          "Pedidos de alto valor más seguros"
+        ]
       },
       "freeDelivery": {
         "title": "Café en tu puerta",
-        "description": "Envío confiable de granos, equipos y regalos—gratis por encima de nuestro umbral."
+        "description": "Envío confiable de granos, equipos y regalos—gratis por encima de nuestro umbral.",
+        "details": [
+          "Café en grano y molido empaquetado para preservar el aroma en tránsito",
+          "Seguimiento en cada envío para saber cuándo llega tu tueste",
+          "Transportistas elegidos por el cuidado de equipos frágiles",
+          "Embalaje consciente del medio ambiente sin comprometer la frescura",
+          "Plazos de entrega habituales mostrados antes de pagar"
+        ],
+        "benefits": [
+          "Empaque pensado en la frescura",
+          "Seguimiento en vivo",
+          "Manejo cuidadoso",
+          "Materiales de menor impacto",
+          "Expectativas de entrega claras"
+        ]
       },
       "easyPayments": {
         "title": "Formas sencillas de pagar",
-        "description": "Tarjetas, monederos digitales y opciones familiares para un pago rápido."
+        "description": "Tarjetas, monederos digitales y opciones familiares para un pago rápido.",
+        "details": [
+          "Tarjetas de crédito y débito principales aceptadas",
+          "Monederos digitales disponibles para pago con un toque",
+          "Totales y envío mostrados antes de confirmar",
+          "Direcciones guardadas para pedidos repetidos más rápidos",
+          "Recibos adecuados para cafeterías y pequeños negocios"
+        ],
+        "benefits": [
+          "Métodos de pago flexibles",
+          "Totales transparentes",
+          "Pedidos repetidos más rápidos",
+          "Recibos para negocios",
+          "Pago sencillo"
+        ]
       },
       "support247": {
         "title": "Ayuda con pedidos y preparación",
-        "description": "Contáctanos para consejos de molienda, cambios de pedido o ayuda con la entrega."
+        "description": "Contáctanos para consejos de molienda, cambios de pedido o ayuda con la entrega.",
+        "details": [
+          "Soporte para estado del pedido, cambios de dirección y suscripciones",
+          "Orientación sobre molienda, ratio de extracción y almacenamiento",
+          "Escalado al equipo de tostaduría por calidad o frescura",
+          "Preguntas frecuentes para dudas comunes de preparación y cuenta",
+          "Varios canales para que elijas el que prefieras"
+        ],
+        "benefits": [
+          "Personas reales que conocen el café",
+          "Consejos de preparación y almacenamiento",
+          "Respuestas respaldadas por la tostaduría",
+          "Centro de ayuda útil",
+          "El canal que tú elijas"
+        ]
       },
       "qualityAssured": {
         "title": "Calidad que se nota",
-        "description": "Lotes cuidadosamente seleccionados, disciplina de fecha de tueste y etiquetado honesto."
+        "description": "Lotes cuidadosamente seleccionados, disciplina de fecha de tueste y etiquetado honesto.",
+        "details": [
+          "Relaciones con productores e importadores de confianza",
+          "Perfiles de tueste ajustados para dulzor, claridad y equilibrio",
+          "Controles por lote antes de que salgan las bolsas de la tostaduría",
+          "Etiquetas claras de origen, proceso y fecha de tueste cuando aplica",
+          "Respondemos por lo que vendemos—avísanos si algo no cumple"
+        ],
+        "benefits": [
+          "Origen trazable y ético",
+          "Calidad de tueste consistente",
+          "Etiquetado transparente",
+          "Cadencia de lanzamientos orientada a la frescura",
+          "Compromiso contigo"
+        ]
       },
       "fastProcessing": {
         "title": "Del tueste al envío sin demora",
-        "description": "Pedidos preparados y enviados rápido para que tus granos esperen menos."
+        "description": "Pedidos preparados y enviados rápido para que tus granos esperen menos.",
+        "details": [
+          "Horarios límite publicados para el empaquetado el mismo día",
+          "Inventario sincronizado para evitar vender lo que no podemos enviar",
+          "Prioridad en regalos y suscripciones urgentes",
+          "Actualizaciones por correo cuando pasa de tostado a enviado",
+          "Formación del equipo en empaque cuidadoso de cristal y cafeteras"
+        ],
+        "benefits": [
+          "Tiempos de preparación predecibles",
+          "Menos sorpresas por falta de stock",
+          "Rapidez para regalos",
+          "Estado en el que puedes confiar",
+          "Estándares de empaque cuidadoso"
+        ]
       },
       "bestPrices": {
         "title": "Valor justo en cada bolsa",
-        "description": "Precios claros en lotes especiales, packs y ediciones limitadas."
+        "description": "Precios claros en lotes especiales, packs y ediciones limitadas.",
+        "details": [
+          "Precios competitivos en orígenes únicos y mezclas de firma",
+          "Ahorro en packs al abastecer casa u oficina",
+          "Precios anticipados en micro-lotes limitados para suscriptores",
+          "Sin inflación falsa de \"precio anterior\"—lo que ves es lo que obtienes",
+          "Ventajas para clientes habituales y socios mayoristas"
+        ],
+        "benefits": [
+          "Precios honestos",
+          "Ahorro al comprar más",
+          "Lanzamientos para miembros",
+          "Valor claro",
+          "Recompensas para clientes fieles"
+        ]
       },
       "modal": {
         "howItWorks": "Cómo funciona",

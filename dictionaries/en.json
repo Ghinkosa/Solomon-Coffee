@@ -345,31 +345,129 @@
       },
       "secureShopping": {
         "title": "Secure checkout for your orders",
-        "description": "Encrypted payments so your coffee order stays private and protected."
+        "description": "Encrypted payments so your coffee order stays private and protected.",
+        "details": [
+          "Industry-standard encryption on every checkout step",
+          "Trusted processors (cards, wallets) with PCI-aligned handling",
+          "We never store full card numbers on our servers",
+          "Clear order confirmations and receipts for every coffee purchase",
+          "Fraud monitoring on high-value equipment and gift orders"
+        ],
+        "benefits": [
+          "Shop with confidence",
+          "Private payment details",
+          "Recognized payment partners",
+          "Transparent receipts",
+          "Safer high-value orders"
+        ]
       },
       "freeDelivery": {
         "title": "Coffee delivered to your door",
-        "description": "Reliable shipping on beans, gear, and gifts—free over our threshold."
+        "description": "Reliable shipping on beans, gear, and gifts—free over our threshold.",
+        "details": [
+          "Whole-bean and ground coffee packed to preserve aroma in transit",
+          "Tracking on every shipment so you know when your roast arrives",
+          "Carriers chosen for careful handling of fragile brew gear",
+          "Eco-conscious packaging where we can without compromising freshness",
+          "Typical delivery windows shown at checkout before you pay"
+        ],
+        "benefits": [
+          "Freshness-minded packing",
+          "Live shipment tracking",
+          "Careful handling",
+          "Lower-impact materials",
+          "Clear delivery expectations"
+        ]
       },
       "easyPayments": {
         "title": "Simple ways to pay",
-        "description": "Cards, wallets, and familiar options so checking out is quick."
+        "description": "Cards, wallets, and familiar options so checking out is quick.",
+        "details": [
+          "Major credit and debit cards supported at checkout",
+          "Digital wallets where available for one-tap payment",
+          "Order totals and shipping shown before you confirm",
+          "Saved addresses for faster repeat bean orders",
+          "Receipts suitable for cafés and small business buyers"
+        ],
+        "benefits": [
+          "Flexible payment methods",
+          "Transparent totals",
+          "Faster repeat orders",
+          "Business-friendly receipts",
+          "Straightforward checkout"
+        ]
       },
       "support247": {
         "title": "Help with orders & brewing",
-        "description": "Reach us for grind advice, order changes, or delivery help."
+        "description": "Reach us for grind advice, order changes, or delivery help.",
+        "details": [
+          "Support for order status, address updates, and subscription questions",
+          "Guidance on grind size, brew ratio, and storage for your lot",
+          "Escalation to the roastery team for quality or freshness concerns",
+          "Self-serve FAQs for common brewing and account questions",
+          "Multiple channels so you can pick what works for you"
+        ],
+        "benefits": [
+          "Real humans who know coffee",
+          "Brewing and storage tips",
+          "Roastery-backed answers",
+          "Helpful help center",
+          "Your choice of channel"
+        ]
       },
       "qualityAssured": {
         "title": "Quality you can taste",
-        "description": "Carefully sourced lots, roast-date discipline, and honest labeling."
+        "description": "Carefully sourced lots, roast-date discipline, and honest labeling.",
+        "details": [
+          "Relationships with growers and importers we trust",
+          "Roast profiles dialed for sweetness, clarity, and balance",
+          "Batch checks before bags leave the roastery",
+          "Clear labels for origin, process, and roast date when applicable",
+          "We stand behind what we sell—tell us if something misses the mark"
+        ],
+        "benefits": [
+          "Traceable, ethical sourcing",
+          "Consistent roast quality",
+          "Transparent labeling",
+          "Freshness-minded release cadence",
+          "Accountability to you"
+        ]
       },
       "fastProcessing": {
         "title": "Roast-to-ship without delay",
-        "description": "Orders picked and packed quickly so your beans spend less time waiting."
+        "description": "Orders picked and packed quickly so your beans spend less time waiting.",
+        "details": [
+          "Cut-off times posted so you know when same-day packing applies",
+          "Inventory synced to avoid selling beans we cannot ship immediately",
+          "Priority handling for time-sensitive gifts and subscriptions",
+          "Email updates when your order moves from roasted to shipped",
+          "Team training on careful packing for glass and brewers"
+        ],
+        "benefits": [
+          "Predictable handling times",
+          "Fewer oversell surprises",
+          "Gift-friendly speed",
+          "Status you can trust",
+          "Careful packing standards"
+        ]
       },
       "bestPrices": {
         "title": "Fair value on every bag",
-        "description": "Straightforward pricing on specialty lots, bundles, and limited releases."
+        "description": "Straightforward pricing on specialty lots, bundles, and limited releases.",
+        "details": [
+          "Competitive pricing on single-origin and signature blends",
+          "Bundle savings when you stock up on household or office coffee",
+          "Early access pricing on limited micro-lots for subscribers",
+          "No fake \"compare at\" inflation—what you see matches the cup",
+          "Loyalty-friendly perks for regular home brewers and wholesale partners"
+        ],
+        "benefits": [
+          "Honest shelf pricing",
+          "Stock-up savings",
+          "Member-friendly drops",
+          "Straightforward value",
+          "Rewards for loyal drinkers"
+        ]
       },
       "modal": {
         "howItWorks": "How It Works",
