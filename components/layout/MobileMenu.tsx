@@ -25,7 +25,7 @@ const MobileMenu = ({ lang, dictionary }: MobileMenuProps) => {
         >
           <AlignLeft className="h-5 w-5" />
         </button>
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <AnimatePresence>
           {isSidebarOpen && (
             <Sidebar

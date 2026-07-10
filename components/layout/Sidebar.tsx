@@ -133,7 +133,7 @@ const Sidebar: FC<SidebarProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm md:hidden"
+        className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm lg:hidden"
       />
 
       {/* Sidebar Container */}
@@ -142,7 +142,7 @@ const Sidebar: FC<SidebarProps> = ({
         initial="closed"
         animate="open"
         exit="exit"
-        className="fixed top-0 left-0 bottom-0 z-[9999] w-[400px] max-w-[85vw] bg-white text-gray-800 shadow-2xl flex flex-col md:hidden overflow-hidden"
+        className="fixed top-0 left-0 bottom-0 z-[9999] w-[400px] max-w-[85vw] bg-white text-gray-800 shadow-2xl flex flex-col lg:hidden overflow-hidden"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
