@@ -21,6 +21,21 @@ interface ProductCardProps {
   onHoverEnd?: () => void;
 }
 
+function getCategoryLabel(category: unknown): string | null {
+  if (typeof category === "string") return category;
+  if (category && typeof category === "object" && "title" in category) {
+    const title = (category as { title?: string }).title;
+    return title ?? null;
+  }
+  return null;
+}
+
+function getCategoryLabels(product: Product): string[] {
+  return (product.categories ?? [])
+    .map((category) => getCategoryLabel(category))
+    .filter((label): label is string => Boolean(label));
+}
+
 const getDisplayPrice = (product: Product): number => {
   const defaultWeight = (product as Product & {
     weightOptions?: Array<{ isDefault?: boolean; price?: number }>;
@@ -59,7 +74,7 @@ const ProductCard = memo(
   const productHref = toLocalizedPath(`/product/${product?.slug?.current}`);
   const displayPrice = getDisplayPrice(product);
   const showOptionsHint = isShopMode && hasProductOptions(product);
-  const primaryCategory = product?.categories?.[0];
+  const primaryCategoryLabel = getCategoryLabels(product)[0];
 
   return (
     <div
@@ -138,9 +153,9 @@ const ProductCard = memo(
 
       <div className={`flex flex-col flex-1 ${isShopMode ? "p-4 gap-3" : "p-3 gap-2"}`}>
         <Link href={productHref} className="block space-y-2">
-          {isShopMode && primaryCategory && (
+          {isShopMode && primaryCategoryLabel && (
             <span className="inline-flex items-center rounded-full bg-shop_light_bg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-shop_light_green">
-              {primaryCategory}
+              {primaryCategoryLabel}
             </span>
           )}
 
@@ -178,9 +193,9 @@ const ProductCard = memo(
 
         {mode !== "home" && (
           <div className={`mt-auto ${isShopMode ? "space-y-3 border-t border-gray-100 pt-3" : ""}`}>
-            {!isShopMode && product?.categories && (
+            {!isShopMode && getCategoryLabels(product).length > 0 && (
               <p className="uppercase line-clamp-1 text-xs font-medium text-light-text">
-                {product.categories.map((cat) => cat).join(", ")}
+                {getCategoryLabels(product).join(", ")}
               </p>
             )}
 
