@@ -22,6 +22,8 @@ import { PAYMENT_METHODS, PaymentMethod } from "@/lib/orderStatus";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import { Badge } from "@/components/ui/badge";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface OrderProduct {
   product: {
@@ -63,6 +65,13 @@ interface OrderCheckoutContentProps {
 }
 
 export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
+  const dictionary = useDictionary();
+  const checkoutCopy = (dictionary?.checkout ?? {}) as Record<string, unknown>;
+  const orderPayment = checkoutCopy.orderPayment as Record<string, unknown> | undefined;
+  const orderToasts = orderPayment?.toasts as Record<string, string> | undefined;
+  const summary = (dictionary?.cart as Record<string, unknown>)?.summary as
+    | Record<string, string>
+    | undefined;
   const toLocalizedPath = useLocalizedPath();
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>(PAYMENT_METHODS.STRIPE);
@@ -85,11 +94,18 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
         // Redirect to Stripe checkout
         window.location.href = data.url;
       } else {
-        toast.error(data.error || "Failed to create payment session");
+        toast.error(
+          data.error ||
+            (orderToasts?.paymentSessionFailed ??
+              t(dictionary, "checkout.orderPayment.toasts.paymentSessionFailed", "Failed to create payment session")),
+        );
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("Failed to initiate payment");
+      toast.error(
+        orderToasts?.paymentInitFailed ??
+          t(dictionary, "checkout.orderPayment.toasts.paymentInitFailed", "Failed to initiate payment"),
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -101,14 +117,24 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
     try {
       // Here you could implement COD logic if needed
       // For now, just show a message
-      toast.success("Order confirmed with Cash on Delivery payment method");
+      toast.success(
+        orderToasts?.codConfirmed ??
+          t(
+            dictionary,
+            "checkout.orderPayment.toasts.codConfirmed",
+            "Order confirmed with Cash on Delivery payment method",
+          ),
+      );
 
       setTimeout(() => {
         window.location.href = `/user/orders/${order._id}`;
       }, 1500);
     } catch (error) {
       console.error("COD payment error:", error);
-      toast.error("Failed to process COD payment");
+      toast.error(
+        orderToasts?.codFailed ??
+          t(dictionary, "checkout.orderPayment.toasts.codFailed", "Failed to process COD payment"),
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -124,7 +150,7 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Order #{order.orderNumber?.slice(-8)}
+                {String(orderPayment?.orderNumber ?? t(dictionary, "checkout.orderPayment.orderNumber", "Order"))} #{order.orderNumber?.slice(-8)}
               </CardTitle>
               <Badge variant="outline" className="capitalize">
                 {order.status}
@@ -134,12 +160,16 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground">Customer</p>
+                <p className="text-muted-foreground">
+                  {String(orderPayment?.customer ?? t(dictionary, "checkout.orderPayment.customer", "Customer"))}
+                </p>
                 <p className="font-medium">{order.customerName}</p>
                 <p className="text-muted-foreground">{order.email}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Order Date</p>
+                <p className="text-muted-foreground">
+                  {String(orderPayment?.orderDate ?? t(dictionary, "checkout.orderPayment.orderDate", "Order Date"))}
+                </p>
                 <p className="font-medium">
                   {new Date(order.orderDate).toLocaleDateString()}
                 </p>
@@ -153,7 +183,7 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="w-5 h-5" />
-              Shipping Address
+              {String(checkoutCopy.shippingAddress ?? t(dictionary, "checkout.shippingAddress", "Shipping Address"))}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -172,7 +202,7 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
-              Payment Method
+              {String(checkoutCopy.paymentMethod ?? t(dictionary, "checkout.paymentMethod", "Payment Method"))}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -193,10 +223,17 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
                   <Label htmlFor="stripe" className="cursor-pointer">
                     <div className="flex items-center gap-2 font-medium">
                       <CreditCard className="w-4 h-4" />
-                      Credit/Debit Card
+                      {String(checkoutCopy.card ?? t(dictionary, "checkout.card", "Credit / Debit Card"))}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Pay securely with your credit or debit card via Stripe
+                      {String(
+                        checkoutCopy.cardDescription ??
+                          t(
+                            dictionary,
+                            "checkout.cardDescription",
+                            "Pay securely with your credit or debit card via Stripe",
+                          ),
+                      )}
                     </p>
                   </Label>
                 </div>
@@ -212,10 +249,17 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
                   <Label htmlFor="cod" className="cursor-pointer">
                     <div className="flex items-center gap-2 font-medium">
                       <Truck className="w-4 h-4" />
-                      Cash on Delivery
+                      {String(orderPayment?.codShort ?? t(dictionary, "checkout.orderPayment.codShort", "Cash on Delivery"))}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Pay when your order is delivered to your doorstep
+                      {String(
+                        checkoutCopy.codDescription ??
+                          t(
+                            dictionary,
+                            "checkout.codDescription",
+                            "Pay when your order is delivered to your doorstep",
+                          ),
+                      )}
                     </p>
                   </Label>
                 </div>
@@ -227,7 +271,9 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
         {/* Order Items */}
         <Card>
           <CardHeader>
-            <CardTitle>Order Items ({order.products.length})</CardTitle>
+            <CardTitle>
+              {String(checkoutCopy.orderItems ?? t(dictionary, "checkout.orderItems", "Order Items"))} ({order.products.length})
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {order.products.map((item, index) => (
@@ -239,7 +285,7 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
                         ? urlFor(item.product.images[0]).url()
                         : "/placeholder.jpg"
                     }
-                    alt={item.product.name || "Product"}
+                    alt={item.product.name || t(dictionary, "ordersTrack.product", "Product")}
                     width={64}
                     height={64}
                     className="w-full h-full object-cover rounded"
@@ -248,7 +294,7 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
                 <div className="flex-1">
                   <h4 className="font-medium">{item.product.name}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Qty: {item.quantity}
+                    {String(checkoutCopy.qty ?? t(dictionary, "checkout.qty", "Qty"))}: {item.quantity}
                   </p>
                 </div>
                 <div className="text-right">
@@ -258,7 +304,8 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
                     />
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    <PriceFormatter amount={item.product.price} /> each
+                    <PriceFormatter amount={item.product.price} />{" "}
+                    {String(checkoutCopy.each ?? t(dictionary, "checkout.each", "each"))}
                   </p>
                 </div>
               </div>
@@ -271,28 +318,35 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Order Summary</CardTitle>
+            <CardTitle>{t(dictionary, "cart.summary.title", "Order Summary")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
-              <span>Subtotal ({order.products.length} items)</span>
+              <span>
+                {(String(
+                  checkoutCopy.subtotalWithCount ??
+                    t(dictionary, "checkout.subtotalWithCount", "Subtotal ({count} items)"),
+                )).replace("{count}", String(order.products.length))}
+              </span>
               <PriceFormatter amount={order.subtotal} />
             </div>
             <div className="flex justify-between">
-              <span>Shipping</span>
+              <span>{summary?.shipping ?? "Shipping"}</span>
               {order.shipping === 0 ? (
-                <span className="text-green-600 font-medium">Free</span>
+                <span className="text-green-600 font-medium">
+                  {summary?.free ?? t(dictionary, "common.free", "Free")}
+                </span>
               ) : (
                 <PriceFormatter amount={order.shipping} />
               )}
             </div>
             <div className="flex justify-between">
-              <span>Tax</span>
+              <span>{summary?.tax ?? "Tax"}</span>
               <PriceFormatter amount={order.tax} />
             </div>
             <Separator />
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
+              <span>{summary?.total ?? "Total"}</span>
               <PriceFormatter amount={order.totalPrice} />
             </div>
           </CardContent>
@@ -311,19 +365,23 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
           {isProcessing ? (
             <div className="flex items-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin" />
-              Processing...
+              {String(checkoutCopy.processing ?? t(dictionary, "checkout.processing", "Processing..."))}
             </div>
           ) : (
             <div className="flex items-center gap-2">
               {selectedPaymentMethod === PAYMENT_METHODS.STRIPE ? (
                 <>
                   <CreditCard className="w-5 h-5" />
-                  Pay <PriceFormatter amount={order.totalPrice} />
+                  {String(orderPayment?.pay ?? t(dictionary, "checkout.orderPayment.pay", "Pay"))}{" "}
+                  <PriceFormatter amount={order.totalPrice} />
                 </>
               ) : (
                 <>
                   <Truck className="w-5 h-5" />
-                  Confirm COD Order
+                  {String(
+                    orderPayment?.confirmCod ??
+                      t(dictionary, "checkout.orderPayment.confirmCod", "Confirm COD Order"),
+                  )}
                 </>
               )}
             </div>
@@ -333,20 +391,47 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
         <Button asChild variant="outline" className="w-full">
           <Link href={toLocalizedPath("/user/orders")} className="flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" />
-            Back to Orders
+            {String(
+              orderPayment?.backToOrders ??
+                t(dictionary, "checkout.orderPayment.backToOrders", "Back to Orders"),
+            )}
           </Link>
         </Button>
 
         <div className="text-center text-xs text-muted-foreground">
           {selectedPaymentMethod === PAYMENT_METHODS.STRIPE ? (
             <>
-              <p>🔒 Secure payment powered by Stripe</p>
-              <p>Your payment information is encrypted and secure</p>
+              <p>
+                {String(
+                  checkoutCopy.stripeSecure ??
+                    t(dictionary, "checkout.stripeSecure", "🔒 Secure checkout powered by Stripe"),
+                )}
+              </p>
+              <p>
+                {String(
+                  checkoutCopy.stripeEncrypted ??
+                    t(
+                      dictionary,
+                      "checkout.stripeEncrypted",
+                      "Your payment information is encrypted and secure",
+                    ),
+                )}
+              </p>
             </>
           ) : (
             <>
-              <p>💵 Pay when your order arrives</p>
-              <p>Cash payment to delivery agent</p>
+              <p>
+                {String(
+                  checkoutCopy.codPayOnArrival ??
+                    t(dictionary, "checkout.codPayOnArrival", "💵 Pay when your order arrives"),
+                )}
+              </p>
+              <p>
+                {String(
+                  checkoutCopy.codCashToAgent ??
+                    t(dictionary, "checkout.codCashToAgent", "Cash payment to delivery agent"),
+                )}
+              </p>
             </>
           )}
         </div>

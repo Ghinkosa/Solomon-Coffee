@@ -12,6 +12,8 @@ import { urlFor } from "@/sanity/lib/image";
 import AddToCartButton from "./AddToCartButton";
 import FavoriteButton from "./FavoriteButton";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 interface RelatedProductsProps {
   currentProduct: Product;
@@ -20,6 +22,13 @@ interface RelatedProductsProps {
 
 const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
   const toLocalizedPath = useLocalizedPath();
+  const dictionary = useDictionary() as Dictionary;
+  const related = (dictionary.product as Record<string, unknown>)?.related as
+    | Record<string, string>
+    | undefined;
+  const stock = (dictionary.product as Record<string, unknown>)?.stock as
+    | Record<string, string>
+    | undefined;
 
   // If no related products found, return null
   if (!relatedProducts || relatedProducts.length === 0) {
@@ -30,9 +39,11 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
     <div className="my-12">
       <div className="text-center mb-8">
         <h2 className="text-2xl lg:text-3xl font-bold text-shop_dark_green mb-2">
-          You Might Also Like
+          {related?.title ?? "You Might Also Like"}
         </h2>
-        <p className="text-gray-600">Similar products from the same category</p>
+        <p className="text-gray-600">
+          {related?.description ?? "Similar products from the same category"}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -57,7 +68,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
-                      alt={"productImage"}
+                      alt={related?.productImage ?? "Product Image"}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
@@ -65,7 +76,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                       <span className="text-gray-500 text-sm">
-                        Product Image
+                        {related?.productImage ?? "Product Image"}
                       </span>
                     </div>
                   )}
@@ -80,7 +91,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                   {/* Stock Badge */}
                   {!isInStock && (
                     <Badge className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600">
-                      Out of Stock
+                      {stock?.outOfStock ?? "Out of Stock"}
                     </Badge>
                   )}
 
@@ -152,7 +163,9 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
           className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
           asChild
         >
-          <Link href={toLocalizedPath("/shop")}>View More Products</Link>
+          <Link href={toLocalizedPath("/shop")}>
+            {related?.viewMore ?? "View More Products"}
+          </Link>
         </Button>
       </div>
     </div>

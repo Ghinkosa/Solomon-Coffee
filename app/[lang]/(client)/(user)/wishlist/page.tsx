@@ -14,12 +14,19 @@ const WishListPage = async ({
 }) => {
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
+  const bc = (dictionary?.breadcrumb ?? {}) as Record<string, string>;
   const user = await currentUser();
 
   return (
     <Container className="py-6">
       {/* Breadcrumb */}
-      <DynamicBreadcrumb />
+      <DynamicBreadcrumb
+        customItems={[
+          { label: bc.home ?? dictionary.common.home, href: "/" },
+          { label: bc.dashboard ?? "Dashboard", href: "/user" },
+          { label: dictionary.wishlist.title },
+        ]}
+      />
 
       {/* Page Header */}
       <div className="flex items-center gap-2 mb-8">

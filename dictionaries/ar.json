@@ -2,7 +2,42 @@
   "wishlist": {
     "title": "قائمة رغباتي",
     "subtitle": "احفظ العناصر المفضلة لديك لوقت لاحق",
-    "loginDetails": "سجل الدخول لحفظ وعرض منتجاتك المفضلة. لا تفوت العناصر التي تحبها!"
+    "loginDetails": "سجل الدخول لحفظ وعرض منتجاتك المفضلة. لا تفوت العناصر التي تحبها!",
+    "removed": "تمت إزالة المنتج من قائمة الأمنيات",
+    "cleared": "تمت إزالة جميع المنتجات من قائمة الأمنيات",
+    "removeAria": "إزالة من قائمة الأمنيات",
+    "inStock": "{count} متوفر",
+    "outOfStock": "غير متوفر",
+    "loadMore": "تحميل المزيد من المنتجات",
+    "showLess": "عرض أقل",
+    "clearWishlist": "إفراغ قائمة الأمنيات",
+    "empty": {
+      "title": "قائمة الأمنيات فارغة",
+      "subtitle": "احفظ المنتجات التي تحبها لوقت لاحق",
+      "description": "أضف عناصر إلى قائمة الأمنيات بالنقر على أيقونة القلب على أي منتج. يمكنك نقلها بسهولة إلى العربة عندما تكون جاهزاً للشراء.",
+      "browseProducts": "تصفح المنتجات",
+      "shopByCategory": "تسوق حسب الفئة"
+    },
+    "features": {
+      "saveFavorites": {
+        "title": "احفظ المفضلات",
+        "description": "تتبع المنتجات التي تحبها"
+      },
+      "easyShopping": {
+        "title": "تسوق سهل",
+        "description": "إضافة سريعة إلى العربة من قائمة الأمنيات"
+      },
+      "stayUpdated": {
+        "title": "ابق على اطلاع",
+        "description": "لا تفوت العروض على العناصر المحفوظة"
+      }
+    },
+    "clearModal": {
+      "title": "إفراغ قائمة الأمنيات",
+      "description": "أنت على وشك إزالة {count} منتجات من قائمة الأمنيات. لا يمكن التراجع عن هذا الإجراء.",
+      "keepProducts": "الاحتفاظ بالمنتجات",
+      "confirm": "إزالة جميع المنتجات"
+    }
   },
   "cart": {
     "title": "عربة التسوق",
@@ -53,10 +88,33 @@
     "clearModal": {
       "title": "إفراغ العربة؟",
       "description": "هل أنت متأكد أنك تريد إزالة جميع المنتجات من عربتك؟ لا يمكن التراجع عن هذا الإجراء.",
-      "confirm": "إفراغ العربة"
+      "confirm": "إفراغ العربة",
+      "confirmYes": "نعم، إفراغ العربة"
     },
     "guestNote": "أنت تدفع كضيف. سجّل الدخول لحفظ عنوانك وتتبع الطلبات.",
-    "cleared": "تم إفراغ العربة بنجاح"
+    "guestCheckoutNote": "يمكنك إكمال تفاصيل الشحن أثناء الدفع كضيف.",
+    "subtotalWithCount": "المجموع الفرعي ({count} منتجات)",
+    "productImageAlt": "صورة المنتج",
+    "cleared": "تم إفراغ العربة بنجاح",
+    "errors": {
+      "emailNotFound": "البريد الإلكتروني غير موجود. يرجى التواصل مع الدعم.",
+      "loadUserData": "فشل تحميل بيانات المستخدم",
+      "refreshAddresses": "فشل تحديث العناوين"
+    },
+    "checkoutButton": {
+      "packagingFee": "رسوم التعبئة",
+      "packagingHint": "تم اختيار تعبئة مميزة لمنتجاتك",
+      "outOfStock": "بعض المنتجات غير متوفرة. يرجى إزالتها للمتابعة.",
+      "selectAddress": "يرجى اختيار عنوان الشحن للمتابعة",
+      "selectAddressToast": "يرجى اختيار عنوان الشحن",
+      "redirecting": "جاري التوجيه إلى الدفع...",
+      "proceedToCheckout": "المتابعة إلى الدفع",
+      "placingOrder": "جاري تقديم الطلب...",
+      "placeOrder": "تقديم الطلب (الدفع لاحقاً)",
+      "recommended": "✓ موصى به: استخدم \"المتابعة إلى الدفع\" للدفع الآمن",
+      "guestCodHint": "\"تقديم الطلب (الدفع لاحقاً)\" ينقلك إلى الدفع لإكمال الشحن والدفع عند الاستلام",
+      "signedCodHint": "\"تقديم الطلب (الدفع لاحقاً)\" يقدّم الطلب مباشرة مع الدفع عند الاستلام"
+    }
   },
   "common": {
     "home": "الرئيسية",
@@ -643,11 +701,17 @@
       "weight": "اختر الوزن",
       "grind": "اختر الطحن",
       "packaging": "اختر التعبئة",
-      "noOptions": "لا توجد خيارات متاحة"
+      "noOptions": "لا توجد خيارات متاحة لهذا المنتج",
+      "noPackaging": "لا توجد خيارات تعبئة متاحة"
     },
+    "default": "افتراضي",
+    "packagingExtra": "تعبئة",
+    "saveDiscount": "وفّر {discount}% على هذا المنتج!",
     "stock": {
       "inStock": "متوفر",
-      "outOfStock": "غير متوفر"
+      "outOfStock": "غير متوفر",
+      "lowStock": "متبقي {count} فقط!",
+      "outOfStockShort": "غير متوفر"
     },
     "addToCart": {
       "loading": "جاري التحميل...",
@@ -662,17 +726,40 @@
     "reviews": {
       "review": "مراجعة",
       "reviews": "مراجعات",
+      "noReviewsYet": "لا توجد مراجعات بعد",
       "signInToReview": "سجّل الدخول لكتابة مراجعة"
     },
     "delivery": {
       "title": "التوصيل والإرجاع",
       "share": "مشاركة",
+      "compareColor": "مقارنة اللون",
+      "askQuestion": "اطرح سؤالاً",
       "freeDelivery": "توصيل مجاني",
-      "returnDelivery": "إرجاع الشحنة"
+      "returnDelivery": "إرجاع الشحنة",
+      "postalCodeHint": "أدخل الرمز البريدي للتحقق من توفر التوصيل.",
+      "checkNow": "تحقق الآن",
+      "returnDetails": "إرجاع مجاني خلال 30 يوماً.",
+      "details": "التفاصيل"
+    },
+    "trust": {
+      "securePayment": {
+        "title": "دفع آمن",
+        "description": "دفع آمن 100% بتشفير SSL"
+      },
+      "fastDelivery": {
+        "title": "توصيل سريع",
+        "description": "شحن مجاني للطلبات فوق 50$"
+      },
+      "qualityPromise": {
+        "title": "ضمان الجودة",
+        "description": "مساعدة سريعة للتلف أو الأخطاء أو مشاكل الجودة"
+      }
     },
     "related": {
       "title": "قد يعجبك أيضاً",
-      "description": "منتجات مشابهة من نفس الفئة"
+      "description": "منتجات مشابهة من نفس الفئة",
+      "viewMore": "عرض المزيد من المنتجات",
+      "productImage": "صورة المنتج"
     },
     "meta": {
       "notFoundTitle": "المنتج غير موجود",
@@ -699,9 +786,61 @@
     "payNow": "ادفع الآن",
     "placeOrder": "تأكيد الطلب (ادفع لاحقاً)",
     "processing": "جاري المعالجة...",
+    "placingOrder": "جاري تقديم الطلب...",
+    "codDescription": "ادفع عند وصول طلبك إلى باب منزلك",
+    "cardDescription": "ادفع بأمان ببطاقة ائتمان أو خصم عبر Stripe",
+    "addressSelected": "محدد",
+    "businessDiscount": "خصم الحساب التجاري (2%)",
+    "packaging": "التعبئة",
+    "packagingExtra": "تعبئة",
+    "subtotalWithCount": "المجموع الفرعي ({count} منتجات)",
+    "emptyCartHint": "أضف منتجات للمتابعة إلى الدفع",
+    "redirecting": {
+      "title": "جاري معالجة طلبك...",
+      "description": "يرجى الانتظار بينما نوجهك لإتمام الدفع."
+    },
+    "toasts": {
+      "readyTitle": "جاهز للدفع! 🛒",
+      "readyDescription": "أكمل طلبك باختيار طريقة الدفع أدناه",
+      "addressLoadError": "خطأ في تحميل العنوان من العربة",
+      "fixShipping": "يرجى تصحيح تفاصيل الشحن",
+      "selectAddress": "يرجى اختيار عنوان الشحن",
+      "completeGuest": "يرجى إكمال تفاصيل الدفع كضيف"
+    },
+    "stripeSecure": "🔒 دفع آمن عبر Stripe",
+    "stripeEncrypted": "معلومات الدفع مشفرة وآمنة",
+    "codPayOnArrival": "💵 ادفع عند وصول طلبك",
+    "codCashToAgent": "الدفع نقداً لمندوب التوصيل",
+    "paymentModal": {
+      "title": "اختر طريقة الدفع",
+      "heading": "اختر طريقة الدفع",
+      "description": "اختر بوابة الدفع المفضلة لإتمام طلبك",
+      "payWithStripe": "الدفع عبر Stripe"
+    },
+    "orderPayment": {
+      "orderNumber": "طلب",
+      "customer": "العميل",
+      "orderDate": "تاريخ الطلب",
+      "codShort": "الدفع عند الاستلام",
+      "confirmCod": "تأكيد طلب الدفع عند الاستلام",
+      "pay": "ادفع",
+      "backToOrders": "العودة إلى الطلبات",
+      "toasts": {
+        "paymentSessionFailed": "فشل إنشاء جلسة الدفع",
+        "paymentInitFailed": "فشل بدء الدفع",
+        "codConfirmed": "تم تأكيد الطلب مع الدفع عند الاستلام",
+        "codFailed": "فشل معالجة الدفع عند الاستلام"
+      }
+    },
+    "addressSelector": {
+      "noAddresses": "لم يتم العثور على عناوين سابقة",
+      "enterNew": "يمكنك إدخال عنوان جديد أثناء الدفع",
+      "mostRecent": "الأحدث"
+    },
     "guest": {
       "title": "الدفع كضيف",
       "description": "أكمل طلبك دون إنشاء حساب.",
+      "formDescription": "أدخل بيانات الاتصال والشحن لإتمام طلبك.",
       "fullName": "الاسم الكامل",
       "email": "البريد الإلكتروني",
       "phone": "الهاتف",
@@ -709,7 +848,38 @@
       "city": "المدينة",
       "state": "الولاية",
       "zip": "الرمز البريدي",
-      "selectState": "اختر الولاية"
+      "selectState": "اختر الولاية",
+      "placeholders": {
+        "fullName": "فاطمة أحمد",
+        "email": "fatima@example.com",
+        "phone": "(555) 555-5555",
+        "street": "123 الشارع الرئيسي، شقة 4ب",
+        "city": "الرياض",
+        "zip": "12345"
+      },
+      "validation": {
+        "nameRequired": "الاسم الكامل مطلوب",
+        "nameTooShort": "أدخل الاسم الأول واسم العائلة",
+        "nameTooLong": "يجب ألا يتجاوز الاسم 80 حرفاً",
+        "nameInvalid": "أدخل الاسم الأول واسم العائلة بأحرف فقط",
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailTooLong": "يجب ألا يتجاوز البريد 254 حرفاً",
+        "emailInvalid": "أدخل بريداً إلكترونياً صالحاً",
+        "phoneRequired": "رقم الهاتف مطلوب",
+        "phoneInvalid": "أدخل رقم هاتف أمريكي صالح من 10 أرقام",
+        "phoneGenericInvalid": "أدخل رقم هاتف صالح",
+        "addressRequired": "عنوان الشارع مطلوب",
+        "addressTooShort": "عنوان الشارع قصير جداً",
+        "addressTooLong": "يجب ألا يتجاوز العنوان 100 حرف",
+        "addressNoNumber": "أضف رقم الشارع في عنوانك",
+        "addressInvalid": "أدخل عنوان شارع صالح",
+        "cityRequired": "المدينة مطلوبة",
+        "cityInvalid": "أدخل اسم مدينة صالح",
+        "stateRequired": "الولاية مطلوبة",
+        "stateInvalid": "اختر ولاية أمريكية صالحة",
+        "zipRequired": "الرمز البريدي مطلوب",
+        "zipInvalid": "أدخل رمزاً بريدياً صالحاً (12345 أو 12345-6789)"
+      }
     }
   },
   "breadcrumb": {

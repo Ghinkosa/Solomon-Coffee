@@ -41,6 +41,10 @@ import {
 import RelatedProducts from "./RelatedProducts";
 import { WeightOption, GrindOption, PackagingOption } from "@/store";
 import Image from "next/image";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 /** Rows from BRAND_QUERY (`"brandName": brand->title`) */
 type ProductBrandRows = Array<{ brandName?: string | null }> | null;
@@ -56,6 +60,18 @@ const ProductContent = ({
   relatedProducts,
   brand,
 }: ProductContentProps) => {
+  const dictionary = useDictionary() as Dictionary;
+  const productCopy = dictionary.product as Record<string, unknown>;
+  const select = productCopy?.select as Record<string, string> | undefined;
+  const stockCopy = productCopy?.stock as Record<string, string> | undefined;
+  const reviewsCopy = productCopy?.reviews as Record<string, string> | undefined;
+  const delivery = productCopy?.delivery as Record<string, string> | undefined;
+  const trust = productCopy?.trust as Record<
+    string,
+    { title?: string; description?: string }
+  > | undefined;
+  const defaultLabel = t(dictionary, "product.default", "Default");
+  const packagingExtra = t(dictionary, "product.packagingExtra", "packaging");
   const [selectedWeight, setSelectedWeight] = useState<WeightOption | undefined>(
     (product as any).weightOptions?.find((w: WeightOption) => w.isDefault)
   );
@@ -189,7 +205,9 @@ const ProductContent = ({
                   </div>
                   <span className="text-sm font-semibold text-shop_dark_green">
                     {averageRating.toFixed(1)} ({totalReviews}{" "}
-                    {totalReviews === 1 ? "review" : "reviews"})
+                    {totalReviews === 1
+                      ? (reviewsCopy?.review ?? "review")
+                      : (reviewsCopy?.reviews ?? "reviews")})
                   </span>
                 </div>
               ) : (
@@ -203,7 +221,9 @@ const ProductContent = ({
                       />
                     ))}
                   </div>
-                  <span className="text-sm text-gray-500">No reviews yet</span>
+                  <span className="text-sm text-gray-500">
+                    {reviewsCopy?.noReviewsYet ?? "No reviews yet"}
+                  </span>
                 </div>
               )}
             </div>
@@ -218,7 +238,7 @@ const ProductContent = ({
                 />
                 {packagingPrice > 0 && (
                   <span className="text-sm text-gray-500">
-                    + ${packagingPrice} packaging
+                    + ${packagingPrice} {packagingExtra}
                   </span>
                 )}
               </div>
@@ -235,17 +255,24 @@ const ProductContent = ({
                   }`}
                 >
                   {product?.stock === 0
-                    ? "Out of Stock"
+                    ? (stockCopy?.outOfStock ?? "Out of Stock")
                     : product?.stock && product.stock < 10
-                    ? `Only ${product.stock} left!`
-                    : "In Stock"}
+                    ? (stockCopy?.lowStock ?? "Only {count} left!").replace(
+                        "{count}",
+                        String(product.stock),
+                      )
+                    : (stockCopy?.inStock ?? "In Stock")}
                 </Badge>
               </div>
 
               {/* Discount Information */}
               {product?.discount && product.discount > 0 && (
                 <div className="bg-shop_orange/10 text-shop_orange px-3 py-2 rounded-lg text-sm font-medium">
-                  💰 Save {product.discount}% on this item!
+                  💰{" "}
+                  {(t(dictionary, "product.saveDiscount", "Save {discount}% on this item!")).replace(
+                    "{discount}",
+                    String(product.discount),
+                  )}
                 </div>
               )}
             </div>
@@ -255,7 +282,7 @@ const ProductContent = ({
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Scale className="w-4 h-4 text-shop_dark_green" />
-                  Select Weight
+                  {select?.weight ?? "Select Weight"}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {(product as any).weightOptions.map((option: WeightOption) => (
@@ -273,7 +300,7 @@ const ProductContent = ({
                         ${option.price}
                       </div>
                       {option.isDefault && (
-                        <div className="text-xs text-shop_dark_green mt-1">Default</div>
+                        <div className="text-xs text-shop_dark_green mt-1">{defaultLabel}</div>
                       )}
                     </button>
                   ))}
@@ -286,7 +313,7 @@ const ProductContent = ({
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Coffee className="w-4 h-4 text-shop_dark_green" />
-                  Select Grind
+                  {select?.grind ?? "Select Grind"}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {(product as any).grindOptions
@@ -302,16 +329,10 @@ const ProductContent = ({
                         }`}
                       >
                         <div className="font-semibold text-gray-900">
-                          {option.grindType === "whole-bean"
-                            ? "Whole Bean"
-                            : option.grindType === "cafetiere"
-                            ? "Cafetiere"
-                            : option.grindType === "filter"
-                            ? "Filter"
-                            : "Espresso"}
+                          {getGrindLabel(dictionary, option.grindType)}
                         </div>
                         {option.isDefault && (
-                          <div className="text-xs text-shop_dark_green mt-1">Default</div>
+                          <div className="text-xs text-shop_dark_green mt-1">{defaultLabel}</div>
                         )}
                       </button>
                     ))}
@@ -324,7 +345,7 @@ const ProductContent = ({
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Package className="w-4 h-4 text-shop_dark_green" />
-                  Select Packaging
+                  {select?.packaging ?? "Select Packaging"}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
@@ -335,7 +356,7 @@ const ProductContent = ({
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Package className="w-4 h-4 text-shop_dark_green" />
-                  Select Packaging
+                  {select?.packaging ?? "Select Packaging"}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {packagingOptions.map((pkg) => {
@@ -374,7 +395,7 @@ const ProductContent = ({
                         <div className="flex-1 text-left">
                           <div className="font-semibold text-gray-900">{pkg.title}</div>
                           <div className="text-sm text-gray-600">
-                            {pkg.price === 0 ? "Free" : `+$${pkg.price}`}
+                            {pkg.price === 0 ? t(dictionary, "common.free", "Free") : `+$${pkg.price}`}
                           </div>
                         </div>
                         {isSelected && (
@@ -387,7 +408,7 @@ const ProductContent = ({
               </div>
             ) : (
               <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded-lg">
-                No packaging options available
+                {select?.noPackaging ?? "No packaging options available"}
               </div>
             )}
 
@@ -413,19 +434,19 @@ const ProductContent = ({
             <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2">
               <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
                 <RxBorderSplit className="text-lg" />
-                <span>Compare color</span>
+                <span>{delivery?.compareColor ?? "Compare color"}</span>
               </button>
               <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
                 <FaRegQuestionCircle className="text-lg" />
-                <span>Ask a question</span>
+                <span>{delivery?.askQuestion ?? "Ask a question"}</span>
               </button>
               <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
                 <TbTruckDelivery className="text-lg" />
-                <span>Delivery & Return</span>
+                <span>{delivery?.title ?? "Delivery & Return"}</span>
               </button>
               <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
                 <FiShare2 className="text-lg" />
-                <span>Share</span>
+                <span>{delivery?.share ?? "Share"}</span>
               </button>
             </div>
 
@@ -436,12 +457,13 @@ const ProductContent = ({
                   <Truck size={32} className="text-shop_orange" />
                   <div>
                     <p className="text-lg font-semibold text-black">
-                      Free Delivery
+                      {delivery?.freeDelivery ?? "Free Delivery"}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Enter your Postal code for Delivery Availability.{" "}
+                      {delivery?.postalCodeHint ??
+                        "Enter your Postal code for Delivery Availability."}{" "}
                       <button className="underline underline-offset-2 hover:text-shop_light_green transition-colors">
-                        Check now
+                        {delivery?.checkNow ?? "Check now"}
                       </button>
                     </p>
                   </div>
@@ -450,12 +472,12 @@ const ProductContent = ({
                   <CornerDownLeft size={32} className="text-shop_orange" />
                   <div>
                     <p className="text-lg font-semibold text-black">
-                      Return Delivery
+                      {delivery?.returnDelivery ?? "Return Delivery"}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Free 30 days Delivery Returns.{" "}
+                      {delivery?.returnDetails ?? "Free 30 days Delivery Returns."}{" "}
                       <button className="underline underline-offset-2 hover:text-shop_light_green transition-colors">
-                        Details
+                        {delivery?.details ?? "Details"}
                       </button>
                     </p>
                   </div>
@@ -476,30 +498,33 @@ const ProductContent = ({
             <Card className="border-2 border-gray-100 text-center p-4">
               <Shield className="h-8 w-8 text-shop_orange mx-auto mb-2" />
               <h3 className="font-semibold text-shop_dark_green mb-1">
-                Secure Payment
+                {trust?.securePayment?.title ?? "Secure Payment"}
               </h3>
               <p className="text-sm text-gray-600">
-                100% secure payment with SSL encryption
+                {trust?.securePayment?.description ??
+                  "100% secure payment with SSL encryption"}
               </p>
             </Card>
 
             <Card className="border-2 border-gray-100 text-center p-4">
               <Truck className="h-8 w-8 text-shop_orange mx-auto mb-2" />
               <h3 className="font-semibold text-shop_dark_green mb-1">
-                Fast Delivery
+                {trust?.fastDelivery?.title ?? "Fast Delivery"}
               </h3>
               <p className="text-sm text-gray-600">
-                Free shipping on orders over $50
+                {trust?.fastDelivery?.description ??
+                  "Free shipping on orders over $50"}
               </p>
             </Card>
 
             <Card className="border-2 border-gray-100 text-center p-4">
               <RefreshCw className="h-8 w-8 text-shop_orange mx-auto mb-2" />
               <h3 className="font-semibold text-shop_dark_green mb-1">
-                Quality Promise
+                {trust?.qualityPromise?.title ?? "Quality Promise"}
               </h3>
               <p className="text-sm text-gray-600">
-                Fast help for damaged, incorrect, or quality-related issues
+                {trust?.qualityPromise?.description ??
+                  "Fast help for damaged, incorrect, or quality-related issues"}
               </p>
             </Card>
           </div>

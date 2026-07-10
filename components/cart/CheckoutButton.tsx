@@ -16,6 +16,8 @@ import {
   buildCheckoutPricingItems,
   calculateCheckoutTotals,
 } from "@/lib/checkout-pricing";
+import { useDictionary } from "@/lib/dictionary-context";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 interface Address {
   _id: string;
@@ -54,6 +56,10 @@ export function CheckoutButton({
   selectedAddress,
   isGuestCheckout = false,
 }: CheckoutButtonProps) {
+  const dictionary = useDictionary() as Dictionary;
+  const btn = (dictionary.cart as Record<string, unknown>)?.checkoutButton as
+    | Record<string, string>
+    | undefined;
   const { user } = useUser();
   const router = useRouter();
   const toLocalizedPath = useLocalizedPath();
@@ -127,7 +133,9 @@ export function CheckoutButton({
     console.log("🚀 PROCEED TO CHECKOUT clicked");
     
     if (!isGuestCheckout && !selectedAddress) {
-      toast.error("Please select a shipping address");
+      toast.error(
+        btn?.selectAddressToast ?? "Please select a shipping address",
+      );
       setIsRedirecting(false);
       return;
     }
@@ -139,7 +147,10 @@ export function CheckoutButton({
     });
     
     if (outOfStockItems.length > 0) {
-      toast.error("Some items are out of stock. Please remove them to continue.");
+      toast.error(
+        btn?.outOfStock ??
+          "Some items are out of stock. Please remove them to continue.",
+      );
       setIsRedirecting(false);
       return;
     }
@@ -165,7 +176,10 @@ export function CheckoutButton({
     console.log("🚀 PLACE ORDER (Pay Later) clicked");
 
     if (hasOutOfStockItems) {
-      toast.error("Some items are out of stock. Please remove them to continue.");
+      toast.error(
+        btn?.outOfStock ??
+          "Some items are out of stock. Please remove them to continue.",
+      );
       return;
     }
 
@@ -184,7 +198,9 @@ export function CheckoutButton({
     }
     
     if (!selectedAddress) {
-      toast.error("Please select a shipping address");
+      toast.error(
+        btn?.selectAddressToast ?? "Please select a shipping address",
+      );
       return;
     }
 
@@ -248,14 +264,16 @@ export function CheckoutButton({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Package className="w-4 h-4 text-shop_light_green" />
-                <span className="text-sm font-medium text-shop_dark_green">Packaging Fee</span>
+                <span className="text-sm font-medium text-shop_dark_green">
+                  {btn?.packagingFee ?? "Packaging Fee"}
+                </span>
               </div>
               <span className="text-sm font-semibold text-shop_light_green">
                 +${totalPackagingFee.toFixed(2)}
               </span>
             </div>
             <p className="text-xs text-light-color mt-1">
-              Premium packaging selected for your items
+              {btn?.packagingHint ?? "Premium packaging selected for your items"}
             </p>
           </div>
         )}
@@ -263,7 +281,8 @@ export function CheckoutButton({
         {hasOutOfStockItems && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-700">
-              Some items are out of stock. Please remove them to continue.
+              {btn?.outOfStock ??
+                "Some items are out of stock. Please remove them to continue."}
             </p>
           </div>
         )}
@@ -271,7 +290,7 @@ export function CheckoutButton({
         {!isGuestCheckout && !selectedAddress && (
           <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
             <p className="text-sm text-orange-700">
-              Please select a shipping address to continue
+              {btn?.selectAddress ?? "Please select a shipping address to continue"}
             </p>
           </div>
         )}
@@ -292,12 +311,12 @@ export function CheckoutButton({
             {isRedirecting ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Redirecting to Checkout...
+                {btn?.redirecting ?? "Redirecting to Checkout..."}
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5" />
-                Proceed to Checkout
+                {btn?.proceedToCheckout ?? "Proceed to Checkout"}
                 {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}
@@ -319,17 +338,17 @@ export function CheckoutButton({
             {isPlacingOrder && actionType === "order" ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
-                Placing Order...
+                {btn?.placingOrder ?? "Placing Order..."}
               </div>
             ) : isRedirecting && actionType === "checkout" ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
-                Redirecting to Checkout...
+                {btn?.redirecting ?? "Redirecting to Checkout..."}
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Place Order (Pay Later)
+                {btn?.placeOrder ?? "Place Order (Pay Later)"}
                 {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
               </div>
             )}
@@ -337,11 +356,16 @@ export function CheckoutButton({
         </div>
 
         <div className="text-center text-xs text-muted-foreground">
-          <p className="text-green-600">✓ Recommended: Use "Proceed to Checkout" for secure payment</p>
+          <p className="text-green-600">
+            {btn?.recommended ??
+              '✓ Recommended: Use "Proceed to Checkout" for secure payment'}
+          </p>
           <p className="text-muted-foreground mt-1">
             {isGuestCheckout
-              ? '"Place Order (Pay Later)" takes you to checkout to complete shipping and pay on delivery'
-              : '"Place Order (Pay Later)" places order directly with Cash on Delivery'}
+              ? (btn?.guestCodHint ??
+                '"Place Order (Pay Later)" takes you to checkout to complete shipping and pay on delivery')
+              : (btn?.signedCodHint ??
+                '"Place Order (Pay Later)" places order directly with Cash on Delivery')}
           </p>
         </div>
       </div>

@@ -4,9 +4,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { ServerCartContent } from "./ServerCartContent";
 import { CartSkeleton } from "./CartSkeleton";
-import Link from "next/link";
-import { useLocalizedPath } from "@/hooks/useLocale";
-import { Button } from "../ui/button";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 // Interface for Address
 interface Address {
@@ -49,7 +49,7 @@ interface UserData {
 
 export function ClientCartContent() {
   const { user, isLoaded } = useUser();
-  const toLocalizedPath = useLocalizedPath();
+  const dictionary = useDictionary() as Dictionary;
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +59,9 @@ export function ClientCartContent() {
 
     const userEmail = user.emailAddresses[0]?.emailAddress;
     if (!userEmail) {
-      setError("Email not found. Please contact support.");
+      setError(
+        t(dictionary, "cart.errors.emailNotFound", "Email not found. Please contact support."),
+      );
       setLoading(false);
       return;
     }
@@ -71,17 +73,23 @@ export function ClientCartContent() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch user data");
+        throw new Error(
+          t(dictionary, "cart.errors.loadUserData", "Failed to load user data"),
+        );
       }
 
       const data = await response.json();
       setUserData(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load user data");
+      setError(
+        err instanceof Error
+          ? err.message
+          : t(dictionary, "cart.errors.loadUserData", "Failed to load user data"),
+      );
     } finally {
       setLoading(false);
     }
-  }, [isLoaded, user]);
+  }, [isLoaded, user, dictionary]);
 
   const refreshAddresses = async () => {
     if (!user) return;
@@ -121,7 +129,7 @@ export function ClientCartContent() {
           onClick={() => fetchUserData()} 
           className="mt-4 text-sm text-primary underline"
         >
-          Try again
+          {t(dictionary, "common.tryAgain", "Try again")}
         </button>
       </div>
     );

@@ -2,7 +2,42 @@
   "wishlist": {
     "title": "Mi lista de deseos",
     "subtitle": "Guarda tus cafés y accesorios favoritos para más tarde",
-    "loginDetails": "Inicia sesión para guardar y ver tus cafés favoritos. No te pierdas los lotes que más te gustan."
+    "loginDetails": "Inicia sesión para guardar y ver tus cafés favoritos. No te pierdas los lotes que más te gustan.",
+    "removed": "Producto eliminado de la lista de deseos",
+    "cleared": "Todos los productos eliminados de la lista de deseos",
+    "removeAria": "Eliminar de la lista de deseos",
+    "inStock": "{count} en stock",
+    "outOfStock": "Agotado",
+    "loadMore": "Cargar más productos",
+    "showLess": "Mostrar menos",
+    "clearWishlist": "Vaciar lista de deseos",
+    "empty": {
+      "title": "Tu lista de deseos está vacía",
+      "subtitle": "Guarda los productos que te gustan para más tarde",
+      "description": "Añade artículos a tu lista de deseos haciendo clic en el icono del corazón en cualquier producto. Puedes moverlos fácilmente al carrito cuando quieras comprar.",
+      "browseProducts": "Explorar productos",
+      "shopByCategory": "Comprar por categoría"
+    },
+    "features": {
+      "saveFavorites": {
+        "title": "Guardar favoritos",
+        "description": "Lleva un registro de los productos que te encantan"
+      },
+      "easyShopping": {
+        "title": "Compra fácil",
+        "description": "Añade al carrito rápidamente desde la lista de deseos"
+      },
+      "stayUpdated": {
+        "title": "Mantente al día",
+        "description": "No te pierdas ofertas en artículos guardados"
+      }
+    },
+    "clearModal": {
+      "title": "Vaciar lista de deseos",
+      "description": "Estás a punto de eliminar {count} productos de tu lista de deseos. Esta acción no se puede deshacer.",
+      "keepProducts": "Conservar productos",
+      "confirm": "Eliminar todos los productos"
+    }
   },
   "logo": {
     "first": "Sheba",
@@ -457,11 +492,17 @@
       "weight": "Seleccionar peso",
       "grind": "Seleccionar molienda",
       "packaging": "Seleccionar empaque",
-      "noOptions": "No hay opciones disponibles"
+      "noOptions": "No hay opciones disponibles para este producto",
+      "noPackaging": "No hay opciones de empaque disponibles"
     },
+    "default": "Predeterminado",
+    "packagingExtra": "empaque",
+    "saveDiscount": "¡Ahorra {discount}% en este artículo!",
     "stock": {
       "inStock": "En stock",
-      "outOfStock": "Agotado"
+      "outOfStock": "Agotado",
+      "lowStock": "¡Solo quedan {count}!",
+      "outOfStockShort": "Agotado"
     },
     "addToCart": {
       "loading": "Cargando...",
@@ -476,17 +517,40 @@
     "reviews": {
       "review": "reseña",
       "reviews": "reseñas",
+      "noReviewsYet": "Aún no hay reseñas",
       "signInToReview": "Inicia sesión para escribir una reseña"
     },
     "delivery": {
       "title": "Envío y devoluciones",
       "share": "Compartir",
+      "compareColor": "Comparar color",
+      "askQuestion": "Hacer una pregunta",
       "freeDelivery": "Envío gratis",
-      "returnDelivery": "Devolución de envío"
+      "returnDelivery": "Devolución de envío",
+      "postalCodeHint": "Introduce tu código postal para comprobar la disponibilidad de entrega.",
+      "checkNow": "Comprobar ahora",
+      "returnDetails": "Devoluciones gratuitas en 30 días.",
+      "details": "Detalles"
+    },
+    "trust": {
+      "securePayment": {
+        "title": "Pago seguro",
+        "description": "Pago 100% seguro con cifrado SSL"
+      },
+      "fastDelivery": {
+        "title": "Entrega rápida",
+        "description": "Envío gratis en pedidos superiores a $50"
+      },
+      "qualityPromise": {
+        "title": "Promesa de calidad",
+        "description": "Ayuda rápida por daños, errores o problemas de calidad"
+      }
     },
     "related": {
       "title": "También te puede gustar",
-      "description": "Productos similares de la misma categoría"
+      "description": "Productos similares de la misma categoría",
+      "viewMore": "Ver más productos",
+      "productImage": "Imagen del producto"
     },
     "meta": {
       "notFoundTitle": "Producto no encontrado",
@@ -513,9 +577,61 @@
     "payNow": "Pagar ahora",
     "placeOrder": "Realizar pedido (pagar después)",
     "processing": "Procesando...",
+    "placingOrder": "Realizando pedido...",
+    "codDescription": "Paga cuando tu pedido llegue a tu puerta",
+    "cardDescription": "Paga de forma segura con tarjeta de crédito o débito vía Stripe",
+    "addressSelected": "Seleccionada",
+    "businessDiscount": "Descuento cuenta comercial (2%)",
+    "packaging": "Empaque",
+    "packagingExtra": "empaque",
+    "subtotalWithCount": "Subtotal ({count} artículos)",
+    "emptyCartHint": "Añade productos para continuar con el pago",
+    "redirecting": {
+      "title": "Procesando tu pedido...",
+      "description": "Espera mientras te redirigimos para completar el pago."
+    },
+    "toasts": {
+      "readyTitle": "¡Listo para pagar! 🛒",
+      "readyDescription": "Completa tu pedido seleccionando un método de pago abajo",
+      "addressLoadError": "Error al cargar la dirección del carrito",
+      "fixShipping": "Corrige tus datos de envío",
+      "selectAddress": "Selecciona una dirección de envío",
+      "completeGuest": "Completa tus datos de pago como invitado"
+    },
+    "stripeSecure": "🔒 Pago seguro con Stripe",
+    "stripeEncrypted": "Tu información de pago está cifrada y segura",
+    "codPayOnArrival": "💵 Paga cuando llegue tu pedido",
+    "codCashToAgent": "Pago en efectivo al repartidor",
+    "paymentModal": {
+      "title": "Seleccionar método de pago",
+      "heading": "Elige método de pago",
+      "description": "Selecciona tu pasarela de pago preferida para completar tu pedido",
+      "payWithStripe": "Pagar con Stripe"
+    },
+    "orderPayment": {
+      "orderNumber": "Pedido",
+      "customer": "Cliente",
+      "orderDate": "Fecha del pedido",
+      "codShort": "Pago contra entrega",
+      "confirmCod": "Confirmar pedido contra entrega",
+      "pay": "Pagar",
+      "backToOrders": "Volver a pedidos",
+      "toasts": {
+        "paymentSessionFailed": "Error al crear la sesión de pago",
+        "paymentInitFailed": "Error al iniciar el pago",
+        "codConfirmed": "Pedido confirmado con pago contra entrega",
+        "codFailed": "Error al procesar el pago contra entrega"
+      }
+    },
+    "addressSelector": {
+      "noAddresses": "No se encontraron direcciones anteriores",
+      "enterNew": "Puedes introducir una nueva dirección durante el pago",
+      "mostRecent": "Más reciente"
+    },
     "guest": {
       "title": "Pago como invitado",
       "description": "Completa tu pedido sin crear una cuenta.",
+      "formDescription": "Introduce tus datos de contacto y envío para completar tu pedido.",
       "fullName": "Nombre completo",
       "email": "Correo electrónico",
       "phone": "Teléfono",
@@ -523,7 +639,38 @@
       "city": "Ciudad",
       "state": "Estado",
       "zip": "Código postal",
-      "selectState": "Seleccionar estado"
+      "selectState": "Seleccionar estado",
+      "placeholders": {
+        "fullName": "María García",
+        "email": "maria@ejemplo.com",
+        "phone": "(555) 555-5555",
+        "street": "Calle Principal 123, Piso 4B",
+        "city": "Madrid",
+        "zip": "28001"
+      },
+      "validation": {
+        "nameRequired": "El nombre completo es obligatorio",
+        "nameTooShort": "Introduce tu nombre y apellido",
+        "nameTooLong": "El nombre debe tener 80 caracteres o menos",
+        "nameInvalid": "Introduce nombre y apellido solo con letras",
+        "emailRequired": "El correo es obligatorio",
+        "emailTooLong": "El correo debe tener 254 caracteres o menos",
+        "emailInvalid": "Introduce un correo válido",
+        "phoneRequired": "El teléfono es obligatorio",
+        "phoneInvalid": "Introduce un teléfono válido de 10 dígitos (EE.UU.)",
+        "phoneGenericInvalid": "Introduce un teléfono válido",
+        "addressRequired": "La dirección es obligatoria",
+        "addressTooShort": "La dirección es demasiado corta",
+        "addressTooLong": "La dirección debe tener 100 caracteres o menos",
+        "addressNoNumber": "Incluye un número de calle en tu dirección",
+        "addressInvalid": "Introduce una dirección válida",
+        "cityRequired": "La ciudad es obligatoria",
+        "cityInvalid": "Introduce un nombre de ciudad válido",
+        "stateRequired": "El estado es obligatorio",
+        "stateInvalid": "Selecciona un estado válido de EE.UU.",
+        "zipRequired": "El código postal es obligatorio",
+        "zipInvalid": "Introduce un código postal válido (12345 o 12345-6789)"
+      }
     }
   },
   "breadcrumb": {
@@ -830,9 +977,32 @@
     "clearModal": {
       "title": "¿Vaciar carrito?",
       "description": "¿Estás seguro de que quieres eliminar todos los artículos de tu carrito? Esta acción no se puede deshacer.",
-      "confirm": "Vaciar carrito"
+      "confirm": "Vaciar carrito",
+      "confirmYes": "Sí, vaciar carrito"
     },
     "guestNote": "Estás pagando como invitado. Inicia sesión para guardar tu dirección y rastrear pedidos.",
-    "cleared": "Carrito vaciado correctamente"
+    "guestCheckoutNote": "Puedes completar los datos de envío durante el pago como invitado.",
+    "subtotalWithCount": "Subtotal ({count} artículos)",
+    "productImageAlt": "Imagen del producto",
+    "cleared": "Carrito vaciado correctamente",
+    "errors": {
+      "emailNotFound": "Correo no encontrado. Contacta con soporte.",
+      "loadUserData": "Error al cargar los datos del usuario",
+      "refreshAddresses": "Error al actualizar las direcciones"
+    },
+    "checkoutButton": {
+      "packagingFee": "Tarifa de empaque",
+      "packagingHint": "Empaque premium seleccionado para tus artículos",
+      "outOfStock": "Algunos artículos están agotados. Elimínalos para continuar.",
+      "selectAddress": "Selecciona una dirección de envío para continuar",
+      "selectAddressToast": "Selecciona una dirección de envío",
+      "redirecting": "Redirigiendo al pago...",
+      "proceedToCheckout": "Proceder al pago",
+      "placingOrder": "Realizando pedido...",
+      "placeOrder": "Realizar pedido (pagar después)",
+      "recommended": "✓ Recomendado: usa \"Proceder al pago\" para un pago seguro",
+      "guestCodHint": "\"Realizar pedido (pagar después)\" te lleva al pago para completar el envío y pagar contra entrega",
+      "signedCodHint": "\"Realizar pedido (pagar después)\" realiza el pedido directamente con pago contra entrega"
+    }
   }
 }

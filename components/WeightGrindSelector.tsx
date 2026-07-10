@@ -6,6 +6,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import type { PackagingOption } from "@/store";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 interface WeightOption {
   weight: string;
@@ -33,13 +37,6 @@ interface WeightGrindSelectorProps {
   onPackagingChange: (packaging: PackagingOption) => void;
 }
 
-const grindLabels: Record<string, string> = {
-  "whole-bean": "Whole Bean",
-  "cafetiere": "Cafetiere",
-  "filter": "Filter",
-  "espresso": "Espresso",
-};
-
 export function WeightGrindSelector({
   productId,
   weightOptions = [],
@@ -52,6 +49,14 @@ export function WeightGrindSelector({
   onGrindChange,
   onPackagingChange,
 }: WeightGrindSelectorProps) {
+  const dictionary = useDictionary() as Dictionary;
+  const select = (dictionary.product as Record<string, unknown>)?.select as
+    | Record<string, string>
+    | undefined;
+  const stock = (dictionary.product as Record<string, unknown>)?.stock as
+    | Record<string, string>
+    | undefined;
+  const defaultLabel = t(dictionary, "product.default", "Default");
   const hasWeightOptions = weightOptions.length > 0;
   const hasGrindOptions = grindOptions.length > 0;
   const hasPackagingOptions = packagingOptions.length > 0;
@@ -59,7 +64,7 @@ export function WeightGrindSelector({
   if (!hasWeightOptions && !hasGrindOptions && !hasPackagingOptions) {
     return (
       <div className="text-sm text-gray-400 italic p-2 text-center">
-        No options available for this product
+        {select?.noOptions ?? "No options available for this product"}
       </div>
     );
   }
@@ -71,7 +76,7 @@ export function WeightGrindSelector({
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
             <Scale className="w-4 h-4" />
-            Select Weight
+            {select?.weight ?? "Select Weight"}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {weightOptions.map((option) => (
@@ -91,10 +96,12 @@ export function WeightGrindSelector({
                 <div className="font-medium">{option.weight}</div>
                 <div className="text-sm text-gray-600">${option.price}</div>
                 {option.isDefault && !selectedWeight && (
-                  <div className="text-xs text-primary mt-1">Default</div>
+                  <div className="text-xs text-primary mt-1">{defaultLabel}</div>
                 )}
                 {option.stock === 0 && (
-                  <div className="text-xs text-red-500 mt-1">Out of stock</div>
+                  <div className="text-xs text-red-500 mt-1">
+                    {stock?.outOfStockShort ?? "Out of stock"}
+                  </div>
                 )}
               </button>
             ))}
@@ -107,7 +114,7 @@ export function WeightGrindSelector({
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
             <Coffee className="w-4 h-4" />
-            Select Grind
+            {select?.grind ?? "Select Grind"}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {grindOptions
@@ -125,10 +132,10 @@ export function WeightGrindSelector({
                   `}
                 >
                   <div className="font-medium">
-                    {grindLabels[option.grindType] || option.grindType.replace('-', ' ').toUpperCase()}
+                    {getGrindLabel(dictionary, option.grindType)}
                   </div>
                   {option.isDefault && !selectedGrind && (
-                    <div className="text-xs text-primary mt-1">Default</div>
+                    <div className="text-xs text-primary mt-1">{defaultLabel}</div>
                   )}
                 </button>
               ))}
@@ -141,7 +148,7 @@ export function WeightGrindSelector({
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
             <Package className="w-4 h-4" />
-            Select Packaging
+            {select?.packaging ?? "Select Packaging"}
           </label>
           <div className="grid grid-cols-2 gap-3">
             {packagingOptions.map((pkg) => {
@@ -172,7 +179,7 @@ export function WeightGrindSelector({
                   <div className="flex-1 min-w-0">
                     <p className="text-[11px] font-bold uppercase truncate">{pkg.title}</p>
                     <p className="text-[10px] font-medium text-black/60">
-                      {pkg.price > 0 ? `+$${pkg.price.toFixed(2)}` : "Free"}
+                      {pkg.price > 0 ? `+$${pkg.price.toFixed(2)}` : t(dictionary, "common.free", "Free")}
                     </p>
                   </div>
                   {isSelected && (

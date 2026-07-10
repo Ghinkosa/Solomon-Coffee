@@ -24,8 +24,19 @@ import {
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 const WishlistProducts = () => {
+  const dictionary = useDictionary() as Dictionary;
+  const wl = (dictionary.wishlist ?? {}) as Record<string, unknown>;
+  const empty = wl.empty as Record<string, string> | undefined;
+  const features = wl.features as Record<
+    string,
+    { title?: string; description?: string }
+  > | undefined;
+  const clearModal = wl.clearModal as Record<string, string> | undefined;
   const [visibleProducts, setVisibleProducts] = useState(8);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { favoriteProduct, removeFromFavorite, resetFavorite } = useCartStore();
@@ -42,7 +53,7 @@ const WishlistProducts = () => {
   const confirmResetFavorite = () => {
     resetFavorite();
     setShowDeleteModal(false);
-    toast.success("All products removed from wishlist");
+    toast.success(String(wl.cleared ?? t(dictionary, "wishlist.cleared", "All products removed from wishlist")));
   };
 
   return (
@@ -60,10 +71,10 @@ const WishlistProducts = () => {
                   <button
                     onClick={() => {
                       removeFromFavorite(product._id);
-                      toast.success("Product removed from wishlist");
+                      toast.success(String(wl.removed ?? t(dictionary, "wishlist.removed", "Product removed from wishlist")));
                     }}
                     className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 hover:bg-red-50 hover:text-red-600 transition-all duration-200 shadow-sm"
-                    aria-label="Remove from wishlist"
+                    aria-label={String(wl.removeAria ?? t(dictionary, "wishlist.removeAria", "Remove from wishlist"))}
                   >
                     <X size={16} />
                   </button>
@@ -122,8 +133,11 @@ const WishlistProducts = () => {
                         }`}
                       >
                         {product?.stock && product.stock > 0
-                          ? `${product.stock} in stock`
-                          : "Out of stock"}
+                          ? (String(wl.inStock ?? t(dictionary, "wishlist.inStock", "{count} in stock"))).replace(
+                              "{count}",
+                              String(product.stock),
+                            )
+                          : String(wl.outOfStock ?? t(dictionary, "wishlist.outOfStock", "Out of stock"))}
                       </span>
                     </div>
 
@@ -153,7 +167,7 @@ const WishlistProducts = () => {
                 variant="outline"
                 className="hover:bg-shop_dark_green hover:text-white hover:border-shop_dark_green font-semibold px-8 py-2"
               >
-                Load More Products
+                {String(wl.loadMore ?? t(dictionary, "wishlist.loadMore", "Load More Products"))}
               </Button>
             </div>
           )}
@@ -164,7 +178,7 @@ const WishlistProducts = () => {
                 variant="ghost"
                 className="text-gray-600 hover:text-gray-800 font-medium"
               >
-                Show Less
+                {String(wl.showLess ?? t(dictionary, "wishlist.showLess", "Show Less"))}
               </Button>
             </div>
           )}
@@ -175,7 +189,7 @@ const WishlistProducts = () => {
                 onClick={handleResetFavorite}
                 className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700 font-semibold px-6 py-2"
               >
-                Clear Wishlist
+                {String(wl.clearWishlist ?? t(dictionary, "wishlist.clearWishlist", "Clear Wishlist"))}
               </Button>
             </div>
           )}
@@ -192,15 +206,14 @@ const WishlistProducts = () => {
           </div>
           <div className="space-y-3 max-w-md">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-              Your wishlist is empty
+              {empty?.title ?? "Your wishlist is empty"}
             </h2>
             <p className="text-lg text-muted-foreground">
-              Save products you love for later
+              {empty?.subtitle ?? "Save products you love for later"}
             </p>
             <p className="text-sm text-muted-foreground/80 leading-relaxed">
-              Add items to your wishlist by clicking the heart icon on any
-              product. You can easily move them to your cart when you&apos;re
-              ready to purchase.
+              {empty?.description ??
+                "Add items to your wishlist by clicking the heart icon on any product. You can easily move them to your cart when you're ready to purchase."}
             </p>
           </div>
 
@@ -208,37 +221,47 @@ const WishlistProducts = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mt-8">
             <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-50">
               <Heart className="h-8 w-8 text-red-400" />
-              <h3 className="font-semibold text-sm">Save Favorites</h3>
+              <h3 className="font-semibold text-sm">
+                {features?.saveFavorites?.title ?? "Save Favorites"}
+              </h3>
               <p className="text-xs text-muted-foreground text-center">
-                Keep track of products you love
+                {features?.saveFavorites?.description ?? "Keep track of products you love"}
               </p>
             </div>
             <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-50">
               <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
                 <span className="text-green-600 text-sm font-bold">🛍️</span>
               </div>
-              <h3 className="font-semibold text-sm">Easy Shopping</h3>
+              <h3 className="font-semibold text-sm">
+                {features?.easyShopping?.title ?? "Easy Shopping"}
+              </h3>
               <p className="text-xs text-muted-foreground text-center">
-                Quick add to cart from wishlist
+                {features?.easyShopping?.description ?? "Quick add to cart from wishlist"}
               </p>
             </div>
             <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-50">
               <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                 <span className="text-blue-600 text-sm font-bold">🔔</span>
               </div>
-              <h3 className="font-semibold text-sm">Stay Updated</h3>
+              <h3 className="font-semibold text-sm">
+                {features?.stayUpdated?.title ?? "Stay Updated"}
+              </h3>
               <p className="text-xs text-muted-foreground text-center">
-                Never miss deals on saved items
+                {features?.stayUpdated?.description ?? "Never miss deals on saved items"}
               </p>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mt-8">
             <Button asChild size="lg" className="px-8">
-              <Link href={toLocalizedPath("/shop")}>Browse Products</Link>
+              <Link href={toLocalizedPath("/shop")}>
+                {empty?.browseProducts ?? "Browse Products"}
+              </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="px-8">
-              <Link href={toLocalizedPath("/category")}>Shop by Category</Link>
+              <Link href={toLocalizedPath("/category")}>
+                {empty?.shopByCategory ?? "Shop by Category"}
+              </Link>
             </Button>
           </div>
         </div>
@@ -259,14 +282,12 @@ const WishlistProducts = () => {
               </div>
               <div className="space-y-2">
                 <DialogTitle className="text-xl font-bold text-gray-900">
-                  Clear Wishlist
+                  {clearModal?.title ?? "Clear Wishlist"}
                 </DialogTitle>
                 <DialogDescription className="text-gray-600 leading-relaxed">
-                  You&apos;re about to remove{" "}
-                  <span className="font-semibold text-red-600">
-                    {favoriteProduct.length} products
-                  </span>{" "}
-                  from your wishlist. This action cannot be undone.
+                  {(clearModal?.description ??
+                    "You're about to remove {count} products from your wishlist. This action cannot be undone.")
+                    .replace("{count}", String(favoriteProduct.length))}
                 </DialogDescription>
               </div>
             </DialogHeader>
@@ -276,7 +297,7 @@ const WishlistProducts = () => {
                 onClick={() => setShowDeleteModal(false)}
                 className="w-full sm:w-auto border-gray-300 hover:bg-gray-50 font-medium"
               >
-                Keep Products
+                {clearModal?.keepProducts ?? "Keep Products"}
               </Button>
               <Button
                 variant="destructive"
@@ -284,12 +305,12 @@ const WishlistProducts = () => {
                 className="w-full sm:w-auto bg-red-600 hover:bg-red-700 focus:ring-red-500 font-semibold shadow-lg hover:shadow-red-200"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Clear All Products
+                {clearModal?.confirm ?? "Clear All Products"}
               </Button>
             </DialogFooter>
             <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
               <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{t(dictionary, "common.close", "Close")}</span>
             </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </DialogPortal>

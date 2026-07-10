@@ -54,6 +54,7 @@ import {
 } from "@/lib/checkout-pricing";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
 
 interface OrderAddress {
   _id: string;
@@ -107,11 +108,18 @@ function resolveCheckoutLine(
 export function CheckoutContent() {
   const dictionary = useDictionary();
   const checkoutCopy = (dictionary?.checkout ?? {}) as Record<string, unknown>;
+  const toasts = checkoutCopy.toasts as Record<string, string> | undefined;
+  const paymentModal = checkoutCopy.paymentModal as Record<string, string> | undefined;
+  const redirectingCopy = checkoutCopy.redirecting as Record<string, string> | undefined;
+  const summary = (dictionary?.cart as Record<string, unknown>)?.summary as
+    | Record<string, string>
+    | undefined;
   const { user, isLoaded } = useUser();
   const searchParams = useSearchParams();
   const {
     items: cart,
     openAuthSidebar,
+    resetCart,
   } = useCartStore();
   const toLocalizedPath = useLocalizedPath();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
@@ -301,13 +309,25 @@ export function CheckoutContent() {
         };
         setSelectedAddress(orderAddress);
 
-        toast.success("Ready for Checkout! 🛒", {
-          description: "Complete your order by selecting a payment method below",
-          duration: 4000,
-        });
+        toast.success(
+          toasts?.readyTitle ?? t(dictionary, "checkout.toasts.readyTitle", "Ready for Checkout! 🛒"),
+          {
+            description:
+              toasts?.readyDescription ??
+              t(
+                dictionary,
+                "checkout.toasts.readyDescription",
+                "Complete your order by selecting a payment method below",
+              ),
+            duration: 4000,
+          },
+        );
       } catch (error) {
         console.error("Error parsing address from URL:", error);
-        toast.error("Error loading address from cart");
+        toast.error(
+          toasts?.addressLoadError ??
+            t(dictionary, "checkout.toasts.addressLoadError", "Error loading address from cart"),
+        );
       }
     }
   }, [searchParams]);
@@ -339,11 +359,18 @@ export function CheckoutContent() {
     if (user) return true;
 
     setShowGuestFormErrors(true);
-    const validationMessage = getGuestCheckoutValidationMessage(guestDetails);
+    const validationMessage = getGuestCheckoutValidationMessage(
+      guestDetails,
+      dictionary,
+    );
     if (validationMessage) {
-      toast.error("Please fix your shipping details", {
-        description: validationMessage,
-      });
+      toast.error(
+        toasts?.fixShipping ??
+          t(dictionary, "checkout.toasts.fixShipping", "Please fix your shipping details"),
+        {
+          description: validationMessage,
+        },
+      );
       return false;
     }
 
@@ -357,8 +384,14 @@ export function CheckoutContent() {
     if (!checkoutAddress) {
       toast.error(
         user
-          ? "Please select a shipping address"
-          : "Please complete your guest checkout details",
+          ? (toasts?.selectAddress ??
+              t(dictionary, "checkout.toasts.selectAddress", "Please select a shipping address"))
+          : (toasts?.completeGuest ??
+              t(
+                dictionary,
+                "checkout.toasts.completeGuest",
+                "Please complete your guest checkout details",
+              )),
       );
       return;
     }
@@ -380,8 +413,14 @@ export function CheckoutContent() {
     if (!checkoutAddress) {
       toast.error(
         user
-          ? "Please select a shipping address"
-          : "Please complete your guest checkout details",
+          ? (toasts?.selectAddress ??
+              t(dictionary, "checkout.toasts.selectAddress", "Please select a shipping address"))
+          : (toasts?.completeGuest ??
+              t(
+                dictionary,
+                "checkout.toasts.completeGuest",
+                "Please complete your guest checkout details",
+              )),
       );
       return;
     }
@@ -415,6 +454,7 @@ export function CheckoutContent() {
 
     if (result?.success && result.redirectTo) {
       setIsRedirecting(true);
+      resetCart();
       if (result.orderNumber) {
         sessionStorage.setItem(
           action === "pay" && result.isStripeRedirect
@@ -452,9 +492,17 @@ export function CheckoutContent() {
     return (
       <div className="text-center py-10">
         <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-shop_light_green" />
-        <h2 className="text-xl font-semibold mb-2 text-shop_dark_green">Processing your order...</h2>
+        <h2 className="text-xl font-semibold mb-2 text-shop_dark_green">
+          {redirectingCopy?.title ??
+            t(dictionary, "checkout.redirecting.title", "Processing your order...")}
+        </h2>
         <p className="text-muted-foreground">
-          Please wait while we redirect you to complete your payment.
+          {redirectingCopy?.description ??
+            t(
+              dictionary,
+              "checkout.redirecting.description",
+              "Please wait while we redirect you to complete your payment.",
+            )}
         </p>
       </div>
     );
@@ -470,7 +518,10 @@ export function CheckoutContent() {
         <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
         <h2 className="text-2xl font-semibold mb-2">{String((checkoutCopy.empty as Record<string,string>)?.title ?? t(dictionary, "checkout.empty.title", "Your cart is empty"))}</h2>
         <p className="text-muted-foreground mb-4">
-          Add some products to continue with checkout
+          {String(
+            (checkoutCopy.empty as Record<string, string>)?.description ??
+              t(dictionary, "checkout.emptyCartHint", "Add some products to continue with checkout"),
+          )}
         </p>
         <Button asChild className="bg-primary hover:bg-primary/90">
           <a href={toLocalizedPath("/shop")}>{String((checkoutCopy.empty as Record<string,string>)?.cta ?? t(dictionary, "checkout.empty.cta", "Continue Shopping"))}</a>
@@ -527,7 +578,14 @@ export function CheckoutContent() {
                       {String(checkoutCopy.cod ?? t(dictionary, "checkout.cod", "Cash on Delivery (Pay Later)"))}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Pay when your order is delivered to your doorstep
+                      {String(
+                        checkoutCopy.codDescription ??
+                          t(
+                            dictionary,
+                            "checkout.codDescription",
+                            "Pay when your order is delivered to your doorstep",
+                          ),
+                      )}
                     </p>
                   </Label>
                 </div>
@@ -543,10 +601,17 @@ export function CheckoutContent() {
                   <Label htmlFor="stripe" className="cursor-pointer">
                     <div className="flex items-center gap-2 font-medium">
                       <CreditCard className="w-4 h-4" />
-                      Credit/Debit Card
+                      {String(checkoutCopy.card ?? t(dictionary, "checkout.card", "Credit / Debit Card"))}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Pay securely with your credit or debit card via Stripe
+                      {String(
+                        checkoutCopy.cardDescription ??
+                          t(
+                            dictionary,
+                            "checkout.cardDescription",
+                            "Pay securely with your credit or debit card via Stripe",
+                          ),
+                      )}
                     </p>
                   </Label>
                 </div>
@@ -596,7 +661,7 @@ export function CheckoutContent() {
                       </p>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded">
-                      ✓ Selected
+                      ✓ {String(checkoutCopy.addressSelected ?? t(dictionary, "checkout.addressSelected", "Selected"))}
                     </div>
                   </div>
                 </div>
@@ -636,7 +701,7 @@ export function CheckoutContent() {
                           ? urlFor(item.product.images[0]).url()
                           : "/placeholder.jpg"
                       }
-                      alt={item.product.name || "Product"}
+                      alt={item.product.name || t(dictionary, "ordersTrack.product", "Product")}
                       width={64}
                       height={64}
                       className="w-full h-full object-cover rounded"
@@ -645,7 +710,7 @@ export function CheckoutContent() {
                   <div className="flex-1">
                     <h4 className="font-medium">{item.product.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Qty: {item.quantity}
+                      {String(checkoutCopy.qty ?? t(dictionary, "checkout.qty", "Qty"))}: {item.quantity}
                     </p>
                     {/* Display selected options */}
                     <div className="mt-1 text-xs text-gray-500 space-x-2">
@@ -658,7 +723,7 @@ export function CheckoutContent() {
                       {item.selectedGrind && (
                         <span className="inline-flex items-center gap-1">
                           <Coffee className="w-3 h-3" />
-                          {item.selectedGrind.grindType.replace('-', ' ').toUpperCase()}
+                          {getGrindLabel(dictionary, item.selectedGrind.grindType)}
                         </span>
                       )}
                       {(urlPackaging || item.selectedPackaging) && (
@@ -674,8 +739,10 @@ export function CheckoutContent() {
                       <PriceFormatter amount={totalItemPrice} />
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      <PriceFormatter amount={itemPrice} /> each
-                      {packagingPrice > 0 && ` + $${packagingPrice} packaging`}
+                      <PriceFormatter amount={itemPrice} />{" "}
+                      {String(checkoutCopy.each ?? t(dictionary, "checkout.each", "each"))}
+                      {packagingPrice > 0 &&
+                        ` + $${packagingPrice} ${String(checkoutCopy.packagingExtra ?? t(dictionary, "checkout.packagingExtra", "packaging"))}`}
                     </p>
                   </div>
                 </div>
@@ -693,12 +760,17 @@ export function CheckoutContent() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
-              <span>Subtotal ({cart.length} items)</span>
+              <span>
+                {(String(
+                  checkoutCopy.subtotalWithCount ??
+                    t(dictionary, "checkout.subtotalWithCount", "Subtotal ({count} items)"),
+                )).replace("{count}", String(cart.length))}
+              </span>
               <PriceFormatter amount={grossSubtotal} />
             </div>
             {totalDiscount > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>Discount</span>
+                <span>{summary?.discount ?? "Discount"}</span>
                 <span>
                   -<PriceFormatter amount={totalDiscount} />
                 </span>
@@ -706,7 +778,12 @@ export function CheckoutContent() {
             )}
             {businessDiscount > 0 && (
               <div className="flex justify-between text-blue-600">
-                <span>Business Account Discount (2%)</span>
+                <span>
+                  {String(
+                    checkoutCopy.businessDiscount ??
+                      t(dictionary, "checkout.businessDiscount", "Business Account Discount (2%)"),
+                  )}
+                </span>
                 <span>
                   -<PriceFormatter amount={businessDiscount} />
                 </span>
@@ -718,27 +795,29 @@ export function CheckoutContent() {
               <div className="flex justify-between pt-2 border-t">
                 <div className="flex items-center gap-2">
                   <Box className="w-4 h-4 text-muted-foreground" />
-                  <span>Packaging</span>
+                  <span>{String(checkoutCopy.packaging ?? t(dictionary, "checkout.packaging", "Packaging"))}</span>
                 </div>
                 <PriceFormatter amount={totalPackagingFee} />
               </div>
             )}
             
             <div className="flex justify-between">
-              <span>Shipping</span>
+              <span>{summary?.shipping ?? "Shipping"}</span>
               {shipping === 0 ? (
-                <span className="text-green-600 font-medium">Free</span>
+                <span className="text-green-600 font-medium">
+                  {summary?.free ?? t(dictionary, "common.free", "Free")}
+                </span>
               ) : (
                 <PriceFormatter amount={shipping} />
               )}
             </div>
             <div className="flex justify-between">
-              <span>Tax</span>
+              <span>{summary?.tax ?? "Tax"}</span>
               <PriceFormatter amount={tax} />
             </div>
             <Separator />
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
+              <span>{summary?.total ?? "Total"}</span>
               <PriceFormatter amount={total} />
             </div>
           </CardContent>
@@ -754,7 +833,7 @@ export function CheckoutContent() {
             {isPlacingOrder && actionType === "pay" ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Processing...
+                {String(checkoutCopy.processing ?? t(dictionary, "checkout.processing", "Processing..."))}
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -775,7 +854,10 @@ export function CheckoutContent() {
             {isPlacingOrder && actionType === "order" ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Placing Order...
+                {String(
+                  checkoutCopy.placingOrder ??
+                    t(dictionary, "checkout.placingOrder", "Placing Order..."),
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -790,13 +872,37 @@ export function CheckoutContent() {
         <div className="text-center text-xs text-muted-foreground">
           {selectedPaymentMethod === PAYMENT_METHODS.STRIPE ? (
             <>
-              <p>🔒 Secure checkout powered by Stripe</p>
-              <p>Your payment information is encrypted and secure</p>
+              <p>
+                {String(
+                  checkoutCopy.stripeSecure ??
+                    t(dictionary, "checkout.stripeSecure", "🔒 Secure checkout powered by Stripe"),
+                )}
+              </p>
+              <p>
+                {String(
+                  checkoutCopy.stripeEncrypted ??
+                    t(
+                      dictionary,
+                      "checkout.stripeEncrypted",
+                      "Your payment information is encrypted and secure",
+                    ),
+                )}
+              </p>
             </>
           ) : (
             <>
-              <p>💵 Pay when your order arrives</p>
-              <p>Cash payment to delivery agent</p>
+              <p>
+                {String(
+                  checkoutCopy.codPayOnArrival ??
+                    t(dictionary, "checkout.codPayOnArrival", "💵 Pay when your order arrives"),
+                )}
+              </p>
+              <p>
+                {String(
+                  checkoutCopy.codCashToAgent ??
+                    t(dictionary, "checkout.codCashToAgent", "Cash payment to delivery agent"),
+                )}
+              </p>
             </>
           )}
         </div>
@@ -820,7 +926,10 @@ export function CheckoutContent() {
             )}
           >
             <VisuallyHidden.Root>
-              <DialogTitle>Select Payment Method</DialogTitle>
+              <DialogTitle>
+                {paymentModal?.title ??
+                  t(dictionary, "checkout.paymentModal.title", "Select Payment Method")}
+              </DialogTitle>
             </VisuallyHidden.Root>
             <div className="text-center space-y-4">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-shop_light_bg border-4 border-shop_orange/30">
@@ -828,10 +937,16 @@ export function CheckoutContent() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-shop_dark_green">
-                  Choose Payment Method
+                  {paymentModal?.heading ??
+                    t(dictionary, "checkout.paymentModal.heading", "Choose Payment Method")}
                 </h3>
                 <p className="text-light-color leading-relaxed">
-                  Select your preferred payment gateway to complete your order
+                  {paymentModal?.description ??
+                    t(
+                      dictionary,
+                      "checkout.paymentModal.description",
+                      "Select your preferred payment gateway to complete your order",
+                    )}
                 </p>
               </div>
             </div>
@@ -842,12 +957,13 @@ export function CheckoutContent() {
                 disabled={isPlacingOrder}
               >
                 <CreditCard className="w-5 h-5 mr-2" />
-                Pay with Stripe
+                {paymentModal?.payWithStripe ??
+                  t(dictionary, "checkout.paymentModal.payWithStripe", "Pay with Stripe")}
               </Button>
             </div>
             <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
               <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{t(dictionary, "common.close", "Close")}</span>
             </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </DialogPortal>

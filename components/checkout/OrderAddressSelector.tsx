@@ -3,6 +3,8 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { AddressSelectorSkeleton } from "@/components/cart/CartSkeleton";
+import { useDictionary } from "@/lib/dictionary-context";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 interface OrderAddress {
   _id: string;
@@ -32,6 +34,10 @@ export function OrderAddressSelector({
   onAddressSelect,
   isLoading = false,
 }: OrderAddressSelectorProps) {
+  const dictionary = useDictionary() as Dictionary;
+  const selector = (dictionary.checkout as Record<string, unknown>)
+    ?.addressSelector as Record<string, string> | undefined;
+
   if (isLoading) {
     return <AddressSelectorSkeleton />;
   }
@@ -40,10 +46,10 @@ export function OrderAddressSelector({
     return (
       <div className="text-center py-4">
         <p className="text-muted-foreground mb-2">
-          No previous addresses found
+          {selector?.noAddresses ?? "No previous addresses found"}
         </p>
         <p className="text-sm text-muted-foreground">
-          You can enter a new address during payment
+          {selector?.enterNew ?? "You can enter a new address during payment"}
         </p>
       </div>
     );
@@ -71,7 +77,7 @@ export function OrderAddressSelector({
                   {address.name}
                   {address.default && (
                     <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                      Most Recent
+                      {selector?.mostRecent ?? "Most Recent"}
                     </span>
                   )}
                 </div>

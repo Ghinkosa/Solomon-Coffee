@@ -2,7 +2,42 @@
   "wishlist": {
     "title": "My Wishlist",
     "subtitle": "Save your favorite coffees and brew gear for later",
-    "loginDetails": "Log in to save and view your favorite coffees. Don’t miss out on the lots you love."
+    "loginDetails": "Log in to save and view your favorite coffees. Don’t miss out on the lots you love.",
+    "removed": "Product removed from wishlist",
+    "cleared": "All products removed from wishlist",
+    "removeAria": "Remove from wishlist",
+    "inStock": "{count} in stock",
+    "outOfStock": "Out of stock",
+    "loadMore": "Load More Products",
+    "showLess": "Show Less",
+    "clearWishlist": "Clear Wishlist",
+    "empty": {
+      "title": "Your wishlist is empty",
+      "subtitle": "Save products you love for later",
+      "description": "Add items to your wishlist by clicking the heart icon on any product. You can easily move them to your cart when you're ready to purchase.",
+      "browseProducts": "Browse Products",
+      "shopByCategory": "Shop by Category"
+    },
+    "features": {
+      "saveFavorites": {
+        "title": "Save Favorites",
+        "description": "Keep track of products you love"
+      },
+      "easyShopping": {
+        "title": "Easy Shopping",
+        "description": "Quick add to cart from wishlist"
+      },
+      "stayUpdated": {
+        "title": "Stay Updated",
+        "description": "Never miss deals on saved items"
+      }
+    },
+    "clearModal": {
+      "title": "Clear Wishlist",
+      "description": "You're about to remove {count} products from your wishlist. This action cannot be undone.",
+      "keepProducts": "Keep Products",
+      "confirm": "Clear All Products"
+    }
   },
   "cart": {
     "title": "Cart",
@@ -53,10 +88,33 @@
     "clearModal": {
       "title": "Clear Cart?",
       "description": "Are you sure you want to remove all items from your cart? This action cannot be undone.",
-      "confirm": "Clear Cart"
+      "confirm": "Clear Cart",
+      "confirmYes": "Yes, Clear Cart"
     },
     "guestNote": "You're checking out as a guest. Sign in to save your address and track orders.",
-    "cleared": "Cart cleared successfully"
+    "guestCheckoutNote": "You can complete shipping details during guest checkout.",
+    "subtotalWithCount": "Subtotal ({count} items)",
+    "productImageAlt": "Product image",
+    "cleared": "Cart cleared successfully",
+    "errors": {
+      "emailNotFound": "Email not found. Please contact support.",
+      "loadUserData": "Failed to load user data",
+      "refreshAddresses": "Failed to refresh addresses"
+    },
+    "checkoutButton": {
+      "packagingFee": "Packaging Fee",
+      "packagingHint": "Premium packaging selected for your items",
+      "outOfStock": "Some items are out of stock. Please remove them to continue.",
+      "selectAddress": "Please select a shipping address to continue",
+      "selectAddressToast": "Please select a shipping address",
+      "redirecting": "Redirecting to Checkout...",
+      "proceedToCheckout": "Proceed to Checkout",
+      "placingOrder": "Placing Order...",
+      "placeOrder": "Place Order (Pay Later)",
+      "recommended": "✓ Recommended: Use \"Proceed to Checkout\" for secure payment",
+      "guestCodHint": "\"Place Order (Pay Later)\" takes you to checkout to complete shipping and pay on delivery",
+      "signedCodHint": "\"Place Order (Pay Later)\" places order directly with Cash on Delivery"
+    }
   },
   "common": {
     "home": "Home",
@@ -652,11 +710,17 @@
       "weight": "Select Weight",
       "grind": "Select Grind",
       "packaging": "Select Packaging",
-      "noOptions": "No options available"
+      "noOptions": "No options available for this product",
+      "noPackaging": "No packaging options available"
     },
+    "default": "Default",
+    "packagingExtra": "packaging",
+    "saveDiscount": "Save {discount}% on this item!",
     "stock": {
       "inStock": "In Stock",
-      "outOfStock": "Out of Stock"
+      "outOfStock": "Out of Stock",
+      "lowStock": "Only {count} left!",
+      "outOfStockShort": "Out of stock"
     },
     "addToCart": {
       "loading": "Loading...",
@@ -671,17 +735,40 @@
     "reviews": {
       "review": "review",
       "reviews": "reviews",
+      "noReviewsYet": "No reviews yet",
       "signInToReview": "Sign in to write a review"
     },
     "delivery": {
       "title": "Delivery & Return",
       "share": "Share",
+      "compareColor": "Compare color",
+      "askQuestion": "Ask a question",
       "freeDelivery": "Free Delivery",
-      "returnDelivery": "Return Delivery"
+      "returnDelivery": "Return Delivery",
+      "postalCodeHint": "Enter your Postal code for Delivery Availability.",
+      "checkNow": "Check now",
+      "returnDetails": "Free 30 days Delivery Returns.",
+      "details": "Details"
+    },
+    "trust": {
+      "securePayment": {
+        "title": "Secure Payment",
+        "description": "100% secure payment with SSL encryption"
+      },
+      "fastDelivery": {
+        "title": "Fast Delivery",
+        "description": "Free shipping on orders over $50"
+      },
+      "qualityPromise": {
+        "title": "Quality Promise",
+        "description": "Fast help for damaged, incorrect, or quality-related issues"
+      }
     },
     "related": {
       "title": "You Might Also Like",
-      "description": "Similar products from the same category"
+      "description": "Similar products from the same category",
+      "viewMore": "View More Products",
+      "productImage": "Product Image"
     },
     "meta": {
       "notFoundTitle": "Product Not Found",
@@ -708,9 +795,61 @@
     "payNow": "Pay Now",
     "placeOrder": "Place Order (Pay Later)",
     "processing": "Processing...",
+    "placingOrder": "Placing Order...",
+    "codDescription": "Pay when your order is delivered to your doorstep",
+    "cardDescription": "Pay securely with your credit or debit card via Stripe",
+    "addressSelected": "Selected",
+    "businessDiscount": "Business Account Discount (2%)",
+    "packaging": "Packaging",
+    "packagingExtra": "packaging",
+    "subtotalWithCount": "Subtotal ({count} items)",
+    "emptyCartHint": "Add some products to continue with checkout",
+    "redirecting": {
+      "title": "Processing your order...",
+      "description": "Please wait while we redirect you to complete your payment."
+    },
+    "toasts": {
+      "readyTitle": "Ready for Checkout! 🛒",
+      "readyDescription": "Complete your order by selecting a payment method below",
+      "addressLoadError": "Error loading address from cart",
+      "fixShipping": "Please fix your shipping details",
+      "selectAddress": "Please select a shipping address",
+      "completeGuest": "Please complete your guest checkout details"
+    },
+    "stripeSecure": "🔒 Secure checkout powered by Stripe",
+    "stripeEncrypted": "Your payment information is encrypted and secure",
+    "codPayOnArrival": "💵 Pay when your order arrives",
+    "codCashToAgent": "Cash payment to delivery agent",
+    "paymentModal": {
+      "title": "Select Payment Method",
+      "heading": "Choose Payment Method",
+      "description": "Select your preferred payment gateway to complete your order",
+      "payWithStripe": "Pay with Stripe"
+    },
+    "orderPayment": {
+      "orderNumber": "Order",
+      "customer": "Customer",
+      "orderDate": "Order Date",
+      "codShort": "Cash on Delivery",
+      "confirmCod": "Confirm COD Order",
+      "pay": "Pay",
+      "backToOrders": "Back to Orders",
+      "toasts": {
+        "paymentSessionFailed": "Failed to create payment session",
+        "paymentInitFailed": "Failed to initiate payment",
+        "codConfirmed": "Order confirmed with Cash on Delivery payment method",
+        "codFailed": "Failed to process COD payment"
+      }
+    },
+    "addressSelector": {
+      "noAddresses": "No previous addresses found",
+      "enterNew": "You can enter a new address during payment",
+      "mostRecent": "Most Recent"
+    },
     "guest": {
       "title": "Guest checkout",
       "description": "Complete your order without creating an account.",
+      "formDescription": "Enter your contact and shipping details to complete your order.",
       "fullName": "Full name",
       "email": "Email",
       "phone": "Phone",
@@ -718,7 +857,38 @@
       "city": "City",
       "state": "State",
       "zip": "ZIP code",
-      "selectState": "Select state"
+      "selectState": "Select state",
+      "placeholders": {
+        "fullName": "Jane Doe",
+        "email": "jane@example.com",
+        "phone": "(555) 555-5555",
+        "street": "123 Main St, Apt 4B",
+        "city": "Arlington",
+        "zip": "22204"
+      },
+      "validation": {
+        "nameRequired": "Full name is required",
+        "nameTooShort": "Enter your first and last name",
+        "nameTooLong": "Name must be 80 characters or fewer",
+        "nameInvalid": "Enter first and last name using letters only",
+        "emailRequired": "Email is required",
+        "emailTooLong": "Email must be 254 characters or fewer",
+        "emailInvalid": "Enter a valid email address",
+        "phoneRequired": "Phone number is required",
+        "phoneInvalid": "Enter a valid 10-digit US phone number",
+        "phoneGenericInvalid": "Enter a valid phone number",
+        "addressRequired": "Street address is required",
+        "addressTooShort": "Street address is too short",
+        "addressTooLong": "Street address must be 100 characters or fewer",
+        "addressNoNumber": "Include a street number in your address",
+        "addressInvalid": "Enter a valid street address",
+        "cityRequired": "City is required",
+        "cityInvalid": "Enter a valid city name",
+        "stateRequired": "State is required",
+        "stateInvalid": "Select a valid US state",
+        "zipRequired": "ZIP code is required",
+        "zipInvalid": "Enter a valid ZIP code (12345 or 12345-6789)"
+      }
     }
   },
   "breadcrumb": {
@@ -806,10 +976,22 @@
       "description": "We source, roast, and deliver premium coffee with exceptional service, practical brew education, and a deep focus on quality."
     },
     "stats": [
-      { "number": "10K+", "label": "Happy Customers" },
-      { "number": "500+", "label": "Coffee Products" },
-      { "number": "50+", "label": "Partner Producers" },
-      { "number": "99%", "label": "Satisfaction" }
+      {
+        "number": "10K+",
+        "label": "Happy Customers"
+      },
+      {
+        "number": "500+",
+        "label": "Coffee Products"
+      },
+      {
+        "number": "50+",
+        "label": "Partner Producers"
+      },
+      {
+        "number": "99%",
+        "label": "Satisfaction"
+      }
     ],
     "values": {
       "badge": "Our Values",
@@ -882,9 +1064,15 @@
       "paragraph2": "Your purchase helps provide screenings, treatment support, and care for families.",
       "closing": "Sheba Cup Coffee stands for great coffee with a purpose.",
       "tags": [
-        { "text": "Childhood Cancer Care" },
-        { "text": "Treatment Support" },
-        { "text": "Family Care" }
+        {
+          "text": "Childhood Cancer Care"
+        },
+        {
+          "text": "Treatment Support"
+        },
+        {
+          "text": "Family Care"
+        }
       ],
       "imageAlts": {
         "main": "Supporting childhood cancer care in Ethiopia",
@@ -907,7 +1095,11 @@
       "communityTitle": "Community Growth",
       "communityDescription": "Education & development programs",
       "quote": "Our goal reaches beyond coffee. Growth from our business supports education and development programs for women and children, helping build stronger communities for the next generation.",
-      "badges": ["30+ Years", "Birbirsa Farm", "Shakicha Farm"],
+      "badges": [
+        "30+ Years",
+        "Birbirsa Farm",
+        "Shakicha Farm"
+      ],
       "imageAlts": {
         "farm": "Birbirsa Coffee Farm - Ethiopian coffee farming",
         "practice": "Sustainable coffee farming practices",
@@ -1059,7 +1251,13 @@
         "The amount of mucilage retained after processing creates different honey varieties. Higher mucilage content creates fuller-bodied coffee with richer flavor profiles."
       ],
       "varietiesTitle": "Honey Varieties:",
-      "varieties": ["White Honey", "Yellow Honey", "Gold Honey", "Red Honey", "Black Honey"],
+      "varieties": [
+        "White Honey",
+        "Yellow Honey",
+        "Gold Honey",
+        "Red Honey",
+        "Black Honey"
+      ],
       "learnMore": "Learn More",
       "imageAlts": {
         "workflow": "Honey processing workflow",
@@ -1288,12 +1486,30 @@
       "description": "Browse by topic"
     },
     "categories": [
-      { "id": "all", "label": "All Questions" },
-      { "id": "shopping", "label": "Shopping" },
-      { "id": "payment", "label": "Payment" },
-      { "id": "shipping", "label": "Shipping" },
-      { "id": "returns", "label": "Quality Issues" },
-      { "id": "account", "label": "Account" }
+      {
+        "id": "all",
+        "label": "All Questions"
+      },
+      {
+        "id": "shopping",
+        "label": "Shopping"
+      },
+      {
+        "id": "payment",
+        "label": "Payment"
+      },
+      {
+        "id": "shipping",
+        "label": "Shipping"
+      },
+      {
+        "id": "returns",
+        "label": "Quality Issues"
+      },
+      {
+        "id": "account",
+        "label": "Account"
+      }
     ],
     "questions": [
       {
@@ -1608,11 +1824,26 @@
     "quickNav": {
       "title": "Quick Navigation",
       "links": [
-        { "title": "Orders & Purchases", "href": "#orders" },
-        { "title": "Payment Terms", "href": "#payment" },
-        { "title": "Shipping & Returns", "href": "#shipping" },
-        { "title": "Privacy & Data", "href": "#privacy" },
-        { "title": "Legal & Disputes", "href": "#legal" }
+        {
+          "title": "Orders & Purchases",
+          "href": "#orders"
+        },
+        {
+          "title": "Payment Terms",
+          "href": "#payment"
+        },
+        {
+          "title": "Shipping & Returns",
+          "href": "#shipping"
+        },
+        {
+          "title": "Privacy & Data",
+          "href": "#privacy"
+        },
+        {
+          "title": "Legal & Disputes",
+          "href": "#legal"
+        }
       ]
     },
     "sections": [

@@ -21,6 +21,9 @@ import {
   type ShippingAddressFields,
   validateShippingAddress,
 } from "@/lib/shipping-address-validation";
+import { useDictionary } from "@/lib/dictionary-context";
+import { translateGuestValidationError } from "@/lib/checkout-guest-validation-i18n";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 export type GuestCheckoutDetails = ShippingAddressFields;
 
@@ -51,12 +54,21 @@ export function GuestCheckoutForm({
   onChange,
   showErrors = false,
 }: GuestCheckoutFormProps) {
+  const dictionary = useDictionary() as Dictionary;
+  const guest = (dictionary.checkout as Record<string, unknown>)?.guest as
+    | Record<string, unknown>
+    | undefined;
+  const guestLabels = guest as Record<string, string> | undefined;
+  const placeholders = guest?.placeholders as Record<string, string> | undefined;
   const [touched, setTouched] = useState<
     Partial<Record<ShippingAddressField, boolean>>
   >({});
 
   const stateOptions = useMemo(() => getUsStateOptions(), []);
   const errors = useMemo(() => validateShippingAddress(value), [value]);
+
+  const getFieldError = (field: ShippingAddressField) =>
+    translateGuestValidationError(dictionary, errors[field]);
 
   const shouldShowError = (field: ShippingAddressField) =>
     Boolean(errors[field] && (showErrors || touched[field]));
@@ -75,33 +87,38 @@ export function GuestCheckoutForm({
   return (
     <div className="space-y-4 rounded-lg border p-4 bg-white">
       <div>
-        <h3 className="text-lg font-semibold">Guest checkout</h3>
+        <h3 className="text-lg font-semibold">
+          {guestLabels?.title ?? "Guest checkout"}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Enter your contact and shipping details to complete your order.
+          {String(guest?.formDescription ?? guestLabels?.description ??
+            "Enter your contact and shipping details to complete your order.")}
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="guest-name">Full name</Label>
+          <Label htmlFor="guest-name">
+            {guestLabels?.fullName ?? "Full name"}
+          </Label>
           <Input
             id="guest-name"
             value={value.name}
             onChange={(event) => updateField("name", event.target.value)}
             onBlur={() => handleBlur("name")}
             autoComplete="name"
-            placeholder="Jane Doe"
+            placeholder={placeholders?.fullName ?? "Jane Doe"}
             aria-invalid={shouldShowError("name")}
             aria-describedby={shouldShowError("name") ? "guest-name-error" : undefined}
             className={inputClassName("name")}
           />
           {shouldShowError("name") && (
-            <FieldError message={errors.name} id="guest-name-error" />
+            <FieldError message={getFieldError("name")} id="guest-name-error" />
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="guest-email">Email</Label>
+          <Label htmlFor="guest-email">{guestLabels?.email ?? "Email"}</Label>
           <Input
             id="guest-email"
             type="email"
@@ -109,18 +126,18 @@ export function GuestCheckoutForm({
             onChange={(event) => updateField("email", event.target.value)}
             onBlur={() => handleBlur("email")}
             autoComplete="email"
-            placeholder="jane@example.com"
+            placeholder={placeholders?.email ?? "jane@example.com"}
             aria-invalid={shouldShowError("email")}
             aria-describedby={shouldShowError("email") ? "guest-email-error" : undefined}
             className={inputClassName("email")}
           />
           {shouldShowError("email") && (
-            <FieldError message={errors.email} id="guest-email-error" />
+            <FieldError message={getFieldError("email")} id="guest-email-error" />
           )}
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="guest-phone">Phone</Label>
+          <Label htmlFor="guest-phone">{guestLabels?.phone ?? "Phone"}</Label>
           <Input
             id="guest-phone"
             type="tel"
@@ -131,25 +148,27 @@ export function GuestCheckoutForm({
             }
             onBlur={() => handleBlur("phone")}
             autoComplete="tel"
-            placeholder="(555) 555-5555"
+            placeholder={placeholders?.phone ?? "(555) 555-5555"}
             aria-invalid={shouldShowError("phone")}
             aria-describedby={shouldShowError("phone") ? "guest-phone-error" : undefined}
             className={inputClassName("phone")}
           />
           {shouldShowError("phone") && (
-            <FieldError message={errors.phone} id="guest-phone-error" />
+            <FieldError message={getFieldError("phone")} id="guest-phone-error" />
           )}
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="guest-address">Street address</Label>
+          <Label htmlFor="guest-address">
+            {guestLabels?.streetAddress ?? "Street address"}
+          </Label>
           <Input
             id="guest-address"
             value={value.address}
             onChange={(event) => updateField("address", event.target.value)}
             onBlur={() => handleBlur("address")}
             autoComplete="street-address"
-            placeholder="123 Main St, Apt 4B"
+            placeholder={placeholders?.street ?? "123 Main St, Apt 4B"}
             aria-invalid={shouldShowError("address")}
             aria-describedby={
               shouldShowError("address") ? "guest-address-error" : undefined
@@ -157,30 +176,30 @@ export function GuestCheckoutForm({
             className={inputClassName("address")}
           />
           {shouldShowError("address") && (
-            <FieldError message={errors.address} id="guest-address-error" />
+            <FieldError message={getFieldError("address")} id="guest-address-error" />
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="guest-city">City</Label>
+          <Label htmlFor="guest-city">{guestLabels?.city ?? "City"}</Label>
           <Input
             id="guest-city"
             value={value.city}
             onChange={(event) => updateField("city", event.target.value)}
             onBlur={() => handleBlur("city")}
             autoComplete="address-level2"
-            placeholder="Arlington"
+            placeholder={placeholders?.city ?? "Arlington"}
             aria-invalid={shouldShowError("city")}
             aria-describedby={shouldShowError("city") ? "guest-city-error" : undefined}
             className={inputClassName("city")}
           />
           {shouldShowError("city") && (
-            <FieldError message={errors.city} id="guest-city-error" />
+            <FieldError message={getFieldError("city")} id="guest-city-error" />
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="guest-state">State</Label>
+          <Label htmlFor="guest-state">{guestLabels?.state ?? "State"}</Label>
           <Select
             value={value.state}
             onValueChange={(stateValue) => {
@@ -193,7 +212,7 @@ export function GuestCheckoutForm({
               aria-invalid={shouldShowError("state")}
               className={inputClassName("state")}
             >
-              <SelectValue placeholder="Select state" />
+              <SelectValue placeholder={guestLabels?.selectState ?? "Select state"} />
             </SelectTrigger>
             <SelectContent className="max-h-72">
               {stateOptions.map((state) => (
@@ -203,11 +222,13 @@ export function GuestCheckoutForm({
               ))}
             </SelectContent>
           </Select>
-          {shouldShowError("state") && <FieldError message={errors.state} />}
+          {shouldShowError("state") && (
+            <FieldError message={getFieldError("state")} />
+          )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="guest-zip">ZIP code</Label>
+          <Label htmlFor="guest-zip">{guestLabels?.zip ?? "ZIP code"}</Label>
           <Input
             id="guest-zip"
             value={value.zip}
@@ -217,14 +238,14 @@ export function GuestCheckoutForm({
             onBlur={() => handleBlur("zip")}
             autoComplete="postal-code"
             inputMode="numeric"
-            placeholder="22204"
+            placeholder={placeholders?.zip ?? "22204"}
             maxLength={10}
             aria-invalid={shouldShowError("zip")}
             aria-describedby={shouldShowError("zip") ? "guest-zip-error" : undefined}
             className={inputClassName("zip")}
           />
           {shouldShowError("zip") && (
-            <FieldError message={errors.zip} id="guest-zip-error" />
+            <FieldError message={getFieldError("zip")} id="guest-zip-error" />
           )}
         </div>
       </div>
@@ -238,10 +259,11 @@ export function isGuestCheckoutComplete(details: GuestCheckoutDetails): boolean 
 
 export function getGuestCheckoutValidationMessage(
   details: GuestCheckoutDetails,
+  dictionary?: Dictionary | null,
 ): string | undefined {
   const errors = validateShippingAddress(details);
   const firstError = Object.values(errors)[0];
-  return firstError;
+  return translateGuestValidationError(dictionary, firstError);
 }
 
 export function guestDetailsToAddress(details: GuestCheckoutDetails) {

@@ -29,6 +29,10 @@ import {
   buildCheckoutPricingItems,
   calculateCheckoutTotals,
 } from "@/lib/checkout-pricing";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
+import type { Dictionary } from "@/lib/dictionary-context";
 
 interface WeightOption {
   weight: string;
@@ -143,6 +147,12 @@ export function ServerCartContent({
   onAddressesRefresh,
   isGuest = false,
 }: ServerCartContentProps) {
+  const dictionary = useDictionary() as Dictionary;
+  const cartCopy = (dictionary.cart ?? {}) as Record<string, unknown>;
+  const summary = (cartCopy.summary ?? {}) as Record<string, string>;
+  const actions = (cartCopy.actions ?? {}) as Record<string, string>;
+  const options = (cartCopy.options ?? {}) as Record<string, string>;
+  const clearModal = (cartCopy.clearModal ?? {}) as Record<string, string>;
   const toLocalizedPath = useLocalizedPath();
   const {
     items: cart,
@@ -187,7 +197,7 @@ export function ServerCartContent({
   const confirmResetCart = () => {
     resetCart();
     setShowClearModal(false);
-    toast.success("Cart cleared successfully");
+    toast.success(t(dictionary, "cart.cleared", "Cart cleared successfully"));
   };
 
   const getItemCurrentPrice = (item: any) => {
@@ -247,7 +257,7 @@ export function ServerCartContent({
                   <div className="relative w-24 h-24 flex-shrink-0">
                     <Image
                       src={item.product.images?.[0] ? urlFor(item.product.images[0]).url() : "/placeholder.jpg"}
-                      alt='Product image'
+                      alt={t(dictionary, "cart.productImageAlt", "Product image")}
                       fill
                       className="object-cover rounded-md"
                     />
@@ -276,19 +286,20 @@ export function ServerCartContent({
                       {item.selectedWeight && (
                         <span className="inline-flex items-center gap-1">
                           <Scale className="w-3 h-3" />
-                          Weight: {item.selectedWeight.weight}
+                          {options.weight ?? "Weight"}: {item.selectedWeight.weight}
                         </span>
                       )}
                       {item.selectedGrind && (
                         <span className="inline-flex items-center gap-1">
                           <Coffee className="w-3 h-3" />
-                          Grind: {item.selectedGrind.grindType.replace('-', ' ').toUpperCase()}
+                          {options.grind ?? "Grind"}:{" "}
+                          {getGrindLabel(dictionary, item.selectedGrind.grindType)}
                         </span>
                       )}
                       {item.selectedPackaging && (
                         <span className="inline-flex items-center gap-1">
                           <Package className="w-3 h-3" />
-                          Packaging: {item.selectedPackaging.title}
+                          {options.packaging ?? "Packaging"}: {item.selectedPackaging.title}
                         </span>
                       )}
                     </div>
@@ -343,11 +354,13 @@ export function ServerCartContent({
           
           <div className="flex justify-between items-center pt-4">
             <Button asChild variant="outline">
-              <Link href={toLocalizedPath("/shop")}>Continue Shopping</Link>
+              <Link href={toLocalizedPath("/shop")}>
+                {actions.continueShopping ?? "Continue Shopping"}
+              </Link>
             </Button>
             <Button variant="destructive" onClick={handleResetCart} className="gap-2">
               <Trash2 className="w-4 h-4" />
-              Clear Cart
+              {actions.clearCart ?? "Clear Cart"}
             </Button>
           </div>
         </div>
@@ -365,21 +378,32 @@ export function ServerCartContent({
             />
           ) : (
             <div className="border rounded-lg p-4 bg-muted/30 text-sm text-muted-foreground">
-              You can complete shipping details during guest checkout.
+              {t(
+                dictionary,
+                "cart.guestCheckoutNote",
+                "You can complete shipping details during guest checkout.",
+              )}
             </div>
           )}
 
           <div className="border rounded-lg p-6 bg-white shadow-sm">
-            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {summary.title ?? "Order Summary"}
+            </h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span>Subtotal ({cart.length} items)</span>
+                <span>
+                  {(t(dictionary, "cart.subtotalWithCount", "Subtotal ({count} items)")).replace(
+                    "{count}",
+                    String(cart.length),
+                  )}
+                </span>
                 <PriceFormatter amount={grossSubtotal} />
               </div>
               
               {totalDiscount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>Discount</span>
+                  <span>{summary.discount ?? "Discount"}</span>
                   <span>-<PriceFormatter amount={totalDiscount} /></span>
                 </div>
               )}
@@ -387,30 +411,32 @@ export function ServerCartContent({
               {totalPackagingFee > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="flex items-center gap-1">
-                    <Package className="w-3 h-3" /> Packaging Fee
+                    <Package className="w-3 h-3" /> {summary.packagingFee ?? "Packaging Fee"}
                   </span>
                   <PriceFormatter amount={totalPackagingFee} />
                 </div>
               )}
               
               <div className="flex justify-between text-sm">
-                <span>Shipping</span>
+                <span>{summary.shipping ?? "Shipping"}</span>
                 {shipping === 0 ? (
-                  <span className="text-green-600 font-medium">Free</span>
+                  <span className="text-green-600 font-medium">
+                    {summary.free ?? "Free"}
+                  </span>
                 ) : (
                   <PriceFormatter amount={shipping} />
                 )}
               </div>
               
               <div className="flex justify-between text-sm">
-                <span>Tax</span>
+                <span>{summary.tax ?? "Tax"}</span>
                 <PriceFormatter amount={tax} />
               </div>
               
               <Separator />
               
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
+                <span>{summary.total ?? "Total"}</span>
                 <PriceFormatter amount={finalTotal} />
               </div>
             </div>
@@ -434,25 +460,28 @@ export function ServerCartContent({
             className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg"
           >
             <VisuallyHidden.Root>
-              <DialogTitle>Clear Cart</DialogTitle>
+              <DialogTitle>{clearModal.title ?? "Clear Cart?"}</DialogTitle>
             </VisuallyHidden.Root>
             <div className="text-center space-y-4">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Clear Cart?</h3>
+                <h3 className="text-lg font-semibold">
+                  {clearModal.title ?? "Clear Cart?"}
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  This action cannot be undone. All items will be removed from your cart.
+                  {clearModal.description ??
+                    "Are you sure you want to remove all items from your cart? This action cannot be undone."}
                 </p>
               </div>
             </div>
             <div className="flex flex-col gap-3 pt-4">
               <Button onClick={confirmResetCart} variant="destructive" className="w-full">
-                Yes, Clear Cart
+                {clearModal.confirmYes ?? "Yes, Clear Cart"}
               </Button>
               <Button onClick={() => setShowClearModal(false)} variant="outline" className="w-full">
-                Cancel
+                {actions.cancel ?? "Cancel"}
               </Button>
             </div>
           </DialogPrimitive.Content>

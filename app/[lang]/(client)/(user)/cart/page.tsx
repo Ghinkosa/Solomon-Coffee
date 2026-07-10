@@ -9,11 +9,17 @@ import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 const CartPage = async ({ params }: { params: Promise<{ lang: string }> }) => {
   const { lang } = await params;
   const dictionary = await getDictionary(lang as Locale);
+  const bc = (dictionary?.breadcrumb ?? {}) as Record<string, string>;
   const user = await currentUser();
   return (
     <Container className="py-6">
       {/* Breadcrumb */}
-      <DynamicBreadcrumb />
+      <DynamicBreadcrumb
+        customItems={[
+          { label: bc.home ?? dictionary.common.home, href: "/" },
+          { label: bc.cart ?? dictionary.cart.title },
+        ]}
+      />
 
       {/* Cart Header */}
       <div className="flex items-center gap-2 mb-6">
