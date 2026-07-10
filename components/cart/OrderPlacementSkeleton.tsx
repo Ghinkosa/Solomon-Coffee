@@ -20,23 +20,23 @@ export function OrderPlacementSkeleton({
   const getStepDisplay = (stepName: string) => {
     const status = getStepStatus(stepName);
     return {
-      completed: "text-green-600 font-medium",
+      completed: "text-shop_light_green font-medium",
       active:
-        "text-green-600 font-medium flex items-center justify-center gap-2",
-      pending: "text-gray-400",
+        "text-shop_dark_green font-medium flex items-center justify-center gap-2",
+      pending: "text-light-color",
     }[status];
   };
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 bg-white border border-gray-200 rounded-xl shadow-lg mx-auto w-full">
+    <div className="p-4 sm:p-6 md:p-8 bg-white border border-shop_orange/20 rounded-xl shadow-lg mx-auto w-full">
       <div className="text-center space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="space-y-3 sm:space-y-4">
           <div className="flex justify-center">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+            <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-shop_orange/25 border-t-shop_light_green rounded-full animate-spin" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+            <h3 className="text-lg sm:text-xl font-bold text-shop_dark_green">
               {isCheckoutRedirect &&
                 step === "redirecting" &&
                 "Redirecting to Checkout"}
@@ -53,7 +53,7 @@ export function OrderPlacementSkeleton({
                 step === "redirecting" &&
                 "Order Confirmed!"}
             </h3>
-            <p className="text-xs sm:text-sm text-gray-600 max-w-xs sm:max-w-sm mx-auto px-2">
+            <p className="text-xs sm:text-sm text-light-color max-w-xs sm:max-w-sm mx-auto px-2">
               {isCheckoutRedirect &&
                 step === "redirecting" &&
                 "Taking you to the secure checkout page where you can complete your payment"}
@@ -90,10 +90,10 @@ export function OrderPlacementSkeleton({
                   <div
                     className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all duration-300 ${
                       status === "completed"
-                        ? "bg-green-600 text-white scale-110"
+                        ? "bg-shop_light_green text-white scale-110"
                         : status === "active"
-                        ? "bg-blue-600 text-white animate-pulse scale-110"
-                        : "bg-gray-200 text-gray-500"
+                        ? "bg-shop_dark_green text-white animate-pulse scale-110"
+                        : "bg-shop_light_bg text-light-color"
                     }`}
                   >
                     {status === "completed" ? "✓" : stepNum}
@@ -111,8 +111,8 @@ export function OrderPlacementSkeleton({
                             index + 1
                           ]
                         ) === "active"
-                          ? "bg-green-600"
-                          : "bg-gray-200"
+                          ? "bg-shop_light_green"
+                          : "bg-shop_light_bg"
                       }`}
                     />
                   )}
@@ -124,40 +124,40 @@ export function OrderPlacementSkeleton({
           <div className="space-y-3 sm:space-y-4 max-w-xs sm:max-w-sm mx-auto px-2">
             <div className={getStepDisplay("validating")}>
               {getStepStatus("validating") === "completed" && (
-                <span className="text-green-600 font-bold">✓</span>
+                <span className="text-shop_light_green font-bold">✓</span>
               )}
               {getStepStatus("validating") === "active" && (
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
               )}
               <span className="ml-2">Verifying Order Details</span>
             </div>
 
             <div className={getStepDisplay("creating")}>
               {getStepStatus("creating") === "completed" && (
-                <span className="text-green-600 font-bold">✓</span>
+                <span className="text-shop_light_green font-bold">✓</span>
               )}
               {getStepStatus("creating") === "active" && (
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
               )}
               <span className="ml-2">Processing Payment & Order</span>
             </div>
 
             <div className={getStepDisplay("emailing")}>
               {getStepStatus("emailing") === "completed" && (
-                <span className="text-green-600 font-bold">✓</span>
+                <span className="text-shop_light_green font-bold">✓</span>
               )}
               {getStepStatus("emailing") === "active" && (
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
               )}
               <span className="ml-2">Sending Email Confirmation</span>
             </div>
 
             <div className={getStepDisplay("redirecting")}>
               {getStepStatus("redirecting") === "completed" && (
-                <span className="text-green-600 font-bold">✓</span>
+                <span className="text-shop_light_green font-bold">✓</span>
               )}
               {getStepStatus("redirecting") === "active" && (
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
               )}
               <span className="ml-2">Redirecting to Confirmation</span>
             </div>
@@ -165,38 +165,38 @@ export function OrderPlacementSkeleton({
         </div>
 
         {/* Order Summary Skeleton */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4 border border-blue-100 mx-2 sm:mx-0">
-          <div className="text-base font-semibold text-gray-800 mb-4 text-center">
+        <div className="bg-gradient-to-r from-shop_light_bg to-shop_light_pink rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4 border border-shop_orange/20 mx-2 sm:mx-0">
+          <div className="text-base font-semibold text-shop_dark_green mb-4 text-center">
             📦 Order Summary
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <div className="h-4 bg-blue-200 rounded-full w-28 animate-pulse" />
-              <div className="h-4 bg-blue-200 rounded-full w-20 animate-pulse" />
+              <div className="h-4 bg-shop_orange/25 rounded-full w-28 animate-pulse" />
+              <div className="h-4 bg-shop_orange/25 rounded-full w-20 animate-pulse" />
             </div>
             <div className="flex justify-between items-center">
-              <div className="h-4 bg-blue-200 rounded-full w-24 animate-pulse" />
-              <div className="h-4 bg-blue-200 rounded-full w-16 animate-pulse" />
+              <div className="h-4 bg-shop_orange/25 rounded-full w-24 animate-pulse" />
+              <div className="h-4 bg-shop_orange/25 rounded-full w-16 animate-pulse" />
             </div>
             <div className="flex justify-between items-center">
-              <div className="h-4 bg-blue-200 rounded-full w-20 animate-pulse" />
-              <div className="h-4 bg-blue-200 rounded-full w-14 animate-pulse" />
+              <div className="h-4 bg-shop_orange/25 rounded-full w-20 animate-pulse" />
+              <div className="h-4 bg-shop_orange/25 rounded-full w-14 animate-pulse" />
             </div>
-            <div className="border-t border-blue-200 pt-3 mt-4">
+            <div className="border-t border-shop_orange/20 pt-3 mt-4">
               <div className="flex justify-between items-center">
-                <div className="h-5 bg-blue-300 rounded-full w-24 animate-pulse font-bold" />
-                <div className="h-5 bg-blue-300 rounded-full w-20 animate-pulse font-bold" />
+                <div className="h-5 bg-shop_light_green/30 rounded-full w-24 animate-pulse font-bold" />
+                <div className="h-5 bg-shop_light_green/30 rounded-full w-20 animate-pulse font-bold" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer Message */}
-        <div className="text-xs sm:text-sm text-gray-600 space-y-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 mx-2 sm:mx-0">
+        <div className="text-xs sm:text-sm text-shop_dark_green space-y-2 bg-shop_light_bg border border-shop_orange/25 rounded-lg p-3 sm:p-4 mx-2 sm:mx-0">
           <p className="flex items-center justify-center gap-2 font-medium">
             🔒 <span>Secure Processing</span>
           </p>
-          <p className="text-xs text-center text-gray-500">
+          <p className="text-xs text-center text-light-color">
             Please keep this window open until the process completes
           </p>
         </div>
@@ -211,7 +211,7 @@ export function OrderPlacementOverlay({
 }: OrderPlacementSkeletonProps) {
   return (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 md:p-8"
+      className="fixed inset-0 bg-shop_dark_green/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 md:p-8"
       style={{ zIndex: 9999 }}
     >
       <div className="w-full max-w-md max-h-[90vh] sm:max-w-lg animate-in fade-in-0 zoom-in-95 duration-300 overflow-y-auto">

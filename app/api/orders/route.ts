@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { getMyOrders } from "@/sanity/helpers";
-import { getSanityAuthErrorMessage, writeClient } from "@/sanity/lib/client";
+import { getSanityAuthErrorMessage, readClient, writeClient } from "@/sanity/lib/client";
 import {
   ORDER_STATUSES,
   PAYMENT_STATUSES,
   PAYMENT_METHODS,
 } from "@/lib/orderStatus";
+import { validateOrderPricing } from "@/lib/validate-order";
+import {
+  isShippingAddressValid,
+  normalizeShippingAddress,
+  validateShippingAddress,
+} from "@/lib/shipping-address-validation";
 import crypto from "crypto";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 
@@ -55,13 +61,9 @@ export async function GET() {
 
 export const POST = async (request: NextRequest) => {
   try {
-    // Check authentication
     const { userId } = await auth();
     const user = await currentUser();
-
-    if (!userId || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const isGuest = !userId || !user;
 
     const reqBody = await request.json();
     const {
@@ -89,6 +91,39 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
+    if (isGuest) {
+      if (!shippingAddress.email || !shippingAddress.name) {
+        return NextResponse.json(
+          { error: "Guest name and email are required" },
+          { status: 400 },
+        );
+      }
+
+      const guestAddress = normalizeShippingAddress({
+        name: shippingAddress.name,
+        email: shippingAddress.email,
+        phone: shippingAddress.phone || "",
+        address: shippingAddress.address,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zip: shippingAddress.zip,
+      });
+
+      if (!isShippingAddressValid(guestAddress)) {
+        const errors = validateShippingAddress(guestAddress);
+        const firstError = Object.values(errors)[0] || "Invalid shipping address";
+        return NextResponse.json({ error: firstError }, { status: 400 });
+      }
+
+      shippingAddress.name = guestAddress.name;
+      shippingAddress.email = guestAddress.email;
+      shippingAddress.phone = guestAddress.phone;
+      shippingAddress.address = guestAddress.address;
+      shippingAddress.city = guestAddress.city;
+      shippingAddress.state = guestAddress.state;
+      shippingAddress.zip = guestAddress.zip;
+    }
+
     if (
       !paymentMethod ||
       !Object.values(PAYMENT_METHODS).includes(paymentMethod)
@@ -99,26 +134,66 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
+    const userEmail = isGuest
+      ? shippingAddress.email
+      : user?.emailAddresses[0]?.emailAddress;
+    const userName = isGuest
+      ? shippingAddress.name
+      : `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || "User";
+    const userPhone =
+      shippingAddress.phone ||
+      user?.phoneNumbers?.[0]?.phoneNumber ||
+      "";
+
+    let businessDiscountRate = 0;
+    if (!isGuest && userEmail) {
+      const profile = await readClient.fetch<{
+        isBusiness?: boolean;
+        businessStatus?: string;
+      }>(
+        `*[_type == "userType" && email == $email][0]{ isBusiness, businessStatus }`,
+        { email: userEmail },
+      );
+
+      if (profile?.isBusiness && profile.businessStatus === "active") {
+        businessDiscountRate = 0.02;
+      }
+    }
+
+    const pricingValidation = await validateOrderPricing({
+      items,
+      totalAmount,
+      subtotal,
+      shipping,
+      tax,
+      packagingFee,
+      businessDiscountRate,
+    });
+
+    if (!pricingValidation.valid) {
+      return NextResponse.json(
+        { error: pricingValidation.error },
+        { status: 400 },
+      );
+    }
+
+    const calculated = pricingValidation.calculated;
+
     // Generate order number
     const orderNumber = `ORDER-${Date.now()}-${Math.random()
       .toString(36)
       .substring(2, 11)
       .toUpperCase()}`;
 
-    const userEmail = user.emailAddresses[0]?.emailAddress;
-    const userName =
-      `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
-    const userPhone =
-      user.phoneNumbers?.[0]?.phoneNumber || shippingAddress.phone || "";
-
     // Create order object with full support for weight, grind, and packaging
     const orderData = {
       _type: "order" as const,
       orderNumber,
+      isGuest,
       customerName: userName,
       email: userEmail,
       phone: userPhone,
-      clerkUserId: userId,
+      ...(isGuest ? {} : { clerkUserId: userId }),
       products: items.map((item: CartItem) => {
         const productItem: any = {
           _key: crypto.randomUUID(),
@@ -166,10 +241,10 @@ export const POST = async (request: NextRequest) => {
         
         return productItem;
       }),
-      totalPrice: totalAmount,
+      totalPrice: calculated.total,
       currency: "USD",
-      amountDiscount: 0,
-      packagingFee: packagingFee || 0,
+      amountDiscount: calculated.productDiscount + calculated.businessDiscount,
+      packagingFee: calculated.packagingFee,
       address: {
         _type: "object",
         name: shippingAddress.name,
@@ -185,9 +260,9 @@ export const POST = async (request: NextRequest) => {
         paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY
           ? PAYMENT_STATUSES.PENDING
           : PAYMENT_STATUSES.PENDING,
-      subtotal: subtotal || 0,
-      shipping: shipping || 0,
-      tax: tax || 0,
+      subtotal: calculated.subtotal,
+      shipping: calculated.shipping,
+      tax: calculated.tax,
       ...(paymentMethod === PAYMENT_METHODS.STRIPE && {
         stripeCustomerId: "",
         stripePaymentIntentId: "",
@@ -221,15 +296,15 @@ export const POST = async (request: NextRequest) => {
           eventParams: {
             orderId: createdOrder._id,
             orderNumber: createdOrder.orderNumber,
-            amount: totalAmount,
+            amount: calculated.total,
             status: createdOrder.status,
-            userId: userId,
+            userId: userId || "guest",
             paymentMethod: paymentMethod,
             itemCount: items.length,
-            subtotal: subtotal,
-            shipping: shipping,
-            tax: tax,
-            packagingFee: packagingFee,
+            subtotal: calculated.subtotal,
+            shipping: calculated.shipping,
+            tax: calculated.tax,
+            packagingFee: calculated.packagingFee,
             customerEmail: userEmail,
             products: items.map((item: CartItem) => ({
               productId: item.product._id,
@@ -254,7 +329,7 @@ export const POST = async (request: NextRequest) => {
           eventName: "purchase",
           eventParams: {
             orderId: createdOrder._id,
-            value: totalAmount,
+            value: calculated.total,
             currency: "USD",
             items: items.map((item: CartItem) => ({
               productId: item.product._id,
@@ -268,7 +343,7 @@ export const POST = async (request: NextRequest) => {
               packaging: item.packaging?.title || null,
               packagingPrice: item.packaging?.price || 0,
             })),
-            userId: userId,
+            userId: userId || "guest",
           },
         }),
         signal: AbortSignal.timeout(5000),
@@ -281,19 +356,20 @@ export const POST = async (request: NextRequest) => {
       console.error("Failed to initiate analytics tracking:", analyticsError);
     }
 
-    // Send order confirmation notification
-    try {
-      await sendOrderStatusNotification({
-        clerkUserId: userId,
-        orderNumber: createdOrder.orderNumber,
-        orderId: createdOrder._id,
-        status: ORDER_STATUSES.PENDING,
-      });
-    } catch (notificationError) {
-      console.error(
-        "Failed to send order confirmation notification:",
-        notificationError,
-      );
+    if (!isGuest && userId) {
+      try {
+        await sendOrderStatusNotification({
+          clerkUserId: userId,
+          orderNumber: createdOrder.orderNumber,
+          orderId: createdOrder._id,
+          status: ORDER_STATUSES.PENDING,
+        });
+      } catch (notificationError) {
+        console.error(
+          "Failed to send order confirmation notification:",
+          notificationError,
+        );
+      }
     }
 
     return NextResponse.json({
@@ -305,6 +381,7 @@ export const POST = async (request: NextRequest) => {
         paymentMethod: createdOrder.paymentMethod,
         totalPrice: createdOrder.totalPrice,
         currency: createdOrder.currency,
+        isGuest,
       },
       message: "Order created successfully",
     });

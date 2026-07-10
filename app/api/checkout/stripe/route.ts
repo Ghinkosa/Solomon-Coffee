@@ -15,7 +15,8 @@ export const POST = async (request: NextRequest) => {
       shippingAddress, 
       orderAmount,
       shipping,
-      tax
+      tax,
+      isGuest,
     } = reqBody;
 
     // Validate required fields
@@ -103,12 +104,13 @@ export const POST = async (request: NextRequest) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}&orderNumber=${orderNumber}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/user/orders/${orderId}?cancelled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}&orderNumber=${orderNumber}${isGuest ? "&guest=true" : ""}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout?cancelled=true`,
       metadata: {
         orderId: String(orderId),
         orderNumber: String(orderNumber || ""),
         email: String(email || ""),
+        isGuest: String(reqBody.isGuest || false),
       },
       customer_email: email,
     });

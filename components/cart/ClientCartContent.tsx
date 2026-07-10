@@ -103,10 +103,15 @@ export function ClientCartContent() {
   };
 
   useEffect(() => {
+    if (!isLoaded) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     fetchUserData();
-  }, [user, fetchUserData]);
+  }, [user, isLoaded, fetchUserData]);
 
-  if (!isLoaded || loading) return <CartSkeleton />;
+  if (!isLoaded || (user && loading)) return <CartSkeleton />;
 
   if (error) {
     return (
@@ -124,12 +129,12 @@ export function ClientCartContent() {
 
   if (!user) {
     return (
-      <div className="text-center py-20 border rounded-lg bg-gray-50">
-        <p className="text-muted-foreground">Please sign in to view your cart.</p>
-        <Link href={toLocalizedPath("/sign-in")} className="mt-4 inline-block">
-           <Button>Sign In</Button>
-        </Link>
-      </div>
+      <ServerCartContent
+        userEmail=""
+        userId="guest"
+        userAddresses={[]}
+        isGuest
+      />
     );
   }
 

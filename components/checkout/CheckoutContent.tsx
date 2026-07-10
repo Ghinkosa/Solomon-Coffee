@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,13 @@ import { urlFor } from "@/sanity/lib/image";
 import { toast } from "sonner";
 import { PAYMENT_METHODS, PaymentMethod } from "@/lib/orderStatus";
 import { OrderAddressSelector } from "@/components/checkout/OrderAddressSelector";
+import {
+  GuestCheckoutForm,
+  getGuestCheckoutValidationMessage,
+  guestDetailsToAddress,
+  isGuestCheckoutComplete,
+  type GuestCheckoutDetails,
+} from "@/components/checkout/GuestCheckoutForm";
 import { useOrderPlacement } from "@/hooks/useOrderPlacement";
 import { CheckoutSkeleton } from "@/components/checkout/CheckoutSkeleton";
 import { OrderPlacementOverlay } from "@/components/cart/OrderPlacementSkeleton";
@@ -40,6 +47,11 @@ import {
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import {
+  buildCheckoutPricingItems,
+  calculateCheckoutTotals,
+} from "@/lib/checkout-pricing";
 
 interface OrderAddress {
   _id: string;
@@ -65,23 +77,46 @@ const getItemCurrentPrice = (item: CartItem): number => {
   return defaultWeight?.price || item.product.price || 0;
 };
 
-// Helper to get packaging fee
-const getItemPackagingFee = (item: CartItem): number => {
-  return item.selectedPackaging?.price || 0;
+type CheckoutSelection = {
+  productId: string;
+  weight: WeightOption | null;
+  grind: GrindOption | null;
+  packaging: PackagingOption | null;
 };
+
+function resolveCheckoutLine(
+  item: CartItem,
+  selectionsData: CheckoutSelection[],
+) {
+  const selection = selectionsData.find(
+    (entry) => entry.productId === item.product._id,
+  );
+  const weight = item.selectedWeight || selection?.weight;
+  const packaging = item.selectedPackaging || selection?.packaging;
+
+  return {
+    product: item.product,
+    quantity: item.quantity,
+    unitPrice: weight?.price ?? getItemCurrentPrice(item),
+    packagingPrice: packaging?.price ?? 0,
+  };
+}
 
 export function CheckoutContent() {
   const { user, isLoaded } = useUser();
   const searchParams = useSearchParams();
   const {
     items: cart,
-    resetCart,
-    getSubTotalPrice,
-    getTotalDiscount,
+    openAuthSidebar,
   } = useCartStore();
   const toLocalizedPath = useLocalizedPath();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
-    user: user!,
+    user: user
+      ? {
+          id: user.id,
+          emailAddresses: user.emailAddresses,
+        }
+      : null,
   });
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>(PAYMENT_METHODS.STRIPE);
@@ -96,7 +131,18 @@ export function CheckoutContent() {
   const [userProfile, setUserProfile] = useState<{
     isBusiness: boolean;
     isActive: boolean;
+    businessStatus?: string;
   } | null>(null);
+  const [guestDetails, setGuestDetails] = useState<GuestCheckoutDetails>({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+  });
+  const [showGuestFormErrors, setShowGuestFormErrors] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectionsData, setSelectionsData] = useState<Array<{
     productId: string;
@@ -121,33 +167,36 @@ export function CheckoutContent() {
     }
   }, [searchParams]);
 
-  // Calculate pricing with weight and packaging
-  const grossSubtotal = cart.reduce((sum, item) => {
-    const itemPrice = getItemCurrentPrice(item);
-    return sum + itemPrice * item.quantity;
-  }, 0);
-  
-  const totalDiscount = getTotalDiscount();
+  useEffect(() => {
+    if (searchParams.get("intent") === "cod") {
+      setSelectedPaymentMethod(PAYMENT_METHODS.CASH_ON_DELIVERY);
+    }
+  }, [searchParams]);
+
+  const checkoutTotals = useMemo(() => {
+    const lines = cart.map((item) => resolveCheckoutLine(item, selectionsData));
+
+    const businessDiscountRate =
+      userProfile?.isBusiness && userProfile.businessStatus === "active"
+        ? 0.02
+        : 0;
+
+    return calculateCheckoutTotals({
+      items: buildCheckoutPricingItems(lines),
+      businessDiscountRate,
+    });
+  }, [cart, selectionsData, userProfile]);
+
+  const grossSubtotal = checkoutTotals.subtotal;
+  const totalDiscount = checkoutTotals.productDiscount;
   const currentSubtotal = grossSubtotal - totalDiscount;
-
-  // Calculate total packaging fee
-  const totalPackagingFee = cart.reduce((sum, item) => {
-    // First try from URL selections, then from cart item
-    const urlPackaging = selectionsData.find(s => s.productId === item.product._id)?.packaging;
-    const packagingPrice = urlPackaging?.price || item.selectedPackaging?.price || 0;
-    return sum + packagingPrice * item.quantity;
-  }, 0);
-
-  // Business account discount (2% additional discount)
-  const businessDiscount = userProfile?.isBusiness ? currentSubtotal * 0.02 : 0;
-  const subtotalAfterBusinessDiscount = currentSubtotal - businessDiscount;
-
-  // Add packaging price
-  const subtotalWithPackaging = subtotalAfterBusinessDiscount + totalPackagingFee;
-
-  const shipping = subtotalWithPackaging > 100 ? 0 : 10;
-  const tax = subtotalWithPackaging * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
-  const total = subtotalWithPackaging + shipping + tax;
+  const businessDiscount = checkoutTotals.businessDiscount;
+  const totalPackagingFee = checkoutTotals.packagingFee;
+  const subtotalWithPackaging =
+    currentSubtotal - businessDiscount + totalPackagingFee;
+  const shipping = checkoutTotals.shipping;
+  const tax = checkoutTotals.tax;
+  const total = checkoutTotals.total;
 
   console.log("📍 CheckoutContent - Calculations:", {
     grossSubtotal,
@@ -170,10 +219,11 @@ export function CheckoutContent() {
         const response = await fetch("/api/user/status");
         if (response.ok) {
           const data = await response.json();
-          if (data.user) {
+          if (data.userProfile) {
             setUserProfile({
-              isBusiness: data.user.isBusiness || false,
-              isActive: data.user.isActive || false,
+              isBusiness: data.userProfile.isBusiness || false,
+              isActive: data.userProfile.isActive || false,
+              businessStatus: data.userProfile.businessStatus || "none",
             });
           }
         }
@@ -220,6 +270,8 @@ export function CheckoutContent() {
 
     if (isLoaded && user) {
       fetchAddresses();
+    } else if (isLoaded && !user) {
+      setIsLoadingAddresses(false);
     }
   }, [isLoaded, user]);
 
@@ -267,9 +319,43 @@ export function CheckoutContent() {
     }
   }, [cart, hasInitialCart, isLoaded]);
 
+  const getCheckoutAddress = () => {
+    if (user) {
+      return selectedAddress;
+    }
+
+    if (!isGuestCheckoutComplete(guestDetails)) {
+      return null;
+    }
+
+    return guestDetailsToAddress(guestDetails);
+  };
+
+  const ensureGuestCheckoutIsValid = () => {
+    if (user) return true;
+
+    setShowGuestFormErrors(true);
+    const validationMessage = getGuestCheckoutValidationMessage(guestDetails);
+    if (validationMessage) {
+      toast.error("Please fix your shipping details", {
+        description: validationMessage,
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handlePayNowClick = () => {
-    if (!selectedAddress) {
-      toast.error("Please select a shipping address");
+    if (!ensureGuestCheckoutIsValid()) return;
+
+    const checkoutAddress = getCheckoutAddress();
+    if (!checkoutAddress) {
+      toast.error(
+        user
+          ? "Please select a shipping address"
+          : "Please complete your guest checkout details",
+      );
       return;
     }
     setShowPaymentModal(true);
@@ -284,8 +370,15 @@ export function CheckoutContent() {
     action: "pay" | "order",
     paymentGateway?: "stripe"
   ) => {
-    if (!selectedAddress) {
-      toast.error("Please select a shipping address");
+    if (!ensureGuestCheckoutIsValid()) return;
+
+    const checkoutAddress = getCheckoutAddress();
+    if (!checkoutAddress) {
+      toast.error(
+        user
+          ? "Please select a shipping address"
+          : "Please complete your guest checkout details",
+      );
       return;
     }
 
@@ -305,7 +398,7 @@ export function CheckoutContent() {
     }));
 
     const result = await placeOrder(
-      selectedAddress,
+      checkoutAddress,
       paymentMethodToUse,
       currentSubtotal,           // subtotal (without packaging)
       totalPackagingFee,         // packagingFee
@@ -318,16 +411,26 @@ export function CheckoutContent() {
 
     if (result?.success && result.redirectTo) {
       setIsRedirecting(true);
+      if (result.orderNumber) {
+        sessionStorage.setItem(
+          action === "pay" && result.isStripeRedirect
+            ? "pendingCheckoutOrder"
+            : "completedOrder",
+          result.orderNumber,
+        );
+        if (!user && checkoutAddress.email) {
+          sessionStorage.setItem("guestOrderEmail", checkoutAddress.email);
+        }
+      }
+
       if (action === "pay" && result.isStripeRedirect) {
-        resetCart();
         window.location.href = result.redirectTo;
       } else {
         setTimeout(
           () => {
-            resetCart();
             window.location.href = result.redirectTo;
           },
-          action === "order" ? 1500 : 500
+          action === "order" ? 1500 : 500,
         );
       }
     }
@@ -335,25 +438,17 @@ export function CheckoutContent() {
     setActionType(null);
   };
 
+  const checkoutAddressReady = Boolean(getCheckoutAddress());
+
   if (!isLoaded) {
     return <CheckoutSkeleton />;
-  }
-
-  if (!user) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-muted-foreground">
-          Please sign in to proceed with checkout.
-        </p>
-      </div>
-    );
   }
 
   if (isRedirecting) {
     return (
       <div className="text-center py-10">
-        <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-primary" />
-        <h2 className="text-xl font-semibold mb-2">Processing your order...</h2>
+        <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-shop_light_green" />
+        <h2 className="text-xl font-semibold mb-2 text-shop_dark_green">Processing your order...</h2>
         <p className="text-muted-foreground">
           Please wait while we redirect you to complete your payment.
         </p>
@@ -384,6 +479,21 @@ export function CheckoutContent() {
     <div className="grid lg:grid-cols-3 gap-8">
       {/* Left Column */}
       <div className="lg:col-span-2 space-y-6">
+        {!user && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Already have an account? Sign in for faster checkout and order history.
+                </p>
+                <Button variant="outline" onClick={() => openAuthSidebar("signIn")}>
+                  Sign in
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Payment Method */}
         <Card>
           <CardHeader>
@@ -450,7 +560,13 @@ export function CheckoutContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoadingAddresses ? (
+            {!user ? (
+              <GuestCheckoutForm
+                value={guestDetails}
+                onChange={setGuestDetails}
+                showErrors={showGuestFormErrors}
+              />
+            ) : isLoadingAddresses ? (
               <div className="space-y-3">
                 <div className="flex items-start gap-3 p-4 border rounded-lg">
                   <div className="w-4 h-4 bg-gray-200 rounded-full animate-pulse mt-1"></div>
@@ -627,8 +743,8 @@ export function CheckoutContent() {
         <div className="space-y-3">
           <Button
             onClick={handlePayNowClick}
-            disabled={isPlacingOrder || !selectedAddress || cart.length === 0}
-            className="w-full h-12 text-lg font-semibold"
+            disabled={isPlacingOrder || !checkoutAddressReady || cart.length === 0}
+            className="w-full h-12 text-lg font-semibold bg-shop_dark_green hover:bg-shop_light_green text-white shadow-md hover:shadow-shop_orange/20"
             size="lg"
           >
             {isPlacingOrder && actionType === "pay" ? (
@@ -647,9 +763,9 @@ export function CheckoutContent() {
 
           <Button
             onClick={() => handlePlaceOrder("order")}
-            disabled={isPlacingOrder || !selectedAddress || cart.length === 0}
+            disabled={isPlacingOrder || !checkoutAddressReady || cart.length === 0}
             variant="outline"
-            className="w-full h-12 text-lg font-semibold"
+            className="w-full h-12 text-lg font-semibold border-shop_dark_green text-shop_dark_green hover:bg-shop_light_bg"
             size="lg"
           >
             {isPlacingOrder && actionType === "order" ? (
@@ -703,14 +819,14 @@ export function CheckoutContent() {
               <DialogTitle>Select Payment Method</DialogTitle>
             </VisuallyHidden.Root>
             <div className="text-center space-y-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 border-4 border-blue-100">
-                <CreditCard className="h-8 w-8 text-blue-600" />
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-shop_light_bg border-4 border-shop_orange/30">
+                <CreditCard className="h-8 w-8 text-shop_light_green" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-bold text-gray-900">
+                <h3 className="text-xl font-bold text-shop_dark_green">
                   Choose Payment Method
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-light-color leading-relaxed">
                   Select your preferred payment gateway to complete your order
                 </p>
               </div>
@@ -718,7 +834,7 @@ export function CheckoutContent() {
             <div className="flex flex-col gap-3 pt-6">
               <Button
                 onClick={() => handlePaymentMethodSelect("stripe")}
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 font-semibold shadow-lg hover:shadow-blue-200"
+                className="w-full h-12 bg-shop_dark_green hover:bg-shop_light_green text-white font-semibold shadow-md hover:shadow-shop_orange/20 transition-colors"
                 disabled={isPlacingOrder}
               >
                 <CreditCard className="w-5 h-5 mr-2" />

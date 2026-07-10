@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
+import { requireAdminApi, isAdminApiError } from "@/lib/requireAdminApi";
 import { client } from "@/sanity/lib/client";
 
 export async function GET() {
   try {
+    const admin = await requireAdminApi();
+    if (isAdminApiError(admin)) {
+      return admin;
+    }
+
     // Fetch users with pending premium requests
     const premiumRequests = await client.fetch(`
       *[_type == "userType" && premiumStatus == "pending"] {

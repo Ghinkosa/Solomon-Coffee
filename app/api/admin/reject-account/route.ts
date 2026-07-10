@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminApi, isAdminApiError } from "@/lib/requireAdminApi";
 import { client } from "@/sanity/lib/client";
 import { backendClient } from "@/sanity/lib/backendClient";
 
 export async function POST(request: NextRequest) {
   try {
+    const admin = await requireAdminApi();
+    if (isAdminApiError(admin)) {
+      return admin;
+    }
+
     const body = await request.json();
     const { userId, type, reason } = body;
 

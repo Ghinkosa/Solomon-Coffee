@@ -44,6 +44,7 @@ interface Address {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
   address: string;
   city: string;
   state: string;
@@ -179,18 +180,12 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         return itemData;
       });
 
-      // Calculate products total with weight prices
-      const productsTotal = itemsWithSelections.reduce((sum, item) => {
-        const productPrice = item.product.price * item.quantity;
-        return sum + productPrice;
-      }, 0);
-
       const orderData = {
         items: itemsWithSelections,
         shippingAddress: selectedAddress,
         paymentMethod: selectedPaymentMethod,
         totalAmount: total,
-        subtotal: productsTotal,
+        subtotal,
         packagingFee,
         shipping,
         tax,
@@ -213,12 +208,17 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
       const orderId = orderResult.order._id;
       const orderNumber = orderResult.order.orderNumber;
 
+      resetCart();
+
       setOrderPlacementState(true, "emailing");
 
       // ✅ Prepare Email Data with ALL selections (Weight, Grind, Packaging)
       const emailData: EmailOrderData = {
         customerName: selectedAddress.name || "Customer",
-        customerEmail: user?.emailAddresses[0]?.emailAddress || "",
+        customerEmail:
+          selectedAddress.email ||
+          user?.emailAddresses[0]?.emailAddress ||
+          "",
         orderId: orderNumber,
         orderDate: new Date().toLocaleDateString(),
         items: cartSnapshot.map((item) => {
@@ -281,13 +281,16 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
               orderId,
               orderNumber,
               items: itemsWithSelections,
-              email: user?.emailAddresses[0]?.emailAddress,
+              email:
+                selectedAddress.email ||
+                user?.emailAddresses[0]?.emailAddress,
               shippingAddress: selectedAddress,
               orderAmount: total,
               subtotal: subtotal,
               packagingFee,
               shipping,
               tax,
+              isGuest: !user,
             }),
           });
 
@@ -310,6 +313,9 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           orderNumber: orderNumber,
           payment_method: 'cod'
         });
+        if (!user && selectedAddress.email) {
+          params.set("guest", "true");
+        }
 
         return {
           success: true,

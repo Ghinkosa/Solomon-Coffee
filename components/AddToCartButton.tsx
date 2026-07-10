@@ -14,6 +14,7 @@ interface Props {
   product: Product;
   className?: string;
   theme?: "default" | "onDark";
+  compact?: boolean;
   selectedWeight?: WeightOption;
   selectedGrind?: GrindOption;
   selectedPackaging?: PackagingOption;
@@ -48,12 +49,13 @@ const AddToCartButton = memo(({
   product, 
   className, 
   theme = "default",
+  compact = false,
   selectedWeight,
   selectedGrind,
   selectedPackaging,
 }: Props) => {
   const isOnDark = theme === "onDark";
-  const { addItem, getItemCount } = useCartStore();
+  const { addItem, getItemCount, openCartDrawer } = useCartStore();
   const [isClient, setIsClient] = useState(false);
 
   // Get effective selections (use passed values or fallback to defaults)
@@ -79,20 +81,15 @@ const AddToCartButton = memo(({
 
   const handleAddToCart = useCallback(() => {
     if ((product?.stock as number) > itemCount) {
-      // Pass all selections to the store
       addItem(product, effectiveWeight, effectiveGrind, effectivePackaging);
-      
-      let description = `Current quantity: ${itemCount + 1}`;
-      if (effectiveWeight) description += ` | Weight: ${effectiveWeight.weight}`;
-      if (effectiveGrind) description += ` | Grind: ${effectiveGrind.grindType}`;
-      if (effectivePackaging) description += ` | Packaging: ${effectivePackaging.title}`;
-      
-      toast.success(`${product?.name} added to cart!`, {
-        description,
-        duration: 3000,
+
+      openCartDrawer({
+        productId: product._id,
+        selectedWeight: effectiveWeight,
+        selectedGrind: effectiveGrind,
+        selectedPackaging: effectivePackaging,
       });
-      
-      // Analytics tracking
+
       trackAddToCart({
         productId: product._id,
         name: product.name || "Unknown",
@@ -108,11 +105,20 @@ const AddToCartButton = memo(({
         duration: 4000,
       });
     }
-  }, [product, itemCount, addItem, effectiveWeight, effectiveGrind, effectivePackaging, totalItemPrice]);
+  }, [
+    product,
+    itemCount,
+    addItem,
+    openCartDrawer,
+    effectiveWeight,
+    effectiveGrind,
+    effectivePackaging,
+    totalItemPrice,
+  ]);
 
   if (!isClient) {
     return (
-      <div className="w-full h-12 flex items-center">
+      <div className={cn("w-full flex items-center", compact ? "min-h-10" : "h-12")}>
         <Button
           disabled
           className={cn(
@@ -127,8 +133,39 @@ const AddToCartButton = memo(({
   }
 
   return (
-    <div className="w-full h-12 flex items-center">
+    <div className={cn("w-full", compact ? "min-h-10" : "h-12 flex items-center")}>
       {itemCount ? (
+        compact ? (
+          <div
+            className={cn(
+              "flex items-center justify-between gap-3 rounded-full border px-3 py-2",
+              isOnDark
+                ? "border-[#e4c290]/30 bg-[#2a1810]/70"
+                : "border-shop_light_green/30 bg-shop_light_bg/60",
+            )}
+          >
+            <span
+              className={cn(
+                "text-xs font-medium",
+                isOnDark ? "text-[#e4c290]/90" : "text-shop_dark_green",
+              )}
+            >
+              In cart
+            </span>
+            <QuantityButtons
+              product={product}
+              selectedWeight={effectiveWeight}
+              selectedGrind={effectiveGrind}
+              selectedPackaging={effectivePackaging}
+              countClassName={isOnDark ? "text-[#fdf6e8]" : undefined}
+              buttonClassName={
+                isOnDark
+                  ? "border-[#e4c290]/40 bg-[#2a1810]/80 text-[#fdf6e8] hover:bg-[#3a2417]"
+                  : undefined
+              }
+            />
+          </div>
+        ) : (
         <div className="text-sm w-full">
           <div className="flex items-center justify-between">
             <span
@@ -211,6 +248,7 @@ const AddToCartButton = memo(({
             </div>
           </div>
         </div>
+        )
       ) : (
         <Button
           onClick={handleAddToCart}

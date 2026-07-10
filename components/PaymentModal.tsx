@@ -93,7 +93,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
         <div className="py-4 space-y-6">
           {/* Order Summary */}
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-100 animate-in slide-in-from-top-2 duration-200">
+          <div className="p-4 bg-shop_light_bg rounded-lg border border-shop_orange/20 animate-in slide-in-from-top-2 duration-200">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-600">Order Number</span>
               <span className="font-medium">
@@ -131,7 +131,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <Button
               onClick={handlePayNow}
               disabled={isProcessing}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+              className="flex-1 bg-shop_dark_green hover:bg-shop_light_green text-white transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-shop_orange/20"
             >
               {isProcessing ? (
                 <>

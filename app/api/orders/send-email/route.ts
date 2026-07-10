@@ -38,11 +38,6 @@ interface EmailOrderData {
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { orderData }: { orderData: EmailOrderData } = await request.json();
 
     if (!orderData) {
@@ -50,6 +45,10 @@ export async function POST(request: NextRequest) {
         { error: "Order data is required" },
         { status: 400 }
       );
+    }
+
+    if (!userId && !orderData.customerEmail) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Convert EmailOrderData to OrderConfirmationData with proper image URLs

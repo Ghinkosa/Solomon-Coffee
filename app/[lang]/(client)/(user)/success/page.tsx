@@ -18,6 +18,7 @@ import type { QueryResult } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import { defineQuery } from "next-sanity";
 import { useUser } from "@clerk/nextjs";
+import useCartStore from "@/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +31,11 @@ const SuccessContent = () => {
   const [showAllOrders, setShowAllOrders] = useState(false);
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("orderNumber");
+  const isGuestOrder = searchParams.get("guest") === "true";
 
   const { user } = useUser();
   const userId = user?.id;
+  const { resetCart } = useCartStore();
 
   const query =
     defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){
@@ -40,6 +43,19 @@ const SuccessContent = () => {
     ...,product->
   }
 }`);
+
+  useEffect(() => {
+    if (!orderNumber) return;
+
+    const pendingOrder = sessionStorage.getItem("pendingCheckoutOrder");
+    const completedOrder = sessionStorage.getItem("completedOrder");
+
+    if (pendingOrder === orderNumber || completedOrder === orderNumber) {
+      resetCart();
+      sessionStorage.removeItem("pendingCheckoutOrder");
+      sessionStorage.removeItem("completedOrder");
+    }
+  }, [orderNumber, resetCart]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -253,11 +269,15 @@ const SuccessContent = () => {
 
           <Button asChild variant="outline" size="lg" className="h-12">
             <Link
-              href={toLocalizedPath("/user/orders")}
+              href={
+                isGuestOrder || !user
+                  ? toLocalizedPath("/order/track")
+                  : toLocalizedPath("/user/orders")
+              }
               className="flex items-center justify-center gap-2"
             >
               <Package className="w-5 h-5" />
-              Track Orders
+              {isGuestOrder || !user ? "Track Order" : "Track Orders"}
             </Link>
           </Button>
 

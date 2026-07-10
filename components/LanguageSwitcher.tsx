@@ -61,12 +61,19 @@ const LanguageSwitcher = ({
     ? (lang as Locale)
     : "en") as Locale;
 
-  function renderLocaleFlag(locale: Locale, className = "h-4 w-5 rounded-xs") {
-    if (failedFlagLocales[locale]) return <span>{localeNames[locale]}</span>;
+  function renderLocaleFlag(locale: Locale, className = "h-4 w-5 object-cover") {
+    if (failedFlagLocales[locale]) {
+      return (
+        <span className="text-xs font-semibold uppercase" aria-hidden>
+          {locale}
+        </span>
+      );
+    }
     return (
       <img
         src={localeFlags[locale]}
-        alt={`${localeNames[locale]} flag`}
+        alt=""
+        aria-hidden
         className={className}
         loading="lazy"
         onError={() =>
@@ -86,29 +93,29 @@ const LanguageSwitcher = ({
           size="sm"
           className={
             isDark
-              ? "h-10 gap-1.5 border-0 bg-transparent px-2 text-shop_light_pink/85 shadow-none hover:bg-transparent hover:text-shop_orange"
-              : "h-10 gap-1.5 border-0 bg-transparent px-2 text-shop_dark_green shadow-none hover:bg-transparent hover:text-shop_light_green"
+              ? "h-10 gap-1 border-0 bg-transparent px-2 text-shop_light_pink/85 shadow-none hover:bg-transparent hover:text-shop_orange"
+              : "h-10 gap-1 border-0 bg-transparent px-2 text-shop_dark_green shadow-none hover:bg-transparent hover:text-shop_light_green"
           }
+          aria-label={`Switch language (${localeNames[currentLocale]})`}
         >
-          {renderLocaleFlag(currentLocale)}
-          <span className="text-xs font-semibold uppercase">{currentLocale}</span>
+          {renderLocaleFlag(currentLocale, "h-5 w-7 object-cover")}
           <ChevronDown
-            className={`h-3 w-3 opacity-60 ${isDark ? "text-shop_light_pink/70" : "text-stone-500"}`}
+            className={`h-3.5 w-3.5 opacity-60 ${isDark ? "text-shop_light_pink/70" : "text-stone-500"}`}
           />
-          <span className="sr-only">Switch Language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align="end" className="w-auto min-w-[3.5rem] p-1">
         {visibleLocales.map((locale) => (
           <DropdownMenuItem
             key={locale}
             onClick={() => handleLocaleChange(locale)}
-            className={`cursor-pointer flex items-center gap-2 ${
-              lang === locale ? "font-bold bg-gray-50 text-shop_dark_green" : ""
+            aria-label={localeNames[locale]}
+            className={`cursor-pointer flex items-center justify-center px-2.5 py-2 ${
+              lang === locale ? "bg-gray-50" : ""
             }`}
           >
-            {renderLocaleFlag(locale, "h-4 w-5 rounded-xs")}
-            <span>{localeNames[locale]}</span>
+            {renderLocaleFlag(locale, "h-5 w-7 object-cover")}
+            <span className="sr-only">{localeNames[locale]}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

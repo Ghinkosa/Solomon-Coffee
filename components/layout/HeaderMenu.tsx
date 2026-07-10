@@ -47,7 +47,7 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
             <li key={item.title} className="shrink-0">
               <Link
                 href={href}
-                className={`whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] transition-colors duration-200 xl:text-[13px] xl:tracking-[0.12em] ${
+                className={`whitespace-nowrap text-sm font-semibold uppercase tracking-[0.08em] transition-colors duration-200 xl:text-base xl:tracking-[0.1em] ${
                   active
                     ? "text-shop_dark_green"
                     : "text-stone-500 hover:text-shop_light_green"

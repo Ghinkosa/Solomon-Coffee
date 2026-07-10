@@ -25,6 +25,10 @@ import {
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { WeightGrindSelector } from "../WeightGrindSelector";
+import {
+  buildCheckoutPricingItems,
+  calculateCheckoutTotals,
+} from "@/lib/checkout-pricing";
 
 interface WeightOption {
   weight: string;
@@ -65,6 +69,7 @@ interface ServerCartContentProps {
   userAddresses: Address[];
   userOrders?: UserOrder[];
   onAddressesRefresh?: () => Promise<void>;
+  isGuest?: boolean;
 }
 
 // ========== HELPER FUNCTIONS (defined first) ==========
@@ -136,11 +141,11 @@ export function ServerCartContent({
   userAddresses,
   userOrders = [],
   onAddressesRefresh,
+  isGuest = false,
 }: ServerCartContentProps) {
   const toLocalizedPath = useLocalizedPath();
   const {
     items: cart,
-    getTotalDiscount,
     resetCart,
     setOrderPlacementState,
     updateCartItemPackaging,
@@ -194,22 +199,24 @@ export function ServerCartContent({
     return defaultWeight?.price || item.product.price || 0;
   };
 
-  const totalPackagingFee = cart.reduce((total, item) => {
-    const itemPkgPrice = item.selectedPackaging?.price || 0;
-    return total + (itemPkgPrice * item.quantity);
-  }, 0);
+  const checkoutTotals = calculateCheckoutTotals({
+    items: buildCheckoutPricingItems(
+      cart.map((item) => ({
+        product: item.product,
+        quantity: item.quantity,
+        unitPrice: getItemCurrentPrice(item),
+        packagingPrice: item.selectedPackaging?.price || 0,
+      })),
+    ),
+  });
 
-  const grossSubtotal = cart.reduce((sum, item) => {
-    const itemPrice = getItemCurrentPrice(item);
-    return sum + (itemPrice * item.quantity);
-  }, 0);
-  
-  const totalDiscount = getTotalDiscount();
+  const grossSubtotal = checkoutTotals.subtotal;
+  const totalDiscount = checkoutTotals.productDiscount;
+  const totalPackagingFee = checkoutTotals.packagingFee;
   const currentSubtotal = grossSubtotal - totalDiscount + totalPackagingFee;
-  
-  const shipping = currentSubtotal > 100 ? 0 : 10;
-  const tax = currentSubtotal * (parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0);
-  const finalTotal = currentSubtotal + shipping + tax;
+  const shipping = checkoutTotals.shipping;
+  const tax = checkoutTotals.tax;
+  const finalTotal = checkoutTotals.total;
 
   if (!cart || cart.length === 0) {
     return <EmptyCart />;
@@ -347,14 +354,20 @@ export function ServerCartContent({
 
         {/* Sidebar Summary */}
         <div className="space-y-6">
-          <AddressSelector
-            userEmail={userEmail}
-            userId={userId}
-            addresses={userAddresses}
-            selectedAddress={selectedAddress}
-            onAddressSelect={setSelectedAddress}
-            onAddressesRefresh={onAddressesRefresh}
-          />
+          {!isGuest ? (
+            <AddressSelector
+              userEmail={userEmail}
+              userId={userId}
+              addresses={userAddresses}
+              selectedAddress={selectedAddress}
+              onAddressSelect={setSelectedAddress}
+              onAddressesRefresh={onAddressesRefresh}
+            />
+          ) : (
+            <div className="border rounded-lg p-4 bg-muted/30 text-sm text-muted-foreground">
+              You can complete shipping details during guest checkout.
+            </div>
+          )}
 
           <div className="border rounded-lg p-6 bg-white shadow-sm">
             <h2 className="text-xl font-bold mb-4">Order Summary</h2>
@@ -406,6 +419,7 @@ export function ServerCartContent({
               <CheckoutButton 
                 cart={cart} 
                 selectedAddress={selectedAddress}
+                isGuestCheckout={isGuest}
               />
             </div>
           </div>

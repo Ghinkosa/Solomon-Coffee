@@ -1,26 +1,24 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { i18n } from "./i18n-config";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
+import { isUserAdmin } from "@/lib/adminUtils";
 
 const isProtectedRoute = createRouteMatcher([
   "/user(.*)",
-  "/cart(.*)",
   "/wishlist(.*)",
-  "/success(.*)",
-  "/checkout(.*)",
   "/settings(.*)",
   "/admin(.*)",
   "/:locale/user(.*)",
-  "/:locale/cart(.*)",
   "/:locale/wishlist(.*)",
-  "/:locale/success(.*)",
-  "/:locale/checkout(.*)",
   "/:locale/settings(.*)",
   "/:locale/admin(.*)",
 ]);
+
+const isAdminApiRoute = createRouteMatcher(["/api/admin(.*)"]);
+const isDebugApiRoute = createRouteMatcher(["/api/debug(.*)"]);
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)", "/:locale/admin(.*)"]);
 
@@ -80,7 +78,34 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
-  // 2. Clerk Auth Protection
+  // 2. Protect admin/debug API routes
+  if (isDebugApiRoute(req) && process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (isAdminApiRoute(req) || isDebugApiRoute(req)) {
+    const authResult = await auth();
+
+    if (!authResult.userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    try {
+      const clerk = await clerkClient();
+      const user = await clerk.users.getUser(authResult.userId);
+      const email = user.primaryEmailAddress?.emailAddress;
+
+      if (!email || !isUserAdmin(email)) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    return NextResponse.next();
+  }
+
+  // 3. Clerk Auth Protection for account pages
   if (isProtectedRoute(req)) {
     await auth.protect();
   }

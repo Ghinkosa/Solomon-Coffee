@@ -68,6 +68,10 @@ interface StoreState {
   authMode: "signIn" | "signUp";
   openAuthSidebar: (mode?: "signIn" | "signUp") => void;
   closeAuthSidebar: () => void;
+  isCartDrawerOpen: boolean;
+  cartDrawerHighlightKey: string | null;
+  openCartDrawer: (highlight?: CartLineSelection) => void;
+  closeCartDrawer: () => void;
 }
 
 const getDefaultWeight = (product: Product): WeightOption | undefined => {
@@ -122,6 +126,24 @@ const findMatchingCartItem = (
   _.find(items, (item) =>
     matchesCartItem(item, productId, selectedWeight, selectedGrind, selectedPackaging),
   );
+
+export function getCartLineKey(selection: CartLineSelection): string {
+  return [
+    selection.productId,
+    selection.selectedWeight?.weight ?? "",
+    selection.selectedGrind?.grindType ?? "",
+    selection.selectedPackaging?._id ?? "",
+  ].join(":");
+}
+
+export function getCartItemKey(item: CartItem): string {
+  return getCartLineKey({
+    productId: item.product._id,
+    selectedWeight: item.selectedWeight,
+    selectedGrind: item.selectedGrind,
+    selectedPackaging: item.selectedPackaging,
+  });
+}
 
 const useCartStore = create<StoreState>()(
   persist(
@@ -374,6 +396,16 @@ const useCartStore = create<StoreState>()(
       authMode: "signIn",
       openAuthSidebar: (mode = "signIn") => set({ isAuthSidebarOpen: true, authMode: mode }),
       closeAuthSidebar: () => set({ isAuthSidebarOpen: false }),
+
+      isCartDrawerOpen: false,
+      cartDrawerHighlightKey: null,
+      openCartDrawer: (highlight) =>
+        set({
+          isCartDrawerOpen: true,
+          cartDrawerHighlightKey: highlight ? getCartLineKey(highlight) : null,
+        }),
+      closeCartDrawer: () =>
+        set({ isCartDrawerOpen: false, cartDrawerHighlightKey: null }),
     }),
     { 
       name: "cart-store",

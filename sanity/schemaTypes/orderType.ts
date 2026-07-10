@@ -55,10 +55,17 @@ export const orderType = defineType({
     }),
 
     defineField({
+      name: "isGuest",
+      title: "Guest Order",
+      type: "boolean",
+      initialValue: false,
+    }),
+
+    defineField({
       name: "clerkUserId",
       title: "Store User ID",
       type: "string",
-      validation: (Rule) => Rule.required(),
+      hidden: ({ document }) => document?.isGuest === true,
     }),
 
     defineField({
