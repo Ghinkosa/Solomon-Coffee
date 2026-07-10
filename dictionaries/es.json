@@ -673,6 +673,89 @@
       }
     }
   },
+  "userDashboard": {
+    "layout": {
+      "title": "Panel de usuario",
+      "active": "Activo",
+      "signOut": "Cerrar sesión",
+      "userAvatarAlt": "Avatar del usuario",
+      "adminTools": "Herramientas de administración"
+    },
+    "nav": {
+      "dashboard": { "title": "Panel", "description": "Resumen y estadísticas" },
+      "orders": { "title": "Pedidos", "description": "Rastrea tus pedidos" },
+      "profile": { "title": "Perfil", "description": "Información personal" },
+      "notifications": { "title": "Notificaciones", "description": "Actualizaciones y alertas" },
+      "wishlist": { "title": "Lista de deseos", "description": "Artículos guardados" },
+      "settings": { "title": "Ajustes", "description": "Preferencias de cuenta" }
+    },
+    "admin": {
+      "manageUsers": { "title": "Gestionar usuarios", "description": "Estado premium de usuarios" },
+      "premiumAccounts": { "title": "Cuentas premium", "description": "Aprobaciones premium" },
+      "businessAccounts": { "title": "Cuentas comerciales", "description": "Aprobaciones comerciales" }
+    },
+    "orders": {
+      "title": "Mis pedidos",
+      "showing": "Mostrando {count} de {total} pedidos"
+    },
+    "settings": {
+      "title": "Ajustes",
+      "subtitle": "Gestiona las preferencias y privacidad de tu cuenta",
+      "notificationsTitle": "Preferencias de notificación",
+      "notificationsDescription": "Elige cómo quieres recibir avisos de actividad",
+      "emailNotifications": "Notificaciones por correo",
+      "emailNotificationsHint": "Recibe notificaciones por correo electrónico",
+      "pushNotifications": "Notificaciones push",
+      "pushNotificationsHint": "Recibe notificaciones push en tu navegador",
+      "orderUpdates": "Actualizaciones de pedidos",
+      "orderUpdatesHint": "Recibe avisos sobre cambios de estado del pedido",
+      "marketingEmails": "Correos de marketing",
+      "marketingEmailsHint": "Recibe ofertas promocionales y novedades",
+      "securityTitle": "Seguridad y privacidad",
+      "securityDescription": "Gestiona la seguridad y privacidad de tu cuenta",
+      "twoFactorAuth": "Autenticación de dos factores",
+      "twoFactorAuthHint": "Añade una capa extra de seguridad a tu cuenta",
+      "profileVisibility": "Visibilidad del perfil",
+      "profileVisibilityHint": "Haz tu perfil visible para otros usuarios",
+      "dataTitle": "Gestión de datos",
+      "dataDescription": "Exporta o elimina los datos de tu cuenta",
+      "exportData": "Exportar datos",
+      "exportDataHint": "Descarga una copia de los datos de tu cuenta",
+      "export": "Exportar",
+      "deleteAccount": "Eliminar cuenta",
+      "deleteAccountHint": "Una vez eliminada tu cuenta, no hay vuelta atrás. Por favor, confírmalo.",
+      "deleteConfirm": "¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.",
+      "updated": "Ajustes actualizados correctamente",
+      "updateFailed": "Error al actualizar los ajustes",
+      "exported": "Datos exportados correctamente",
+      "exportFailed": "Error al exportar los datos",
+      "deleteInitiated": "Eliminación de cuenta iniciada",
+      "deleteFailed": "Error al eliminar la cuenta"
+    },
+    "dashboard": {
+      "welcome": "¡Bienvenido de nuevo, {name}!",
+      "subtitle": "Esto es lo que ocurre hoy con tu cuenta",
+      "businessAccount": "Cuenta comercial",
+      "totalOrders": "Pedidos totales",
+      "ordersPlaced": "Pedidos realizados",
+      "notifications": "Notificaciones",
+      "unread": "{count} sin leer",
+      "wishlist": "Lista de deseos",
+      "itemsSaved": "Artículos guardados",
+      "rewardPoints": "Puntos de recompensa",
+      "availablePoints": "Puntos disponibles",
+      "walletBalance": "Saldo de cartera",
+      "fromRefunds": "De reembolsos",
+      "recentActivity": "Actividad reciente",
+      "recentActivityDescription": "Tu actividad más reciente",
+      "viewAll": "Ver todo",
+      "noRecentActivity": "Sin actividad reciente",
+      "quickActions": "Acciones rápidas",
+      "quickActionsDescription": "Funciones usadas con frecuencia",
+      "viewOrders": "Ver pedidos",
+      "profileSettings": "Ajustes de perfil"
+    }
+  },
   "breadcrumb": {
     "home": "Inicio",
     "signIn": "Iniciar sesión",

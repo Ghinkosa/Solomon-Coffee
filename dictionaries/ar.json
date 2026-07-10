@@ -882,6 +882,89 @@
       }
     }
   },
+  "userDashboard": {
+    "layout": {
+      "title": "لوحة المستخدم",
+      "active": "نشط",
+      "signOut": "تسجيل الخروج",
+      "userAvatarAlt": "صورة المستخدم",
+      "adminTools": "أدوات الإدارة"
+    },
+    "nav": {
+      "dashboard": { "title": "لوحة التحكم", "description": "نظرة عامة وإحصائيات" },
+      "orders": { "title": "الطلبات", "description": "تتبع طلباتك" },
+      "profile": { "title": "الملف الشخصي", "description": "المعلومات الشخصية" },
+      "notifications": { "title": "الإشعارات", "description": "التحديثات والتنبيهات" },
+      "wishlist": { "title": "قائمة الأمنيات", "description": "العناصر المحفوظة" },
+      "settings": { "title": "الإعدادات", "description": "تفضيلات الحساب" }
+    },
+    "admin": {
+      "manageUsers": { "title": "إدارة المستخدمين", "description": "حالة العضوية المميزة" },
+      "premiumAccounts": { "title": "الحسابات المميزة", "description": "موافقات العضوية المميزة" },
+      "businessAccounts": { "title": "الحسابات التجارية", "description": "موافقات الحسابات التجارية" }
+    },
+    "orders": {
+      "title": "طلباتي",
+      "showing": "عرض {count} من {total} طلبات"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "subtitle": "إدارة تفضيلات حسابك وإعدادات الخصوصية",
+      "notificationsTitle": "تفضيلات الإشعارات",
+      "notificationsDescription": "اختر كيف تريد تلقي إشعارات النشاط",
+      "emailNotifications": "إشعارات البريد الإلكتروني",
+      "emailNotificationsHint": "تلقي الإشعارات عبر البريد الإلكتروني",
+      "pushNotifications": "إشعارات المتصفح",
+      "pushNotificationsHint": "تلقي إشعارات push في متصفحك",
+      "orderUpdates": "تحديثات الطلب",
+      "orderUpdatesHint": "تلقي إشعارات تغيير حالة الطلب",
+      "marketingEmails": "رسائل تسويقية",
+      "marketingEmailsHint": "تلقي العروض والتحديثات الترويجية",
+      "securityTitle": "الأمان والخصوصية",
+      "securityDescription": "إدارة أمان حسابك وتفضيلات الخصوصية",
+      "twoFactorAuth": "المصادقة الثنائية",
+      "twoFactorAuthHint": "أضف طبقة أمان إضافية لحسابك",
+      "profileVisibility": "ظهور الملف الشخصي",
+      "profileVisibilityHint": "اجعل ملفك الشخصي مرئياً للمستخدمين الآخرين",
+      "dataTitle": "إدارة البيانات",
+      "dataDescription": "تصدير أو حذف بيانات حسابك",
+      "exportData": "تصدير البيانات",
+      "exportDataHint": "تنزيل نسخة من بيانات حسابك",
+      "export": "تصدير",
+      "deleteAccount": "حذف الحساب",
+      "deleteAccountHint": "بمجرد حذف حسابك، لا يمكن التراجع. يرجى التأكد.",
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+      "updated": "تم تحديث الإعدادات بنجاح",
+      "updateFailed": "فشل تحديث الإعدادات",
+      "exported": "تم تصدير البيانات بنجاح",
+      "exportFailed": "فشل تصدير البيانات",
+      "deleteInitiated": "تم بدء حذف الحساب",
+      "deleteFailed": "فشل حذف الحساب"
+    },
+    "dashboard": {
+      "welcome": "مرحباً بعودتك، {name}!",
+      "subtitle": "إليك ما يحدث مع حسابك اليوم",
+      "businessAccount": "حساب تجاري",
+      "totalOrders": "إجمالي الطلبات",
+      "ordersPlaced": "الطلبات المقدمة",
+      "notifications": "الإشعارات",
+      "unread": "{count} غير مقروء",
+      "wishlist": "قائمة الأمنيات",
+      "itemsSaved": "عناصر محفوظة",
+      "rewardPoints": "نقاط المكافآت",
+      "availablePoints": "النقاط المتاحة",
+      "walletBalance": "رصيد المحفظة",
+      "fromRefunds": "من المبالغ المستردة",
+      "recentActivity": "النشاط الأخير",
+      "recentActivityDescription": "أحدث نشاط في حسابك",
+      "viewAll": "عرض الكل",
+      "noRecentActivity": "لا يوجد نشاط حديث",
+      "quickActions": "إجراءات سريعة",
+      "quickActionsDescription": "الميزات المستخدمة بكثرة",
+      "viewOrders": "عرض الطلبات",
+      "profileSettings": "إعدادات الملف الشخصي"
+    }
+  },
   "breadcrumb": {
     "home": "الرئيسية",
     "signIn": "تسجيل الدخول",

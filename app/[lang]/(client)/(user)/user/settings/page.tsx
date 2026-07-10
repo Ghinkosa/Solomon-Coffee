@@ -15,8 +15,14 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import NewsletterSubscription from "@/components/profile/NewsletterSubscription";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 export default function UserSettingsPage() {
+  const dictionary = useDictionary();
+  const s = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.settings.${path}`, fallback);
+
   const [settings, setSettings] = useState({
     emailNotifications: true,
     pushNotifications: false,
@@ -38,13 +44,13 @@ export default function UserSettingsPage() {
 
       if (response.ok) {
         setSettings((prev) => ({ ...prev, [key]: value }));
-        toast.success("Settings updated successfully");
+        toast.success(s("updated", "Settings updated successfully"));
       } else {
-        toast.error("Failed to update settings");
+        toast.error(s("updateFailed", "Failed to update settings"));
       }
     } catch (error) {
       console.error("Error updating settings:", error);
-      toast.error("Failed to update settings");
+      toast.error(s("updateFailed", "Failed to update settings"));
     }
   };
 
@@ -61,20 +67,23 @@ export default function UserSettingsPage() {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        toast.success("Data exported successfully");
+        toast.success(s("exported", "Data exported successfully"));
       } else {
-        toast.error("Failed to export data");
+        toast.error(s("exportFailed", "Failed to export data"));
       }
     } catch (error) {
       console.error("Error exporting data:", error);
-      toast.error("Failed to export data");
+      toast.error(s("exportFailed", "Failed to export data"));
     }
   };
 
   const handleDeleteAccount = async () => {
     if (
       window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
+        s(
+          "deleteConfirm",
+          "Are you sure you want to delete your account? This action cannot be undone.",
+        ),
       )
     ) {
       try {
@@ -83,14 +92,13 @@ export default function UserSettingsPage() {
         });
 
         if (response.ok) {
-          toast.success("Account deletion initiated");
-          // Redirect to sign out or home page
+          toast.success(s("deleteInitiated", "Account deletion initiated"));
         } else {
-          toast.error("Failed to delete account");
+          toast.error(s("deleteFailed", "Failed to delete account"));
         }
       } catch (error) {
         console.error("Error deleting account:", error);
-        toast.error("Failed to delete account");
+        toast.error(s("deleteFailed", "Failed to delete account"));
       }
     }
   };
@@ -98,29 +106,33 @@ export default function UserSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {s("title", "Settings")}
+        </h1>
         <p className="text-gray-600">
-          Manage your account preferences and privacy settings
+          {s("subtitle", "Manage your account preferences and privacy settings")}
         </p>
       </div>
 
-      {/* Notification Settings */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <Bell className="mr-2 h-5 w-5" />
-            Notification Preferences
+            {s("notificationsTitle", "Notification Preferences")}
           </CardTitle>
           <CardDescription>
-            Choose how you want to be notified about account activity
+            {s(
+              "notificationsDescription",
+              "Choose how you want to be notified about account activity",
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Email Notifications</Label>
+              <Label>{s("emailNotifications", "Email Notifications")}</Label>
               <p className="text-sm text-gray-500">
-                Receive notifications via email
+                {s("emailNotificationsHint", "Receive notifications via email")}
               </p>
             </div>
             <Switch
@@ -133,9 +145,12 @@ export default function UserSettingsPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Push Notifications</Label>
+              <Label>{s("pushNotifications", "Push Notifications")}</Label>
               <p className="text-sm text-gray-500">
-                Receive push notifications in your browser
+                {s(
+                  "pushNotificationsHint",
+                  "Receive push notifications in your browser",
+                )}
               </p>
             </div>
             <Switch
@@ -148,9 +163,9 @@ export default function UserSettingsPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Order Updates</Label>
+              <Label>{s("orderUpdates", "Order Updates")}</Label>
               <p className="text-sm text-gray-500">
-                Get notified about order status changes
+                {s("orderUpdatesHint", "Get notified about order status changes")}
               </p>
             </div>
             <Switch
@@ -163,9 +178,12 @@ export default function UserSettingsPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Marketing Emails</Label>
+              <Label>{s("marketingEmails", "Marketing Emails")}</Label>
               <p className="text-sm text-gray-500">
-                Receive promotional offers and updates
+                {s(
+                  "marketingEmailsHint",
+                  "Receive promotional offers and updates",
+                )}
               </p>
             </div>
             <Switch
@@ -178,23 +196,28 @@ export default function UserSettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Security Settings */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <Shield className="mr-2 h-5 w-5" />
-            Security & Privacy
+            {s("securityTitle", "Security & Privacy")}
           </CardTitle>
           <CardDescription>
-            Manage your account security and privacy preferences
+            {s(
+              "securityDescription",
+              "Manage your account security and privacy preferences",
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Two-Factor Authentication</Label>
+              <Label>{s("twoFactorAuth", "Two-Factor Authentication")}</Label>
               <p className="text-sm text-gray-500">
-                Add an extra layer of security to your account
+                {s(
+                  "twoFactorAuthHint",
+                  "Add an extra layer of security to your account",
+                )}
               </p>
             </div>
             <Switch
@@ -207,9 +230,12 @@ export default function UserSettingsPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Profile Visibility</Label>
+              <Label>{s("profileVisibility", "Profile Visibility")}</Label>
               <p className="text-sm text-gray-500">
-                Make your profile visible to other users
+                {s(
+                  "profileVisibilityHint",
+                  "Make your profile visible to other users",
+                )}
               </p>
             </div>
             <Switch
@@ -222,29 +248,29 @@ export default function UserSettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Newsletter Subscription */}
       <NewsletterSubscription />
 
-      {/* Data Management */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <Download className="mr-2 h-5 w-5" />
-            Data Management
+            {s("dataTitle", "Data Management")}
           </CardTitle>
-          <CardDescription>Export or delete your account data</CardDescription>
+          <CardDescription>
+            {s("dataDescription", "Export or delete your account data")}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Export Data</Label>
+              <Label>{s("exportData", "Export Data")}</Label>
               <p className="text-sm text-gray-500">
-                Download a copy of your account data
+                {s("exportDataHint", "Download a copy of your account data")}
               </p>
             </div>
             <Button variant="outline" onClick={handleExportData}>
               <Download className="mr-2 h-4 w-4" />
-              Export
+              {s("export", "Export")}
             </Button>
           </div>
 
@@ -256,11 +282,13 @@ export default function UserSettingsPage() {
                 <Trash2 className="h-5 w-5 text-red-500 mt-0.5" />
                 <div className="flex-1">
                   <h3 className="text-sm font-medium text-red-800">
-                    Delete Account
+                    {s("deleteAccount", "Delete Account")}
                   </h3>
                   <p className="text-sm text-red-700 mt-1">
-                    Once you delete your account, there is no going back. Please
-                    be certain.
+                    {s(
+                      "deleteAccountHint",
+                      "Once you delete your account, there is no going back. Please be certain.",
+                    )}
                   </p>
                   <Button
                     variant="destructive"
@@ -269,7 +297,7 @@ export default function UserSettingsPage() {
                     onClick={handleDeleteAccount}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Account
+                    {s("deleteAccount", "Delete Account")}
                   </Button>
                 </div>
               </div>

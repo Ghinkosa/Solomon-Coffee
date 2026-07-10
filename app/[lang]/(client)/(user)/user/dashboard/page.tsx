@@ -30,6 +30,8 @@ import PremiumBanner from "@/components/ui/premium-banner";
 import PremiumBadge from "@/components/ui/premium-badge";
 import ApplicationSuccessNotification from "@/components/ui/application-success-notification";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface UserStats {
   ordersCount: number;
@@ -68,6 +70,9 @@ interface UserProfile {
 
 export default function UserDashboardPage() {
   const { user } = useUser();
+  const dictionary = useDictionary();
+  const d = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.dashboard.${path}`, fallback);
   const toLocalizedPath = useLocalizedPath();
   const [stats, setStats] = useState<UserStats>({
     ordersCount: 0,
@@ -237,6 +242,11 @@ export default function UserDashboardPage() {
     }
   };
 
+  const displayName =
+    user?.firstName ||
+    user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] ||
+    "User";
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-8">
@@ -271,11 +281,10 @@ export default function UserDashboardPage() {
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Welcome back,{" "}
-                  {user?.firstName ||
-                    user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] ||
-                    "User"}
-                  !
+                  {d("welcome", "Welcome back, {name}!").replace(
+                    "{name}",
+                    displayName,
+                  )}
                 </h1>
                 {userProfile?.isActive && (
                   <PremiumBadge
@@ -285,12 +294,15 @@ export default function UserDashboardPage() {
                 )}
                 {userProfile?.isBusiness && (
                   <div className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-                    Business Account
+                    {d("businessAccount", "Business Account")}
                   </div>
                 )}
               </div>
               <p className="text-gray-600 mt-1">
-                Here&apos;s what&apos;s happening with your account today
+                {d(
+                  "subtitle",
+                  "Here's what's happening with your account today",
+                )}
               </p>
             </div>
           </div>
@@ -644,18 +656,24 @@ export default function UserDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {d("totalOrders", "Total Orders")}
+            </CardTitle>
             <Package className="h-5 w-5" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold mb-1">{stats.ordersCount}</div>
-            <p className="text-xs text-blue-100">Orders placed</p>
+            <p className="text-xs text-blue-100">
+              {d("ordersPlaced", "Orders placed")}
+            </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">Notifications</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {d("notifications", "Notifications")}
+            </CardTitle>
             <Bell className="h-5 w-5" />
           </CardHeader>
           <CardContent>
@@ -663,30 +681,41 @@ export default function UserDashboardPage() {
               {stats.notificationsCount}
             </div>
             <p className="text-xs text-purple-100">
-              {stats.unreadNotifications} unread
+              {d("unread", "{count} unread").replace(
+                "{count}",
+                String(stats.unreadNotifications),
+              )}
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">Wishlist</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {d("wishlist", "Wishlist")}
+            </CardTitle>
             <Heart className="h-5 w-5" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold mb-1">{stats.wishlistCount}</div>
-            <p className="text-xs text-red-100">Items saved</p>
+            <p className="text-xs text-red-100">
+              {d("itemsSaved", "Items saved")}
+            </p>
           </CardContent>
         </Card>
 
         <Card className="bg-linear-to-br from-green-500 to-green-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">Reward Points</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {d("rewardPoints", "Reward Points")}
+            </CardTitle>
             <Star className="h-5 w-5" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold mb-1">{stats.rewardPoints}</div>
-            <p className="text-xs text-green-100">Available points</p>
+            <p className="text-xs text-green-100">
+              {d("availablePoints", "Available points")}
+            </p>
           </CardContent>
         </Card>
 
@@ -694,7 +723,7 @@ export default function UserDashboardPage() {
           <Card className="bg-linear-to-br from-emerald-500 to-teal-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-medium">
-                Wallet Balance
+                {d("walletBalance", "Wallet Balance")}
               </CardTitle>
               <Wallet className="h-5 w-5" />
             </CardHeader>
@@ -702,7 +731,9 @@ export default function UserDashboardPage() {
               <div className="text-3xl font-bold mb-1">
                 ${stats.walletBalance.toFixed(2)}
               </div>
-              <p className="text-xs text-emerald-100">From refunds</p>
+              <p className="text-xs text-emerald-100">
+                {d("fromRefunds", "From refunds")}
+              </p>
             </CardContent>
           </Card>
         )}
@@ -716,22 +747,28 @@ export default function UserDashboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-gray-600" />
-                <CardTitle className="text-lg">Recent Activity</CardTitle>
+                <CardTitle className="text-lg">
+                  {d("recentActivity", "Recent Activity")}
+                </CardTitle>
               </div>
               <Button variant="ghost" size="sm" asChild>
                 <Link href={toLocalizedPath("/user/notifications")}>
-                  View All
+                  {d("viewAll", "View All")}
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
             </div>
-            <CardDescription>Your latest account activity</CardDescription>
+            <CardDescription>
+              {d("recentActivityDescription", "Your latest account activity")}
+            </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             {recentActivity.length === 0 ? (
               <div className="text-center py-8">
                 <Clock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-sm">No recent activity</p>
+                <p className="text-gray-500 text-sm">
+                  {d("noRecentActivity", "No recent activity")}
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -768,9 +805,13 @@ export default function UserDashboardPage() {
           <CardHeader className="pb-4">
             <div className="flex items-center space-x-2">
               <TrendingUp className="h-5 w-5 text-gray-600" />
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
+              <CardTitle className="text-lg">
+                {d("quickActions", "Quick Actions")}
+              </CardTitle>
             </div>
-            <CardDescription>Frequently used features</CardDescription>
+            <CardDescription>
+              {d("quickActionsDescription", "Frequently used features")}
+            </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="grid grid-cols-1 gap-3">
@@ -780,7 +821,9 @@ export default function UserDashboardPage() {
                   className="w-full justify-start h-12 hover:bg-blue-50 hover:border-blue-200 transition-colors"
                 >
                   <Package className="mr-3 h-4 w-4 text-blue-500" />
-                  <span className="font-medium">View Orders</span>
+                  <span className="font-medium">
+                    {d("viewOrders", "View Orders")}
+                  </span>
                   <ArrowRight className="ml-auto h-4 w-4" />
                 </Button>
               </Link>
@@ -791,7 +834,13 @@ export default function UserDashboardPage() {
                   className="w-full justify-start h-12 hover:bg-purple-50 hover:border-purple-200 transition-colors"
                 >
                   <Bell className="mr-3 h-4 w-4 text-purple-500" />
-                  <span className="font-medium">Notifications</span>
+                  <span className="font-medium">
+                    {t(
+                      dictionary,
+                      "userDashboard.nav.notifications.title",
+                      "Notifications",
+                    )}
+                  </span>
                   {stats.unreadNotifications > 0 && (
                     <Badge variant="destructive" className="ml-auto">
                       {stats.unreadNotifications}
@@ -809,7 +858,13 @@ export default function UserDashboardPage() {
                   className="w-full justify-start h-12 hover:bg-red-50 hover:border-red-200 transition-colors"
                 >
                   <Heart className="mr-3 h-4 w-4 text-red-500" />
-                  <span className="font-medium">Wishlist</span>
+                  <span className="font-medium">
+                    {t(
+                      dictionary,
+                      "userDashboard.nav.wishlist.title",
+                      "Wishlist",
+                    )}
+                  </span>
                   <ArrowRight className="ml-auto h-4 w-4" />
                 </Button>
               </Link>
@@ -820,7 +875,9 @@ export default function UserDashboardPage() {
                   className="w-full justify-start h-12 hover:bg-green-50 hover:border-green-200 transition-colors"
                 >
                   <User className="mr-3 h-4 w-4 text-green-500" />
-                  <span className="font-medium">Profile Settings</span>
+                  <span className="font-medium">
+                    {d("profileSettings", "Profile Settings")}
+                  </span>
                   <ArrowRight className="ml-auto h-4 w-4" />
                 </Button>
               </Link>

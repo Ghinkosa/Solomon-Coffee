@@ -891,6 +891,89 @@
       }
     }
   },
+  "userDashboard": {
+    "layout": {
+      "title": "User Dashboard",
+      "active": "Active",
+      "signOut": "Sign Out",
+      "userAvatarAlt": "User avatar",
+      "adminTools": "Admin Tools"
+    },
+    "nav": {
+      "dashboard": { "title": "Dashboard", "description": "Overview & stats" },
+      "orders": { "title": "Orders", "description": "Track your orders" },
+      "profile": { "title": "Profile", "description": "Personal information" },
+      "notifications": { "title": "Notifications", "description": "Updates & alerts" },
+      "wishlist": { "title": "Wishlist", "description": "Saved items" },
+      "settings": { "title": "Settings", "description": "Account preferences" }
+    },
+    "admin": {
+      "manageUsers": { "title": "Manage Users", "description": "User premium status" },
+      "premiumAccounts": { "title": "Premium Accounts", "description": "Premium approvals" },
+      "businessAccounts": { "title": "Business Accounts", "description": "Business approvals" }
+    },
+    "orders": {
+      "title": "My Orders",
+      "showing": "Showing {count} of {total} orders"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your account preferences and privacy settings",
+      "notificationsTitle": "Notification Preferences",
+      "notificationsDescription": "Choose how you want to be notified about account activity",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsHint": "Receive notifications via email",
+      "pushNotifications": "Push Notifications",
+      "pushNotificationsHint": "Receive push notifications in your browser",
+      "orderUpdates": "Order Updates",
+      "orderUpdatesHint": "Get notified about order status changes",
+      "marketingEmails": "Marketing Emails",
+      "marketingEmailsHint": "Receive promotional offers and updates",
+      "securityTitle": "Security & Privacy",
+      "securityDescription": "Manage your account security and privacy preferences",
+      "twoFactorAuth": "Two-Factor Authentication",
+      "twoFactorAuthHint": "Add an extra layer of security to your account",
+      "profileVisibility": "Profile Visibility",
+      "profileVisibilityHint": "Make your profile visible to other users",
+      "dataTitle": "Data Management",
+      "dataDescription": "Export or delete your account data",
+      "exportData": "Export Data",
+      "exportDataHint": "Download a copy of your account data",
+      "export": "Export",
+      "deleteAccount": "Delete Account",
+      "deleteAccountHint": "Once you delete your account, there is no going back. Please be certain.",
+      "deleteConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
+      "updated": "Settings updated successfully",
+      "updateFailed": "Failed to update settings",
+      "exported": "Data exported successfully",
+      "exportFailed": "Failed to export data",
+      "deleteInitiated": "Account deletion initiated",
+      "deleteFailed": "Failed to delete account"
+    },
+    "dashboard": {
+      "welcome": "Welcome back, {name}!",
+      "subtitle": "Here's what's happening with your account today",
+      "businessAccount": "Business Account",
+      "totalOrders": "Total Orders",
+      "ordersPlaced": "Orders placed",
+      "notifications": "Notifications",
+      "unread": "{count} unread",
+      "wishlist": "Wishlist",
+      "itemsSaved": "Items saved",
+      "rewardPoints": "Reward Points",
+      "availablePoints": "Available points",
+      "walletBalance": "Wallet Balance",
+      "fromRefunds": "From refunds",
+      "recentActivity": "Recent Activity",
+      "recentActivityDescription": "Your latest account activity",
+      "viewAll": "View All",
+      "noRecentActivity": "No recent activity",
+      "quickActions": "Quick Actions",
+      "quickActionsDescription": "Frequently used features",
+      "viewOrders": "View Orders",
+      "profileSettings": "Profile Settings"
+    }
+  },
   "breadcrumb": {
     "home": "Home",
     "signIn": "Sign In",

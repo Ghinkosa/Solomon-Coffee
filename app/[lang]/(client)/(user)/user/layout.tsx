@@ -23,65 +23,31 @@ import { Button } from "@/components/ui/button";
 import { useClerk } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import type { LucideIcon } from "lucide-react";
 
-const sidebarItems = [
-  {
-    title: "Dashboard",
-    href: "/user/dashboard",
-    icon: LayoutDashboard,
-    description: "Overview & stats",
-  },
-  {
-    title: "Orders",
-    href: "/user/orders",
-    icon: Package,
-    description: "Track your orders",
-  },
-  {
-    title: "Profile",
-    href: "/user/profile",
-    icon: User,
-    description: "Personal information",
-  },
-  {
-    title: "Notifications",
-    href: "/user/notifications",
-    icon: Bell,
-    description: "Updates & alerts",
-  },
-  {
-    title: "Wishlist",
-    href: "/wishlist",
-    icon: Heart,
-    description: "Saved items",
-  },
-  {
-    title: "Settings",
-    href: "/user/settings",
-    icon: Settings,
-    description: "Account preferences",
-  },
+const sidebarItems: {
+  key: string;
+  href: string;
+  icon: LucideIcon;
+}[] = [
+  { key: "dashboard", href: "/user/dashboard", icon: LayoutDashboard },
+  { key: "orders", href: "/user/orders", icon: Package },
+  { key: "profile", href: "/user/profile", icon: User },
+  { key: "notifications", href: "/user/notifications", icon: Bell },
+  { key: "wishlist", href: "/wishlist", icon: Heart },
+  { key: "settings", href: "/user/settings", icon: Settings },
 ];
 
-const adminItems = [
-  {
-    title: "Manage Users",
-    href: "/user/admin/manage-users",
-    icon: Users,
-    description: "User premium status",
-  },
-  {
-    title: "Premium Accounts",
-    href: "/user/admin/premium-accounts",
-    icon: Shield,
-    description: "Premium approvals",
-  },
-  {
-    title: "Business Accounts",
-    href: "/user/admin/business-accounts",
-    icon: Building2,
-    description: "Business approvals",
-  },
+const adminItems: {
+  key: string;
+  href: string;
+  icon: LucideIcon;
+}[] = [
+  { key: "manageUsers", href: "/user/admin/manage-users", icon: Users },
+  { key: "premiumAccounts", href: "/user/admin/premium-accounts", icon: Shield },
+  { key: "businessAccounts", href: "/user/admin/business-accounts", icon: Building2 },
 ];
 
 export default function UserLayout({
@@ -91,10 +57,17 @@ export default function UserLayout({
 }) {
   const { user } = useUser();
   const { signOut } = useClerk();
+  const dictionary = useDictionary();
   const pathname = usePathname();
   const params = useParams();
   const lang = params?.lang as string;
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const navLabel = (key: string, field: "title" | "description") =>
+    t(dictionary, `userDashboard.nav.${key}.${field}`, key);
+
+  const adminLabel = (key: string, field: "title" | "description") =>
+    t(dictionary, `userDashboard.admin.${key}.${field}`, key);
 
   // Helper to normalize pathname by removing locale prefix
   const getNormalizedPathname = (path: string) => {
@@ -119,7 +92,7 @@ export default function UserLayout({
                 {user?.imageUrl ? (
                   <img
                     src={user.imageUrl}
-                    alt="User avatar"
+                    alt={t(dictionary, "userDashboard.layout.userAvatarAlt", "User avatar")}
                     className="w-10 h-10 rounded-full object-cover border-2 border-shop_light_green/30"
                   />
                 ) : (
@@ -131,7 +104,9 @@ export default function UserLayout({
                   <h2 className="font-semibold text-gray-900">
                     {user?.firstName} {user?.lastName}
                   </h2>
-                  <p className="text-sm text-gray-500">User Dashboard</p>
+                  <p className="text-sm text-gray-500">
+                    {t(dictionary, "userDashboard.layout.title", "User Dashboard")}
+                  </p>
                 </div>
               </div>
               <Button
@@ -159,7 +134,7 @@ export default function UserLayout({
                     {user?.imageUrl ? (
                       <img
                         src={user.imageUrl}
-                        alt="User avatar"
+                        alt={t(dictionary, "userDashboard.layout.userAvatarAlt", "User avatar")}
                         className="w-12 h-12 rounded-full object-cover border-2 border-white/30"
                       />
                     ) : (
@@ -179,7 +154,9 @@ export default function UserLayout({
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                      <span className="text-white/90 text-sm">Active</span>
+                      <span className="text-white/90 text-sm">
+                        {t(dictionary, "userDashboard.layout.active", "Active")}
+                      </span>
                     </div>
                     <Button
                       onClick={() => signOut()}
@@ -188,7 +165,7 @@ export default function UserLayout({
                       className="text-white hover:bg-white/20 border border-white/30"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-                      Sign Out
+                      {t(dictionary, "userDashboard.layout.signOut", "Sign Out")}
                     </Button>
                   </div>
                 </div>
@@ -202,7 +179,7 @@ export default function UserLayout({
                     const localizedHref = getLocalizedHref(item.href);
                     return (
                       <Link
-                        key={item.title}
+                        key={item.key}
                         href={localizedHref}
                         className={cn(
                           "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group border",
@@ -230,10 +207,10 @@ export default function UserLayout({
                                 : "text-gray-900",
                             )}
                           >
-                            {item.title}
+                            {navLabel(item.key, "title")}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {item.description}
+                            {navLabel(item.key, "description")}
                           </div>
                         </div>
                       </Link>
@@ -246,14 +223,14 @@ export default function UserLayout({
                     <>
                       <div className="w-full border-t border-gray-200 my-3"></div>
                       <div className="w-full text-xs text-gray-500 mb-2 px-2">
-                        Admin Tools
+                        {t(dictionary, "userDashboard.layout.adminTools", "Admin Tools")}
                       </div>
                       {adminItems.map((item) => {
                         const isActive = normalizedPathname === item.href;
                         const localizedHref = getLocalizedHref(item.href);
                         return (
                           <Link
-                            key={item.title}
+                            key={item.key}
                             href={localizedHref}
                             className={cn(
                               "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group border",
@@ -279,10 +256,10 @@ export default function UserLayout({
                                   isActive ? "text-red-700" : "text-gray-900",
                                 )}
                               >
-                                {item.title}
+                                {adminLabel(item.key, "title")}
                               </div>
                               <div className="text-xs text-gray-500">
-                                {item.description}
+                                {adminLabel(item.key, "description")}
                               </div>
                             </div>
                           </Link>
@@ -304,7 +281,7 @@ export default function UserLayout({
                   {user?.imageUrl ? (
                     <img
                       src={user.imageUrl}
-                      alt="User avatar"
+                      alt={t(dictionary, "userDashboard.layout.userAvatarAlt", "User avatar")}
                       className="w-16 h-16 rounded-full object-cover border-3 border-white/30"
                     />
                   ) : (
@@ -321,7 +298,9 @@ export default function UserLayout({
                     </p>
                     <div className="flex items-center mt-2">
                       <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                      <span className="text-white/90 text-xs">Active</span>
+                      <span className="text-white/90 text-xs">
+                        {t(dictionary, "userDashboard.layout.active", "Active")}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -334,7 +313,7 @@ export default function UserLayout({
                   const localizedHref = getLocalizedHref(item.href);
                   return (
                     <Link
-                      key={item.title}
+                      key={item.key}
                       href={localizedHref}
                       onClick={() => setSidebarOpen(false)}
                       className={cn(
@@ -364,10 +343,10 @@ export default function UserLayout({
                                 : "text-gray-900",
                             )}
                           >
-                            {item.title}
+                            {navLabel(item.key, "title")}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {item.description}
+                            {navLabel(item.key, "description")}
                           </div>
                         </div>
                       </div>
@@ -387,14 +366,14 @@ export default function UserLayout({
                   <>
                     <div className="border-t border-gray-200 pt-4 mt-4">
                       <div className="text-xs text-gray-500 mb-3 px-4">
-                        Admin Tools
+                        {t(dictionary, "userDashboard.layout.adminTools", "Admin Tools")}
                       </div>
                       {adminItems.map((item) => {
                         const isActive = normalizedPathname === item.href;
                         const localizedHref = getLocalizedHref(item.href);
                         return (
                           <Link
-                            key={item.title}
+                            key={item.key}
                             href={localizedHref}
                             onClick={() => setSidebarOpen(false)}
                             className={cn(
@@ -422,10 +401,10 @@ export default function UserLayout({
                                     isActive ? "text-red-700" : "text-gray-900",
                                   )}
                                 >
-                                  {item.title}
+                                  {adminLabel(item.key, "title")}
                                 </div>
                                 <div className="text-xs text-gray-500">
-                                  {item.description}
+                                  {adminLabel(item.key, "description")}
                                 </div>
                               </div>
                             </div>
@@ -451,7 +430,7 @@ export default function UserLayout({
                   className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <LogOut className="h-5 w-5 mr-3" />
-                  Sign Out
+                  {t(dictionary, "userDashboard.layout.signOut", "Sign Out")}
                 </Button>
               </div>
             </div>
