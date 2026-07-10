@@ -40,9 +40,10 @@ import { notFound } from "next/navigation";
 
 import { Metadata } from "next";
 import { generateBlogMetadata, generateBlogSchema } from "@/lib/seo";
+import { localizedPath } from "@/lib/localized-path";
 
 type Props = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -62,9 +63,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const SingleBlogPage = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: string }>;
 }) => {
-  const { slug } = await params;
+  const { slug, lang } = await params;
   const blog = (await getSingleBlog(slug)) as SingleBlogFetched | null;
   if (!blog) return notFound();
 
@@ -113,7 +114,7 @@ const SingleBlogPage = async ({
       <Container className="pt-6">
         <DynamicBreadcrumb
           customItems={[
-            { label: "Blog", href: "/blog" },
+            { label: "Blog", href: localizedPath("/blog", lang) },
             { label: blog?.title || "Article" },
           ]}
         />
@@ -328,7 +329,7 @@ const SingleBlogPage = async ({
                   variant="outline"
                   className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
                 >
-                  <Link href="/blog" className="flex items-center gap-2">
+                  <Link href={localizedPath("/blog", lang)} className="flex items-center gap-2">
                     <ChevronLeft size={16} />
                     Back to Blog
                   </Link>
@@ -340,14 +341,20 @@ const SingleBlogPage = async ({
           </div>
 
           {/* Sidebar */}
-          <BlogSidebar slug={slug} />
+          <BlogSidebar slug={slug} lang={lang} />
         </div>
       </Container>
     </div>
   );
 };
 
-const BlogSidebar = async ({ slug }: { slug: string }) => {
+const BlogSidebar = async ({
+  slug,
+  lang,
+}: {
+  slug: string;
+  lang: string;
+}) => {
   const categories = (await getBlogCategories()) as BlogCategorySidebarRow[];
   const blogs = (await getOthersBlog(slug, 5)) as Array<
     Blog & { publishedAt?: string }
@@ -395,7 +402,7 @@ const BlogSidebar = async ({ slug }: { slug: string }) => {
               index: number,
             ) => (
               <Link
-                href={`/blog/${blogItem?.slug?.current}`}
+                href={localizedPath(`/blog/${blogItem?.slug?.current}`, lang)}
                 key={index}
                 className="flex items-start gap-3 p-3 rounded-lg hover:bg-shop_light_bg transition-all duration-200 group"
               >

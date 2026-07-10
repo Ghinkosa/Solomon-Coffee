@@ -6,6 +6,7 @@ import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import {
   ArrowLeft,
   ArrowRight,
@@ -24,6 +25,7 @@ interface Props {
 }
 
 const CategoryPageWrapper = ({ slug }: Props) => {
+  const toLocalizedPath = useLocalizedPath();
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [categoryLoading, setCategoryLoading] = useState(true);
@@ -94,7 +96,7 @@ const CategoryPageWrapper = ({ slug }: Props) => {
         </h3>
         <p className="text-gray-600 mb-4">{error}</p>
         <Link
-          href="/category"
+          href={toLocalizedPath("/category")}
           className="inline-flex items-center gap-2 bg-shop_light_green text-white px-4 py-2 rounded-lg hover:bg-shop_dark_green transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -163,7 +165,7 @@ const CategoryPageWrapper = ({ slug }: Props) => {
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3">
               <Link
-                href="/category"
+                href={toLocalizedPath("/category")}
                 className="inline-flex items-center gap-2 text-shop_dark_green hover:text-shop_light_green transition-colors duration-300 text-sm font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -173,7 +175,7 @@ const CategoryPageWrapper = ({ slug }: Props) => {
               <div className="h-4 w-px bg-gray-300" />
 
               <Link
-                href="/shop"
+                href={toLocalizedPath("/shop")}
                 className="inline-flex items-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-4 py-2 rounded-full font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
               >
                 <Package className="w-4 h-4" />
@@ -214,7 +216,7 @@ const CategoryPageWrapper = ({ slug }: Props) => {
               Explore Other Categories
             </h3>
             <Link
-              href="/category"
+              href={toLocalizedPath("/category")}
               className="text-shop_light_green hover:text-shop_dark_green font-medium text-sm flex items-center gap-1 transition-colors duration-300"
             >
               View All
@@ -226,7 +228,7 @@ const CategoryPageWrapper = ({ slug }: Props) => {
             {relatedCategories.map((category) => (
               <Link
                 key={category._id}
-                href={`/category/${category.slug?.current}`}
+                href={toLocalizedPath(`/category/${category.slug?.current}`)}
                 className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 hover:border-shop_light_green p-4 text-center"
               >
                 {/* Category Image */}
@@ -266,7 +268,7 @@ const CategoryPageWrapper = ({ slug }: Props) => {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/shop"
+              href={toLocalizedPath("/shop")}
               className="inline-flex items-center justify-center gap-2 bg-shop_dark_green hover:bg-shop_light_green text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <Package className="w-5 h-5" />
@@ -274,7 +276,7 @@ const CategoryPageWrapper = ({ slug }: Props) => {
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
-              href="/category"
+              href={toLocalizedPath("/category")}
               className="inline-flex items-center justify-center gap-2 border-2 border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white px-6 py-3 rounded-full font-semibold transition-all duration-300"
             >
               <Grid3X3 className="w-5 h-5" />

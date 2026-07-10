@@ -3,6 +3,7 @@
 import Container from "./Container";
 import Title from "./Title";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
 import {
   Truck,
@@ -21,6 +22,7 @@ const ShopByBrands = ({
   brands: any[];
   dictionary?: any;
 }) => {
+  const toLocalizedPath = useLocalizedPath();
   const features = [
     {
       icon: Truck,
@@ -71,7 +73,7 @@ const ShopByBrands = ({
             "Discover coffee selections from trusted roasters and producers"}
         </p>
         <Link
-          href={"/shop"}
+          href={toLocalizedPath("/shop")}
           className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-shop_light_pink text-shop_dark_green font-semibold rounded-full hover:bg-shop_orange hover:text-white border-2 border-shop_orange hoverEffect"
         >
           {dictionary?.exploreAll || "Explore All Roasters"}

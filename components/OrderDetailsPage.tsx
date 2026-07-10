@@ -32,6 +32,7 @@ import { format } from "date-fns";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { toast } from "sonner";
 import useCartStore from "@/store";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import OrderTimeline from "./OrderTimeline";
 import { requestOrderCancellation } from "@/actions/orderCancellationActions";
 import {
@@ -172,6 +173,7 @@ const getPaymentStatusColor = (status: string) => {
 };
 
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
+  const toLocalizedPath = useLocalizedPath();
   const [generatingInvoice, setGeneratingInvoice] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(order);
   const [isReordering, setIsReordering] = useState(false);
@@ -235,7 +237,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
 
       // Redirect to cart after a short delay
       setTimeout(() => {
-        router.push("/cart");
+        router.push(toLocalizedPath("/cart"));
       }, 1000);
     } catch (error) {
       console.error("Error reordering:", error);
@@ -408,7 +410,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             </Button>
           )}
           <Button asChild>
-            <Link href="/user/orders">← Back to Orders</Link>
+            <Link href={toLocalizedPath("/user/orders")}>← Back to Orders</Link>
           </Button>
         </div>
       </div>
@@ -562,7 +564,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                           <h3 className="font-medium text-gray-900 truncate">
                             {item.product.slug ? (
                               <Link
-                                href={`/product/${item.product.slug.current}`}
+                                href={toLocalizedPath(`/product/${item.product.slug.current}`)}
                                 className="hover:text-shop_dark_green transition-colors"
                               >
                                 {item.product.name}

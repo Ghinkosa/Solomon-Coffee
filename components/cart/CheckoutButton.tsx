@@ -11,6 +11,7 @@ import { PAYMENT_METHODS } from "@/lib/orderStatus";
 import { trackCheckoutStarted } from "@/lib/analytics";
 import { OrderPlacementOverlay } from "./OrderPlacementSkeleton";
 import { useRouter } from "next/navigation";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 interface Address {
   _id: string;
@@ -49,6 +50,7 @@ export function CheckoutButton({
 }: CheckoutButtonProps) {
   const { user } = useUser();
   const router = useRouter();
+  const toLocalizedPath = useLocalizedPath();
   const { resetCart, setOrderPlacementState } = useCartStore();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
     user: user ? { emailAddresses: user.emailAddresses } : null,
@@ -122,7 +124,7 @@ export function CheckoutButton({
     const addressParam = encodeURIComponent(JSON.stringify(selectedAddress));
     const selectionsParam = encodeURIComponent(JSON.stringify(selectionsDataForUrl));
     
-    const checkoutUrl = `/checkout?address=${addressParam}&selections=${selectionsParam}`;
+    const checkoutUrl = `${toLocalizedPath("/checkout")}?address=${addressParam}&selections=${selectionsParam}`;
     
     console.log("🔗 REDIRECTING TO CHECKOUT:", checkoutUrl);
     

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 interface FAQ {
   id: string;
@@ -225,6 +226,7 @@ const categories = [
 ];
 
 const FAQClient = () => {
+  const toLocalizedPath = useLocalizedPath();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
@@ -424,7 +426,7 @@ const FAQClient = () => {
             </CardHeader>
             <CardContent className="text-center pb-8">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link href="/contact">
+                <Link href={toLocalizedPath("/contact")}>
                   <Button
                     size="lg"
                     variant="secondary"
@@ -434,7 +436,7 @@ const FAQClient = () => {
                     Contact Support
                   </Button>
                 </Link>
-                <Link href="/help">
+                <Link href={toLocalizedPath("/help")}>
                   <Button
                     size="lg"
                     variant="outline"

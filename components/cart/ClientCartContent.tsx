@@ -5,6 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { ServerCartContent } from "./ServerCartContent";
 import { CartSkeleton } from "./CartSkeleton";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import { Button } from "../ui/button";
 
 // Interface for Address
@@ -48,6 +49,7 @@ interface UserData {
 
 export function ClientCartContent() {
   const { user, isLoaded } = useUser();
+  const toLocalizedPath = useLocalizedPath();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,7 +126,7 @@ export function ClientCartContent() {
     return (
       <div className="text-center py-20 border rounded-lg bg-gray-50">
         <p className="text-muted-foreground">Please sign in to view your cart.</p>
-        <Link href="/sign-in" className="mt-4 inline-block">
+        <Link href={toLocalizedPath("/sign-in")} className="mt-4 inline-block">
            <Button>Sign In</Button>
         </Link>
       </div>

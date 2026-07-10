@@ -12,8 +12,15 @@ import { urlFor } from "@/sanity/lib/image";
 import dayjs from "dayjs";
 import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { localizedPath } from "@/lib/localized-path";
 
-const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
+const LatestBlog = async ({
+  dictionary,
+  lang = "en",
+}: {
+  dictionary?: any;
+  lang?: string;
+}) => {
   const blogs = (await getLatestBlogs()) as LatestBlogItem[];
 
   return (
@@ -28,7 +35,7 @@ const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
       />
       <div className="mb-10 text-center lg:mb-12">
         <Link
-          href={"/blog"}
+          href={localizedPath("/blog", lang)}
           className={`${homeOutlineButtonClass} group`}
         >
           {dictionary?.viewAll || "View All Posts"}
@@ -47,7 +54,7 @@ const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
             {/* Image Container */}
             {blog?.mainImage && (
               <div className="relative overflow-hidden">
-                <Link href={`/blog/${blog?.slug?.current}`}>
+                <Link href={localizedPath(`/blog/${blog?.slug?.current}`, lang)}>
                   <Image
                     src={urlFor(blog?.mainImage).url()}
                     alt={blog?.title || "Blog image"}
@@ -81,7 +88,7 @@ const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
               </div>
 
               {/* Title */}
-              <Link href={`/blog/${blog?.slug?.current}`} className="block">
+              <Link href={localizedPath(`/blog/${blog?.slug?.current}`, lang)} className="block">
                 <h3 className="font-serif text-lg font-bold text-dark-color line-clamp-2 group-hover:text-shop_dark_green hoverEffect leading-tight mb-4 md:text-xl">
                   {blog?.title}
                 </h3>
@@ -90,7 +97,7 @@ const LatestBlog = async ({ dictionary }: { dictionary?: any }) => {
               {/* Read More Button */}
               <div className="pt-4 border-t border-gray-50">
                 <Link
-                  href={`/blog/${blog?.slug?.current}`}
+                  href={localizedPath(`/blog/${blog?.slug?.current}`, lang)}
                   className="inline-flex items-center gap-2 text-base font-medium text-shop_dark_green hover:text-shop_light_green hoverEffect group/btn"
                 >
                   {dictionary?.readMore || "Read More"}

@@ -1,3 +1,5 @@
+"use client";
+
 import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +11,7 @@ import { Product } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import AddToCartButton from "./AddToCartButton";
 import FavoriteButton from "./FavoriteButton";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 interface RelatedProductsProps {
   currentProduct: Product;
@@ -16,6 +19,8 @@ interface RelatedProductsProps {
 }
 
 const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
+  const toLocalizedPath = useLocalizedPath();
+
   // If no related products found, return null
   if (!relatedProducts || relatedProducts.length === 0) {
     return null;
@@ -90,7 +95,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                 {/* Product Info */}
                 <div className="space-y-2">
                   <Link
-                    href={`/product/${product?.slug?.current}`}
+                    href={toLocalizedPath(`/product/${product?.slug?.current}`)}
                     className="block hover:text-shop_light_green transition-colors"
                   >
                     <h3 className="font-semibold text-shop_dark_green line-clamp-2 text-sm">
@@ -147,7 +152,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
           className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
           asChild
         >
-          <Link href="/shop">View More Products</Link>
+          <Link href={toLocalizedPath("/shop")}>View More Products</Link>
         </Button>
       </div>
     </div>

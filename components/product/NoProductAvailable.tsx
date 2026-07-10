@@ -4,13 +4,16 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Package, Search, ArrowRight, Grid3X3 } from "lucide-react";
 import Link from "next/link";
+import { localizedPath } from "@/lib/localized-path";
 
 const NoProductAvailable = ({
   selectedTab,
   className,
+  lang = "en",
 }: {
   selectedTab?: string;
   className?: string;
+  lang?: string;
 }) => {
   return (
     <div
@@ -70,7 +73,7 @@ const NoProductAvailable = ({
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/shop"
+            href={localizedPath("/shop", lang)}
             className="inline-flex items-center justify-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105"
           >
             <Grid3X3 className="w-4 h-4" />
@@ -79,7 +82,7 @@ const NoProductAvailable = ({
           </Link>
 
           <Link
-            href="/category"
+            href={localizedPath("/category", lang)}
             className="inline-flex items-center justify-center gap-2 border border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300"
           >
             <Package className="w-4 h-4" />

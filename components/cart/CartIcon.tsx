@@ -5,6 +5,7 @@ import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const CartIcon = ({
   variant = "light",
@@ -16,6 +17,7 @@ const CartIcon = ({
   const { items, openAuthSidebar } = useCartStore();
   const { isSignedIn } = useUser();
   const [isClient, setIsClient] = useState(false);
+  const toLocalizedPath = useLocalizedPath();
 
   useEffect(() => {
     setIsClient(true);
@@ -48,7 +50,7 @@ const CartIcon = ({
 
   if (!isClient) {
     return (
-      <Link href={"/cart"} className={linkClass} aria-label="Shopping cart">
+      <Link href={toLocalizedPath("/cart")} className={linkClass} aria-label="Shopping cart">
         <ShoppingBag className={iconClass} />
       </Link>
     );
@@ -56,7 +58,7 @@ const CartIcon = ({
 
   return (
     <Link
-      href={"/cart"}
+      href={toLocalizedPath("/cart")}
       onClick={handleClick}
       className={linkClass}
       aria-label="Shopping cart"

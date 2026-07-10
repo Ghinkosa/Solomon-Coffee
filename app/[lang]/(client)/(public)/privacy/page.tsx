@@ -27,8 +27,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const PrivacyPage = () => {
+  const toLocalizedPath = useLocalizedPath();
   const privacyHighlights = [
     {
       icon: Shield,
@@ -505,14 +507,14 @@ const PrivacyPage = () => {
                     asChild
                     className="bg-shop_dark_green hover:bg-shop_btn_dark_green"
                   >
-                    <Link href="/contact">Contact Privacy Team</Link>
+                    <Link href={toLocalizedPath("/contact")}>Contact Privacy Team</Link>
                   </Button>
                   <Button
                     asChild
                     variant="outline"
                     className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5"
                   >
-                    <Link href="/faq">Privacy FAQ</Link>
+                    <Link href={toLocalizedPath("/faq")}>Privacy FAQ</Link>
                   </Button>
                 </div>
                 <p className="text-sm text-light-text mt-6">

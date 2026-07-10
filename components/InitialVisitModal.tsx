@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Code, Coffee, ExternalLink, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const InitialVisitModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSidePopup, setShowSidePopup] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const toLocalizedPath = useLocalizedPath();
 
   useEffect(() => {
     setMounted(true);
@@ -124,7 +126,7 @@ const InitialVisitModal = () => {
 
                 {/* Action Button */}
                 <Link
-                  href="/shop"
+                  href={toLocalizedPath("/shop")}
                   className="w-full"
                 >
                   <motion.button
@@ -181,7 +183,7 @@ const InitialVisitModal = () => {
               </button>
 
               <Link
-                href="/"
+                href={toLocalizedPath("/")}
                 className="flex items-center gap-4 pr-6" // Added padding-right for close button space
               >
                 <div className="w-12 h-12 bg-linear-to-br from-shop_dark_green to-shop_light_green rounded-lg flex items-center justify-center text-white shadow-lg shrink-0">

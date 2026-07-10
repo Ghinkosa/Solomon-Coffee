@@ -5,6 +5,7 @@ import Fade from "embla-carousel-fade";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { localizedPath } from "@/lib/localized-path";
 import { urlFor } from "@/sanity/lib/image";
 import { useCallback, useEffect, useState } from "react";
 
@@ -305,7 +306,7 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
                     >
                       {banner.link && (
                         <Link
-                          href={banner.link}
+                          href={localizedPath(banner.link, lang || "en")}
                           className="flex items-center space-x-2 rounded-full bg-stone-100 px-8 py-4 font-medium text-stone-900 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-stone-200"
                         >
                           <span>{buttonText}</span>

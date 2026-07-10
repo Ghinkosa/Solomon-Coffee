@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import { usePathname } from "next/navigation";
 import { Employee, getRoleDisplayName } from "@/types/employee";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,7 @@ interface EmployeeNavProps {
 
 export default function EmployeeNav({ employee }: EmployeeNavProps) {
   const pathname = usePathname();
+  const toLocalizedPath = useLocalizedPath();
 
   const getNavItems = () => {
     const baseItems = [
@@ -79,7 +81,7 @@ export default function EmployeeNav({ employee }: EmployeeNavProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand */}
           <div className="flex items-center gap-4">
-            <Link href="/employee" className="text-xl font-bold text-primary">
+            <Link href={toLocalizedPath("/employee")} className="text-xl font-bold text-primary">
               Sheba Cup Coffee{" "}
               <span className="text-sm font-normal">Employee</span>
             </Link>
@@ -95,7 +97,7 @@ export default function EmployeeNav({ employee }: EmployeeNavProps) {
               const isActive = pathname.startsWith(item.href);
 
               return (
-                <Link key={item.href} href={item.href}>
+                <Link key={item.href} href={toLocalizedPath(item.href)}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
                     size="sm"
@@ -135,7 +137,7 @@ export default function EmployeeNav({ employee }: EmployeeNavProps) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/" className="cursor-pointer">
+                <Link href={toLocalizedPath("/")} className="cursor-pointer">
                   <Store className="w-4 h-4 mr-2" />
                   Back to Store
                 </Link>

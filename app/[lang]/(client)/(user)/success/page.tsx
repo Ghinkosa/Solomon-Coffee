@@ -13,6 +13,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import type { QueryResult } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import { defineQuery } from "next-sanity";
@@ -24,6 +25,7 @@ import PriceFormatter from "@/components/PriceFormatter";
 import { format } from "date-fns";
 
 const SuccessContent = () => {
+  const toLocalizedPath = useLocalizedPath();
   const [orders, setOrders] = useState<QueryResult>([]);
   const [showAllOrders, setShowAllOrders] = useState(false);
   const searchParams = useSearchParams();
@@ -206,7 +208,7 @@ const SuccessContent = () => {
                             {order.status || "pending"}
                           </Badge>
                           <Button asChild size="sm" variant="outline">
-                            <Link href={`/user/orders/${order._id}`}>
+                            <Link href={toLocalizedPath(`/user/orders/${order._id}`)}>
                               <Eye className="w-3 h-3 mr-1" />
                               View
                             </Link>
@@ -243,7 +245,7 @@ const SuccessContent = () => {
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto"
         >
           <Button asChild size="lg" className="h-12">
-            <Link href="/" className="flex items-center justify-center gap-2">
+            <Link href={toLocalizedPath("/")} className="flex items-center justify-center gap-2">
               <Home className="w-5 h-5" />
               Continue Shopping
             </Link>
@@ -251,7 +253,7 @@ const SuccessContent = () => {
 
           <Button asChild variant="outline" size="lg" className="h-12">
             <Link
-              href="/user/orders"
+              href={toLocalizedPath("/user/orders")}
               className="flex items-center justify-center gap-2"
             >
               <Package className="w-5 h-5" />
@@ -261,7 +263,7 @@ const SuccessContent = () => {
 
           <Button asChild variant="outline" size="lg" className="h-12">
             <Link
-              href="/shop"
+              href={toLocalizedPath("/shop")}
               className="flex items-center justify-center gap-2"
             >
               <ShoppingBag className="w-5 h-5" />

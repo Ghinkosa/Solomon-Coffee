@@ -23,11 +23,13 @@ import {
 } from "./ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const WishlistProducts = () => {
   const [visibleProducts, setVisibleProducts] = useState(8);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { favoriteProduct, removeFromFavorite, resetFavorite } = useCartStore();
+  const toLocalizedPath = useLocalizedPath();
 
   const loadMore = () => {
     setVisibleProducts((prev) => Math.min(prev + 8, favoriteProduct.length));
@@ -68,7 +70,7 @@ const WishlistProducts = () => {
 
                   <Link
                     href={{
-                      pathname: `/product/${product?.slug?.current}`,
+                      pathname: toLocalizedPath(`/product/${product?.slug?.current}`),
                       query: { id: product?._id },
                     }}
                     className="block rounded-lg overflow-hidden bg-gray-50"
@@ -93,7 +95,7 @@ const WishlistProducts = () => {
                   <div className="flex flex-col gap-2 flex-1">
                     <Link
                       href={{
-                        pathname: `/product/${product?.slug?.current}`,
+                        pathname: toLocalizedPath(`/product/${product?.slug?.current}`),
                         query: { id: product?._id },
                       }}
                     >
@@ -233,10 +235,10 @@ const WishlistProducts = () => {
 
           <div className="flex flex-col sm:flex-row gap-3 mt-8">
             <Button asChild size="lg" className="px-8">
-              <Link href="/shop">Browse Products</Link>
+              <Link href={toLocalizedPath("/shop")}>Browse Products</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="px-8">
-              <Link href="/category">Shop by Category</Link>
+              <Link href={toLocalizedPath("/category")}>Shop by Category</Link>
             </Button>
           </div>
         </div>

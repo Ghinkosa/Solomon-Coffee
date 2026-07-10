@@ -39,6 +39,7 @@ import useStore from "@/store";
 import Logo from "../common/Logo";
 import SocialMedia from "../common/SocialMedia";
 import LanguageSwitcher from "../LanguageSwitcher";
+import { localizedPath } from "@/lib/localized-path";
 import { createPortal } from "react-dom";
 
 interface SidebarProps {
@@ -57,7 +58,7 @@ const Sidebar: FC<SidebarProps> = ({
   const { items, favoriteProduct, openAuthSidebar } = useStore();
   const [mounted, setMounted] = useState(false);
 
-  const localizedHref = (href: string) => `/${lang}${href === "/" ? "" : href}`;
+  const localizedHref = (href: string) => localizedPath(href, lang);
 
   useEffect(() => {
     setMounted(true);

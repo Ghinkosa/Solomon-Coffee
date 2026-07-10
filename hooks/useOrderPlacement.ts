@@ -4,6 +4,8 @@ import { useState } from "react";
 import useCartStore, { CartItem, PackagingOption, WeightOption, GrindOption } from "@/store";
 import { PAYMENT_METHODS, PaymentMethod } from "@/lib/orderStatus";
 import { toast } from "sonner";
+import { localizedPath } from "@/lib/localized-path";
+import { useLocale } from "@/hooks/useLocale";
 
 interface EmailOrderItem {
   name: string;
@@ -66,6 +68,7 @@ const getItemCurrentPrice = (item: CartItem): number => {
 };
 
 export function useOrderPlacement({ user }: UseOrderPlacementProps) {
+  const lang = useLocale();
   const {
     items: cart,
     resetCart,
@@ -266,7 +269,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             success: true,
             orderId,
             orderNumber,
-            redirectTo: `/checkout?order_id=${orderId}&orderNumber=${orderNumber}`,
+            redirectTo: localizedPath(`/checkout?order_id=${orderId}&orderNumber=${orderNumber}`, lang),
             isCheckoutRedirect: true,
           };
         } else {
@@ -293,13 +296,15 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
             success: true,
             orderId,
             orderNumber,
-            redirectTo: stripeResult.url || `/user/orders`,
+            redirectTo: stripeResult.url || localizedPath("/user/orders", lang),
             isStripeRedirect: !!stripeResult.url,
           };
         }
       } else {
         // COD Logic
-        const targetPath = redirectToCheckout ? '/checkout' : '/success';
+        const targetPath = redirectToCheckout
+          ? localizedPath("/checkout", lang)
+          : localizedPath("/success", lang);
         const params = new URLSearchParams({
           order_id: orderId,
           orderNumber: orderNumber,

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import EmptyCart from "@/components/EmptyCart";
 import PriceFormatter from "@/components/PriceFormatter";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { CartItemControls } from "./CartItemControls";
@@ -136,6 +137,7 @@ export function ServerCartContent({
   userOrders = [],
   onAddressesRefresh,
 }: ServerCartContentProps) {
+  const toLocalizedPath = useLocalizedPath();
   const {
     items: cart,
     getTotalDiscount,
@@ -311,7 +313,7 @@ export function ServerCartContent({
           
           <div className="flex justify-between items-center pt-4">
             <Button asChild variant="outline">
-              <Link href="/shop">Continue Shopping</Link>
+              <Link href={toLocalizedPath("/shop")}>Continue Shopping</Link>
             </Button>
             <Button variant="destructive" onClick={handleResetCart} className="gap-2">
               <Trash2 className="w-4 h-4" />

@@ -4,10 +4,12 @@ import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { useUserData } from "@/contexts/UserDataContext";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 export default function NotificationBell() {
   const { isSignedIn } = useUser();
   const { unreadNotifications } = useUserData();
+  const toLocalizedPath = useLocalizedPath();
 
   if (!isSignedIn) {
     return null;
@@ -16,7 +18,7 @@ export default function NotificationBell() {
   const displayCount = unreadNotifications > 9 ? "9+" : unreadNotifications;
 
   return (
-    <Link href="/user/notifications" className="relative">
+    <Link href={toLocalizedPath("/user/notifications")} className="relative">
       <Bell className="text-shop_dark_green/80 group-hover:text-shop_dark_green hoverEffect" />
       {unreadNotifications > 0 ? (
         <span

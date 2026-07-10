@@ -13,8 +13,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { localizedPath } from "@/lib/localized-path";
 
-const ProductPage = async () => {
+const ProductPage = async ({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) => {
+  const { lang } = await params;
   const [products, categories] = await Promise.all([
     getAllProducts(),
     getCategories(),
@@ -30,7 +36,7 @@ const ProductPage = async () => {
               <Breadcrumb>
                 <BreadcrumbList className="text-white/80">
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/" className="hover:text-white">
+                    <BreadcrumbLink href={localizedPath("/", lang)} className="hover:text-white">
                       Home
                     </BreadcrumbLink>
                   </BreadcrumbItem>

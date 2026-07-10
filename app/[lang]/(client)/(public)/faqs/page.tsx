@@ -14,8 +14,11 @@ import { Button } from "@/components/ui/button";
 import Container from "@/components/Container";
 import { faqsData } from "@/constants";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const FAQPage = () => {
+  const toLocalizedPath = useLocalizedPath();
+
   return (
     <div className="bg-gradient-to-b from-shop_light_bg to-white min-h-screen">
       {/* Hero Section */}
@@ -103,7 +106,7 @@ const FAQPage = () => {
                     size="lg"
                     className="bg-white text-shop_dark_green hover:bg-white/90"
                   >
-                    <Link href="/faq">
+                    <Link href={toLocalizedPath("/faq")}>
                       <HelpCircle className="w-4 h-4 mr-2" />
                       Detailed FAQ
                     </Link>
@@ -114,7 +117,7 @@ const FAQPage = () => {
                     variant="outline"
                     className="border-white text-white hover:bg-white/10"
                   >
-                    <Link href="/contact">
+                    <Link href={toLocalizedPath("/contact")}>
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Contact Support
                     </Link>

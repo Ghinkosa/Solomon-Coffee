@@ -1,3 +1,5 @@
+"use client";
+
 import { memo } from "react";
 import { Product } from "@/sanity.types";
 import PriceView from "./PriceView";
@@ -8,6 +10,7 @@ import { StarIcon } from "@sanity/icons";
 import ProductSideMenu from "./ProductSideMenu";
 import { Flame } from "lucide-react";
 import { image } from "@/sanity/image";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 interface ProductCardProps {
   product: Product;
@@ -27,6 +30,7 @@ const ProductCard = memo(
     onHoverStart,
     onHoverEnd,
   }: ProductCardProps) => {
+  const toLocalizedPath = useLocalizedPath();
   const isHomeMode = mode === "home";
   const isExpandable = mode === "home" || mode === "shop";
 
@@ -60,7 +64,7 @@ const ProductCard = memo(
                     loading="lazy"
                   />
                 </button>
-                <Link href={`/product/${product?.slug?.current}`} className="hidden md:block">
+                <Link href={toLocalizedPath(`/product/${product?.slug?.current}`)} className="hidden md:block">
                   <img
                     src={image(product.images[0]).size(900, 880).url()}
                     className={`w-full h-64 object-contain overflow-hidden transition-transform bg-shop_light_bg duration-500 ${
@@ -72,7 +76,7 @@ const ProductCard = memo(
                 </Link>
               </>
             ) : (
-              <Link href={`/product/${product?.slug?.current}`}>
+              <Link href={toLocalizedPath(`/product/${product?.slug?.current}`)}>
                 <img
                   src={image(product.images[0]).size(900, 880).url()}
                   className={`w-full h-64 object-contain overflow-hidden transition-transform bg-shop_light_bg duration-500 ${
@@ -106,7 +110,7 @@ const ProductCard = memo(
       </div>
 
       <div className="p-3 flex flex-col gap-2">
-        <Link href={`/product/${product?.slug?.current}`} className="block">
+        <Link href={toLocalizedPath(`/product/${product?.slug?.current}`)} className="block">
           <Title className="text-sm line-clamp-1">{product?.name}</Title>
 
           <div className="flex items-center gap-2 mt-2">

@@ -18,6 +18,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
+import { localizedPath } from "@/lib/localized-path";
 
 const BLOG_HERO_IMAGE =
   "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format";
@@ -140,7 +141,7 @@ const BlogPage = async ({ params }: Props) => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                     <Link
-                      href={`/blog/${blog?.slug?.current}`}
+                      href={localizedPath(`/blog/${blog?.slug?.current}`, lang)}
                       className="absolute inset-0"
                     />
 
@@ -169,7 +170,7 @@ const BlogPage = async ({ params }: Props) => {
 
                   {/* Title */}
                   <Link
-                    href={`/blog/${blog?.slug?.current}`}
+                    href={localizedPath(`/blog/${blog?.slug?.current}`, lang)}
                     className="block group/title"
                   >
                     <h3
@@ -192,7 +193,7 @@ const BlogPage = async ({ params }: Props) => {
 
                   {/* Read More Link */}
                   <Link
-                    href={`/blog/${blog?.slug?.current}`}
+                    href={localizedPath(`/blog/${blog?.slug?.current}`, lang)}
                     className="inline-flex items-center gap-2 text-sm font-medium text-shop_light_green hover:text-shop_dark_green transition-colors duration-200 group/link"
                   >
                     {dictionary.blog.list.readMore}
@@ -219,7 +220,7 @@ const BlogPage = async ({ params }: Props) => {
                   {dictionary.blog.list.noPosts.description}
                 </p>
                 <Button asChild>
-                  <Link href="/">{dictionary.blog.list.noPosts.button}</Link>
+                  <Link href={localizedPath("/", lang)}>{dictionary.blog.list.noPosts.button}</Link>
                 </Button>
               </div>
             </div>

@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import { motion } from "framer-motion";
 import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,8 @@ const fadeInRight = {
 };
 
 export default function OurCoffee() {
+  const toLocalizedPath = useLocalizedPath();
+
   return (
     <div className="bg-white overflow-hidden">
       {/* Hero Section */}
@@ -405,12 +408,12 @@ export default function OurCoffee() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-stone-900 hover:bg-stone-800 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
-                <Link href="/shop">
+                <Link href={toLocalizedPath("/shop")}>
                   Shop Now <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-stone-900 text-stone-900 hover:bg-stone-900/5 px-8 py-6 text-lg rounded-full">
-                <Link href="/contact">
+                <Link href={toLocalizedPath("/contact")}>
                   Learn More
                 </Link>
               </Button>

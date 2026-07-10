@@ -27,6 +27,7 @@ import { useIsAdmin } from "@/lib/adminUtils";
 import { useUserData } from "@/contexts/UserDataContext";
 import { usePathname, useRouter } from "next/navigation";
 import { i18n, Locale } from "@/i18n-config";
+import { localizedPath } from "@/lib/localized-path";
 
 interface UserDropdownProps {
   dictionary: any;
@@ -184,7 +185,7 @@ const UserDropdown = ({
               )}
 
               <Link
-                href="/user/profile"
+                href={localizedPath("/user/profile", lang)}
                 onClick={handleLinkClick}
                 className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
               >
@@ -195,7 +196,7 @@ const UserDropdown = ({
               </Link>
 
               <Link
-                href="/user/orders"
+                href={localizedPath("/user/orders", lang)}
                 onClick={handleLinkClick}
                 className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
               >
@@ -217,7 +218,7 @@ const UserDropdown = ({
               </Link>
 
               <Link
-                href="/wishlist"
+                href={localizedPath("/wishlist", lang)}
                 onClick={handleLinkClick}
                 className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
               >
@@ -228,7 +229,7 @@ const UserDropdown = ({
               </Link>
 
               <Link
-                href="/user"
+                href={localizedPath("/user", lang)}
                 onClick={handleLinkClick}
                 className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
               >
@@ -239,7 +240,7 @@ const UserDropdown = ({
               </Link>
 
               <Link
-                href="/user/notifications"
+                href={localizedPath("/user/notifications", lang)}
                 onClick={handleLinkClick}
                 className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
               >
@@ -250,7 +251,7 @@ const UserDropdown = ({
               </Link>
 
               <Link
-                href="/user/settings"
+                href={localizedPath("/user/settings", lang)}
                 onClick={handleLinkClick}
                 className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
               >
@@ -284,7 +285,7 @@ const UserDropdown = ({
 
               {isEmployee && !isAdmin && (
                 <Link
-                  href="/employee"
+                  href={localizedPath("/employee", lang)}
                   onClick={handleLinkClick}
                   className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-blue-50 transition-colors duration-200 group"
                 >
@@ -296,7 +297,7 @@ const UserDropdown = ({
               )}
 
               <Link
-                href="/help"
+                href={localizedPath("/help", lang)}
                 onClick={handleLinkClick}
                 className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
               >
@@ -319,7 +320,7 @@ const UserDropdown = ({
               </Link>
               {isAdmin && (
                 <Link
-                  href="/admin"
+                  href={localizedPath("/admin", lang)}
                   onClick={handleLinkClick}
                   className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-shop_light_bg transition-colors duration-200 group"
                 >

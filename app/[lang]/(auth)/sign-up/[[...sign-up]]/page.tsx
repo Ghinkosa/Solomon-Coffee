@@ -3,6 +3,7 @@
 import { SignUp } from "@clerk/nextjs";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import Logo from "@/components/common/Logo";
 import {
   ArrowLeft,
@@ -19,6 +20,7 @@ import { Suspense } from "react";
 
 const SignUpContent = () => {
   const searchParams = useSearchParams();
+  const toLocalizedPath = useLocalizedPath();
   const redirectTo = searchParams.get("redirectTo");
 
   const benefits = [
@@ -54,7 +56,7 @@ const SignUpContent = () => {
         <header className="relative z-10 px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <Link
-              href="/"
+              href={toLocalizedPath("/")}
               className="flex items-center gap-2 text-shop_dark_green hover:text-shop_light_green transition-colors duration-200 font-medium"
             >
               <ArrowLeft className="w-5 h-5" />

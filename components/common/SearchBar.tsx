@@ -10,6 +10,7 @@ import PriceView from "../PriceView";
 import Image from "next/image";
 import Link from "next/link";
 import { useOutsideClick } from "@/hooks";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const SearchBar = ({
   dictionary,
@@ -27,6 +28,7 @@ const SearchBar = ({
   const [featuredProduct, setFeaturedProduct] = useState([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useOutsideClick<HTMLDivElement>(() => setShowSearch(false));
+  const toLocalizedPath = useLocalizedPath();
 
   const placeholder = "Search";
   const isRtl = dictionary?.header?.search?.direction === "rtl";
@@ -228,7 +230,7 @@ const SearchBar = ({
                       className="group bg-white border border-gray-200 hover:border-shop_light_green rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                     >
                       <Link
-                        href={`/product/${product?.slug?.current}`}
+                        href={toLocalizedPath(`/product/${product?.slug?.current}`)}
                         onClick={() => setShowSearch(false)}
                         className="block"
                       >
@@ -267,7 +269,7 @@ const SearchBar = ({
 
                       <div className="p-4">
                         <Link
-                          href={`/product/${product?.slug?.current}`}
+                          href={toLocalizedPath(`/product/${product?.slug?.current}`)}
                           onClick={() => setShowSearch(false)}
                           className="block"
                         >
@@ -336,7 +338,7 @@ const SearchBar = ({
                                   className="group bg-white border border-gray-200 hover:border-shop_light_green rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                                 >
                                   <Link
-                                    href={`/product/${item?.slug?.current}`}
+                                    href={toLocalizedPath(`/product/${item?.slug?.current}`)}
                                     onClick={() => setShowSearch(false)}
                                     className="block"
                                   >
@@ -376,7 +378,7 @@ const SearchBar = ({
 
                                   <div className="p-4">
                                     <Link
-                                      href={`/product/${item?.slug?.current}`}
+                                      href={toLocalizedPath(`/product/${item?.slug?.current}`)}
                                       onClick={() => setShowSearch(false)}
                                       className="block"
                                     >

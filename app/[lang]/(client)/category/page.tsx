@@ -14,8 +14,14 @@ import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Package, Tag } from "lucide-react";
+import { localizedPath } from "@/lib/localized-path";
 
-const CategoryPage = async () => {
+const CategoryPage = async ({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) => {
+  const { lang } = await params;
   const categories: Category[] = await getCategories();
 
   return (
@@ -27,7 +33,7 @@ const CategoryPage = async () => {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/">Home</Link>
+                  <Link href={localizedPath("/", lang)}>Home</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -50,7 +56,7 @@ const CategoryPage = async () => {
           {/* View All Products Button */}
           <div className="flex justify-center">
             <Link
-              href="/shop"
+              href={localizedPath("/shop", lang)}
               className="inline-flex items-center justify-center gap-2 bg-shop_dark_green hover:bg-shop_light_green text-white px-8 py-3 rounded-full font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
               <Package className="w-5 h-5" />
@@ -66,7 +72,7 @@ const CategoryPage = async () => {
               {categories.map((category) => (
                 <Link
                   key={category._id}
-                  href={`/category/${category.slug?.current}`}
+                  href={localizedPath(`/category/${category.slug?.current}`, lang)}
                   className="group relative bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-shop_light_green transform hover:-translate-y-1"
                 >
                   {/* Category Image */}
@@ -145,7 +151,7 @@ const CategoryPage = async () => {
                   coffee and brewing collection.
                 </p>
                 <Link
-                  href="/shop"
+                  href={localizedPath("/shop", lang)}
                   className="inline-flex items-center justify-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
                 >
                   <Package className="w-4 h-4" />
@@ -167,7 +173,7 @@ const CategoryPage = async () => {
                 soon for our product categories!
               </p>
               <Link
-                href="/shop"
+                href={localizedPath("/shop", lang)}
                 className="inline-flex items-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
               >
                 <Package className="w-4 h-4" />
@@ -190,14 +196,14 @@ const CategoryPage = async () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
-                  href="/shop"
+                  href={localizedPath("/shop", lang)}
                   className="inline-flex items-center justify-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
                 >
                   <Package className="w-4 h-4" />
                   All Products
                 </Link>
                 <Link
-                  href="/brands"
+                  href={localizedPath("/brands", lang)}
                   className="inline-flex items-center justify-center gap-2 border-2 border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
                 >
                   <Tag className="w-4 h-4" />

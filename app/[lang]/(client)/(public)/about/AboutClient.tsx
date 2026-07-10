@@ -17,10 +17,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
 import aboutUsHeadshot from "@/images/about-us-headshot.jpg";
 
 const AboutClient = () => {
+  const toLocalizedPath = useLocalizedPath();
   const stats = [
     { number: "10K+", label: "Happy Customers", icon: Users },
     { number: "500+", label: "Coffee Products", icon: ShoppingBag },
@@ -223,7 +225,7 @@ const AboutClient = () => {
                 asChild
                 className="mt-8 rounded-full bg-shop_dark_green px-6 hover:bg-shop_btn_dark_green"
               >
-                <Link href="/contact">
+                <Link href={toLocalizedPath("/contact")}>
                   Get in Touch <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -358,7 +360,7 @@ const AboutClient = () => {
                 size="lg"
                 className="bg-white text-shop_dark_green hover:bg-white/90"
               >
-                <Link href="/shop">
+                <Link href={toLocalizedPath("/shop")}>
                   Start Shopping <ShoppingBag className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
@@ -367,7 +369,7 @@ const AboutClient = () => {
                 size="lg"
                 className="bg-white text-shop_dark_green hover:bg-white/90"
               >
-                <Link href="/contact">
+                <Link href={toLocalizedPath("/contact")}>
                   Contact Us <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>

@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
 
 const MISSION_IMAGES = {
@@ -44,6 +45,7 @@ const MISSION_IMAGES = {
 } as const;
 
 const MissionClient = () => {
+  const toLocalizedPath = useLocalizedPath();
   return (
     <div className="bg-gradient-to-b from-stone-100 to-white min-h-screen">
       {/* HERO SECTION - Behind the Coffee / Our Mission */}
@@ -405,7 +407,7 @@ const MissionClient = () => {
               size="lg"
               className="bg-amber-700 hover:bg-amber-800 text-white rounded-full px-12 h-14 text-lg"
             >
-              <Link href="/shop">Shop Coffee, Make an Impact</Link>
+              <Link href={toLocalizedPath("/shop")}>Shop Coffee, Make an Impact</Link>
             </Button>
             <Button
               asChild
@@ -413,7 +415,7 @@ const MissionClient = () => {
               variant="outline"
               className="border-stone-300 text-stone-700 hover:bg-stone-100 rounded-full px-12 h-14 text-lg"
             >
-              <Link href="/education">Discover Our Roasting Process →</Link>
+              <Link href={toLocalizedPath("/education")}>Discover Our Roasting Process →</Link>
             </Button>
           </div>
           <p className="mt-8 text-stone-500 text-sm">

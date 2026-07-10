@@ -1,11 +1,14 @@
 "use client";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import { motion } from "framer-motion";
 import { emptyCart } from "@/images";
 import Image from "next/image";
 
 export default function EmptyCart() {
+  const toLocalizedPath = useLocalizedPath();
+
   return (
     <div className="py-10 md:py-20 bg-linear-to-b from-blue-50 to-white flex items-center justify-center p-4">
       <motion.div
@@ -61,7 +64,7 @@ export default function EmptyCart() {
 
         <div>
           <Link
-            href="/"
+            href={toLocalizedPath("/")}
             className="block bg-dark-color/5 border border-dark-color/20 text-center py-2.5 rounded-full text-sm font-semibold tracking-wide hover:border-dark-color hover:bg-dark-color hover:text-white hoverEffect"
           >
             Discover Products

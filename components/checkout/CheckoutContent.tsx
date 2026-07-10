@@ -21,6 +21,7 @@ import {
   Coffee,
 } from "lucide-react";
 import useCartStore, { CartItem, WeightOption, GrindOption, PackagingOption } from "@/store";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import PriceFormatter from "@/components/PriceFormatter";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
@@ -78,6 +79,7 @@ export function CheckoutContent() {
     getSubTotalPrice,
     getTotalDiscount,
   } = useCartStore();
+  const toLocalizedPath = useLocalizedPath();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
     user: user!,
   });
@@ -372,7 +374,7 @@ export function CheckoutContent() {
           Add some products to continue with checkout
         </p>
         <Button asChild className="bg-primary hover:bg-primary/90">
-          <a href="/shop">Continue Shopping</a>
+          <a href={toLocalizedPath("/shop")}>Continue Shopping</a>
         </Button>
       </div>
     );

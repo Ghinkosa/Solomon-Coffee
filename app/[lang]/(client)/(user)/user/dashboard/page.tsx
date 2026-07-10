@@ -3,6 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import {
   Package,
   Heart,
@@ -67,6 +68,7 @@ interface UserProfile {
 
 export default function UserDashboardPage() {
   const { user } = useUser();
+  const toLocalizedPath = useLocalizedPath();
   const [stats, setStats] = useState<UserStats>({
     ordersCount: 0,
     wishlistCount: 0,
@@ -717,7 +719,7 @@ export default function UserDashboardPage() {
                 <CardTitle className="text-lg">Recent Activity</CardTitle>
               </div>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/user/notifications">
+                <Link href={toLocalizedPath("/user/notifications")}>
                   View All
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
@@ -772,7 +774,7 @@ export default function UserDashboardPage() {
           </CardHeader>
           <CardContent className="pt-0">
             <div className="grid grid-cols-1 gap-3">
-              <Link href="/user/orders">
+              <Link href={toLocalizedPath("/user/orders")}>
                 <Button
                   variant="outline"
                   className="w-full justify-start h-12 hover:bg-blue-50 hover:border-blue-200 transition-colors"
@@ -783,7 +785,7 @@ export default function UserDashboardPage() {
                 </Button>
               </Link>
 
-              <Link href="/user/notifications">
+              <Link href={toLocalizedPath("/user/notifications")}>
                 <Button
                   variant="outline"
                   className="w-full justify-start h-12 hover:bg-purple-50 hover:border-purple-200 transition-colors"
@@ -801,7 +803,7 @@ export default function UserDashboardPage() {
                 </Button>
               </Link>
 
-              <Link href="/wishlist">
+              <Link href={toLocalizedPath("/wishlist")}>
                 <Button
                   variant="outline"
                   className="w-full justify-start h-12 hover:bg-red-50 hover:border-red-200 transition-colors"
@@ -812,7 +814,7 @@ export default function UserDashboardPage() {
                 </Button>
               </Link>
 
-              <Link href="/user/profile">
+              <Link href={toLocalizedPath("/user/profile")}>
                 <Button
                   variant="outline"
                   className="w-full justify-start h-12 hover:bg-green-50 hover:border-green-200 transition-colors"

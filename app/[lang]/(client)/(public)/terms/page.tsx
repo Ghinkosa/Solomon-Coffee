@@ -25,8 +25,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const TermsPage = () => {
+  const toLocalizedPath = useLocalizedPath();
   const quickLinks = [
     { icon: ShoppingCart, title: "Orders & Purchases", href: "#orders" },
     { icon: CreditCard, title: "Payment Terms", href: "#payment" },
@@ -266,14 +268,14 @@ const TermsPage = () => {
                     asChild
                     className="bg-shop_dark_green hover:bg-shop_btn_dark_green"
                   >
-                    <Link href="/contact">Contact Legal Team</Link>
+                    <Link href={toLocalizedPath("/contact")}>Contact Legal Team</Link>
                   </Button>
                   <Button
                     asChild
                     variant="outline"
                     className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5"
                   >
-                    <Link href="/faq">View FAQ</Link>
+                    <Link href={toLocalizedPath("/faq")}>View FAQ</Link>
                   </Button>
                 </div>
                 <p className="text-sm text-light-text mt-6">

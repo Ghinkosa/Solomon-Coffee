@@ -18,6 +18,7 @@ import {
   Video,
 } from "lucide-react";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 const HelpPage = () => {
+  const toLocalizedPath = useLocalizedPath();
   const [searchTerm, setSearchTerm] = useState("");
 
   const helpCategories = [
@@ -396,7 +398,7 @@ const HelpPage = () => {
             </CardHeader>
             <CardContent className="text-center pb-8">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-                <Link href="/faq">
+                <Link href={toLocalizedPath("/faq")}>
                   <Button
                     variant="secondary"
                     className="w-full bg-white text-shop_dark_green hover:bg-gray-100"
@@ -405,7 +407,7 @@ const HelpPage = () => {
                     View FAQ
                   </Button>
                 </Link>
-                <Link href="/contact">
+                <Link href={toLocalizedPath("/contact")}>
                   <Button
                     variant="outline"
                     className="w-full border-white text-white hover:bg-white/10"

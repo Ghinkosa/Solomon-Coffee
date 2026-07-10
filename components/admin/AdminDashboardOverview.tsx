@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DashboardOverviewSkeleton } from "@/components/admin/SkeletonLoaders";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 interface DashboardStats {
   totalRevenue: number;
@@ -43,6 +44,7 @@ interface AccountRequestsSummary {
 }
 
 const AdminDashboardOverview = () => {
+  const toLocalizedPath = useLocalizedPath();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [accountRequests, setAccountRequests] =
     useState<AccountRequestsSummary | null>(null);
@@ -339,7 +341,7 @@ const AdminDashboardOverview = () => {
               </div>
 
               <div className="mt-6 text-center">
-                <Link href="/admin/account-requests">
+                <Link href={toLocalizedPath("/admin/account-requests")}>
                   <Button className="bg-amber-600 hover:bg-amber-700 text-white">
                     <UserCheck className="w-4 h-4 mr-2" />
                     Review Requests

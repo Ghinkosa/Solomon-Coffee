@@ -20,6 +20,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { toast } from "sonner";
 import { PAYMENT_METHODS, PaymentMethod } from "@/lib/orderStatus";
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import { Badge } from "@/components/ui/badge";
 
 interface OrderProduct {
@@ -62,6 +63,7 @@ interface OrderCheckoutContentProps {
 }
 
 export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
+  const toLocalizedPath = useLocalizedPath();
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>(PAYMENT_METHODS.STRIPE);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -329,7 +331,7 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
         </Button>
 
         <Button asChild variant="outline" className="w-full">
-          <Link href="/user/orders" className="flex items-center gap-2">
+          <Link href={toLocalizedPath("/user/orders")} className="flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Orders
           </Link>

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import isArray from "js-isarray";
 import _ from "lodash";
 import { trackWishlistAdd, trackWishlistRemove } from "@/lib/analytics";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const FavoriteButton = ({
   showProduct = false,
@@ -22,6 +23,7 @@ const FavoriteButton = ({
   const { favoriteProduct, addToFavorite, openAuthSidebar } = useCartStore();
   const { isSignedIn } = useUser();
   const [existingProduct, setExistingProduct] = useState<Product | null>(null);
+  const toLocalizedPath = useLocalizedPath();
 
   useEffect(() => {
     const availableItem = _.find(
@@ -95,7 +97,7 @@ const FavoriteButton = ({
     <>
       {!isProductMode ? (
         <BreadcrumbLink
-          href={"/wishlist"}
+          href={toLocalizedPath("/wishlist")}
           onClick={handleWishlistClick}
           className={navLinkClass}
         >

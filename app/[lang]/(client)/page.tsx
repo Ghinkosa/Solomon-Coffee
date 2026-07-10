@@ -21,6 +21,7 @@ import {
   homeEyebrowClass,
   homeSubheadingClass,
 } from "@/components/HomeSectionHeader";
+import { localizedPath } from "@/lib/localized-path";
 
 export default async function Home({
   params,
@@ -105,7 +106,7 @@ export default async function Home({
               </div>
             </div>
             <Link
-              href="/mission"
+              href={localizedPath("/mission", lang)}
               className="inline-flex items-center gap-2 border-b border-shop_orange pb-1 text-base font-medium text-shop_orange transition-all hover:border-shop_dark_green hover:text-shop_dark_green"
             >
               <span>Learn about our mission</span>
@@ -148,7 +149,7 @@ export default async function Home({
       <ShopFeatures dictionary={dictionary.home.shopFeatures} />
 
       <section className="py-16 lg:py-20">
-        <LatestBlog dictionary={dictionary.home.latestBlog} />
+        <LatestBlog dictionary={dictionary.home.latestBlog} lang={lang} />
       </section>
     </div>
   );

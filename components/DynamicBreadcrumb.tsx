@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home } from "lucide-react";
 import { useEffect, useState } from "react";
+import { i18n, type Locale } from "@/i18n-config";
+import { localizedPath } from "@/lib/localized-path";
+import { useLocale } from "@/hooks/useLocale";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,6 +48,7 @@ const DynamicBreadcrumb = ({
   parentPath,
 }: DynamicBreadcrumbProps) => {
   const pathname = usePathname();
+  const lang = useLocale();
   const [detectedParentPath, setDetectedParentPath] = useState<string | null>(
     null
   );
@@ -110,6 +114,15 @@ const DynamicBreadcrumb = ({
       .split("/")
       .filter((segment) => segment !== "");
 
+    const locale =
+      pathSegments[0] &&
+      (i18n.locales as readonly string[]).includes(pathSegments[0])
+        ? (pathSegments[0] as Locale)
+        : lang;
+
+    const routeSegments =
+      pathSegments[0] === locale ? pathSegments.slice(1) : pathSegments;
+
     const breadcrumbs: Array<{
       label: string;
       href?: string;
@@ -119,12 +132,12 @@ const DynamicBreadcrumb = ({
     // Always start with Home
     breadcrumbs.push({
       label: "Home",
-      href: "/",
-      isLast: pathSegments.length === 0,
+      href: localizedPath("/", locale),
+      isLast: routeSegments.length === 0,
     });
 
     // If we're on home page, return just Home
-    if (pathSegments.length === 0) {
+    if (routeSegments.length === 0) {
       return breadcrumbs;
     }
 
@@ -132,22 +145,22 @@ const DynamicBreadcrumb = ({
     const activeParentPath = parentPath || detectedParentPath;
     if (
       activeParentPath &&
-      !pathSegments.includes(activeParentPath.replace("/", ""))
+      !routeSegments.includes(activeParentPath.replace("/", ""))
     ) {
       // Add the parent to the breadcrumbs
       const parentSegment = activeParentPath.replace("/", "");
       breadcrumbs.push({
         label: formatSegmentLabel(parentSegment),
-        href: activeParentPath,
+        href: localizedPath(activeParentPath, locale),
         isLast: false,
       });
     }
 
     // Build breadcrumbs for each segment
-    let currentPath = "";
-    pathSegments.forEach((segment, index) => {
-      const isLast = index === pathSegments.length - 1;
-      const parentSegment = pathSegments[index - 1];
+    let currentPath = `/${locale}`;
+    routeSegments.forEach((segment, index) => {
+      const isLast = index === routeSegments.length - 1;
+      const parentSegment = routeSegments[index - 1];
 
       // Skip route groups like (client), (user), (public)
       if (segment.startsWith("(") && segment.endsWith(")")) {
@@ -204,6 +217,7 @@ const DynamicBreadcrumb = ({
       const homeBreadcrumb = breadcrumbs[0];
       const customBreadcrumbs = customItems.map((item, index) => ({
         ...item,
+        href: item.href ? localizedPath(item.href, locale) : item.href,
         isLast: index === customItems.length - 1,
       }));
 
@@ -229,7 +243,7 @@ const DynamicBreadcrumb = ({
                 ) : (
                   <BreadcrumbLink asChild>
                     <Link
-                      href={crumb.href || "/"}
+                      href={crumb.href || localizedPath("/", lang)}
                       className={`flex items-center hover:text-shop_light_green transition-colors ${
                         index === 0 ? "flex items-center" : ""
                       }`}

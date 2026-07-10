@@ -230,7 +230,7 @@ const ProductGrid = ({
           />
         </div>
       ) : (
-        <NoProductAvailable selectedTab={selectedTab || undefined} />
+        <NoProductAvailable selectedTab={selectedTab || undefined} lang={lang} />
       )}
 
       <div className="mt-10 flex justify-center">

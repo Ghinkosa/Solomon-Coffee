@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
+import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
 
 const ROASTING_IMAGES = {
@@ -39,6 +40,7 @@ const ROASTING_IMAGES = {
 } as const;
 
 const RoastingClient = () => {
+  const toLocalizedPath = useLocalizedPath();
   return (
     <div className="bg-gradient-to-b from-stone-100 to-white min-h-screen">
       {/* HERO SECTION */}
@@ -245,7 +247,7 @@ const RoastingClient = () => {
             size="lg"
             className="bg-stone-950 hover:bg-stone-800 text-white rounded-full px-12 h-14 text-lg"
           >
-            <Link href="/shop">Explore the Collection</Link>
+            <Link href={toLocalizedPath("/shop")}>Explore the Collection</Link>
           </Button>
         </Container>
       </section>
