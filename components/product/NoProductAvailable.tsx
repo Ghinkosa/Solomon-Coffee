@@ -4,17 +4,37 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Package, Search, ArrowRight, Grid3X3 } from "lucide-react";
 import Link from "next/link";
-import { localizedPath } from "@/lib/localized-path";
+import { useLocale, useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 const NoProductAvailable = ({
   selectedTab,
   className,
-  lang = "en",
+  lang: langProp,
 }: {
   selectedTab?: string;
   className?: string;
   lang?: string;
 }) => {
+  const dictionary = useDictionary();
+  const locale = useLocale();
+  const lang = langProp ?? locale;
+  const toLocalizedPath = useLocalizedPath();
+  const categoryLabel = selectedTab?.replace(/-/g, " ");
+
+  const description = categoryLabel
+    ? t(
+        dictionary,
+        "shopNoProducts.description",
+        "We couldn't find any products in the {category} category. This category might be temporarily out of stock.",
+      ).replace("{category}", categoryLabel)
+    : t(
+        dictionary,
+        "shopNoProducts.descriptionGeneric",
+        "We couldn't find any products. This category might be temporarily out of stock.",
+      );
+
   return (
     <div
       className={cn(
@@ -22,7 +42,6 @@ const NoProductAvailable = ({
         className
       )}
     >
-      {/* Icon */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -37,30 +56,18 @@ const NoProductAvailable = ({
         </div>
       </motion.div>
 
-      {/* Title */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
         className="space-y-2"
       >
-        <h2 className="text-2xl font-bold text-gray-800">No Products Found</h2>
-        <p className="text-gray-600 max-w-md">
-          We couldn&apos;t find any products{" "}
-          {selectedTab && (
-            <>
-              in the{" "}
-              <span className="font-semibold text-shop_dark_green capitalize">
-                {selectedTab.replace(/-/g, " ")}
-              </span>{" "}
-              category
-            </>
-          )}
-          . This category might be temporarily out of stock.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-800">
+          {t(dictionary, "shopNoProducts.title", "No Products Found")}
+        </h2>
+        <p className="text-gray-600 max-w-md">{description}</p>
       </motion.div>
 
-      {/* Suggestions */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -68,32 +75,36 @@ const NoProductAvailable = ({
         className="space-y-4 w-full max-w-md"
       >
         <p className="text-sm text-gray-500 font-medium">
-          What would you like to do?
+          {t(dictionary, "shopNoProducts.whatToDo", "What would you like to do?")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href={localizedPath("/shop", lang)}
+            href={toLocalizedPath("/shop")}
             className="inline-flex items-center justify-center gap-2 bg-shop_light_green hover:bg-shop_dark_green text-white px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105"
           >
             <Grid3X3 className="w-4 h-4" />
-            Browse All Products
+            {t(dictionary, "shopNoProducts.browseAll", "Browse All Products")}
             <ArrowRight className="w-4 h-4" />
           </Link>
 
           <Link
-            href={localizedPath("/category", lang)}
+            href={toLocalizedPath("/category")}
             className="inline-flex items-center justify-center gap-2 border border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300"
           >
             <Package className="w-4 h-4" />
-            View Categories
+            {t(dictionary, "shopNoProducts.viewCategories", "View Categories")}
           </Link>
         </div>
 
         <div className="pt-2 border-t border-gray-100">
           <p className="text-xs text-gray-400 flex items-center justify-center gap-2">
             <Search className="w-3 h-3" />
-            Try exploring our other product categories
+            {t(
+              dictionary,
+              "shopNoProducts.footerHint",
+              "Try exploring our other product categories"
+            )}
           </p>
         </div>
       </motion.div>

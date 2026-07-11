@@ -11,6 +11,8 @@ import ProductSideMenu from "./ProductSideMenu";
 import { Flame, ArrowUpRight } from "lucide-react";
 import { image } from "@/sanity/image";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface ProductCardProps {
   product: Product;
@@ -67,7 +69,11 @@ const ProductCard = memo(
     onHoverStart,
     onHoverEnd,
   }: ProductCardProps) => {
+  const dictionary = useDictionary();
   const toLocalizedPath = useLocalizedPath();
+  const imageAlt =
+    product.name ||
+    t(dictionary, "productCard.imageAlt", "Product image");
   const isHomeMode = mode === "home";
   const isShopMode = mode === "shop";
   const isExpandable = mode === "home" || mode === "shop";
@@ -75,6 +81,14 @@ const ProductCard = memo(
   const displayPrice = getDisplayPrice(product);
   const showOptionsHint = isShopMode && hasProductOptions(product);
   const primaryCategoryLabel = getCategoryLabels(product)[0];
+
+  const reviewLabel = product?.totalReviews
+    ? `${product.totalReviews} ${
+        product.totalReviews === 1
+          ? t(dictionary, "productCard.review", "Review")
+          : t(dictionary, "productCard.reviews", "Reviews")
+      }`
+    : t(dictionary, "productCard.noReviews", "No Reviews");
 
   return (
     <div
@@ -102,7 +116,7 @@ const ProductCard = memo(
                     className={`w-full aspect-[4/3] object-contain p-4 transition-transform duration-500 ${
                       product?.stock !== 0 ? "group-hover:scale-[1.03]" : "opacity-50"
                     }`}
-                    alt={product.name || "Product image"}
+                    alt={imageAlt}
                     loading="lazy"
                   />
                 </button>
@@ -112,7 +126,7 @@ const ProductCard = memo(
                     className={`w-full aspect-[4/3] object-contain p-4 transition-transform duration-500 ${
                       product?.stock !== 0 ? "group-hover:scale-[1.03]" : "opacity-50"
                     }`}
-                    alt={product.name || "Product image"}
+                    alt={imageAlt}
                     loading="lazy"
                   />
                 </Link>
@@ -126,7 +140,7 @@ const ProductCard = memo(
                       ? "group-hover:scale-[1.03]"
                       : "opacity-50"
                   }`}
-                  alt={product.name || "Product image"}
+                  alt={imageAlt}
                   loading="lazy"
                 />
               </Link>
@@ -136,7 +150,7 @@ const ProductCard = memo(
         <ProductSideMenu product={product} />
         {product?.status === "sale" ? (
           <p className="absolute top-2 left-2 z-10 text-xs border border-dark-color/50 px-2 rounded-full group-hover:border-light-green hover:text-shop_dark_green hoverEffect">
-            Sale!
+            {t(dictionary, "productCard.sale", "Sale!")}
           </p>
         ) : (
           !isHomeMode && (
@@ -181,13 +195,7 @@ const ProductCard = memo(
                 />
               ))}
             </div>
-            <p className="text-light-text text-xs tracking-wide">
-              {product?.totalReviews
-                ? `${product.totalReviews} ${
-                    product.totalReviews === 1 ? "Review" : "Reviews"
-                  }`
-                : "No Reviews"}
-            </p>
+            <p className="text-light-text text-xs tracking-wide">{reviewLabel}</p>
           </div>
         </Link>
 
@@ -203,7 +211,9 @@ const ProductCard = memo(
               <>
                 <div className="space-y-1">
                   {showOptionsHint && (
-                    <p className="text-[11px] text-muted-foreground">From</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {t(dictionary, "productCard.from", "From")}
+                    </p>
                   )}
                   <PriceView
                     price={displayPrice}
@@ -223,7 +233,7 @@ const ProductCard = memo(
                       href={productHref}
                       className="inline-flex items-center gap-1 text-xs font-medium text-shop_light_green transition-colors hover:text-shop_dark_green"
                     >
-                      Customize options
+                      {t(dictionary, "productCard.customizeOptions", "Customize options")}
                       <ArrowUpRight className="h-3.5 w-3.5" />
                     </Link>
                   )}

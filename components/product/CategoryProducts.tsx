@@ -1,13 +1,16 @@
 "use client";
 import { Category, Product } from "@/sanity.types";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { client } from "@/sanity/lib/client";
 import { motion } from "motion/react";
 import { Grid3X3 } from "lucide-react";
 import ProductCard from "../ProductCard";
 import NoProductAvailable from "./NoProductAvailable";
 import { useRouter } from "next/navigation";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 interface Props {
   categories: Category[];
@@ -16,6 +19,8 @@ interface Props {
 }
 
 const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
+  const dictionary = useDictionary();
+  const toLocalizedPath = useLocalizedPath();
   const [currentSlug, setCurrentSlug] = useState(slug);
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [loading, setLoading] = useState(false);
@@ -23,20 +28,43 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  const currentCategoryTitle = useMemo(() => {
+    const match = categories.find((item) => item.slug?.current === currentSlug);
+    return match?.title ?? currentSlug.replace(/-/g, " ");
+  }, [categories, currentSlug]);
+
+  const productsCountLabel =
+    products.length === 1
+      ? t(
+          dictionary,
+          "categoryPage.products.productFound",
+          "{count} product found"
+        ).replace("{count}", String(products.length))
+      : t(
+          dictionary,
+          "categoryPage.products.productsFound",
+          "{count} products found"
+        ).replace("{count}", String(products.length));
+
+  const productsInLabel = t(
+    dictionary,
+    "categoryPage.products.productsIn",
+    "Products in {category}"
+  ).replace("{category}", currentCategoryTitle);
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
       if (window.innerWidth >= 768) setIsSidebarOpen(true);
     };
 
-    // Initial check
     handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   useEffect(() => {
-    // Only fetch if slug changed from initial
     if (currentSlug === slug) {
       setProducts(initialProducts);
       return;
@@ -54,8 +82,8 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
         }
       }
     `;
-        const products = await client.fetch(query, { slug: currentSlug });
-        setProducts(products);
+        const fetchedProducts = await client.fetch(query, { slug: currentSlug });
+        setProducts(fetchedProducts);
       } catch (error) {
         console.error("Error fetching category products:", error);
       } finally {
@@ -71,24 +99,24 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
   const handleCategoryChange = (newSlug: string) => {
     if (newSlug === currentSlug) return;
     setCurrentSlug(newSlug);
-    router.push(`/category/${newSlug}`);
+    router.push(toLocalizedPath(`/category/${newSlug}`));
   };
 
   return (
     <div className="py-5 flex flex-col md:flex-row items-start gap-5">
       <div className="flex flex-col w-full md:w-auto md:min-w-72 bg-white rounded-xl shadow-sm border border-gray-100/50 overflow-hidden">
-        {/* Mobile Header / Toggle */}
         <div
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-100 cursor-pointer"
         >
-          <h3 className="font-semibold text-shop_dark_green">Categories</h3>
+          <h3 className="font-semibold text-shop_dark_green">
+            {t(dictionary, "categoryPage.products.categoriesSidebar", "Categories")}
+          </h3>
           <Grid3X3
             className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isSidebarOpen ? "rotate-180" : ""}`}
           />
         </div>
 
-        {/* Category List */}
         <motion.div
           initial={false}
           animate={{ height: isMobile ? (isSidebarOpen ? "auto" : 0) : "auto" }}
@@ -123,14 +151,13 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
 
       <motion.div
         className="w-full"
-        key={currentSlug} // This will trigger re-animation when slug changes
+        key={currentSlug}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         {loading ? (
           <div className="w-full">
-            {/* Loading skeleton with same layout as actual content */}
             <div className="mb-6">
               <div className="h-4 bg-gray-200 animate-pulse rounded w-48 mb-2"></div>
               <div className="h-3 bg-gray-200 animate-pulse rounded w-32"></div>
@@ -158,29 +185,23 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
           </div>
         ) : products?.length > 0 ? (
           <div className="w-full">
-            {/* Products Header */}
             <div className="mb-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-shop_dark_green">
-                    Products in{" "}
-                    {currentSlug
-                      ? currentSlug.replace(/-/g, " ")
-                      : "this category"}
+                    {productsInLabel}
                   </h3>
-                  <p className="text-sm text-gray-600">
-                    {products.length} product{products.length !== 1 ? "s" : ""}{" "}
-                    found
-                  </p>
+                  <p className="text-sm text-gray-600">{productsCountLabel}</p>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                   <Grid3X3 className="w-4 h-4" />
-                  <span>Grid View</span>
+                  <span>
+                    {t(dictionary, "categoryPage.products.gridView", "Grid View")}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Products Grid */}
             <motion.div
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5"
               initial={{ opacity: 0 }}
@@ -196,7 +217,7 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{
                     duration: 0.3,
-                    delay: index * 0.05, // Stagger the animation
+                    delay: index * 0.05,
                   }}
                 >
                   <ProductCard product={product} />
@@ -206,16 +227,19 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
           </div>
         ) : (
           <div className="w-full">
-            {/* Empty State Header */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-shop_dark_green">
-                Products in{" "}
-                {currentSlug ? currentSlug.replace(/-/g, " ") : "this category"}
+                {productsInLabel}
               </h3>
-              <p className="text-sm text-gray-600">0 products found</p>
+              <p className="text-sm text-gray-600">
+                {t(
+                  dictionary,
+                  "categoryPage.products.zeroProductsFound",
+                  "0 products found"
+                )}
+              </p>
             </div>
 
-            {/* Enhanced No Products Component */}
             <NoProductAvailable
               selectedTab={currentSlug}
               className="mt-0 w-full border-2 border-dashed border-gray-200 bg-white"

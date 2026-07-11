@@ -41,19 +41,25 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { generateBlogMetadata, generateBlogSchema } from "@/lib/seo";
 import { localizedPath } from "@/lib/localized-path";
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
 
 type Props = {
   params: Promise<{ slug: string; lang: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, lang } = await params;
+  const dictionary = await getDictionary(lang as Locale);
+  const meta = dictionary?.blogSingle?.meta;
   const blog = await getSingleBlog(slug);
 
   if (!blog) {
     return {
-      title: "Blog Not Found",
-      description: "The blog post you're looking for could not be found.",
+      title: meta?.notFoundTitle ?? "Blog Not Found",
+      description:
+        meta?.notFoundDescription ??
+        "The blog post you're looking for could not be found.",
     };
   }
 
@@ -66,7 +72,12 @@ const SingleBlogPage = async ({
   params: Promise<{ slug: string; lang: string }>;
 }) => {
   const { slug, lang } = await params;
-  const blog = (await getSingleBlog(slug)) as SingleBlogFetched | null;
+  const [blog, dictionary] = await Promise.all([
+    getSingleBlog(slug) as Promise<SingleBlogFetched | null>,
+    getDictionary(lang as Locale),
+  ]);
+  const bs = dictionary?.blogSingle ?? {};
+  const bc = dictionary?.breadcrumb ?? {};
   if (!blog) return notFound();
 
   // Generate structured data
@@ -114,8 +125,11 @@ const SingleBlogPage = async ({
       <Container className="pt-6">
         <DynamicBreadcrumb
           customItems={[
-            { label: "Blog", href: localizedPath("/blog", lang) },
-            { label: blog?.title || "Article" },
+            {
+              label: bc.blog ?? "Blog",
+              href: localizedPath("/blog", lang),
+            },
+            { label: blog?.title || bs.article || "Article" },
           ]}
         />
       </Container>
@@ -157,7 +171,12 @@ const SingleBlogPage = async ({
 
                   <div className="flex items-center gap-1">
                     <Clock size={16} />
-                    <span>{readingTime} min read</span>
+                    <span>
+                      {(bs.minRead ?? "{count} min read").replace(
+                        "{count}",
+                        String(readingTime),
+                      )}
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-1">
@@ -174,7 +193,7 @@ const SingleBlogPage = async ({
                     className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
                   >
                     <Heart size={16} className="mr-2" />
-                    Like
+                    {bs.actions?.like ?? "Like"}
                   </Button>
                   <Button
                     variant="outline"
@@ -182,7 +201,7 @@ const SingleBlogPage = async ({
                     className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
                   >
                     <MessageCircle size={16} className="mr-2" />
-                    Comment
+                    {bs.actions?.comment ?? "Comment"}
                   </Button>
                   <Button
                     variant="outline"
@@ -190,7 +209,7 @@ const SingleBlogPage = async ({
                     className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
                   >
                     <Share2 size={16} className="mr-2" />
-                    Share
+                    {bs.actions?.share ?? "Share"}
                   </Button>
                 </div>
               </div>
@@ -200,7 +219,7 @@ const SingleBlogPage = async ({
                 <div className="relative overflow-hidden rounded-xl shadow-lg">
                   <Image
                     src={urlFor(blog.mainImage).width(1200).height(600).url()}
-                    alt={blog.title || "Blog Image"}
+                    alt={blog.title || bs.imageAlt || "Blog Image"}
                     width={1200}
                     height={600}
                     className="w-full h-[400px] sm:h-[500px] object-cover"
@@ -331,7 +350,7 @@ const SingleBlogPage = async ({
                 >
                   <Link href={localizedPath("/blog", lang)} className="flex items-center gap-2">
                     <ChevronLeft size={16} />
-                    Back to Blog
+                    {bs.backToBlog ?? "Back to Blog"}
                   </Link>
                 </Button>
 
@@ -341,7 +360,7 @@ const SingleBlogPage = async ({
           </div>
 
           {/* Sidebar */}
-          <BlogSidebar slug={slug} lang={lang} />
+          <BlogSidebar slug={slug} lang={lang} labels={bs} />
         </div>
       </Container>
     </div>
@@ -351,10 +370,15 @@ const SingleBlogPage = async ({
 const BlogSidebar = async ({
   slug,
   lang,
+  labels,
 }: {
   slug: string;
   lang: string;
+  labels: Record<string, unknown>;
 }) => {
+  const sidebar = (labels.sidebar ?? {}) as Record<string, string>;
+  const newsletter = (labels.newsletter ?? {}) as Record<string, string>;
+  const thumbnailAlt = (labels.thumbnailAlt as string) || "blog thumbnail";
   const categories = (await getBlogCategories()) as BlogCategorySidebarRow[];
   const blogs = (await getOthersBlog(slug, 5)) as Array<
     Blog & { publishedAt?: string }
@@ -367,7 +391,7 @@ const BlogSidebar = async ({
         <CardHeader>
           <CardTitle className="text-lg font-bold text-shop_dark_green flex items-center gap-2">
             <BookOpen size={18} />
-            Blog Categories
+            {sidebar.categories ?? "Blog Categories"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -392,7 +416,7 @@ const BlogSidebar = async ({
         <CardHeader>
           <CardTitle className="text-lg font-bold text-shop_dark_green flex items-center gap-2">
             <BookOpen size={18} />
-            Latest Posts
+            {sidebar.latestPosts ?? "Latest Posts"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -413,7 +437,7 @@ const BlogSidebar = async ({
                         .width(80)
                         .height(80)
                         .url()}
-                      alt="blog thumbnail"
+                      alt={blogItem.title || thumbnailAlt}
                       width={80}
                       height={80}
                       className="w-16 h-16 rounded-lg object-cover border border-gray-200 group-hover:border-shop_light_green transition-colors"
@@ -444,16 +468,17 @@ const BlogSidebar = async ({
         <CardContent className="p-6 text-center">
           <BookOpen className="w-12 h-12 text-shop_dark_green mx-auto mb-4" />
           <h3 className="text-lg font-bold text-shop_dark_green mb-2">
-            Stay Updated
+            {newsletter.title ?? "Stay Updated"}
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Get the latest articles delivered to your inbox.
+            {newsletter.description ??
+              "Get the latest articles delivered to your inbox."}
           </p>
           <Button
             className="w-full bg-shop_dark_green hover:bg-shop_light_green"
             size="sm"
           >
-            Subscribe Now
+            {newsletter.subscribe ?? "Subscribe Now"}
           </Button>
         </CardContent>
       </Card>

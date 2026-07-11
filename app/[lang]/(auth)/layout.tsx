@@ -1,5 +1,8 @@
 import { Metadata } from "next";
 import { contactConfig } from "@/config/contact";
+import { getDictionary } from "@/lib/dictionary";
+import { DictionaryProvider } from "@/lib/dictionary-context";
+import { Locale } from "@/i18n-config";
 
 export const metadata: Metadata = {
   title: `Authentication - ${contactConfig.company.name}`,
@@ -14,10 +17,19 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ lang: string }>;
 }) {
-  return <div className="auth-layout">{children}</div>;
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang as Locale);
+
+  return (
+    <DictionaryProvider dictionary={dictionary}>
+      <div className="auth-layout">{children}</div>
+    </DictionaryProvider>
+  );
 }

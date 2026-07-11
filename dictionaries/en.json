@@ -37,6 +37,12 @@
       "description": "You're about to remove {count} products from your wishlist. This action cannot be undone.",
       "keepProducts": "Keep Products",
       "confirm": "Clear All Products"
+    },
+    "toasts": {
+      "added": "Added to wishlist",
+      "removed": "Removed from wishlist",
+      "addedDescription": "Product added successfully!",
+      "removedDescription": "Product removed successfully!"
     }
   },
   "cart": {
@@ -197,7 +203,8 @@
       "ourCoffee": "Our Coffee",
       "wholesalers": "Wholesale",
       "contactUs": "Contact Us",
-      "openMenu": "Open menu"
+      "openMenu": "Open menu",
+      "mainNavAria": "Main navigation"
     },
     "auth": {
       "welcome": "Welcome",
@@ -213,7 +220,8 @@
       "signInLink": "Sign in"
     },
     "search": {
-      "placeholder": "Search coffees and brewing gear..."
+      "placeholder": "Search coffees and brewing gear...",
+      "placeholderShort": "Search"
     },
     "language": {
       "select": "Select Language",
@@ -565,7 +573,8 @@
         "title": "Priority Support & Updates",
         "description": "Fast support and early feature access"
       }
-    }
+    },
+    "closeAria": "Close"
   },
   "contact": {
     "hero": {
@@ -713,7 +722,18 @@
     "filters": "Filters",
     "applyFilters": "Apply Filters",
     "productsFound": "Coffee option(s) found",
-    "showingAll": "Showing all available coffee options"
+    "showingAll": "Showing all available coffee options",
+    "categoryFilterTitle": "Categories",
+    "clearCategoryFilter": "Clear category filter",
+    "brands": "Brands",
+    "clearBrandFilter": "Clear brand filter",
+    "priceRange": "Price Range",
+    "clearPriceFilter": "Clear price filter",
+    "under100": "Under $100",
+    "range100_200": "$100 - $200",
+    "range200_300": "$200 - $300",
+    "range300_500": "$300 - $500",
+    "over500": "Over $500"
   },
   "deals": {
     "countdown": {
@@ -828,7 +848,11 @@
       "add": "Add to Cart",
       "weight": "Weight",
       "grind": "Grind",
-      "packaging": "Packaging"
+      "packaging": "Packaging",
+      "toasts": {
+        "stockLimitTitle": "Stock limit reached",
+        "stockLimitDescription": "Cannot add more than available stock"
+      }
     },
     "reviews": {
       "review": "review",
@@ -975,7 +999,15 @@
       "coffeeDetails": "Coffee details",
       "closeAria": "Close details",
       "viewFullDetails": "View full details"
-    }
+    },
+    "details": {
+      "description": "Description",
+      "additionalInfo": "Additional Information",
+      "weight": "Weight",
+      "dimensions": "Dimensions",
+      "noDescription": "No description available for this product."
+    },
+    "defaultProductName": "this product"
   },
   "checkout": {
     "title": "Checkout",
@@ -1862,7 +1894,29 @@
     "orders": "Orders",
     "payment": "Payment",
     "categories": "Categories",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "orderHistory": "Order History",
+    "wishlist": "Wishlist",
+    "blog": "Blog",
+    "shop": "Shop",
+    "product": "Product",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help",
+    "faq": "FAQ",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "trackOrder": "Track Order",
+    "order": "Order",
+    "profile": "Profile",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "success": "Success",
+    "wholesalers": "Wholesale",
+    "mission": "Mission",
+    "education": "Education",
+    "brands": "Brands",
+    "products": "Products"
   },
   "newsletterForm": {
     "placeholder": "Enter your email",
@@ -1876,7 +1930,11 @@
   "shopNoProducts": {
     "title": "No Products Found",
     "browseAll": "Browse All Products",
-    "whatToDo": "What would you like to do?"
+    "whatToDo": "What would you like to do?",
+    "description": "We couldn't find any products in the {category} category. This category might be temporarily out of stock.",
+    "descriptionGeneric": "We couldn't find any products. This category might be temporarily out of stock.",
+    "viewCategories": "View Categories",
+    "footerHint": "Try exploring our other product categories"
   },
   "categoryPage": {
     "title": "Explore Coffee Categories",
@@ -1896,7 +1954,27 @@
     "infoTitle": "Can't Find What You're Looking For?",
     "infoDescription": "Browse all our products or use our search feature to find specific items.",
     "allProducts": "All Products",
-    "shopByRoasters": "Shop by Roasters"
+    "shopByRoasters": "Shop by Roasters",
+    "featuredCategory": "Featured Category",
+    "rangeLabel": "Range:",
+    "categoryView": "Category View",
+    "filteredResults": "Filtered Results",
+    "exploreOtherCategories": "Explore Other Categories",
+    "viewAll": "View All",
+    "discoverMoreTitle": "Discover More Amazing Products",
+    "discoverMoreDescription": "Can't find what you're looking for in {category}? Explore our complete collection of products across all categories.",
+    "metaNotFoundTitle": "Category Not Found",
+    "metaNotFoundDescription": "The category you're looking for could not be found.",
+    "productsSuffix": "Products",
+    "products": {
+      "categoriesSidebar": "Categories",
+      "productsIn": "Products in {category}",
+      "thisCategory": "this category",
+      "productFound": "{count} product found",
+      "productsFound": "{count} products found",
+      "zeroProductsFound": "0 products found",
+      "gridView": "Grid View"
+    }
   },
   "brandsPage": {
     "title": "Shop by Roasters",
@@ -2901,5 +2979,203 @@
       "lastUpdated": "These terms were last updated on January 15, 2024",
       "notice": "By continuing to use Sheba Cup Coffee, you agree to the most current version of these terms."
     }
+  },
+  "productCard": {
+    "imageAlt": "Product image",
+    "sale": "Sale!",
+    "review": "Review",
+    "reviews": "Reviews",
+    "noReviews": "No Reviews",
+    "from": "From",
+    "customizeOptions": "Customize options"
+  },
+  "searchModal": {
+    "placeholder": "Search",
+    "openAria": "Open search",
+    "title": "Search Products",
+    "closeAria": "Close search (Escape)",
+    "closeTitle": "Close (Escape)",
+    "loadingTitle": "Searching products...",
+    "loadingHint": "Please wait a moment",
+    "badges": {
+      "hot": "Hot",
+      "new": "New"
+    },
+    "emptyTitle": "Discover Amazing Products",
+    "emptyDescription": "Search and explore thousands of products",
+    "popularTitle": "Popular Products",
+    "quickSearch": "Quick search:",
+    "noResultsTitle": "No Results Found",
+    "noResultsDescription": "Sorry, we couldn't find any products matching",
+    "clearSearch": "Clear Search",
+    "productAlt": "Product"
+  },
+  "socialShare": {
+    "defaultTitle": "Check this out!",
+    "linkCopied": "Link copied to clipboard",
+    "label": "Share this article:",
+    "shareOn": "Share on {platform}",
+    "shareOrCopy": "Share or Copy Link"
+  },
+  "initialVisit": {
+    "title": "Welcome to Sheba Cup Coffee!",
+    "description": "Discover freshly roasted Ethiopian coffee, brewing essentials, and curated lots delivered to your door.",
+    "features": [
+      "Fresh Roasts",
+      "Ethiopian Origins",
+      "Brewing Gear",
+      "Wholesale Options"
+    ],
+    "cta": "Shop Sheba Cup Coffee",
+    "dismiss": "No thanks, maybe later",
+    "sidePopup": {
+      "title": "Visit Sheba Cup Coffee",
+      "description": "Explore our curated coffee collection"
+    }
+  },
+  "productCatalog": {
+    "searchPlaceholder": "Search products...",
+    "sortBy": "Sort by",
+    "sortNameAsc": "Name A-Z",
+    "sortNameDesc": "Name Z-A",
+    "sortPriceLow": "Price Low to High",
+    "sortPriceHigh": "Price High to Low",
+    "sortNewest": "Newest First",
+    "filters": "Filters",
+    "activeFilters": "Active filters:",
+    "searchLabel": "Search:",
+    "clearAll": "Clear all",
+    "categories": "Categories",
+    "priceRange": "Price Range",
+    "resultsSummary": "Showing {shown} of {total} products"
+  },
+  "productCatalogPage": {
+    "title": "Product Catalog",
+    "breadcrumbProducts": "Products",
+    "heroDescription": "Discover our complete collection of premium coffee and brewing essentials. From freshly roasted beans to everyday coffee tools, find everything you need in one place.",
+    "statsProducts": "{count}+ Products",
+    "statsQuality": "Premium Quality Items",
+    "statsCategories": "{count} Categories",
+    "statsNavigate": "Easy to Navigate",
+    "statsFilters": "Advanced Filters",
+    "statsFind": "Find What You Need",
+    "loading": "Loading products...",
+    "ctaTitle": "Can't find what you're looking for?",
+    "ctaDescription": "Our customer support team is here to help you find the perfect product. Get in touch with us for personalized recommendations.",
+    "contactSupport": "Contact Support"
+  },
+  "authPages": {
+    "backToHome": "Back to Home",
+    "supportPrompt": "Need help? Contact our support team at",
+    "questionsPrompt": "Questions? Contact us at",
+    "signIn": {
+      "title": "Welcome Back!",
+      "description": "Sign in to access your account, track orders, and enjoy personalized coffee recommendations at {company}.",
+      "features": {
+        "secure": {
+          "title": "Secure Authentication",
+          "description": "Your data is protected with enterprise-grade security"
+        },
+        "trusted": {
+          "title": "Trusted by Thousands",
+          "description": "Join our community of satisfied customers"
+        },
+        "premium": {
+          "title": "Premium Experience",
+          "description": "Access exclusive coffee offers and personalized brew picks"
+        }
+      }
+    },
+    "signUp": {
+      "title": "Join {company}",
+      "description": "Create your account today and unlock exclusive benefits, personalized recommendations, and seamless shopping experiences.",
+      "benefits": {
+        "welcome": {
+          "title": "Welcome Bonus",
+          "description": "Get 10% off your first order when you sign up"
+        },
+        "deals": {
+          "title": "Exclusive Deals",
+          "description": "Access member-only discounts and early sales"
+        },
+        "shipping": {
+          "title": "Free Shipping",
+          "description": "Enjoy free shipping on orders over $50"
+        },
+        "payments": {
+          "title": "Secure Payments",
+          "description": "Multiple payment options with bank-level security"
+        }
+      },
+      "trustCustomers": "Trusted by 50,000+ customers",
+      "trustRating": "4.8/5 average rating",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in here"
+    }
+  },
+  "blogSingle": {
+    "meta": {
+      "notFoundTitle": "Blog Not Found",
+      "notFoundDescription": "The blog post you're looking for could not be found."
+    },
+    "article": "Article",
+    "minRead": "{count} min read",
+    "views": "{count} views",
+    "actions": {
+      "like": "Like",
+      "comment": "Comment",
+      "share": "Share"
+    },
+    "imageAlt": "Blog Image",
+    "thumbnailAlt": "Blog thumbnail",
+    "backToBlog": "Back to Blog",
+    "sidebar": {
+      "categories": "Blog Categories",
+      "latestPosts": "Latest Posts"
+    },
+    "newsletter": {
+      "title": "Stay Updated",
+      "description": "Get the latest articles delivered to your inbox.",
+      "subscribe": "Subscribe Now"
+    }
+  },
+  "cartToasts": {
+    "quantityDecreased": "Quantity decreased successfully!",
+    "quantityIncreased": "Quantity increased successfully!",
+    "itemRemoved": "Item removed from cart",
+    "itemRemovedNamed": "{name} removed successfully!",
+    "movedToCart": "Moved to cart successfully!",
+    "removeFailed": "Failed to remove item",
+    "stockLimit": "Cannot add more than available stock"
+  },
+  "checkoutAddress": {
+    "addFirstTitle": "Add Your First Address",
+    "addNewTitle": "Add New Address",
+    "addDescription": "Add a shipping address to {email}",
+    "defaultFirst": "This will be your default address",
+    "setDefault": "Set as default address",
+    "adding": "Adding...",
+    "requiredFields": "Please fill in all required fields",
+    "saved": "Address saved successfully!",
+    "addFailed": "Failed to add address",
+    "phoneLabel": "Phone Number",
+    "cityLabel": "City *",
+    "stateLabel": "State *",
+    "zipLabel": "ZIP Code *"
+  },
+  "checkoutPlacement": {
+    "addressRequired": "Address Required",
+    "selectAddress": "Please select a shipping address",
+    "cartEmpty": "Cart is empty",
+    "insufficientStock": "Insufficient Stock",
+    "orderFailed": "Order Failed"
+  },
+  "shopMeta": {
+    "title": "Shop",
+    "description": "Browse fresh coffee, brewing tools, and curated essentials for home and office brewing."
+  },
+  "blogMeta": {
+    "title": "Blog",
+    "description": "Read our latest insights on coffee, brewing, and our roastery."
   }
 }

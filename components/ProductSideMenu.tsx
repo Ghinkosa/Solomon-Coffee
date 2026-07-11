@@ -6,6 +6,8 @@ import { Heart } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import _ from "lodash";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 const ProductSideMenu = ({
   product,
@@ -15,6 +17,7 @@ const ProductSideMenu = ({
   className?: string;
 }) => {
   const { favoriteProduct, addToFavorite } = useCartStore();
+  const dictionary = useDictionary();
   const [existingProduct, setExistingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -30,11 +33,21 @@ const ProductSideMenu = ({
     if (product?._id) {
       addToFavorite(product).then(() => {
         toast.success(
-          existingProduct ? "Removed from wishlist" : "Added to wishlist",
+          existingProduct
+            ? t(dictionary, "wishlist.toasts.removed", "Removed from wishlist")
+            : t(dictionary, "wishlist.toasts.added", "Added to wishlist"),
           {
             description: existingProduct
-              ? "Product removed successfully!"
-              : "Product added successfully!",
+              ? t(
+                  dictionary,
+                  "wishlist.toasts.removedDescription",
+                  "Product removed successfully!",
+                )
+              : t(
+                  dictionary,
+                  "wishlist.toasts.addedDescription",
+                  "Product added successfully!",
+                ),
             duration: 3000,
           }
         );

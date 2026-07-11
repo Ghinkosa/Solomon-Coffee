@@ -12,18 +12,22 @@ import {
   Linkedin,
   Twitter,
   Share2,
-  Link as LinkIcon,
   Check,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface SocialShareProps {
   title?: string;
   url?: string;
 }
 
-const SocialShare = ({ title = "Check this out!", url }: SocialShareProps) => {
+const SocialShare = ({ title, url }: SocialShareProps) => {
+  const dictionary = useDictionary();
+  const defaultTitle = t(dictionary, "socialShare.defaultTitle", "Check this out!");
+  const shareTitle = title || defaultTitle;
   const [currentUrl, setCurrentUrl] = useState(url || "");
   const [isCopied, setIsCopied] = useState(false);
 
@@ -37,8 +41,8 @@ const SocialShare = ({ title = "Check this out!", url }: SocialShareProps) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: title,
-          text: title,
+          title: shareTitle,
+          text: shareTitle,
           url: currentUrl,
         });
       } catch (error) {
@@ -52,7 +56,9 @@ const SocialShare = ({ title = "Check this out!", url }: SocialShareProps) => {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(currentUrl);
     setIsCopied(true);
-    toast.success("Link copied to clipboard");
+    toast.success(
+      t(dictionary, "socialShare.linkCopied", "Link copied to clipboard"),
+    );
     setTimeout(() => setIsCopied(false), 2000);
   };
 
@@ -61,7 +67,7 @@ const SocialShare = ({ title = "Check this out!", url }: SocialShareProps) => {
       name: "Twitter",
       icon: Twitter,
       href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        title,
+        shareTitle,
       )}&url=${encodeURIComponent(currentUrl)}`,
       color: "hover:text-sky-500 hover:border-sky-500",
     },
@@ -86,7 +92,7 @@ const SocialShare = ({ title = "Check this out!", url }: SocialShareProps) => {
   return (
     <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
       <span className="text-sm font-medium text-gray-700">
-        Share this article:
+        {t(dictionary, "socialShare.label", "Share this article:")}
       </span>
       <div className="flex gap-2">
         <TooltipProvider delayDuration={100}>
@@ -105,7 +111,12 @@ const SocialShare = ({ title = "Check this out!", url }: SocialShareProps) => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Share on {platform.name}</p>
+                <p>
+                  {t(dictionary, "socialShare.shareOn", "Share on {platform}").replace(
+                    "{platform}",
+                    platform.name,
+                  )}
+                </p>
               </TooltipContent>
             </Tooltip>
           ))}
@@ -122,7 +133,9 @@ const SocialShare = ({ title = "Check this out!", url }: SocialShareProps) => {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Share or Copy Link</p>
+              <p>
+                {t(dictionary, "socialShare.shareOrCopy", "Share or Copy Link")}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

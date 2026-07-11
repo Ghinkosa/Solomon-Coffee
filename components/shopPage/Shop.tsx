@@ -174,6 +174,13 @@ const Shop = ({ categories, dictionary }: Props) => {
                     categories={categories}
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
+                    categoryFilterTitle={
+                      dictionary?.shop?.categoryFilterTitle || "Categories"
+                    }
+                    clearCategoryFilterLabel={
+                      dictionary?.shop?.clearCategoryFilter ||
+                      "Clear category filter"
+                    }
                   />
                 </div>
                 <div className="p-4 border-t border-gray-200 bg-gray-50">
@@ -202,6 +209,13 @@ const Shop = ({ categories, dictionary }: Props) => {
                     categories={categories}
                     selectedCategory={selectedCategory}
                     setSelectedCategory={setSelectedCategory}
+                    categoryFilterTitle={
+                      dictionary?.shop?.categoryFilterTitle || "Categories"
+                    }
+                    clearCategoryFilterLabel={
+                      dictionary?.shop?.clearCategoryFilter ||
+                      "Clear category filter"
+                    }
                   />
                 </div>
               </div>

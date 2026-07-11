@@ -5,6 +5,8 @@ import useCartStore, { GrindOption, PackagingOption, WeightOption } from "@/stor
 import { Product } from "@/sanity.types";
 import { twMerge } from "tailwind-merge";
 import { trackAddToCart, trackRemoveFromCart } from "@/lib/analytics";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface Props {
   product: Product;
@@ -28,6 +30,7 @@ const QuantityButtons = ({
   selectedPackaging,
 }: Props) => {
   const { addItem, removeItem, getItemCount } = useCartStore();
+  const dictionary = useDictionary();
   const itemCount = getItemCount(
     product?._id,
     selectedWeight,
@@ -39,9 +42,16 @@ const QuantityButtons = ({
   const handleRemoveProduct = () => {
     removeItem(product?._id, selectedWeight, selectedGrind, selectedPackaging);
     if (itemCount > 1) {
-      toast.success("Quantity Decreased successfully!");
+      toast.success(
+        t(dictionary, "cartToasts.quantityDecreased", "Quantity decreased successfully!"),
+      );
     } else {
-      toast.success(`${product?.name?.substring(0, 12)} removed successfully!`);
+      toast.success(
+        t(dictionary, "cartToasts.itemRemovedNamed", "{name} removed successfully!").replace(
+          "{name}",
+          product?.name?.substring(0, 12) || "",
+        ),
+      );
     }
     // Firebase Analytics event
     trackRemoveFromCart({
@@ -55,7 +65,9 @@ const QuantityButtons = ({
   const handleAddToCart = () => {
     if ((product?.stock as number) > itemCount) {
       addItem(product, selectedWeight, selectedGrind, selectedPackaging);
-      toast.success("Quantity Increased successfully!");
+      toast.success(
+        t(dictionary, "cartToasts.quantityIncreased", "Quantity increased successfully!"),
+      );
       // Firebase Analytics event
       trackAddToCart({
         productId: product._id,
@@ -64,7 +76,9 @@ const QuantityButtons = ({
         quantity: itemCount + 1,
       });
     } else {
-      toast.error("Can not add more than available stock");
+      toast.error(
+        t(dictionary, "cartToasts.stockLimit", "Cannot add more than available stock"),
+      );
     }
   };
   return (

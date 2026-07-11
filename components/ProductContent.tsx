@@ -489,7 +489,7 @@ const ProductContent = ({
 
         {/* Product Details Section */}
         <ProductSectionWrapper delay={0.6}>
-          <ProductsDetails />
+          <ProductsDetails product={product} />
         </ProductSectionWrapper>
 
         {/* Trust Indicators & Guarantees */}
@@ -539,7 +539,10 @@ const ProductContent = ({
         <ProductSectionWrapper delay={0.9}>
           <ProductReviews
             productId={product._id}
-            productName={product.name || "this product"}
+            productName={
+              product.name ||
+              t(dictionary, "product.defaultProductName", "this product")
+            }
           />
         </ProductSectionWrapper>
 

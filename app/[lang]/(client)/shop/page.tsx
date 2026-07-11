@@ -5,14 +5,19 @@ import { Metadata } from "next";
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
 
-export const metadata: Metadata = {
-  title: "Shop",
-  description:
-    "Browse fresh coffee, brewing tools, and curated essentials for home and office brewing.",
-};
-
 interface Props {
   params: Promise<{ lang: Locale }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
+  return {
+    title: dictionary?.shopMeta?.title ?? "Shop",
+    description:
+      dictionary?.shopMeta?.description ??
+      "Browse fresh coffee, brewing tools, and curated essentials for home and office brewing.",
+  };
 }
 
 const ShopPage = async ({ params }: Props) => {

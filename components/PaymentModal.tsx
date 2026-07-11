@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader2, CreditCard, X, ExternalLink } from "lucide-react";
 import PriceFormatter from "./PriceFormatter";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -29,6 +31,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   orderTotal,
   orderNumber,
 }) => {
+  const dictionary = useDictionary();
+  const p = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.paymentModal.${path}`, fallback);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePayNow = async () => {
@@ -47,20 +52,23 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to process payment");
+        throw new Error(data.error || p("toasts.failed", "Failed to process payment"));
       }
 
       if (data.success && data.checkoutUrl) {
-        // Redirect directly to Stripe Checkout
-        toast.success("Redirecting to secure payment...");
+        toast.success(
+          p("toasts.redirecting", "Redirecting to secure payment..."),
+        );
         window.location.href = data.checkoutUrl;
       } else {
-        throw new Error("Payment initialization failed");
+        throw new Error(p("toasts.initFailed", "Payment initialization failed"));
       }
     } catch (error) {
       console.error("Payment error:", error);
       const errorMessage =
-        error instanceof Error ? error.message : "Payment failed";
+        error instanceof Error
+          ? error.message
+          : p("toasts.failed", "Payment failed");
       toast.error(errorMessage);
     } finally {
       setIsProcessing(false);
@@ -78,7 +86,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
-              Confirm Payment
+              {p("title", "Confirm Payment")}
             </DialogTitle>
             <Button
               variant="ghost"
@@ -92,16 +100,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         </DialogHeader>
 
         <div className="py-4 space-y-6">
-          {/* Order Summary */}
           <div className="p-4 bg-shop_light_bg rounded-lg border border-shop_orange/20 animate-in slide-in-from-top-2 duration-200">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">Order Number</span>
+              <span className="text-sm text-gray-600">
+                {p("orderNumber", "Order Number")}
+              </span>
               <span className="font-medium">
-                #{orderNumber?.slice(-10) || "N/A"}
+                #{orderNumber?.slice(-10) || p("notAvailable", "N/A")}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Total Amount</span>
+              <span className="text-sm text-gray-600">
+                {p("totalAmount", "Total Amount")}
+              </span>
               <PriceFormatter
                 amount={orderTotal}
                 className="font-semibold text-lg"
@@ -109,15 +120,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             </div>
           </div>
 
-          {/* Payment Info */}
           <div className="text-center text-sm text-gray-600 animate-in slide-in-from-bottom-2 duration-200 delay-100">
             <p className="flex items-center justify-center gap-1">
               <ExternalLink className="w-4 h-4" />
-              You&apos;ll be redirected to secure checkout
+              {p("redirectHint", "You'll be redirected to secure checkout")}
             </p>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-3 animate-in slide-in-from-bottom-2 duration-200 delay-200">
             <Button
               type="button"
@@ -126,7 +135,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               disabled={isProcessing}
               className="flex-1 transition-all duration-200 hover:bg-gray-50"
             >
-              Cancel
+              {p("cancel", "Cancel")}
             </Button>
             <Button
               onClick={handlePayNow}
@@ -136,12 +145,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Processing...
+                  {p("processing", "Processing...")}
                 </>
               ) : (
                 <>
                   <CreditCard className="w-4 h-4 mr-2" />
-                  Pay Now
+                  {p("payNow", "Pay Now")}
                 </>
               )}
             </Button>

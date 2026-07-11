@@ -3,7 +3,6 @@ import Container from "@/components/Container";
 import Title from "@/components/Title";
 import { getAllProducts, getCategories } from "@/sanity/queries";
 import ProductCatalog from "@/components/ProductCatalog";
-
 import { ArrowRight, Package, Filter, Search } from "lucide-react";
 import {
   Breadcrumb,
@@ -14,6 +13,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { localizedPath } from "@/lib/localized-path";
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
+import Link from "next/link";
 
 const ProductPage = async ({
   params,
@@ -21,14 +23,17 @@ const ProductPage = async ({
   params: Promise<{ lang: string }>;
 }) => {
   const { lang } = await params;
-  const [products, categories] = await Promise.all([
+  const [products, categories, dictionary] = await Promise.all([
     getAllProducts(),
     getCategories(),
+    getDictionary(lang as Locale),
   ]);
+  const t = dictionary?.productCatalogPage ?? {};
+  const bc = dictionary?.breadcrumb ?? {};
+  const common = dictionary?.common ?? {};
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen">
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-shop_dark_green to-shop_light_green">
         <Container>
           <div className="py-16 text-white">
@@ -36,14 +41,17 @@ const ProductPage = async ({
               <Breadcrumb>
                 <BreadcrumbList className="text-white/80">
                   <BreadcrumbItem>
-                    <BreadcrumbLink href={localizedPath("/", lang)} className="hover:text-white">
-                      Home
+                    <BreadcrumbLink
+                      href={localizedPath("/", lang)}
+                      className="hover:text-white"
+                    >
+                      {bc.home ?? common.home ?? "Home"}
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="text-white/60" />
                   <BreadcrumbItem>
                     <BreadcrumbPage className="text-white font-medium">
-                      Products
+                      {t.breadcrumbProducts ?? bc.products ?? "Products"}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
@@ -54,14 +62,13 @@ const ProductPage = async ({
               <div className="flex items-center gap-3 mb-4">
                 <Package className="w-8 h-8" />
                 <Title className="text-4xl md:text-5xl font-bold text-white mb-0">
-                  Product Catalog
+                  {t.title ?? "Product Catalog"}
                 </Title>
               </div>
 
               <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8">
-                Discover our complete collection of premium coffee and brewing
-                essentials. From freshly roasted beans to everyday coffee tools,
-                find everything you need in one place.
+                {t.heroDescription ??
+                  "Discover our complete collection of premium coffee and brewing essentials."}
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -71,10 +78,13 @@ const ProductPage = async ({
                   </div>
                   <div>
                     <p className="font-semibold text-white">
-                      {products?.length || 0}+ Products
+                      {(t.statsProducts ?? "{count}+ Products").replace(
+                        "{count}",
+                        String(products?.length || 0),
+                      )}
                     </p>
                     <p className="text-sm text-white/70">
-                      Premium Quality Items
+                      {t.statsQuality ?? "Premium Quality Items"}
                     </p>
                   </div>
                 </div>
@@ -85,9 +95,14 @@ const ProductPage = async ({
                   </div>
                   <div>
                     <p className="font-semibold text-white">
-                      {categories?.length || 0} Categories
+                      {(t.statsCategories ?? "{count} Categories").replace(
+                        "{count}",
+                        String(categories?.length || 0),
+                      )}
                     </p>
-                    <p className="text-sm text-white/70">Easy to Navigate</p>
+                    <p className="text-sm text-white/70">
+                      {t.statsNavigate ?? "Easy to Navigate"}
+                    </p>
                   </div>
                 </div>
 
@@ -96,8 +111,12 @@ const ProductPage = async ({
                     <Search className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white">Advanced Filters</p>
-                    <p className="text-sm text-white/70">Find What You Need</p>
+                    <p className="font-semibold text-white">
+                      {t.statsFilters ?? "Advanced Filters"}
+                    </p>
+                    <p className="text-sm text-white/70">
+                      {t.statsFind ?? "Find What You Need"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -106,14 +125,15 @@ const ProductPage = async ({
         </Container>
       </div>
 
-      {/* Main Content */}
       <Container className="py-10">
         <Suspense
           fallback={
             <div className="flex items-center justify-center py-20">
               <div className="flex items-center gap-2 text-shop_dark_green">
                 <div className="w-6 h-6 border-2 border-shop_dark_green border-t-transparent rounded-full animate-spin"></div>
-                <span className="font-medium">Loading products...</span>
+                <span className="font-medium">
+                  {t.loading ?? "Loading products..."}
+                </span>
               </div>
             </div>
           }
@@ -125,21 +145,23 @@ const ProductPage = async ({
         </Suspense>
       </Container>
 
-      {/* Bottom CTA Section */}
       <div className="bg-shop_light_bg border-t">
         <Container>
           <div className="py-12 text-center">
             <Title className="text-2xl mb-4">
-              Can&apos;t find what you&apos;re looking for?
+              {t.ctaTitle ?? "Can't find what you're looking for?"}
             </Title>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Our customer support team is here to help you find the perfect
-              product. Get in touch with us for personalized recommendations.
+              {t.ctaDescription ??
+                "Our customer support team is here to help you find the perfect product."}
             </p>
-            <button className="inline-flex items-center gap-2 bg-shop_dark_green text-white px-8 py-3 rounded-lg font-semibold hover:bg-shop_dark_green/90 transition-colors">
-              Contact Support
+            <Link
+              href={localizedPath("/contact", lang)}
+              className="inline-flex items-center gap-2 bg-shop_dark_green text-white px-8 py-3 rounded-lg font-semibold hover:bg-shop_dark_green/90 transition-colors"
+            >
+              {t.contactSupport ?? "Contact Support"}
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
         </Container>
       </div>

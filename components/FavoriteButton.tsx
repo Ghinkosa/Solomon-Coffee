@@ -10,6 +10,8 @@ import isArray from "js-isarray";
 import _ from "lodash";
 import { trackWishlistAdd, trackWishlistRemove } from "@/lib/analytics";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 const FavoriteButton = ({
   showProduct = false,
@@ -22,6 +24,7 @@ const FavoriteButton = ({
 }) => {
   const { favoriteProduct, addToFavorite, openAuthSidebar } = useCartStore();
   const { isSignedIn } = useUser();
+  const dictionary = useDictionary();
   const [existingProduct, setExistingProduct] = useState<Product | null>(null);
   const toLocalizedPath = useLocalizedPath();
 
@@ -47,11 +50,21 @@ const FavoriteButton = ({
 
       addToFavorite(product).then(() => {
         toast.success(
-          isRemoving ? "Removed from wishlist" : "Added to wishlist",
+          isRemoving
+            ? t(dictionary, "wishlist.toasts.removed", "Removed from wishlist")
+            : t(dictionary, "wishlist.toasts.added", "Added to wishlist"),
           {
             description: isRemoving
-              ? "Product removed successfully!"
-              : "Product added successfully!",
+              ? t(
+                  dictionary,
+                  "wishlist.toasts.removedDescription",
+                  "Product removed successfully!",
+                )
+              : t(
+                  dictionary,
+                  "wishlist.toasts.addedDescription",
+                  "Product added successfully!",
+                ),
             duration: 3000,
           },
         );

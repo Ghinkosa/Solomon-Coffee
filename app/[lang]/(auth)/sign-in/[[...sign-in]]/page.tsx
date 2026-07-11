@@ -10,37 +10,63 @@ import { contactConfig } from "@/config/contact";
 import Container from "@/components/Container";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 const SignInContent = () => {
   const searchParams = useSearchParams();
   const toLocalizedPath = useLocalizedPath();
+  const dictionary = useDictionary();
   const redirectTo = searchParams.get("redirectTo");
+  const company = contactConfig.company.name;
 
   const features = [
     {
       icon: Shield,
-      title: "Secure Authentication",
-      description: "Your data is protected with enterprise-grade security",
+      title: t(
+        dictionary,
+        "authPages.signIn.features.secure.title",
+        "Secure Authentication",
+      ),
+      description: t(
+        dictionary,
+        "authPages.signIn.features.secure.description",
+        "Your data is protected with enterprise-grade security",
+      ),
     },
     {
       icon: Users,
-      title: "Trusted by Thousands",
-      description: "Join our community of satisfied customers",
+      title: t(
+        dictionary,
+        "authPages.signIn.features.trusted.title",
+        "Trusted by Thousands",
+      ),
+      description: t(
+        dictionary,
+        "authPages.signIn.features.trusted.description",
+        "Join our community of satisfied customers",
+      ),
     },
     {
       icon: Star,
-      title: "Premium Experience",
-      description: "Access exclusive coffee offers and personalized brew picks",
+      title: t(
+        dictionary,
+        "authPages.signIn.features.premium.title",
+        "Premium Experience",
+      ),
+      description: t(
+        dictionary,
+        "authPages.signIn.features.premium.description",
+        "Access exclusive coffee offers and personalized brew picks",
+      ),
     },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-shop_light_green/5 via-shop_light_bg to-shop_light_pink/50 relative overflow-hidden">
       <Container>
-        {/* Background Pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,156,60,0.1)_0%,transparent_50%),radial-gradient(circle_at_80%_80%,rgba(251,108,8,0.08)_0%,transparent_50%),radial-gradient(circle_at_40%_40%,rgba(252,240,228,0.3)_0%,transparent_50%)]"></div>
 
-        {/* Header */}
         <header className="relative z-10 px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <Link
@@ -48,14 +74,15 @@ const SignInContent = () => {
               className="flex items-center gap-2 text-shop_dark_green hover:text-shop_light_green transition-colors duration-200 font-medium"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Home</span>
+              <span className="font-medium">
+                {t(dictionary, "authPages.backToHome", "Back to Home")}
+              </span>
             </Link>
             <Logo />
           </div>
         </header>
 
         <div className="flex flex-col lg:flex-row min-h-[calc(100vh-120px)]">
-          {/* Left Side - Welcome Content */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -69,16 +96,17 @@ const SignInContent = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-shop_dark_green mb-4">
-                  Welcome Back!
+                  {t(dictionary, "authPages.signIn.title", "Welcome Back!")}
                 </h1>
                 <p className="text-lg text-dark-text mb-8 leading-relaxed">
-                  Sign in to access your account, track orders, and enjoy
-                  personalized coffee recommendations at{" "}
-                  {contactConfig.company.name}.
+                  {t(
+                    dictionary,
+                    "authPages.signIn.description",
+                    "Sign in to access your account, track orders, and enjoy personalized coffee recommendations at {company}.",
+                  ).replace("{company}", company)}
                 </p>
               </motion.div>
 
-              {/* Features */}
               <div className="space-y-6">
                 {features.map((feature, index) => (
                   <motion.div
@@ -95,15 +123,12 @@ const SignInContent = () => {
                       <h3 className="font-semibold text-shop_dark_green mb-1">
                         {feature.title}
                       </h3>
-                      <p className="text-sm text-dark-text">
-                        {feature.description}
-                      </p>
+                      <p className="text-sm text-dark-text">{feature.description}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Contact Support */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -111,7 +136,11 @@ const SignInContent = () => {
                 className="mt-8 p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-shop_light_green/20 shadow-sm"
               >
                 <p className="text-sm text-dark-text">
-                  Need help? Contact our support team at{" "}
+                  {t(
+                    dictionary,
+                    "authPages.supportPrompt",
+                    "Need help? Contact our support team at",
+                  )}{" "}
                   <a
                     href={`mailto:${contactConfig.emails.support}`}
                     className="text-shop_light_green hover:text-shop_dark_green font-medium transition-colors duration-200"
@@ -123,7 +152,6 @@ const SignInContent = () => {
             </div>
           </motion.div>
 
-          {/* Right Side - Sign In Form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -137,7 +165,6 @@ const SignInContent = () => {
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100/50 p-8"
               >
-                {/* Clerk Sign In Component */}
                 <div className="clerk-sign-in">
                   <SignIn
                     signUpUrl={`/sign-up${

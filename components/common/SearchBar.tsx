@@ -11,6 +11,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useOutsideClick } from "@/hooks";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 const SearchBar = ({
   dictionary,
@@ -29,9 +31,13 @@ const SearchBar = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useOutsideClick<HTMLDivElement>(() => setShowSearch(false));
   const toLocalizedPath = useLocalizedPath();
+  const contextDictionary = useDictionary();
+  const dict = dictionary ?? contextDictionary;
 
-  const placeholder = "Search";
-  const isRtl = dictionary?.header?.search?.direction === "rtl";
+  const placeholder =
+    dict?.header?.search?.placeholderShort ??
+    t(dict, "searchModal.placeholder", "Search");
+  const isRtl = dict?.header?.search?.direction === "rtl";
 
   const fetchFeaturedProducts = useCallback(async () => {
     try {
@@ -128,7 +134,7 @@ const SearchBar = ({
               ? `group inline-flex items-center justify-center text-shop_light_pink/80 transition-colors hover:text-shop_orange ${compact ? "h-9 w-9 sm:h-10 sm:w-auto sm:gap-2 sm:px-2" : "h-10 gap-2 px-1 sm:px-2"}`
               : `group inline-flex items-center justify-center text-stone-400 transition-colors hover:text-shop_dark_green ${compact ? "h-9 w-9 sm:h-10 sm:w-auto sm:gap-2.5 sm:px-2" : "h-10 gap-2 px-1 sm:gap-2.5 sm:px-2"}`
           }
-          aria-label="Open search"
+          aria-label={t(dict, "searchModal.openAria", "Open search")}
         >
           <Search
             className={
@@ -171,13 +177,15 @@ const SearchBar = ({
                   <div className="bg-white/20 p-2 rounded-full">
                     <Search className="w-5 h-5" />
                   </div>
-                  <h2 className="text-xl font-bold">Search Products</h2>
+                  <h2 className="text-xl font-bold">
+                    {t(dict, "searchModal.title", "Search Products")}
+                  </h2>
                 </div>
                 <button
                   onClick={() => setShowSearch(false)}
                   className="p-2 hover:bg-white/20 rounded-full transition-colors duration-200"
-                  aria-label="Close search (Escape)"
-                  title="Close (Escape)"
+                  aria-label={t(dict, "searchModal.closeAria", "Close search (Escape)")}
+                  title={t(dict, "searchModal.closeTitle", "Close (Escape)")}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -219,8 +227,12 @@ const SearchBar = ({
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-16 text-shop_dark_green">
                   <Loader2 className="w-8 h-8 animate-spin mb-3" />
-                  <p className="text-lg font-semibold">Searching products...</p>
-                  <p className="text-sm text-gray-500">Please wait a moment</p>
+                  <p className="text-lg font-semibold">
+                    {t(dict, "searchModal.loadingTitle", "Searching products...")}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {t(dict, "searchModal.loadingHint", "Please wait a moment")}
+                  </p>
                 </div>
               ) : products?.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
@@ -238,7 +250,7 @@ const SearchBar = ({
                           {product?.images && (
                             <Image
                               src={urlFor(product?.images[0]).url()}
-                              alt={product.name || "Product"}
+                              alt={product.name || t(dict, "searchModal.productAlt", "Product")}
                               fill
                               className="object-cover group-hover:scale-110 transition-transform duration-500"
                             />
@@ -254,13 +266,13 @@ const SearchBar = ({
                             {product?.status === "hot" && (
                               <span className="inline-flex items-center gap-1 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm">
                                 <TrendingUp className="w-3 h-3" />
-                                Hot
+                                {t(dict, "searchModal.badges.hot", "Hot")}
                               </span>
                             )}
                             {product?.status === "new" && (
                               <span className="inline-flex items-center gap-1 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm">
                                 <Clock className="w-3 h-3" />
-                                New
+                                {t(dict, "searchModal.badges.new", "New")}
                               </span>
                             )}
                           </div>
@@ -286,7 +298,7 @@ const SearchBar = ({
                           />
                           {product?.stock === 0 ? (
                             <span className="text-red-500 text-xs font-semibold bg-red-50 px-2 py-1 rounded-full">
-                              Out of Stock
+                              {t(dict, "product.stock.outOfStock", "Out of Stock")}
                             </span>
                           ) : (
                             <AddToCartButton
@@ -310,10 +322,14 @@ const SearchBar = ({
                           </div>
                         </div>
                         <h3 className="text-xl font-bold text-gray-800 mb-2">
-                          Discover Amazing Products
+                          {t(dict, "searchModal.emptyTitle", "Discover Amazing Products")}
                         </h3>
                         <p className="text-gray-600">
-                          Search and explore thousands of products
+                          {t(
+                            dict,
+                            "searchModal.emptyDescription",
+                            "Search and explore thousands of products",
+                          )}
                         </p>
                       </div>
 
@@ -323,7 +339,7 @@ const SearchBar = ({
                           <div className="flex items-center gap-2">
                             <div className="h-px flex-1 bg-linear-to-r from-transparent via-gray-300 to-transparent" />
                             <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wide">
-                              Popular Products
+                              {t(dict, "searchModal.popularTitle", "Popular Products")}
                             </h4>
                             <div className="h-px flex-1 bg-linear-to-r from-transparent via-gray-300 to-transparent" />
                           </div>
@@ -346,7 +362,7 @@ const SearchBar = ({
                                       {item?.images && (
                                         <Image
                                           src={urlFor(item?.images[0]).url()}
-                                          alt={item.name || "Product"}
+                                          alt={item.name || t(dict, "searchModal.productAlt", "Product")}
                                           fill
                                           className="object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
@@ -363,13 +379,13 @@ const SearchBar = ({
                                         {item?.status === "hot" && (
                                           <span className="inline-flex items-center gap-1 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm">
                                             <TrendingUp className="w-3 h-3" />
-                                            Hot
+                                            {t(dict, "searchModal.badges.hot", "Hot")}
                                           </span>
                                         )}
                                         {item?.status === "new" && (
                                           <span className="inline-flex items-center gap-1 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm">
                                             <Clock className="w-3 h-3" />
-                                            New
+                                            {t(dict, "searchModal.badges.new", "New")}
                                           </span>
                                         )}
                                       </div>
@@ -395,7 +411,7 @@ const SearchBar = ({
                                       />
                                       {item?.stock === 0 ? (
                                         <span className="text-red-500 text-xs font-semibold bg-red-50 px-2 py-1 rounded-full">
-                                          Out of Stock
+                                          {t(dict, "product.stock.outOfStock", "Out of Stock")}
                                         </span>
                                       ) : (
                                         <AddToCartButton
@@ -412,7 +428,7 @@ const SearchBar = ({
                           {/* Quick Search Chips */}
                           <div className="pt-4 border-t border-gray-200">
                             <p className="text-xs text-gray-500 mb-2">
-                              Quick search:
+                              {t(dict, "searchModal.quickSearch", "Quick search:")}
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {featuredProduct
@@ -445,10 +461,14 @@ const SearchBar = ({
                           </div>
                         </div>
                         <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                          No Results Found
+                          {t(dict, "searchModal.noResultsTitle", "No Results Found")}
                         </h3>
                         <p className="text-gray-600 mb-4">
-                          Sorry, we couldn&apos;t find any products matching{" "}
+                          {t(
+                            dict,
+                            "searchModal.noResultsDescription",
+                            "Sorry, we couldn't find any products matching",
+                          )}{" "}
                           <span className="font-semibold text-red-600">
                             &quot;{search}&quot;
                           </span>
@@ -457,7 +477,7 @@ const SearchBar = ({
                           onClick={() => setSearch("")}
                           className="bg-shop_dark_green hover:bg-shop_light_green text-white px-6 py-2 rounded-full font-medium transition-colors duration-200"
                         >
-                          Clear Search
+                          {t(dict, "searchModal.clearSearch", "Clear Search")}
                         </button>
                       </div>
                     </div>

@@ -6,6 +6,8 @@ import { Trash2 } from "lucide-react";
 import useCartStore, { GrindOption, PackagingOption, WeightOption } from "@/store";
 import { Product } from "@/sanity.types";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface CartItemControlsProps {
   product: Product;
@@ -21,10 +23,13 @@ export function CartItemControls({
   selectedPackaging,
 }: CartItemControlsProps) {
   const { deleteCartProduct } = useCartStore();
+  const dictionary = useDictionary();
 
   const handleRemove = () => {
     deleteCartProduct(product._id, selectedWeight, selectedGrind, selectedPackaging);
-    toast.success("Item removed from cart");
+    toast.success(
+      t(dictionary, "cartToasts.itemRemoved", "Item removed from cart"),
+    );
   };
 
   return (

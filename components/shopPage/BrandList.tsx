@@ -7,13 +7,21 @@ interface Props {
   brands: Brand[];
   selectedBrand?: string | null;
   setSelectedBrand: Dispatch<SetStateAction<string | null>>;
+  brandsTitle?: string;
+  clearBrandFilterLabel?: string;
 }
 
-const BrandList = ({ brands, selectedBrand, setSelectedBrand }: Props) => {
+const BrandList = ({
+  brands,
+  selectedBrand,
+  setSelectedBrand,
+  brandsTitle = "Brands",
+  clearBrandFilterLabel = "Clear brand filter",
+}: Props) => {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
-        <Title className="text-base font-semibold text-gray-900">Brands</Title>
+        <Title className="text-base font-semibold text-gray-900">{brandsTitle}</Title>
         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
           {brands?.length || 0}
         </span>
@@ -53,7 +61,7 @@ const BrandList = ({ brands, selectedBrand, setSelectedBrand }: Props) => {
           }}
           className="mt-4 text-xs font-medium text-gray-600 hover:text-shop_dark_green underline underline-offset-2 decoration-1 transition-colors duration-150"
         >
-          Clear brand filter
+          {clearBrandFilterLabel}
         </button>
       )}
     </div>

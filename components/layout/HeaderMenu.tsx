@@ -36,7 +36,7 @@ const HeaderMenu = ({ dictionary, lang }: HeaderMenuProps) => {
   }
 
   return (
-    <nav aria-label="Main navigation">
+    <nav aria-label={dictionary.header.menu.mainNavAria || "Main navigation"}>
       <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 xl:gap-x-5">
         {headerPrimaryNav.map((item) => {
           const label = getNavLabel(item, dictionary);

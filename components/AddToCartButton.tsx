@@ -11,6 +11,7 @@ import { ShoppingBag } from "lucide-react";
 import { trackAddToCart } from "@/lib/analytics";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
 
 interface Props {
   product: Product;
@@ -106,10 +107,17 @@ const AddToCartButton = memo(({
         packaging: effectivePackaging?.title,
       });
     } else {
-      toast.error("Stock limit reached", {
-        description: "Cannot add more than available stock",
-        duration: 4000,
-      });
+      toast.error(
+        t(dictionary, "product.addToCart.toasts.stockLimitTitle", "Stock limit reached"),
+        {
+          description: t(
+            dictionary,
+            "product.addToCart.toasts.stockLimitDescription",
+            "Cannot add more than available stock",
+          ),
+          duration: 4000,
+        },
+      );
     }
   }, [
     product,
@@ -132,7 +140,9 @@ const AddToCartButton = memo(({
             className
           )}
         >
-          <ShoppingBag /> Loading...
+          <ShoppingBag />{" "}
+          {productCopy.loading ??
+            t(dictionary, "product.addToCart.loading", "Loading...")}
         </Button>
       </div>
     );
@@ -156,7 +166,8 @@ const AddToCartButton = memo(({
                 isOnDark ? "text-[#e4c290]/90" : "text-shop_dark_green",
               )}
             >
-              In cart
+              {productCopy.inCart ??
+                t(dictionary, "product.addToCart.inCart", "In cart")}
             </span>
             <QuantityButtons
               product={product}
@@ -180,7 +191,8 @@ const AddToCartButton = memo(({
                 isOnDark ? "text-[#e4c290]/90" : "text-muted-foreground",
               )}
             >
-              Quantity
+              {productCopy.quantity ??
+                t(dictionary, "product.addToCart.quantity", "Quantity")}
             </span>
             <QuantityButtons
               product={product}
@@ -207,7 +219,8 @@ const AddToCartButton = memo(({
                 {effectiveWeight && (
                   <div className="flex justify-between">
                     <span className={isOnDark ? "text-[#e4c290]/70" : "text-muted-foreground"}>
-                      Weight:
+                      {productCopy.weight ??
+                        t(dictionary, "product.addToCart.weight", "Weight")}:
                     </span>
                     <span className={isOnDark ? "text-[#fdf6e8]" : ""}>
                       {effectiveWeight.weight} (+${effectiveWeight.price})
@@ -217,19 +230,19 @@ const AddToCartButton = memo(({
                 {effectiveGrind && (
                   <div className="flex justify-between">
                     <span className={isOnDark ? "text-[#e4c290]/70" : "text-muted-foreground"}>
-                      Grind:
+                      {productCopy.grind ??
+                        t(dictionary, "product.addToCart.grind", "Grind")}:
                     </span>
                     <span className={isOnDark ? "text-[#fdf6e8]" : ""}>
-                      {effectiveGrind.grindType === "whole-bean" ? "Whole Bean" :
-                       effectiveGrind.grindType === "cafetiere" ? "Cafetiere" :
-                       effectiveGrind.grindType === "filter" ? "Filter" : "Espresso"}
+                      {getGrindLabel(dictionary, effectiveGrind.grindType)}
                     </span>
                   </div>
                 )}
                 {effectivePackaging && (
                   <div className="flex justify-between">
                     <span className={isOnDark ? "text-[#e4c290]/70" : "text-muted-foreground"}>
-                      Packaging:
+                      {productCopy.packaging ??
+                        t(dictionary, "product.addToCart.packaging", "Packaging")}:
                     </span>
                     <span className={isOnDark ? "text-[#fdf6e8]" : ""}>
                       {effectivePackaging.title} {effectivePackaging.price > 0 && `(+$${effectivePackaging.price})`}
@@ -245,7 +258,8 @@ const AddToCartButton = memo(({
                   isOnDark ? "text-[#e4c290]" : "",
                 )}
               >
-                Subtotal
+                {productCopy.subtotal ??
+                  t(dictionary, "product.addToCart.subtotal", "Subtotal")}
               </span>
               <PriceFormatter
                 amount={totalItemPrice * itemCount}

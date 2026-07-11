@@ -6,6 +6,9 @@ import { PAYMENT_METHODS, PaymentMethod } from "@/lib/orderStatus";
 import { toast } from "sonner";
 import { localizedPath } from "@/lib/localized-path";
 import { useLocale } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
 
 interface EmailOrderItem {
   name: string;
@@ -70,6 +73,7 @@ const getItemCurrentPrice = (item: CartItem): number => {
 
 export function useOrderPlacement({ user }: UseOrderPlacementProps) {
   const lang = useLocale();
+  const dictionary = useDictionary();
   const {
     items: cart,
     resetCart,
@@ -95,14 +99,18 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     }>
   ) => {
     if (!selectedAddress) {
-      toast.error("Address Required", {
-        description: "Please select a shipping address",
+      toast.error(t(dictionary, "checkoutPlacement.addressRequired", "Address Required"), {
+        description: t(
+          dictionary,
+          "checkoutPlacement.selectAddress",
+          "Please select a shipping address",
+        ),
       });
       return { success: false };
     }
 
     if (cart.length === 0) {
-      toast.error("Cart is empty");
+      toast.error(t(dictionary, "checkoutPlacement.cartEmpty", "Cart is empty"));
       return { success: false };
     }
 
@@ -116,7 +124,9 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
     });
     
     if (outOfStockItems.length > 0) {
-      toast.error("Insufficient Stock");
+      toast.error(
+        t(dictionary, "checkoutPlacement.insufficientStock", "Insufficient Stock"),
+      );
       return { success: false };
     }
 
@@ -157,9 +167,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         
         // ✅ ADD GRIND INFORMATION
         if (finalGrind) {
-          const grindLabel = finalGrind.grindType === "whole-bean" ? "Whole Bean" :
-                   finalGrind.grindType === "cafetiere" ? "Cafetiere" :
-                   finalGrind.grindType === "filter" ? "Filter" : "Espresso";
+          const grindLabel = getGrindLabel(dictionary, finalGrind.grindType);
           itemData.grind = {
             type: finalGrind.grindType,
             label: grindLabel,
@@ -327,7 +335,9 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
       }
     } catch (error: any) {
       console.error("Order placement error:", error);
-      toast.error("Order Failed", { description: error.message });
+      toast.error(t(dictionary, "checkoutPlacement.orderFailed", "Order Failed"), {
+        description: error.message,
+      });
       setOrderPlacementState(false, "validating");
       return { success: false };
     }

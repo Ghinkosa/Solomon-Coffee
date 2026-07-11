@@ -5,12 +5,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Code, Coffee, ExternalLink, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 const InitialVisitModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSidePopup, setShowSidePopup] = useState(false);
   const [mounted, setMounted] = useState(false);
   const toLocalizedPath = useLocalizedPath();
+  const dictionary = useDictionary();
+  const initialVisit = dictionary as {
+    initialVisit?: { features?: string[] };
+  };
+  const features = initialVisit.initialVisit?.features ?? [
+    "Fresh Roasts",
+    "Ethiopian Origins",
+    "Brewing Gear",
+    "Wholesale Options",
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -86,7 +98,7 @@ const InitialVisitModal = () => {
                   transition={{ delay: 0.2 }}
                   className="text-2xl md:text-3xl font-bold text-dark-color mb-3"
                 >
-                  Start Your Project Today!
+                  {t(dictionary, "initialVisit.title", "Welcome to Sheba Cup Coffee!")}
                 </motion.h2>
 
                 <motion.p
@@ -95,23 +107,20 @@ const InitialVisitModal = () => {
                   transition={{ delay: 0.3 }}
                   className="text-light-color mb-8 text-base leading-relaxed"
                 >
-                  Launch your business or hobby project with our premium source
-                  code. Get lifetime updates and full access to the codebase.
+                  {t(
+                    dictionary,
+                    "initialVisit.description",
+                    "Discover freshly roasted Ethiopian coffee, brewing essentials, and curated lots delivered to your door.",
+                  )}
                 </motion.p>
 
-                {/* Features List */}
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
                   className="w-full grid grid-cols-2 gap-3 mb-8"
                 >
-                  {[
-                    "Premium Design",
-                    "Full Source Code",
-                    "Lifetime Updates",
-                    "Easy Customization",
-                  ].map((item, idx) => (
+                  {features.map((item, idx) => (
                     <div
                       key={idx}
                       className="flex items-center gap-2 bg-shop_light_bg/50 p-2.5 rounded-lg"
@@ -136,7 +145,7 @@ const InitialVisitModal = () => {
                     className="w-full py-4 px-6 bg-linear-to-r from-shop_dark_green to-shop_light_green hover:from-shop_btn_dark_green hover:to-shop_dark_green text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transform transition-all duration-300 flex items-center justify-center gap-2 group"
                   >
                     <Coffee className="w-5 h-5" />
-                    <span>Shop Sheba Cup Coffee</span>
+                    <span>{t(dictionary, "initialVisit.cta", "Shop Sheba Cup Coffee")}</span>
                     <ExternalLink className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
                 </Link>
@@ -151,7 +160,7 @@ const InitialVisitModal = () => {
                     onClick={handleClose}
                     className="text-sm text-light-color hover:text-shop_dark_green underline decoration-dashed underline-offset-4"
                   >
-                    No thanks, maybe later
+                    {t(dictionary, "initialVisit.dismiss", "No thanks, maybe later")}
                   </button>
                 </motion.div>
               </div>
@@ -191,10 +200,18 @@ const InitialVisitModal = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-dark-color text-sm">
-                    Visit Sheba Cup Coffee
+                    {t(
+                      dictionary,
+                      "initialVisit.sidePopup.title",
+                      "Visit Sheba Cup Coffee",
+                    )}
                   </h3>
                   <p className="text-xs text-light-color mt-0.5">
-                    Explore our curated coffee collection
+                    {t(
+                      dictionary,
+                      "initialVisit.sidePopup.description",
+                      "Explore our curated coffee collection",
+                    )}
                   </p>
                 </div>
                 <ArrowRight className="w-4 h-4 text-shop_dark_green -ml-1 group-hover:translate-x-1 transition-transform" />

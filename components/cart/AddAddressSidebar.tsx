@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/sheet";
 import { MapPin, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface AddAddressSidebarProps {
   userEmail: string;
@@ -30,6 +32,11 @@ export function AddAddressSidebar({
   onAddressAdded,
   isFirstAddress = false,
 }: AddAddressSidebarProps) {
+  const dictionary = useDictionary();
+  const a = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.profile.addressSidebar.${path}`, fallback);
+  const c = (path: string, fallback: string) =>
+    t(dictionary, `checkoutAddress.${path}`, fallback);
   const [isPending, startTransition] = useTransition();
   const [formData, setFormData] = useState({
     name: "",
@@ -51,7 +58,7 @@ export function AddAddressSidebar({
       !formData.state ||
       !formData.zip
     ) {
-      toast.error("Please fill in all required fields");
+      toast.error(c("requiredFields", "Please fill in all required fields"));
       return;
     }
 
@@ -72,7 +79,7 @@ export function AddAddressSidebar({
         }
 
         await response.json();
-        toast.success("Address saved successfully!");
+        toast.success(c("saved", "Address saved successfully!"));
         setFormData({
           name: "",
           address: "",
@@ -93,7 +100,9 @@ export function AddAddressSidebar({
         }
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to add address"
+          error instanceof Error
+            ? error.message
+            : c("addFailed", "Failed to add address"),
         );
         console.error("Address creation error:", error);
       }
@@ -116,10 +125,15 @@ export function AddAddressSidebar({
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <MapPin className="w-5 h-5" />
-            {isFirstAddress ? "Add Your First Address" : "Add New Address"}
+            {isFirstAddress
+              ? c("addFirstTitle", "Add Your First Address")
+              : c("addNewTitle", "Add New Address")}
           </SheetTitle>
           <SheetDescription>
-            Add a shipping address to {userEmail}
+            {c("addDescription", "Add a shipping address to {email}").replace(
+              "{email}",
+              userEmail,
+            )}
           </SheetDescription>
         </SheetHeader>
 
@@ -127,11 +141,14 @@ export function AddAddressSidebar({
           <div className="flex-1 space-y-6 py-4">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
-                Address Name *
+                {a("addressName", "Address Name *")}
               </Label>
               <Input
                 id="name"
-                placeholder="e.g., Home, Work, Office"
+                placeholder={a(
+                  "addressNamePlaceholder",
+                  "e.g., Home, Work, Office",
+                )}
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 disabled={isPending}
@@ -141,12 +158,12 @@ export function AddAddressSidebar({
 
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-sm font-medium">
-                Phone Number
+                {c("phoneLabel", "Phone Number")}
               </Label>
               <Input
                 id="phone"
                 type="tel"
-                placeholder="(555) 123-4567"
+                placeholder={a("phonePlaceholder", "(555) 123-4567")}
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 disabled={isPending}
@@ -156,11 +173,14 @@ export function AddAddressSidebar({
 
             <div className="space-y-2">
               <Label htmlFor="address" className="text-sm font-medium">
-                Street Address *
+                {a("streetAddress", "Street Address *")}
               </Label>
               <Input
                 id="address"
-                placeholder="123 Main Street, Apt 4B"
+                placeholder={a(
+                  "streetAddressPlaceholder",
+                  "123 Main Street, Apt 4B",
+                )}
                 value={formData.address}
                 onChange={(e) => handleInputChange("address", e.target.value)}
                 disabled={isPending}
@@ -171,7 +191,7 @@ export function AddAddressSidebar({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="city" className="text-sm font-medium">
-                  City *
+                  {c("cityLabel", "City *")}
                 </Label>
                 <Input
                   id="city"
@@ -184,7 +204,7 @@ export function AddAddressSidebar({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="state" className="text-sm font-medium">
-                  State *
+                  {c("stateLabel", "State *")}
                 </Label>
                 <Input
                   id="state"
@@ -202,7 +222,7 @@ export function AddAddressSidebar({
 
             <div className="space-y-2">
               <Label htmlFor="zip" className="text-sm font-medium">
-                ZIP Code *
+                {c("zipLabel", "ZIP Code *")}
               </Label>
               <Input
                 id="zip"
@@ -227,8 +247,8 @@ export function AddAddressSidebar({
               />
               <Label htmlFor="isDefault" className="text-sm">
                 {isFirstAddress
-                  ? "This will be your default address"
-                  : "Set as default address"}
+                  ? c("defaultFirst", "This will be your default address")
+                  : c("setDefault", "Set as default address")}
               </Label>
             </div>
           </div>
@@ -242,16 +262,16 @@ export function AddAddressSidebar({
                 disabled={isPending}
                 className="flex-1"
               >
-                Cancel
+                {t(dictionary, "cart.actions.cancel", "Cancel")}
               </Button>
               <Button type="submit" disabled={isPending} className="flex-1">
                 {isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Adding...
+                    {c("adding", "Adding...")}
                   </>
                 ) : (
-                  "Add Address"
+                  a("addAddressButton", "Add Address")
                 )}
               </Button>
             </div>

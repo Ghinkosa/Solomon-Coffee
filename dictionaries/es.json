@@ -37,6 +37,12 @@
       "description": "Estás a punto de eliminar {count} productos de tu lista de deseos. Esta acción no se puede deshacer.",
       "keepProducts": "Conservar productos",
       "confirm": "Eliminar todos los productos"
+    },
+    "toasts": {
+      "added": "Agregado a la lista de deseos",
+      "removed": "Eliminado de la lista de deseos",
+      "addedDescription": "¡Producto agregado con éxito!",
+      "removedDescription": "¡Producto eliminado con éxito!"
     }
   },
   "logo": {
@@ -55,7 +61,8 @@
       "ourCoffee": "Nuestro café",
       "wholesalers": "Mayoristas",
       "contactUs": "Contáctanos",
-      "openMenu": "Abrir menú"
+      "openMenu": "Abrir menú",
+      "mainNavAria": "Navegación principal"
     },
     "auth": {
       "welcome": "Bienvenido",
@@ -71,7 +78,8 @@
       "signInLink": "Inicia sesión"
     },
     "search": {
-      "placeholder": "Buscar cafés y accesorios..."
+      "placeholder": "Buscar cafés y accesorios...",
+      "placeholderShort": "Buscar"
     },
     "language": {
       "select": "Seleccionar idioma",
@@ -548,7 +556,18 @@
     "filters": "Filtros",
     "applyFilters": "Aplicar filtros",
     "productsFound": "opción(es) de café encontrada(s)",
-    "showingAll": "Mostrando todas las opciones de café disponibles"
+    "showingAll": "Mostrando todas las opciones de café disponibles",
+    "categoryFilterTitle": "Categorías",
+    "clearCategoryFilter": "Limpiar filtro de categoría",
+    "brands": "Marcas",
+    "clearBrandFilter": "Limpiar filtro de marca",
+    "priceRange": "Rango de precio",
+    "clearPriceFilter": "Limpiar filtro de precio",
+    "under100": "Menos de $100",
+    "range100_200": "$100 - $200",
+    "range200_300": "$200 - $300",
+    "range300_500": "$300 - $500",
+    "over500": "Más de $500"
   },
   "blog": {
     "hero": {
@@ -610,7 +629,11 @@
       "add": "Añadir al carrito",
       "weight": "Peso",
       "grind": "Molienda",
-      "packaging": "Empaque"
+      "packaging": "Empaque",
+      "toasts": {
+        "stockLimitTitle": "Límite de stock alcanzado",
+        "stockLimitDescription": "No se puede agregar más del stock disponible"
+      }
     },
     "reviews": {
       "review": "reseña",
@@ -757,7 +780,15 @@
       "coffeeDetails": "Detalles del café",
       "closeAria": "Cerrar detalles",
       "viewFullDetails": "Ver detalles completos"
-    }
+    },
+    "details": {
+      "description": "Descripción",
+      "additionalInfo": "Información adicional",
+      "weight": "Peso",
+      "dimensions": "Dimensiones",
+      "noDescription": "No hay descripción disponible para este producto."
+    },
+    "defaultProductName": "este producto"
   },
   "checkout": {
     "title": "Pago",
@@ -1644,7 +1675,29 @@
     "orders": "Pedidos",
     "payment": "Pago",
     "categories": "Categorías",
-    "dashboard": "Panel"
+    "dashboard": "Panel",
+    "orderHistory": "Historial de pedidos",
+    "wishlist": "Lista de deseos",
+    "blog": "Blog",
+    "shop": "Tienda",
+    "product": "Producto",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "help": "Ayuda",
+    "faq": "Preguntas frecuentes",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "trackOrder": "Rastrear pedido",
+    "order": "Pedido",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "notifications": "Notificaciones",
+    "success": "Éxito",
+    "wholesalers": "Mayoristas",
+    "mission": "Misión",
+    "education": "Educación",
+    "brands": "Marcas",
+    "products": "Productos"
   },
   "newsletterForm": {
     "placeholder": "Introduce tu correo",
@@ -1658,7 +1711,11 @@
   "shopNoProducts": {
     "title": "No se encontraron productos",
     "browseAll": "Ver todos los productos",
-    "whatToDo": "¿Qué te gustaría hacer?"
+    "whatToDo": "¿Qué te gustaría hacer?",
+    "description": "No encontramos productos en la categoría {category}. Esta categoría podría estar temporalmente sin stock.",
+    "descriptionGeneric": "No encontramos productos. Esta categoría podría estar temporalmente sin stock.",
+    "viewCategories": "Ver categorías",
+    "footerHint": "Prueba explorando otras categorías de productos"
   },
   "categoryPage": {
     "title": "Explorar categorías de café",
@@ -1678,7 +1735,27 @@
     "infoTitle": "¿No encuentras lo que buscas?",
     "infoDescription": "Explora todos nuestros productos o usa la búsqueda para encontrar artículos específicos.",
     "allProducts": "Todos los productos",
-    "shopByRoasters": "Comprar por tostadores"
+    "shopByRoasters": "Comprar por tostadores",
+    "featuredCategory": "Categoría destacada",
+    "rangeLabel": "Rango:",
+    "categoryView": "Vista por categoría",
+    "filteredResults": "Resultados filtrados",
+    "exploreOtherCategories": "Explorar otras categorías",
+    "viewAll": "Ver todo",
+    "discoverMoreTitle": "Descubre más productos increíbles",
+    "discoverMoreDescription": "¿No encuentras lo que buscas en {category}? Explora nuestra colección completa en todas las categorías.",
+    "metaNotFoundTitle": "Categoría no encontrada",
+    "metaNotFoundDescription": "No se pudo encontrar la categoría que buscas.",
+    "productsSuffix": "Productos",
+    "products": {
+      "categoriesSidebar": "Categorías",
+      "productsIn": "Productos en {category}",
+      "thisCategory": "esta categoría",
+      "productFound": "{count} producto encontrado",
+      "productsFound": "{count} productos encontrados",
+      "zeroProductsFound": "0 productos encontrados",
+      "gridView": "Vista en cuadrícula"
+    }
   },
   "brandsPage": {
     "title": "Comprar por tostadores",
@@ -1971,5 +2048,206 @@
       "guestCodHint": "\"Realizar pedido (pagar después)\" te lleva al pago para completar el envío y pagar contra entrega",
       "signedCodHint": "\"Realizar pedido (pagar después)\" realiza el pedido directamente con pago contra entrega"
     }
+  },
+  "productCard": {
+    "imageAlt": "Imagen del producto",
+    "sale": "¡Oferta!",
+    "review": "Reseña",
+    "reviews": "Reseñas",
+    "noReviews": "Sin reseñas",
+    "from": "Desde",
+    "customizeOptions": "Personalizar opciones"
+  },
+  "searchModal": {
+    "placeholder": "Buscar",
+    "openAria": "Abrir búsqueda",
+    "title": "Buscar productos",
+    "closeAria": "Cerrar búsqueda (Escape)",
+    "closeTitle": "Cerrar (Escape)",
+    "loadingTitle": "Buscando productos...",
+    "loadingHint": "Espera un momento",
+    "badges": {
+      "hot": "Popular",
+      "new": "Nuevo"
+    },
+    "emptyTitle": "Descubre productos increíbles",
+    "emptyDescription": "Busca y explora miles de productos",
+    "popularTitle": "Productos populares",
+    "quickSearch": "Búsqueda rápida:",
+    "noResultsTitle": "No se encontraron resultados",
+    "noResultsDescription": "Lo sentimos, no encontramos productos que coincidan con",
+    "clearSearch": "Limpiar búsqueda",
+    "productAlt": "Producto"
+  },
+  "socialShare": {
+    "defaultTitle": "¡Mira esto!",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "label": "Compartir este artículo:",
+    "shareOn": "Compartir en {platform}",
+    "shareOrCopy": "Compartir o copiar enlace"
+  },
+  "initialVisit": {
+    "title": "¡Bienvenido a Sheba Cup Coffee!",
+    "description": "Descubre café etíope recién tostado, esenciales de preparación y lotes seleccionados entregados a tu puerta.",
+    "features": [
+      "Tostados frescos",
+      "Orígenes etíopes",
+      "Equipo de preparación",
+      "Opciones mayoristas"
+    ],
+    "cta": "Comprar en Sheba Cup Coffee",
+    "dismiss": "No gracias, quizás después",
+    "sidePopup": {
+      "title": "Visita Sheba Cup Coffee",
+      "description": "Explora nuestra colección de café seleccionada"
+    }
+  },
+  "productCatalog": {
+    "searchPlaceholder": "Buscar productos...",
+    "sortBy": "Ordenar por",
+    "sortNameAsc": "Nombre A-Z",
+    "sortNameDesc": "Nombre Z-A",
+    "sortPriceLow": "Precio: menor a mayor",
+    "sortPriceHigh": "Precio: mayor a menor",
+    "sortNewest": "Más recientes",
+    "filters": "Filtros",
+    "activeFilters": "Filtros activos:",
+    "searchLabel": "Búsqueda:",
+    "clearAll": "Limpiar todo",
+    "categories": "Categorías",
+    "priceRange": "Rango de precio",
+    "resultsSummary": "Mostrando {shown} de {total} productos"
+  },
+  "productCatalogPage": {
+    "title": "Catálogo de productos",
+    "breadcrumbProducts": "Productos",
+    "heroDescription": "Descubre nuestra colección completa de café premium y esenciales de preparación. Desde granos recién tostados hasta herramientas diarias, encuentra todo en un solo lugar.",
+    "statsProducts": "{count}+ productos",
+    "statsQuality": "Artículos de calidad premium",
+    "statsCategories": "{count} categorías",
+    "statsNavigate": "Fácil de navegar",
+    "statsFilters": "Filtros avanzados",
+    "statsFind": "Encuentra lo que necesitas",
+    "loading": "Cargando productos...",
+    "ctaTitle": "¿No encuentras lo que buscas?",
+    "ctaDescription": "Nuestro equipo de soporte está aquí para ayudarte a encontrar el producto perfecto. Contáctanos para recomendaciones personalizadas.",
+    "contactSupport": "Contactar soporte"
+  },
+  "authPages": {
+    "backToHome": "Volver al inicio",
+    "supportPrompt": "¿Necesitas ayuda? Contacta a nuestro equipo de soporte en",
+    "questionsPrompt": "¿Preguntas? Contáctanos en",
+    "signIn": {
+      "title": "¡Bienvenido de nuevo!",
+      "description": "Inicia sesión para acceder a tu cuenta, rastrear pedidos y disfrutar recomendaciones personalizadas de café en {company}.",
+      "features": {
+        "secure": {
+          "title": "Autenticación segura",
+          "description": "Tus datos están protegidos con seguridad de nivel empresarial"
+        },
+        "trusted": {
+          "title": "Confianza de miles",
+          "description": "Únete a nuestra comunidad de clientes satisfechos"
+        },
+        "premium": {
+          "title": "Experiencia premium",
+          "description": "Accede a ofertas exclusivas de café y selecciones personalizadas"
+        }
+      }
+    },
+    "signUp": {
+      "title": "Únete a {company}",
+      "description": "Crea tu cuenta hoy y desbloquea beneficios exclusivos, recomendaciones personalizadas y compras sin fricciones.",
+      "benefits": {
+        "welcome": {
+          "title": "Bono de bienvenida",
+          "description": "Obtén 10% de descuento en tu primer pedido al registrarte"
+        },
+        "deals": {
+          "title": "Ofertas exclusivas",
+          "description": "Accede a descuentos solo para miembros y ventas anticipadas"
+        },
+        "shipping": {
+          "title": "Envío gratis",
+          "description": "Disfruta envío gratis en pedidos superiores a $50"
+        },
+        "payments": {
+          "title": "Pagos seguros",
+          "description": "Múltiples opciones de pago con seguridad bancaria"
+        }
+      },
+      "trustCustomers": "Confianza de más de 50,000 clientes",
+      "trustRating": "Calificación promedio 4.8/5",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signInLink": "Inicia sesión aquí"
+    }
+  },
+  "blogSingle": {
+    "meta": {
+      "notFoundTitle": "Blog no encontrado",
+      "notFoundDescription": "No se pudo encontrar la publicación que buscas."
+    },
+    "article": "Artículo",
+    "minRead": "{count} min de lectura",
+    "views": "{count} vistas",
+    "actions": {
+      "like": "Me gusta",
+      "comment": "Comentar",
+      "share": "Compartir"
+    },
+    "imageAlt": "Imagen del blog",
+    "thumbnailAlt": "Miniatura del blog",
+    "backToBlog": "Volver al blog",
+    "sidebar": {
+      "categories": "Categorías del blog",
+      "latestPosts": "Publicaciones recientes"
+    },
+    "newsletter": {
+      "title": "Mantente informado",
+      "description": "Recibe los últimos artículos en tu bandeja de entrada.",
+      "subscribe": "Suscribirse ahora"
+    }
+  },
+  "cartToasts": {
+    "quantityDecreased": "¡Cantidad disminuida con éxito!",
+    "quantityIncreased": "¡Cantidad aumentada con éxito!",
+    "itemRemoved": "Artículo eliminado del carrito",
+    "itemRemovedNamed": "¡{name} eliminado con éxito!",
+    "movedToCart": "¡Movido al carrito con éxito!",
+    "removeFailed": "Error al eliminar el artículo",
+    "stockLimit": "No se puede agregar más del stock disponible"
+  },
+  "checkoutAddress": {
+    "addFirstTitle": "Agrega tu primera dirección",
+    "addNewTitle": "Agregar nueva dirección",
+    "addDescription": "Agrega una dirección de envío para {email}",
+    "defaultFirst": "Esta será tu dirección predeterminada",
+    "setDefault": "Establecer como dirección predeterminada",
+    "adding": "Agregando...",
+    "requiredFields": "Completa todos los campos obligatorios",
+    "saved": "¡Dirección guardada con éxito!",
+    "addFailed": "Error al agregar la dirección",
+    "phoneLabel": "Número de teléfono",
+    "cityLabel": "Ciudad *",
+    "stateLabel": "Estado *",
+    "zipLabel": "Código postal *"
+  },
+  "checkoutPlacement": {
+    "addressRequired": "Dirección requerida",
+    "selectAddress": "Selecciona una dirección de envío",
+    "cartEmpty": "El carrito está vacío",
+    "insufficientStock": "Stock insuficiente",
+    "orderFailed": "Error en el pedido"
+  },
+  "shopMeta": {
+    "title": "Tienda",
+    "description": "Explora café fresco, herramientas de preparación y esenciales seleccionados para preparar en casa u oficina."
+  },
+  "blogMeta": {
+    "title": "Blog",
+    "description": "Lee nuestras últimas ideas sobre café, preparación y nuestra tostaduría."
+  },
+  "premium": {
+    "closeAria": "Cerrar"
   }
 }

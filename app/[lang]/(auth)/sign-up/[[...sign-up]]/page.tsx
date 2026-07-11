@@ -17,42 +17,76 @@ import { contactConfig } from "@/config/contact";
 import Container from "@/components/Container";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 const SignUpContent = () => {
   const searchParams = useSearchParams();
   const toLocalizedPath = useLocalizedPath();
+  const dictionary = useDictionary();
   const redirectTo = searchParams.get("redirectTo");
+  const company = contactConfig.company.name;
 
   const benefits = [
     {
       icon: Gift,
-      title: "Welcome Bonus",
-      description: "Get 10% off your first order when you sign up",
+      title: t(
+        dictionary,
+        "authPages.signUp.benefits.welcome.title",
+        "Welcome Bonus",
+      ),
+      description: t(
+        dictionary,
+        "authPages.signUp.benefits.welcome.description",
+        "Get 10% off your first order when you sign up",
+      ),
     },
     {
       icon: ShoppingBag,
-      title: "Exclusive Deals",
-      description: "Access member-only discounts and early sales",
+      title: t(
+        dictionary,
+        "authPages.signUp.benefits.deals.title",
+        "Exclusive Deals",
+      ),
+      description: t(
+        dictionary,
+        "authPages.signUp.benefits.deals.description",
+        "Access member-only discounts and early sales",
+      ),
     },
     {
       icon: Truck,
-      title: "Free Shipping",
-      description: "Enjoy free shipping on orders over $50",
+      title: t(
+        dictionary,
+        "authPages.signUp.benefits.shipping.title",
+        "Free Shipping",
+      ),
+      description: t(
+        dictionary,
+        "authPages.signUp.benefits.shipping.description",
+        "Enjoy free shipping on orders over $50",
+      ),
     },
     {
       icon: CreditCard,
-      title: "Secure Payments",
-      description: "Multiple payment options with bank-level security",
+      title: t(
+        dictionary,
+        "authPages.signUp.benefits.payments.title",
+        "Secure Payments",
+      ),
+      description: t(
+        dictionary,
+        "authPages.signUp.benefits.payments.description",
+        "Multiple payment options with bank-level security",
+      ),
     },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-shop_orange/5 via-shop_light_bg to-shop_light_pink/60 relative overflow-hidden">
       <Container>
-        {/* Background Pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(251,108,8,0.1)_0%,transparent_50%),radial-gradient(circle_at_80%_20%,rgba(59,156,60,0.08)_0%,transparent_50%),radial-gradient(circle_at_60%_80%,rgba(252,240,228,0.4)_0%,transparent_50%)]"></div>
 
-        {/* Header */}
         <header className="relative z-10 px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <Link
@@ -60,14 +94,15 @@ const SignUpContent = () => {
               className="flex items-center gap-2 text-shop_dark_green hover:text-shop_light_green transition-colors duration-200 font-medium"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Home</span>
+              <span className="font-medium">
+                {t(dictionary, "authPages.backToHome", "Back to Home")}
+              </span>
             </Link>
             <Logo />
           </div>
         </header>
 
         <div className="flex flex-col lg:flex-row min-h-[calc(100vh-120px)]">
-          {/* Left Side - Benefits & Welcome */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -81,16 +116,21 @@ const SignUpContent = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <h1 className="text-3xl sm:text-4xl font-bold text-shop_dark_green mb-4">
-                  Join {contactConfig.company.name}
+                  {t(
+                    dictionary,
+                    "authPages.signUp.title",
+                    "Join {company}",
+                  ).replace("{company}", company)}
                 </h1>
                 <p className="text-lg text-dark-text mb-8 leading-relaxed">
-                  Create your account today and unlock exclusive benefits,
-                  personalized recommendations, and seamless shopping
-                  experiences.
+                  {t(
+                    dictionary,
+                    "authPages.signUp.description",
+                    "Create your account today and unlock exclusive benefits, personalized recommendations, and seamless shopping experiences.",
+                  )}
                 </p>
               </motion.div>
 
-              {/* Benefits */}
               <div className="space-y-6">
                 {benefits.map((benefit, index) => (
                   <motion.div
@@ -107,15 +147,12 @@ const SignUpContent = () => {
                       <h3 className="font-semibold text-shop_dark_green mb-1">
                         {benefit.title}
                       </h3>
-                      <p className="text-sm text-dark-text">
-                        {benefit.description}
-                      </p>
+                      <p className="text-sm text-dark-text">{benefit.description}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Trust Indicators */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -125,7 +162,11 @@ const SignUpContent = () => {
                 <div className="text-center">
                   <p className="text-sm text-dark-text mb-3">
                     <strong className="text-shop_dark_green text-base">
-                      Trusted by 50,000+ customers
+                      {t(
+                        dictionary,
+                        "authPages.signUp.trustCustomers",
+                        "Trusted by 50,000+ customers",
+                      )}
                     </strong>
                   </p>
                   <div className="flex justify-center items-center gap-3">
@@ -141,13 +182,16 @@ const SignUpContent = () => {
                       ))}
                     </div>
                     <span className="text-sm text-dark-text font-medium">
-                      4.8/5 average rating
+                      {t(
+                        dictionary,
+                        "authPages.signUp.trustRating",
+                        "4.8/5 average rating",
+                      )}
                     </span>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Support Contact */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -155,7 +199,11 @@ const SignUpContent = () => {
                 className="mt-6 text-center"
               >
                 <p className="text-sm text-dark-text">
-                  Questions? Contact us at{" "}
+                  {t(
+                    dictionary,
+                    "authPages.questionsPrompt",
+                    "Questions? Contact us at",
+                  )}{" "}
                   <a
                     href={`mailto:${contactConfig.emails.support}`}
                     className="text-shop_light_green hover:text-shop_dark_green font-medium transition-colors duration-200"
@@ -167,7 +215,6 @@ const SignUpContent = () => {
             </div>
           </motion.div>
 
-          {/* Right Side - Sign Up Form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -181,7 +228,6 @@ const SignUpContent = () => {
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100/50 p-8"
               >
-                {/* Clerk Sign Up Component */}
                 <div className="clerk-sign-up">
                   <SignUp
                     signInUrl={`/sign-in${
@@ -194,10 +240,13 @@ const SignUpContent = () => {
                   />
                 </div>
 
-                {/* Additional Links */}
                 <div className="mt-6 text-center">
                   <p className="text-sm text-gray-600">
-                    Already have an account?{" "}
+                    {t(
+                      dictionary,
+                      "authPages.signUp.hasAccount",
+                      "Already have an account?",
+                    )}{" "}
                     <Link
                       href={`/sign-in${
                         redirectTo
@@ -206,7 +255,11 @@ const SignUpContent = () => {
                       }`}
                       className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
                     >
-                      Sign in here
+                      {t(
+                        dictionary,
+                        "authPages.signUp.signInLink",
+                        "Sign in here",
+                      )}
                     </Link>
                   </p>
                 </div>

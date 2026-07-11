@@ -37,6 +37,12 @@
       "description": "أنت على وشك إزالة {count} منتجات من قائمة الأمنيات. لا يمكن التراجع عن هذا الإجراء.",
       "keepProducts": "الاحتفاظ بالمنتجات",
       "confirm": "إزالة جميع المنتجات"
+    },
+    "toasts": {
+      "added": "أُضيف إلى قائمة الأمنيات",
+      "removed": "أُزيل من قائمة الأمنيات",
+      "addedDescription": "تمت إضافة المنتج بنجاح!",
+      "removedDescription": "تمت إزالة المنتج بنجاح!"
     }
   },
   "cart": {
@@ -197,7 +203,8 @@
       "ourCoffee": "قهوتنا",
       "wholesalers": "تجار الجملة",
       "contactUs": "اتصل بنا",
-      "openMenu": "فتح القائمة"
+      "openMenu": "فتح القائمة",
+      "mainNavAria": "التنقل الرئيسي"
     },
     "auth": {
       "welcome": "مرحباً",
@@ -214,7 +221,8 @@
     },
     "search": {
       "placeholder": "البحث عن المنتجات...",
-      "direction": "rtl"
+      "direction": "rtl",
+      "placeholderShort": "بحث"
     },
     "language": {
       "select": "اختر اللغة",
@@ -566,7 +574,8 @@
         "title": "دعم وتحديثات ذات أولوية",
         "description": "دعم سريع والوصول المبكر للميزات"
       }
-    }
+    },
+    "closeAria": "إغلاق"
   },
   "contact": {
     "hero": {
@@ -704,7 +713,18 @@
     "filters": "المرشحات",
     "applyFilters": "تطبيق المرشحات",
     "productsFound": "منتج(ات) تم العثور عليها",
-    "showingAll": "عرض جميع المنتجات المتاحة"
+    "showingAll": "عرض جميع المنتجات المتاحة",
+    "categoryFilterTitle": "الفئات",
+    "clearCategoryFilter": "مسح فلتر الفئة",
+    "brands": "العلامات",
+    "clearBrandFilter": "مسح فلتر العلامة",
+    "priceRange": "نطاق السعر",
+    "clearPriceFilter": "مسح فلتر السعر",
+    "under100": "أقل من $100",
+    "range100_200": "$100 - $200",
+    "range200_300": "$200 - $300",
+    "range300_500": "$300 - $500",
+    "over500": "أكثر من $500"
   },
   "deals": {
     "countdown": {
@@ -819,7 +839,11 @@
       "add": "أضف إلى العربة",
       "weight": "الوزن",
       "grind": "الطحن",
-      "packaging": "التعبئة"
+      "packaging": "التعبئة",
+      "toasts": {
+        "stockLimitTitle": "تم الوصول لحد المخزون",
+        "stockLimitDescription": "لا يمكن إضافة أكثر من المخزون المتاح"
+      }
     },
     "reviews": {
       "review": "مراجعة",
@@ -966,7 +990,15 @@
       "coffeeDetails": "تفاصيل القهوة",
       "closeAria": "إغلاق التفاصيل",
       "viewFullDetails": "عرض التفاصيل الكاملة"
-    }
+    },
+    "details": {
+      "description": "الوصف",
+      "additionalInfo": "معلومات إضافية",
+      "weight": "الوزن",
+      "dimensions": "الأبعاد",
+      "noDescription": "لا يوجد وصف متاح لهذا المنتج."
+    },
+    "defaultProductName": "هذا المنتج"
   },
   "checkout": {
     "title": "الدفع",
@@ -1853,7 +1885,29 @@
     "orders": "الطلبات",
     "payment": "الدفع",
     "categories": "الفئات",
-    "dashboard": "لوحة التحكم"
+    "dashboard": "لوحة التحكم",
+    "orderHistory": "سجل الطلبات",
+    "wishlist": "قائمة الأمنيات",
+    "blog": "المدونة",
+    "shop": "المتجر",
+    "product": "منتج",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "help": "المساعدة",
+    "faq": "الأسئلة الشائعة",
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "trackOrder": "تتبع الطلب",
+    "order": "طلب",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "notifications": "الإشعارات",
+    "success": "نجاح",
+    "wholesalers": "تجار الجملة",
+    "mission": "مهمتنا",
+    "education": "التعليم",
+    "brands": "العلامات",
+    "products": "المنتجات"
   },
   "newsletterForm": {
     "placeholder": "أدخل بريدك الإلكتروني",
@@ -1867,7 +1921,11 @@
   "shopNoProducts": {
     "title": "لم يتم العثور على منتجات",
     "browseAll": "تصفح جميع المنتجات",
-    "whatToDo": "ماذا تريد أن تفعل؟"
+    "whatToDo": "ماذا تريد أن تفعل؟",
+    "description": "لم نعثر على أي منتجات في فئة {category}. قد تكون هذه الفئة غير متوفرة مؤقتاً.",
+    "descriptionGeneric": "لم نعثر على أي منتجات. قد تكون هذه الفئة غير متوفرة مؤقتاً.",
+    "viewCategories": "عرض الفئات",
+    "footerHint": "جرّب استكشاف فئات المنتجات الأخرى"
   },
   "categoryPage": {
     "title": "استكشف فئات القهوة",
@@ -1887,7 +1945,27 @@
     "infoTitle": "لا تجد ما تبحث عنه؟",
     "infoDescription": "تصفح جميع منتجاتنا أو استخدم البحث للعثور على عناصر محددة.",
     "allProducts": "جميع المنتجات",
-    "shopByRoasters": "تسوق حسب المحمصات"
+    "shopByRoasters": "تسوق حسب المحمصات",
+    "featuredCategory": "فئة مميزة",
+    "rangeLabel": "النطاق:",
+    "categoryView": "عرض الفئة",
+    "filteredResults": "نتائج مفلترة",
+    "exploreOtherCategories": "استكشف فئات أخرى",
+    "viewAll": "عرض الكل",
+    "discoverMoreTitle": "اكتشف المزيد من المنتجات الرائعة",
+    "discoverMoreDescription": "ألا تجد ما تبحث عنه في {category}؟ استكشف مجموعتنا الكاملة من المنتجات في جميع الفئات.",
+    "metaNotFoundTitle": "الفئة غير موجودة",
+    "metaNotFoundDescription": "تعذّر العثور على الفئة التي تبحث عنها.",
+    "productsSuffix": "منتجات",
+    "products": {
+      "categoriesSidebar": "الفئات",
+      "productsIn": "منتجات في {category}",
+      "thisCategory": "هذه الفئة",
+      "productFound": "تم العثور على {count} منتج",
+      "productsFound": "تم العثور على {count} منتجات",
+      "zeroProductsFound": "0 منتجات",
+      "gridView": "عرض شبكي"
+    }
   },
   "brandsPage": {
     "title": "تسوق حسب المحمصات",
@@ -2103,5 +2181,203 @@
       "title": "شروط الخدمة",
       "description": "اقرأ الشروط والأحكام لاستخدام خدمات شيبا كب للقهوة."
     }
+  },
+  "productCard": {
+    "imageAlt": "صورة المنتج",
+    "sale": "تخفيض!",
+    "review": "مراجعة",
+    "reviews": "مراجعات",
+    "noReviews": "لا توجد مراجعات",
+    "from": "من",
+    "customizeOptions": "تخصيص الخيارات"
+  },
+  "searchModal": {
+    "placeholder": "بحث",
+    "openAria": "فتح البحث",
+    "title": "البحث عن منتجات",
+    "closeAria": "إغلاق البحث (Escape)",
+    "closeTitle": "إغلاق (Escape)",
+    "loadingTitle": "جاري البحث عن المنتجات...",
+    "loadingHint": "يرجى الانتظار لحظة",
+    "badges": {
+      "hot": "رائج",
+      "new": "جديد"
+    },
+    "emptyTitle": "اكتشف منتجات رائعة",
+    "emptyDescription": "ابحث واستكشف آلاف المنتجات",
+    "popularTitle": "منتجات شائعة",
+    "quickSearch": "بحث سريع:",
+    "noResultsTitle": "لم يتم العثور على نتائج",
+    "noResultsDescription": "عذراً، لم نعثر على منتجات تطابق",
+    "clearSearch": "مسح البحث",
+    "productAlt": "منتج"
+  },
+  "socialShare": {
+    "defaultTitle": "اطّلع على هذا!",
+    "linkCopied": "تم نسخ الرابط",
+    "label": "شارك هذا المقال:",
+    "shareOn": "شارك على {platform}",
+    "shareOrCopy": "شارك أو انسخ الرابط"
+  },
+  "initialVisit": {
+    "title": "مرحباً بك في Sheba Cup Coffee!",
+    "description": "اكتشف قهوة إثيوبية محمصة طازجة، مستلزمات التحضير، ودفعات مختارة تُسلّم إلى بابك.",
+    "features": [
+      "تحميص طازج",
+      "أصول إثيوبية",
+      "معدات التحضير",
+      "خيارات الجملة"
+    ],
+    "cta": "تسوق Sheba Cup Coffee",
+    "dismiss": "لا شكراً، ربما لاحقاً",
+    "sidePopup": {
+      "title": "زر Sheba Cup Coffee",
+      "description": "استكشف مجموعتنا المختارة من القهوة"
+    }
+  },
+  "productCatalog": {
+    "searchPlaceholder": "البحث عن منتجات...",
+    "sortBy": "ترتيب حسب",
+    "sortNameAsc": "الاسم أ-ي",
+    "sortNameDesc": "الاسم ي-أ",
+    "sortPriceLow": "السعر: من الأقل للأعلى",
+    "sortPriceHigh": "السعر: من الأعلى للأقل",
+    "sortNewest": "الأحدث أولاً",
+    "filters": "الفلاتر",
+    "activeFilters": "الفلاتر النشطة:",
+    "searchLabel": "بحث:",
+    "clearAll": "مسح الكل",
+    "categories": "الفئات",
+    "priceRange": "نطاق السعر",
+    "resultsSummary": "عرض {shown} من {total} منتجات"
+  },
+  "productCatalogPage": {
+    "title": "قائمة المنتجات",
+    "breadcrumbProducts": "المنتجات",
+    "heroDescription": "اكتشف مجموعتنا الكاملة من القهوة الفاخرة ومستلزمات التحضير. من حبوب محمصة طازجة إلى أدوات يومية، اعثر على كل ما تحتاجه في مكان واحد.",
+    "statsProducts": "{count}+ منتجات",
+    "statsQuality": "منتجات عالية الجودة",
+    "statsCategories": "{count} فئات",
+    "statsNavigate": "سهل التصفح",
+    "statsFilters": "فلاتر متقدمة",
+    "statsFind": "اعثر على ما تحتاجه",
+    "loading": "جاري تحميل المنتجات...",
+    "ctaTitle": "ألا تجد ما تبحث عنه؟",
+    "ctaDescription": "فريق الدعم لدينا هنا لمساعدتك في العثور على المنتج المثالي. تواصل معنا للحصول على توصيات شخصية.",
+    "contactSupport": "اتصل بالدعم"
+  },
+  "authPages": {
+    "backToHome": "العودة للرئيسية",
+    "supportPrompt": "تحتاج مساعدة؟ تواصل مع فريق الدعم على",
+    "questionsPrompt": "أسئلة؟ تواصل معنا على",
+    "signIn": {
+      "title": "مرحباً بعودتك!",
+      "description": "سجّل الدخول للوصول إلى حسابك، تتبع الطلبات، والاستمتاع بتوصيات قهوة مخصصة في {company}.",
+      "features": {
+        "secure": {
+          "title": "مصادقة آمنة",
+          "description": "بياناتك محمية بأمان على مستوى المؤسسات"
+        },
+        "trusted": {
+          "title": "موثوق من آلاف العملاء",
+          "description": "انضم إلى مجتمع عملائنا الراضين"
+        },
+        "premium": {
+          "title": "تجربة مميزة",
+          "description": "الوصول إلى عروض قهوة حصرية واختيارات تحضير شخصية"
+        }
+      }
+    },
+    "signUp": {
+      "title": "انضم إلى {company}",
+      "description": "أنشئ حسابك اليوم وافتح المزايا الحصرية، التوصيات الشخصية، وتجربة تسوق سلسة.",
+      "benefits": {
+        "welcome": {
+          "title": "مكافأة ترحيب",
+          "description": "احصل على خصم 10% على أول طلب عند التسجيل"
+        },
+        "deals": {
+          "title": "عروض حصرية",
+          "description": "الوصول إلى خصومات الأعضاء والمبيعات المبكرة"
+        },
+        "shipping": {
+          "title": "شحن مجاني",
+          "description": "استمتع بشحن مجاني للطلبات فوق 50$"
+        },
+        "payments": {
+          "title": "مدفوعات آمنة",
+          "description": "خيارات دفع متعددة بأمان مصرفي"
+        }
+      },
+      "trustCustomers": "موثوق من أكثر من 50,000 عميل",
+      "trustRating": "تقييم متوسط 4.8/5",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "signInLink": "سجّل الدخول هنا"
+    }
+  },
+  "blogSingle": {
+    "meta": {
+      "notFoundTitle": "المدونة غير موجودة",
+      "notFoundDescription": "تعذّر العثور على المقال الذي تبحث عنه."
+    },
+    "article": "مقال",
+    "minRead": "{count} دقائق قراءة",
+    "views": "{count} مشاهدة",
+    "actions": {
+      "like": "إعجاب",
+      "comment": "تعليق",
+      "share": "مشاركة"
+    },
+    "imageAlt": "صورة المدونة",
+    "thumbnailAlt": "صورة مصغرة للمدونة",
+    "backToBlog": "العودة للمدونة",
+    "sidebar": {
+      "categories": "فئات المدونة",
+      "latestPosts": "أحدث المقالات"
+    },
+    "newsletter": {
+      "title": "ابقَ على اطلاع",
+      "description": "احصل على أحدث المقالات في بريدك.",
+      "subscribe": "اشترك الآن"
+    }
+  },
+  "cartToasts": {
+    "quantityDecreased": "تم تقليل الكمية بنجاح!",
+    "quantityIncreased": "تم زيادة الكمية بنجاح!",
+    "itemRemoved": "تمت إزالة العنصر من السلة",
+    "itemRemovedNamed": "تمت إزالة {name} بنجاح!",
+    "movedToCart": "تم النقل إلى السلة بنجاح!",
+    "removeFailed": "فشل إزالة العنصر",
+    "stockLimit": "لا يمكن إضافة أكثر من المخزون المتاح"
+  },
+  "checkoutAddress": {
+    "addFirstTitle": "أضف عنوانك الأول",
+    "addNewTitle": "إضافة عنوان جديد",
+    "addDescription": "أضف عنوان شحن لـ {email}",
+    "defaultFirst": "سيكون هذا عنوانك الافتراضي",
+    "setDefault": "تعيين كعنوان افتراضي",
+    "adding": "جاري الإضافة...",
+    "requiredFields": "يرجى ملء جميع الحقول المطلوبة",
+    "saved": "تم حفظ العنوان بنجاح!",
+    "addFailed": "فشل إضافة العنوان",
+    "phoneLabel": "رقم الهاتف",
+    "cityLabel": "المدينة *",
+    "stateLabel": "الولاية *",
+    "zipLabel": "الرمز البريدي *"
+  },
+  "checkoutPlacement": {
+    "addressRequired": "العنوان مطلوب",
+    "selectAddress": "يرجى اختيار عنوان الشحن",
+    "cartEmpty": "السلة فارغة",
+    "insufficientStock": "مخزون غير كافٍ",
+    "orderFailed": "فشل الطلب"
+  },
+  "shopMeta": {
+    "title": "المتجر",
+    "description": "تصفّح القهوة الطازجة، أدوات التحضير، والأساسيات المختارة للتحضير في المنزل أو المكتب."
+  },
+  "blogMeta": {
+    "title": "المدونة",
+    "description": "اقرأ أحدث أفكارنا حول القهوة والتحضير ومحمصتنا."
   }
 }

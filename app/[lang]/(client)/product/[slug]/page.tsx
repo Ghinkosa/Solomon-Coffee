@@ -15,18 +15,25 @@ import {
   generateBreadcrumbSchema,
 } from "@/lib/seo";
 
+import { getDictionary } from "@/lib/dictionary";
+import { Locale } from "@/i18n-config";
+
 type Props = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: Locale }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, lang } = await params;
+  const dictionary = await getDictionary(lang);
+  const meta = dictionary?.product?.meta;
   const product = (await getProductBySlug(slug)) as Product | null;
 
   if (!product) {
     return {
-      title: "Product Not Found",
-      description: "The product you're looking for could not be found.",
+      title: meta?.notFoundTitle ?? "Product Not Found",
+      description:
+        meta?.notFoundDescription ??
+        "The product you're looking for could not be found.",
     };
   }
 
@@ -40,21 +47,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const ProductPage = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: Locale }>;
 }) => {
-  const { slug } = await params;
+  const { slug, lang } = await params;
 
   return (
     <div>
       <Suspense fallback={<ProductPageSkeleton />}>
-        <ProductPageContent slug={slug} />
+        <ProductPageContent slug={slug} lang={lang} />
       </Suspense>
     </div>
   );
 };
 
-const ProductPageContent = async ({ slug }: { slug: string }) => {
-  const product = (await getProductBySlug(slug)) as Product | null;
+const ProductPageContent = async ({
+  slug,
+  lang,
+}: {
+  slug: string;
+  lang: Locale;
+}) => {
+  const [product, dictionary] = await Promise.all([
+    getProductBySlug(slug) as Promise<Product | null>,
+    getDictionary(lang),
+  ]);
 
   if (!product) {
     return notFound();
@@ -83,10 +99,14 @@ const ProductPageContent = async ({ slug }: { slug: string }) => {
 
   // Generate structured data
   const productSchema = generateProductSchema(productWithBrand);
+  const bc = dictionary?.breadcrumb ?? {};
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: "Home", url: "/" },
-    { name: "Shop", url: "/shop" },
-    { name: productWithReviews.name || "Product", url: `/product/${slug}` },
+    { name: bc.home ?? "Home", url: "/" },
+    { name: bc.shop ?? "Shop", url: "/shop" },
+    {
+      name: productWithReviews.name || bc.product || "Product",
+      url: `/product/${slug}`,
+    },
   ]);
 
   return (

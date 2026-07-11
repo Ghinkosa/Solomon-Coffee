@@ -1,26 +1,47 @@
+"use client";
+
 import { Dispatch, SetStateAction } from "react";
 import Title from "../Title";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
-
-const priceArray = [
-  { title: "Under $100", value: "0-100" },
-  { title: "$100 - $200", value: "100-200" },
-  { title: "$200 - $300", value: "200-300" },
-  { title: "$300 - $500", value: "300-500" },
-  { title: "Over $500", value: "500-10000" },
-];
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface Props {
   selectedPrice?: string | null;
   setSelectedPrice: Dispatch<SetStateAction<string | null>>;
 }
+
 const PriceList = ({ selectedPrice, setSelectedPrice }: Props) => {
+  const dictionary = useDictionary();
+  const priceArray = [
+    {
+      title: t(dictionary, "shop.under100", "Under $100"),
+      value: "0-100",
+    },
+    {
+      title: t(dictionary, "shop.range100_200", "$100 - $200"),
+      value: "100-200",
+    },
+    {
+      title: t(dictionary, "shop.range200_300", "$200 - $300"),
+      value: "200-300",
+    },
+    {
+      title: t(dictionary, "shop.range300_500", "$300 - $500"),
+      value: "300-500",
+    },
+    {
+      title: t(dictionary, "shop.over500", "Over $500"),
+      value: "500-10000",
+    },
+  ];
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
         <Title className="text-base font-semibold text-gray-900">
-          Price Range
+          {t(dictionary, "shop.priceRange", "Price Range")}
         </Title>
         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
           {priceArray.length}
@@ -61,7 +82,7 @@ const PriceList = ({ selectedPrice, setSelectedPrice }: Props) => {
           }}
           className="mt-4 text-xs font-medium text-gray-600 hover:text-shop_dark_green underline underline-offset-2 decoration-1 transition-colors duration-150"
         >
-          Clear price filter
+          {t(dictionary, "shop.clearPriceFilter", "Clear price filter")}
         </button>
       )}
     </div>

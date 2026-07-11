@@ -11,21 +11,25 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface PremiumFloatingButtonProps {
   dictionary: any;
 }
 
 export default function PremiumFloatingButton({
-  dictionary,
+  dictionary: dictionaryProp,
 }: PremiumFloatingButtonProps) {
+  const contextDictionary = useDictionary();
+  const dictionary = dictionaryProp ?? contextDictionary;
   const [isExpanded, setIsExpanded] = useState(false);
   const upgradeUrl =
     process.env.NEXT_PUBLIC_PAID_VERSION ||
     "https://shebascoffee.com";
 
   // Fallback if dictionary is not loaded yet
-  const t = dictionary?.premium || {
+  const premium = dictionary?.premium || {
     title: "Go Premium",
     subtitle: "Unlock All Premium Features",
     cta: "Upgrade to Premium Now",
@@ -53,8 +57,8 @@ export default function PremiumFloatingButton({
 
   const premiumFeatures = featuresList.map((item) => ({
     icon: item.icon,
-    title: t.features?.[item.key]?.title || "",
-    description: t.features?.[item.key]?.description || "",
+    title: premium.features?.[item.key]?.title || "",
+    description: premium.features?.[item.key]?.description || "",
   }));
 
   return (
@@ -113,7 +117,7 @@ export default function PremiumFloatingButton({
                 <button
                   onClick={() => setIsExpanded(false)}
                   className="absolute top-4 right-4 p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-10 backdrop-blur-md"
-                  aria-label="Close"
+                  aria-label={t(dictionary, "premium.closeAria", "Close")}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -130,10 +134,10 @@ export default function PremiumFloatingButton({
                       <Crown className="w-8 h-8 text-purple-600 fill-purple-100" />
                     </motion.div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                      {t.title}
+                      {premium.title}
                     </h3>
                     <p className="text-sm font-medium text-purple-600 bg-purple-50 inline-block px-3 py-1 rounded-full border border-purple-100">
-                      {t.subtitle}
+                      {premium.subtitle}
                     </p>
                   </div>
 
@@ -171,7 +175,7 @@ export default function PremiumFloatingButton({
                       <div className="absolute inset-0 bg-linear-to-r from-violet-600 to-indigo-600 transition-all duration-300 group-hover:scale-105" />
                       <div className="relative px-6 py-4 flex items-center justify-center gap-2 text-white font-bold text-sm">
                         <Zap className="w-4 h-4 fill-yellow-300 text-yellow-300 animate-pulse" />
-                        <span>{t.cta}</span>
+                        <span>{premium.cta}</span>
                         <Sparkles className="w-4 h-4 text-purple-200" />
                       </div>
                     </Link>
@@ -181,21 +185,21 @@ export default function PremiumFloatingButton({
                       <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500 font-medium uppercase tracking-wide">
                         <span className="flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3 text-green-500" />
-                          {t.footer.oneTime}
+                          {premium.footer.oneTime}
                         </span>
                         <span className="flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3 text-green-500" />
-                          {t.footer.lifetime}
+                          {premium.footer.lifetime}
                         </span>
                       </div>
 
                       <div className="flex items-center justify-center gap-3 text-[10px] text-gray-400 bg-gray-50 py-2 rounded-lg">
                         <span className="flex items-center gap-1.5">
                           <ShieldCheck className="w-3 h-3" />
-                          {t.footer.secure}
+                          {premium.footer.secure}
                         </span>
                         <span className="w-px h-3 bg-gray-300" />
-                        <span>{t.footer.support}</span>
+                        <span>{premium.footer.support}</span>
                       </div>
                     </div>
                   </div>
@@ -211,7 +215,7 @@ export default function PremiumFloatingButton({
           className="relative group outline-none"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          aria-label={t.tooltip}
+          aria-label={premium.tooltip}
         >
           {/* Outer glow */}
           <div className="absolute -inset-2 bg-purple-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -234,7 +238,7 @@ export default function PremiumFloatingButton({
 
           {/* Tooltip */}
           <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shadow-xl opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all pointer-events-none">
-            {t.tooltip}
+            {premium.tooltip}
             <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45" />
           </div>
         </motion.button>

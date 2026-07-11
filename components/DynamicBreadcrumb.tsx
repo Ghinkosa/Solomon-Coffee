@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { i18n, type Locale } from "@/i18n-config";
 import { localizedPath } from "@/lib/localized-path";
 import { useLocale } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -49,6 +51,7 @@ const DynamicBreadcrumb = ({
 }: DynamicBreadcrumbProps) => {
   const pathname = usePathname();
   const lang = useLocale();
+  const dictionary = useDictionary();
   const [detectedParentPath, setDetectedParentPath] = useState<string | null>(
     null
   );
@@ -90,12 +93,37 @@ const DynamicBreadcrumb = ({
   }, [parentPath, pathname]);
 
   const formatSegmentLabel = (segment: string): string => {
-    // Handle special cases
     const specialCases: Record<string, string> = {
-      "sign-in": "Sign In",
-      "sign-up": "Sign Up",
-      "my-account": "My Account",
-      "order-history": "Order History",
+      "sign-in": t(dictionary, "breadcrumb.signIn", "Sign In"),
+      "sign-up": t(dictionary, "breadcrumb.signUp", "Sign Up"),
+      "my-account": t(dictionary, "breadcrumb.myAccount", "My Account"),
+      "order-history": t(dictionary, "breadcrumb.orderHistory", "Order History"),
+      cart: t(dictionary, "breadcrumb.cart", "Cart"),
+      checkout: t(dictionary, "breadcrumb.checkout", "Checkout"),
+      orders: t(dictionary, "breadcrumb.orders", "Orders"),
+      payment: t(dictionary, "breadcrumb.payment", "Payment"),
+      category: t(dictionary, "breadcrumb.categories", "Categories"),
+      dashboard: t(dictionary, "breadcrumb.dashboard", "Dashboard"),
+      wishlist: t(dictionary, "breadcrumb.wishlist", "Wishlist"),
+      blog: t(dictionary, "breadcrumb.blog", "Blog"),
+      shop: t(dictionary, "breadcrumb.shop", "Shop"),
+      product: t(dictionary, "breadcrumb.product", "Product"),
+      about: t(dictionary, "breadcrumb.about", "About"),
+      contact: t(dictionary, "breadcrumb.contact", "Contact"),
+      help: t(dictionary, "breadcrumb.help", "Help"),
+      faq: t(dictionary, "breadcrumb.faq", "FAQ"),
+      privacy: t(dictionary, "breadcrumb.privacy", "Privacy"),
+      terms: t(dictionary, "breadcrumb.terms", "Terms"),
+      track: t(dictionary, "breadcrumb.trackOrder", "Track Order"),
+      order: t(dictionary, "breadcrumb.order", "Order"),
+      profile: t(dictionary, "breadcrumb.profile", "Profile"),
+      settings: t(dictionary, "breadcrumb.settings", "Settings"),
+      notifications: t(dictionary, "breadcrumb.notifications", "Notifications"),
+      success: t(dictionary, "breadcrumb.success", "Success"),
+      wholesalers: t(dictionary, "breadcrumb.wholesalers", "Wholesale"),
+      mission: t(dictionary, "breadcrumb.mission", "Mission"),
+      education: t(dictionary, "breadcrumb.education", "Education"),
+      brands: t(dictionary, "breadcrumb.brands", "Brands"),
     };
 
     if (specialCases[segment]) {
@@ -129,9 +157,8 @@ const DynamicBreadcrumb = ({
       isLast: boolean;
     }> = [];
 
-    // Always start with Home
     breadcrumbs.push({
-      label: "Home",
+      label: t(dictionary, "breadcrumb.home", "Home"),
       href: localizedPath("/", locale),
       isLast: routeSegments.length === 0,
     });

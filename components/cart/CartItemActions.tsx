@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { removeFromCart, updateCartItem } from "@/actions/userActions";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface CartItemActionsProps {
   productId: string;
@@ -26,6 +28,7 @@ export function CartItemActions({
 }: CartItemActionsProps) {
   const [isPending, startTransition] = useTransition();
   const [quantity, setQuantity] = useState(currentQuantity);
+  const dictionary = useDictionary();
 
   const handleQuantityChange = (newQuantity: number) => {
     setQuantity(newQuantity);
@@ -38,7 +41,9 @@ export function CartItemActions({
           size,
           color,
         });
-        toast.success("Moved to cart successfully!");
+        toast.success(
+          t(dictionary, "cartToasts.movedToCart", "Moved to cart successfully!"),
+        );
       } catch {
         console.error("Error moving to cart");
       }
@@ -49,9 +54,13 @@ export function CartItemActions({
     startTransition(async () => {
       try {
         await removeFromCart(productId, size, color);
-        toast.success("Item removed from cart");
+        toast.success(
+          t(dictionary, "cartToasts.itemRemoved", "Item removed from cart"),
+        );
       } catch {
-        toast.error("Failed to remove item");
+        toast.error(
+          t(dictionary, "cartToasts.removeFailed", "Failed to remove item"),
+        );
       }
     });
   };

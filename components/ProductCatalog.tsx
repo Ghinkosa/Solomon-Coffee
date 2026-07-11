@@ -32,6 +32,8 @@ import {
 } from "./ui/collapsible";
 import { Checkbox } from "./ui/checkbox";
 import { Slider } from "./ui/slider";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface Props {
   initialProducts: Product[];
@@ -47,6 +49,9 @@ type SortOption =
   | "popular";
 
 const ProductCatalog = ({ initialProducts, categories }: Props) => {
+  const dictionary = useDictionary();
+  const c = (path: string, fallback: string) =>
+    t(dictionary, `productCatalog.${path}`, fallback);
   const [products] = useState<Product[]>(initialProducts);
   const [loading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -157,7 +162,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Search products..."
+              placeholder={c("searchPlaceholder", "Search products...")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -171,14 +176,14 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
               onValueChange={(value: SortOption) => setSortBy(value)}
             >
               <SelectTrigger className="w-full lg:w-48">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={c("sortBy", "Sort by")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="name-asc">Name A-Z</SelectItem>
-                <SelectItem value="name-desc">Name Z-A</SelectItem>
-                <SelectItem value="price-low">Price Low to High</SelectItem>
-                <SelectItem value="price-high">Price High to Low</SelectItem>
-                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="name-asc">{c("sortNameAsc", "Name A-Z")}</SelectItem>
+                <SelectItem value="name-desc">{c("sortNameDesc", "Name Z-A")}</SelectItem>
+                <SelectItem value="price-low">{c("sortPriceLow", "Price Low to High")}</SelectItem>
+                <SelectItem value="price-high">{c("sortPriceHigh", "Price High to Low")}</SelectItem>
+                <SelectItem value="newest">{c("sortNewest", "Newest First")}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -209,7 +214,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
               className="relative"
             >
               <SlidersHorizontal className="w-4 h-4 mr-2" />
-              Filters
+              {c("filters", "Filters")}
               {activeFilterCount > 0 && (
                 <Badge
                   variant="destructive"
@@ -226,11 +231,11 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
         {activeFilterCount > 0 && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t">
             <span className="text-sm font-medium text-gray-600">
-              Active filters:
+              {c("activeFilters", "Active filters:")}
             </span>
             {searchQuery && (
               <Badge variant="secondary" className="gap-1">
-                Search: {searchQuery}
+                {c("searchLabel", "Search:")} {searchQuery}
                 <X
                   className="w-3 h-3 cursor-pointer"
                   onClick={() => setSearchQuery("")}
@@ -264,7 +269,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
               onClick={resetFilters}
               className="ml-auto"
             >
-              Clear all
+              {c("clearAll", "Clear all")}
             </Button>
           </div>
         )}
@@ -281,7 +286,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
               className="w-80 bg-white rounded-lg border shadow-sm p-6 h-fit sticky top-4"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg">Filters</h3>
+                <h3 className="font-semibold text-lg">{c("filters", "Filters")}</h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -300,7 +305,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
                   }
                 >
                   <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
-                    <span className="font-medium">Categories</span>
+                    <span className="font-medium">{c("categories", "Categories")}</span>
                     <ChevronDown
                       className={`w-4 h-4 transition-transform ${
                         isFilterOpen.categories ? "rotate-180" : ""
@@ -339,7 +344,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
                   }
                 >
                   <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
-                    <span className="font-medium">Price Range</span>
+                    <span className="font-medium">{c("priceRange", "Price Range")}</span>
                     <ChevronDown
                       className={`w-4 h-4 transition-transform ${
                         isFilterOpen.price ? "rotate-180" : ""
@@ -375,7 +380,9 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
           {/* Results Summary */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-gray-600">
-              Showing {filteredProducts.length} of {products.length} products
+              {c("resultsSummary", "Showing {shown} of {total} products")
+                .replace("{shown}", String(filteredProducts.length))
+                .replace("{total}", String(products.length))}
             </p>
           </div>
 
