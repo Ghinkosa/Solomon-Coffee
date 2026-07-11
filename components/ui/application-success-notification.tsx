@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, X, Clock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface ApplicationSuccessNotificationProps {
   isVisible: boolean;
@@ -15,14 +17,42 @@ export default function ApplicationSuccessNotification({
   isVisible,
   onClose,
   type,
-  userName = "User",
+  userName,
 }: ApplicationSuccessNotificationProps) {
+  const dictionary = useDictionary();
+  const s = (path: string, fallback: string) =>
+    t(
+      dictionary,
+      `userDashboard.dashboard.applicationSuccess.${path}`,
+      fallback
+    );
+  const a = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.dashboard.applications.${path}`, fallback);
+  const app = (path: string, fallback: string) =>
+    t(
+      dictionary,
+      `userDashboard.dashboard.applications.${type}.${path}`,
+      fallback
+    );
+  const listAt = (subpath: string, fallback: string[]) => {
+    const segments =
+      `userDashboard.dashboard.applications.${subpath}`.split(".");
+    let node: unknown = dictionary;
+    for (const seg of segments) {
+      if (!node || typeof node !== "object") return fallback;
+      node = (node as Record<string, unknown>)[seg];
+    }
+    return Array.isArray(node)
+      ? node.filter((item): item is string => typeof item === "string")
+      : fallback;
+  };
+
   const [isAnimating, setIsAnimating] = useState(false);
+  const displayName = userName || s("defaultUserName", "User");
 
   useEffect(() => {
     if (isVisible) {
       setIsAnimating(true);
-      // Auto-hide after 8 seconds
       const timer = setTimeout(() => {
         onClose();
       }, 8000);
@@ -34,38 +64,55 @@ export default function ApplicationSuccessNotification({
 
   const config = {
     premium: {
-      title: "🎉 Premium Application Submitted!",
-      subtitle: `Congratulations ${userName}!`,
-      description:
-        "Your premium account application has been successfully submitted and is now under administrative review.",
+      title: app("pendingTitle", "Premium Application Submitted!"),
+      subtitle: s("premiumSubtitle", "Congratulations {name}!").replace(
+        "{name}",
+        displayName
+      ),
+      description: app(
+        "pendingDescription",
+        "Your premium account application has been successfully submitted and is currently under administrative review."
+      ),
       bgColor: "from-amber-500 to-yellow-500",
       iconBg: "bg-amber-100",
       iconColor: "text-amber-600",
-      benefits: [
-        "Exclusive premium features access",
+      benefits: listAt("premium.activeBenefits", [
+        "Exclusive access to premium features",
         "Priority customer support",
-        "Enhanced rewards program",
-        "Eligible for Business upgrades",
-      ],
+        "Enhanced rewards and loyalty points",
+        "Eligible for Business Account upgrade",
+      ]),
+      typeLabel: s("premiumType", "Premium"),
     },
     business: {
-      title: "🚀 Business Application Submitted!",
-      subtitle: `Excellent choice ${userName}!`,
-      description:
-        "Your business account application has been submitted and is under review for approval.",
+      title: app("pendingTitle", "Business Application Submitted!"),
+      subtitle: s("businessSubtitle", "Excellent choice {name}!").replace(
+        "{name}",
+        displayName
+      ),
+      description: app(
+        "pendingDescription",
+        "Your business account application has been submitted successfully and is currently under administrative review."
+      ),
       bgColor: "from-blue-500 to-indigo-500",
       iconBg: "bg-blue-100",
       iconColor: "text-blue-600",
-      benefits: [
+      benefits: listAt("business.pendingBenefits", [
         "2% additional discount on all orders",
-        "Priority business support",
+        "Priority customer support",
         "Bulk order management",
-        "Professional invoicing",
-      ],
+        "Business invoicing capabilities",
+      ]),
+      typeLabel: s("businessType", "Business"),
     },
   };
 
   const currentConfig = config[type];
+  const nextSteps = listAt(`${type}.pendingSteps`, listAt("premium.pendingSteps", [
+    "Our admin team will review your application within 24-48 hours",
+    "You'll receive an email notification once your status changes",
+    "Upon approval, benefits will be activated immediately",
+  ]));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -74,7 +121,6 @@ export default function ApplicationSuccessNotification({
           isAnimating ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
       >
-        {/* Header with gradient */}
         <div
           className={`p-6 bg-gradient-to-r ${currentConfig.bgColor} text-white rounded-t-2xl relative overflow-hidden`}
         >
@@ -100,39 +146,33 @@ export default function ApplicationSuccessNotification({
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6">
           <p className="text-gray-700 mb-4">{currentConfig.description}</p>
 
-          {/* Status indicator */}
           <div className="flex items-center gap-2 mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
             <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
             <span className="text-amber-800 font-medium text-sm">
-              Status: Pending Review
+              {s("statusPending", "Status: Pending Review")}
             </span>
           </div>
 
-          {/* What's next */}
           <div className="mb-4">
             <h4 className="font-semibold text-gray-900 mb-2">
-              What happens next?
+              {s("whatNext", a("whatNext", "What happens next?"))}
             </h4>
             <ul className="text-sm text-gray-600 space-y-1">
-              <li>
-                • Admin team will review your application within 24-48 hours
-              </li>
-              <li>
-                • You&apos;ll receive an email notification once status changes
-              </li>
-              <li>• Upon approval, benefits will be activated immediately</li>
+              {nextSteps.map((step, index) => (
+                <li key={index}>• {step}</li>
+              ))}
             </ul>
           </div>
 
-          {/* Benefits preview */}
           <div className="mb-6">
             <h4 className="font-semibold text-gray-900 mb-2">
-              {type === "premium" ? "Premium" : "Business"} Benefits (Upon
-              Approval):
+              {s("benefitsUponApproval", "{type} Benefits (Upon Approval):").replace(
+                "{type}",
+                currentConfig.typeLabel
+              )}
             </h4>
             <ul className="text-sm text-gray-600 space-y-1">
               {currentConfig.benefits.map((benefit, index) => (
@@ -141,13 +181,12 @@ export default function ApplicationSuccessNotification({
             </ul>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3">
             <Button
               onClick={onClose}
               className="flex-1 bg-gray-900 hover:bg-gray-800"
             >
-              Continue to Dashboard
+              {s("continueButton", "Continue to Dashboard")}
             </Button>
           </div>
         </div>

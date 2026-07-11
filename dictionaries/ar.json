@@ -1026,6 +1026,74 @@
       "businessAccounts": {
         "title": "الحسابات التجارية",
         "description": "موافقات الحسابات التجارية"
+      },
+      "common": {
+        "processing": "جاري المعالجة...",
+        "approve": "موافقة",
+        "reject": "رفض",
+        "membership": "العضوية:",
+        "reason": "السبب: {reason}",
+        "date": "التاريخ:",
+        "appliedOn": "تاريخ التقديم {date}",
+        "joinedOn": "تاريخ الانضمام {date}",
+        "approvedBy": "وافق عليه:",
+        "approvedOn": "تاريخ الموافقة:",
+        "processedBy": "عالجه:"
+      },
+      "status": {
+        "active": "نشط",
+        "pending": "قيد الانتظار",
+        "rejected": "مرفوض",
+        "approved": "موافق عليه",
+        "regular": "عادي",
+        "none": "لا يوجد"
+      },
+      "manageUsersPage": {
+        "title": "إدارة مستخدمي المشرف",
+        "subtitle": "إدارة حالة Premium وإعدادات الحساب",
+        "cardTitle": "حالة Premium للمستخدم",
+        "emailLabel": "بريد المستخدم",
+        "emailPlaceholder": "user@example.com",
+        "setPremium": "تعيين كمستخدم Premium",
+        "setStandard": "تعيين كمستخدم عادي",
+        "premiumHelp": "مستخدم Premium: isActive = true، يحصل على ميزات premium",
+        "standardHelp": "مستخدم عادي: isActive = false، ميزات أساسية فقط",
+        "quickAccess": "وصول سريع",
+        "setAdminUser": "تعيين المشرف (admin@shebascoffee.com)",
+        "toasts": {
+          "emailRequired": "يرجى إدخال عنوان البريد الإلكتروني",
+          "manageFailed": "فشل إدارة المستخدم",
+          "manageError": "حدث خطأ أثناء إدارة المستخدم"
+        }
+      },
+      "premiumAccountsPage": {
+        "title": "إدارة حسابات Premium",
+        "subtitle": "إدارة واعتماد طلبات حسابات Premium",
+        "emptyTitle": "لا توجد طلبات Premium",
+        "emptyDescription": "لم يتم العثور على طلبات حسابات premium.",
+        "defaultRejectReason": "الطلب لا يستوفي المتطلبات",
+        "toasts": {
+          "fetchFailed": "فشل جلب حسابات Premium",
+          "loadError": "خطأ في تحميل حسابات Premium",
+          "approved": "تمت الموافقة على حساب Premium بنجاح",
+          "rejected": "تم رفض حساب Premium بنجاح",
+          "updateFailed": "فشل تحديث حساب Premium",
+          "updateError": "خطأ في تحديث حساب Premium"
+        }
+      },
+      "businessAccountsPage": {
+        "title": "إدارة حسابات Business",
+        "subtitle": "إدارة واعتماد طلبات حسابات Business",
+        "emptyTitle": "لا توجد حسابات Business",
+        "emptyDescription": "لم يتم العثور على طلبات حسابات business.",
+        "toasts": {
+          "fetchFailed": "فشل جلب حسابات Business",
+          "loadError": "خطأ في تحميل حسابات Business",
+          "approved": "تمت الموافقة على حساب Business بنجاح",
+          "rejected": "تم رفض حساب Business بنجاح",
+          "updateFailed": "فشل تحديث حساب Business",
+          "updateError": "خطأ في تحديث حساب Business"
+        }
       }
     },
     "orders": {
@@ -1070,6 +1138,189 @@
           "invoiceGenerated": "تم إنشاء الفاتورة بنجاح!",
           "invoiceFailed": "فشل إنشاء الفاتورة"
         }
+      },
+      "detail": {
+        "metaTitle": "طلب {number}",
+        "metaNotFound": "الطلب غير موجود",
+        "title": "تفاصيل الطلب",
+        "orderNumber": "طلب #{number}",
+        "downloadInvoice": "تنزيل الفاتورة",
+        "generatingInvoice": "جاري الإنشاء...",
+        "generateInvoice": "إنشاء فاتورة",
+        "addingToCart": "جاري الإضافة إلى السلة...",
+        "reorder": "إعادة الطلب",
+        "cancelling": "جاري الإلغاء...",
+        "cancelOrder": "إلغاء الطلب",
+        "backToOrders": "← العودة إلى الطلبات",
+        "cancellationPendingTitle": "طلب الإلغاء قيد الانتظار",
+        "cancellationPendingDescription": "تم إرسال طلب الإلغاء وهو قيد المراجعة. سنُعلمك عند معالجته.",
+        "requestedOn": "تاريخ الطلب: {date}",
+        "orderStatusTitle": "حالة الطلب",
+        "orderStatusLabel": "حالة الطلب",
+        "paymentStatusLabel": "حالة الدفع",
+        "paymentMethodLabel": "طريقة الدفع",
+        "orderDateLabel": "تاريخ الطلب",
+        "orderItems": "عناصر الطلب ({count})",
+        "weight": "الوزن: {value}",
+        "grind": "الطحن: {value}",
+        "packaging": "التعبئة: {value}",
+        "qty": "الكمية: {count}",
+        "orderSummary": "ملخص الطلب",
+        "subtotal": "المجموع الفرعي",
+        "tax": "الضريبة",
+        "shipping": "الشحن",
+        "discount": "الخصم",
+        "total": "الإجمالي",
+        "shippingAddress": "عنوان الشحن",
+        "customerInformation": "معلومات العميل",
+        "paymentCompleted": "اكتمل الدفع",
+        "cancelDialogTitle": "طلب إلغاء الطلب",
+        "cancelDialogDescription": "سيتم إرسال طلب الإلغاء إلى فريقنا للمراجعة.",
+        "cancelReasonLabel": "سبب الإلغاء (اختياري)",
+        "cancelReasonPlaceholder": "مثال: غيّرت رأيي، وجدت عرضاً أفضل...",
+        "refundTitle": "معلومات الاسترداد",
+        "refundDescription": "إذا وُوفق على الطلب، سيُضاف مبلغ {amount} إلى رصيد محفظتك.",
+        "refundUseFuture": "استخدمه في الطلبات المستقبلية",
+        "refundWithdraw": "اطلب السحب في أي وقت",
+        "refundDashboard": "اعرض الرصيد في لوحة التحكم",
+        "keepOrder": "الإبقاء على الطلب",
+        "submitting": "جاري الإرسال...",
+        "submitRequest": "إرسال الطلب",
+        "close": "إغلاق",
+        "cancelledByCustomer": "ألغاه العميل",
+        "paymentStatus": {
+          "pending": "قيد الانتظار",
+          "paid": "مدفوع",
+          "failed": "فشل",
+          "cancelled": "ملغى"
+        },
+        "paymentMethods": {
+          "cash_on_delivery": "الدفع عند الاستلام",
+          "stripe": "Stripe",
+          "card": "بطاقة"
+        },
+        "address_confirmed": "تم تأكيد العنوان",
+        "toasts": {
+          "reorderSuccess": "تمت إضافة {count} عنصر إلى السلة!",
+          "reorderRedirect": "جاري التوجيه إلى السلة...",
+          "reorderFailed": "فشلت إعادة الطلب. يرجى المحاولة مرة أخرى.",
+          "invoiceGenerated": "تم إنشاء الفاتورة بنجاح!",
+          "invoiceFailed": "فشل إنشاء الفاتورة",
+          "invoiceNetworkError": "خطأ في الشبكة: فشل إنشاء الفاتورة. يرجى المحاولة مرة أخرى.",
+          "cancelFailed": "فشل إرسال طلب الإلغاء",
+          "cancelError": "حدث خطأ أثناء إرسال طلب الإلغاء"
+        }
+      },
+      "timeline": {
+        "title": "مسار الطلب",
+        "inProgress": "قيد التنفيذ",
+        "completed": "مكتمل",
+        "progress": "التقدم",
+        "progressCount": "{completed} من {total} مكتمل",
+        "events": {
+          "order_placed": {
+            "title": "تم تقديم الطلب",
+            "description": "استلمنا طلبك"
+          },
+          "order_cancelled": {
+            "title": "تم إلغاء الطلب",
+            "description": "تم إلغاء هذا الطلب"
+          },
+          "address_confirmed": {
+            "title": "تم تأكيد العنوان",
+            "description": "تم التحقق من عنوان التسليم",
+            "descriptionBy": "أكده {name}"
+          },
+          "address_confirmation": {
+            "title": "تأكيد العنوان",
+            "description": "في انتظار التحقق من العنوان"
+          },
+          "order_confirmed": {
+            "title": "تم تأكيد الطلب",
+            "description": "تم تأكيد الطلب",
+            "descriptionBy": "أكده {name}"
+          },
+          "order_confirmation": {
+            "title": "تأكيد الطلب",
+            "description": "تأكيد الطلب قيد الانتظار"
+          },
+          "order_packed": {
+            "title": "تم تجهيز الطلب",
+            "description": "تم تجهيز طلبك",
+            "descriptionBy": "جهّزه {name}"
+          },
+          "order_packing": {
+            "title": "تجهيز الطلب",
+            "description": "سيتم تجهيز طلبك قريباً"
+          },
+          "out_for_delivery": {
+            "title": "خارج للتسليم",
+            "description": "الطلب في طريقه للتسليم",
+            "descriptionAssigned": "مُسند إلى {name}",
+            "descriptionPending": "سيتم إرسال طلبك للتسليم قريباً"
+          },
+          "payment_collected": {
+            "title": "تم تحصيل الدفع",
+            "description": "تم استلام الدفع عند الاستلام"
+          },
+          "payment_collection": {
+            "title": "تحصيل الدفع",
+            "description": "سيتم تحصيل الدفع نقداً عند التسليم"
+          },
+          "payment_received": {
+            "title": "تم استلام الدفع",
+            "description": "اكتمل الدفع عبر الإنترنت"
+          },
+          "delivered": {
+            "title": "تم التسليم",
+            "description": "تم تسليم الطلب بنجاح",
+            "descriptionBy": "سلّمه {name}",
+            "descriptionPending": "سيتم تسليم طلبك إلى عنوانك"
+          }
+        }
+      },
+      "paymentModal": {
+        "title": "دفع آمن",
+        "subtitle": "أكمل الدفع بأمان عبر Stripe",
+        "verified": "موثّق",
+        "orderNumber": "رقم الطلب",
+        "totalAmount": "المبلغ الإجمالي",
+        "sslProtection": "محمي بتشفير SSL 256-bit",
+        "stepSecure": "آمن",
+        "stepPay": "ادفع",
+        "stepComplete": "اكتمل",
+        "cancel": "إلغاء",
+        "processing": "جاري المعالجة...",
+        "paySecurely": "ادفع بأمان الآن",
+        "sslSecured": "SSL آمن",
+        "instant": "فوري",
+        "protected": "محمي",
+        "close": "إغلاق",
+        "toasts": {
+          "redirecting": "جاري التوجيه إلى الدفع الآمن...",
+          "failed": "فشل معالجة الدفع",
+          "initFailed": "فشل تهيئة الدفع",
+          "paymentFailed": "فشل الدفع"
+        }
+      },
+      "pagination": {
+        "previous": "السابق",
+        "next": "التالي",
+        "previousAria": "الانتقال إلى الصفحة السابقة",
+        "nextAria": "الانتقال إلى الصفحة التالية",
+        "morePages": "المزيد من الصفحات",
+        "navAria": "ترقيم الصفحات"
+      },
+      "dialog": {
+        "title": "تفاصيل الطلب - {number}",
+        "customer": "العميل:",
+        "email": "البريد:",
+        "date": "التاريخ:",
+        "status": "الحالة:",
+        "invoiceNumber": "رقم الفاتورة:",
+        "viewInvoice": "عرض الفاتورة",
+        "quantity": "الكمية",
+        "price": "السعر"
       }
     },
     "settings": {
@@ -1104,7 +1355,36 @@
       "exported": "تم تصدير البيانات بنجاح",
       "exportFailed": "فشل تصدير البيانات",
       "deleteInitiated": "تم بدء حذف الحساب",
-      "deleteFailed": "فشل حذف الحساب"
+      "deleteFailed": "فشل حذف الحساب",
+      "newsletter": {
+        "title": "اشتراك النشرة البريدية",
+        "description": "إدارة تفضيلات اشتراك النشرة البريدية",
+        "subscribed": "مشترك في النشرة",
+        "notSubscribed": "غير مشترك",
+        "benefitsTitle": "مزايا النشرة:",
+        "benefits": [
+          "عروض وخصومات حصرية حتى 50%",
+          "وصول مبكر للمنتجات الجديدة",
+          "عروض شحن مجاني",
+          "نصائح واتجاهات التسوق",
+          "مفاجآت عيد الميلاد"
+        ],
+        "subscribe": "الاشتراك في النشرة",
+        "unsubscribe": "إلغاء الاشتراك في النشرة",
+        "subscribing": "جاري الاشتراك...",
+        "unsubscribing": "جاري إلغاء الاشتراك...",
+        "footerSubscribed": "يمكنك إعادة الاشتراك في أي وقت",
+        "footerNotSubscribed": "انضم إلى أكثر من 50,000 مشترك ولا تفوت أي عرض",
+        "toasts": {
+          "emailNotFound": "البريد غير موجود",
+          "subscribeSuccess": "تم الاشتراك في النشرة بنجاح!",
+          "alreadySubscribed": "أنت مشترك بالفعل!",
+          "subscribeFailed": "فشل الاشتراك",
+          "unsubscribeSuccess": "تم إلغاء الاشتراك بنجاح",
+          "unsubscribeFailed": "فشل إلغاء الاشتراك",
+          "genericError": "حدث خطأ. يرجى المحاولة مرة أخرى."
+        }
+      }
     },
     "dashboard": {
       "welcome": "مرحباً بعودتك، {name}!",
@@ -1200,6 +1480,38 @@
           "cancelFailed": "فشل إلغاء الطلب",
           "cancelError": "خطأ في إلغاء الطلب"
         }
+      },
+      "premiumBanner": {
+        "title": "افتح مزايا Premium!",
+        "freeBadge": "مجاني",
+        "description": "احصل على عروض حصرية ودعم أولوية ووصول مبكر للتخفيضات وتوصيات مخصصة. انضم اليوم!",
+        "prioritySupport": "دعم أولوية",
+        "exclusiveOffers": "عروض حصرية",
+        "earlyAccess": "وصول مبكر",
+        "registering": "جاري التسجيل...",
+        "applyButton": "التقديم لخدمات Premium",
+        "toasts": {
+          "success": "تم التسجيل في خدمات Premium بنجاح!",
+          "successDescription": "مرحباً بك في Premium! استمتع بالعروض الحصرية والدعم الأولوي.",
+          "failed": "فشل التسجيل في خدمات Premium",
+          "error": "حدث خطأ. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "applicationSuccess": {
+        "continueButton": "المتابعة إلى لوحة التحكم",
+        "statusPending": "الحالة: قيد المراجعة",
+        "whatNext": "ماذا بعد؟",
+        "benefitsUponApproval": "مزايا {type} (عند الموافقة):",
+        "premiumType": "Premium",
+        "businessType": "Business",
+        "premiumSubtitle": "تهانينا {name}!",
+        "businessSubtitle": "اختيار ممتاز {name}!",
+        "defaultUserName": "مستخدم"
+      },
+      "badges": {
+        "vip": "VIP",
+        "premium": "Premium",
+        "member": "عضو"
       }
     },
     "notificationsPage": {
@@ -1366,7 +1678,65 @@
           "deletedMessage": "تم حذف عنوانك بنجاح.",
           "deleteErrorMessage": "فشل حذف العنوان. يرجى المحاولة مرة أخرى."
         }
+      },
+      "locationSelector": {
+        "title": "اختيار الموقع",
+        "country": "البلد",
+        "selectCountry": "اختر البلد",
+        "state": "الولاية",
+        "stateProvince": "الولاية/المقاطعة",
+        "city": "المدينة",
+        "subArea": "المنطقة/الحي (اختياري)",
+        "zipCode": "الرمز البريدي",
+        "postalCode": "الرمز البريدي",
+        "searchCountries": "ابحث عن البلدان...",
+        "searchStates": "ابحث عن الولايات...",
+        "searchCities": "ابحث عن المدن...",
+        "noCountries": "لم يتم العثور على بلدان",
+        "noStates": "لم يتم العثور على ولايات",
+        "noCities": "لم يتم العثور على مدن",
+        "loadingStates": "جاري تحميل الولايات...",
+        "noStatesAvailable": "لا توجد ولايات متاحة",
+        "selectState": "اختر ولاية",
+        "selectStateProvince": "اختر ولاية/مقاطعة",
+        "loadingCities": "جاري تحميل المدن...",
+        "noCitiesAvailable": "لا توجد مدن متاحة أو أدخل يدوياً",
+        "selectCity": "اختر مدينة",
+        "enterCityManually": "أدخل اسم المدينة يدوياً",
+        "subAreaPlaceholder": "أدخل المنطقة أو الحي",
+        "zipPlaceholder": "أدخل الرمز البريدي (مثال: 12345)",
+        "postalPlaceholder": "أدخل الرمز البريدي"
       }
+    },
+    "checkoutSuccess": {
+      "title": "تم تقديم الطلب بنجاح!",
+      "thankYou": "شكراً لشرائك! تم تأكيد طلبك ونحن نجهّزه للشحن. ستتلقى رسالة تأكيد بالبريد",
+      "orderNumber": "رقم الطلب:",
+      "whatNext": "ماذا بعد؟",
+      "steps": {
+        "processing": {
+          "title": "معالجة الطلب",
+          "description": "نحن نجهّز عناصر طلبك للشحن"
+        },
+        "shipping": {
+          "title": "الشحن",
+          "description": "سيُشحن طلبك خلال 2-3 أيام عمل"
+        },
+        "delivery": {
+          "title": "التسليم",
+          "description": "يُسلّم إلى باب منزلك مع تحديثات التتبع"
+        }
+      },
+      "recentOrders": "طلباتك الأخيرة",
+      "orderLabel": "طلب #",
+      "view": "عرض",
+      "showLess": "عرض أقل",
+      "showAll": "عرض كل {count} طلب",
+      "continueShopping": "متابعة التسوق",
+      "trackOrder": "تتبع الطلب",
+      "trackOrders": "تتبع الطلبات",
+      "shopMore": "تسوق المزيد",
+      "notAvailable": "غ/م"
     }
   },
   "breadcrumb": {

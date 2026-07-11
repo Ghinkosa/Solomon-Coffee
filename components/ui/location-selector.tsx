@@ -20,7 +20,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Country, State, City } from "country-state-city";
-import { ChevronRight, MapPin, Globe, Search } from "lucide-react";
+import { MapPin, Globe, Search } from "lucide-react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface LocationData {
   country: string;
@@ -43,6 +45,10 @@ export default function LocationSelector({
   onChange,
   className,
 }: LocationSelectorProps) {
+  const dictionary = useDictionary();
+  const loc = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.profile.locationSelector.${path}`, fallback);
+
   const [countries] = useState(() => Country.getAllCountries());
   const [states, setStates] = useState<
     ReturnType<typeof State.getStatesOfCountry>
@@ -215,7 +221,7 @@ export default function LocationSelector({
         <div className="flex items-center space-x-2 mb-3">
           <MapPin className="h-4 w-4 text-blue-600" />
           <span className="text-sm font-medium text-gray-700">
-            Location Selection
+            {loc("title", "Location Selection")}
           </span>
         </div>
 
@@ -228,12 +234,12 @@ export default function LocationSelector({
                   className="cursor-pointer hover:text-blue-600"
                 >
                   <Globe className="h-3 w-3 mr-1" />
-                  Country
+                  {loc("country", "Country")}
                 </BreadcrumbLink>
               ) : (
                 <BreadcrumbPage className="text-blue-600 font-medium">
                   <Globe className="h-3 w-3 mr-1" />
-                  Select Country
+                  {loc("selectCountry", "Select Country")}
                 </BreadcrumbPage>
               )}
             </BreadcrumbItem>
@@ -295,18 +301,18 @@ export default function LocationSelector({
       {/* Country Selection */}
       <div>
         <Label htmlFor="country" className="text-sm font-medium">
-          Country *
+          {loc("country", "Country")} *
         </Label>
         <Select value={value.countryCode} onValueChange={handleCountryChange}>
           <SelectTrigger className="mt-1">
-            <SelectValue placeholder="Select a country" />
+            <SelectValue placeholder={loc("selectCountry", "Select Country")} />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <div className="sticky top-0 z-10 bg-white p-2 border-b">
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                 <Input
-                  placeholder="Search countries..."
+                  placeholder={loc("searchCountries", "Search countries...")}
                   value={countrySearch}
                   onChange={(e) => setCountrySearch(e.target.value)}
                   className="pl-8"
@@ -326,7 +332,7 @@ export default function LocationSelector({
                 ))
               ) : (
                 <div className="p-4 text-sm text-gray-500 text-center">
-                  No countries found
+                  {loc("noCountries", "No countries found")}
                 </div>
               )}
             </div>
@@ -338,7 +344,10 @@ export default function LocationSelector({
       {value.countryCode && (
         <div>
           <Label htmlFor="state" className="text-sm font-medium">
-            {value.country === "United States" ? "State" : "State/Province"} *
+            {value.country === "United States"
+              ? loc("state", "State")
+              : loc("stateProvince", "State/Province")}{" "}
+            *
           </Label>
           <Select
             value={value.stateCode}
@@ -349,14 +358,12 @@ export default function LocationSelector({
               <SelectValue
                 placeholder={
                   loadingStates
-                    ? "Loading states..."
+                    ? loc("loadingStates", "Loading states...")
                     : states.length === 0
-                    ? "No states available"
-                    : `Select a ${
-                        value.country === "United States"
-                          ? "state"
-                          : "state/province"
-                      }`
+                    ? loc("noStatesAvailable", "No states available")
+                    : value.country === "United States"
+                    ? loc("selectState", "Select a state")
+                    : loc("selectStateProvince", "Select a state/province")
                 }
               />
             </SelectTrigger>
@@ -365,7 +372,7 @@ export default function LocationSelector({
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                   <Input
-                    placeholder="Search states..."
+                    placeholder={loc("searchStates", "Search states...")}
                     value={stateSearch}
                     onChange={(e) => setStateSearch(e.target.value)}
                     className="pl-8"
@@ -382,7 +389,7 @@ export default function LocationSelector({
                   ))
                 ) : (
                   <div className="p-4 text-sm text-gray-500 text-center">
-                    No states found
+                    {loc("noStates", "No states found")}
                   </div>
                 )}
               </div>
@@ -395,7 +402,7 @@ export default function LocationSelector({
       {value.stateCode && (
         <div>
           <Label htmlFor="city" className="text-sm font-medium">
-            City *
+            {loc("city", "City")} *
           </Label>
           <Select
             value={value.city}
@@ -406,10 +413,13 @@ export default function LocationSelector({
               <SelectValue
                 placeholder={
                   loadingCities
-                    ? "Loading cities..."
+                    ? loc("loadingCities", "Loading cities...")
                     : cities.length === 0
-                    ? "No cities available or enter manually below"
-                    : "Select a city"
+                    ? loc(
+                        "noCitiesAvailable",
+                        "No cities available or enter manually below"
+                      )
+                    : loc("selectCity", "Select a city")
                 }
               />
             </SelectTrigger>
@@ -418,7 +428,7 @@ export default function LocationSelector({
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                   <Input
-                    placeholder="Search cities..."
+                    placeholder={loc("searchCities", "Search cities...")}
                     value={citySearch}
                     onChange={(e) => setCitySearch(e.target.value)}
                     className="pl-8"
@@ -435,7 +445,7 @@ export default function LocationSelector({
                   ))
                 ) : (
                   <div className="p-4 text-sm text-gray-500 text-center">
-                    No cities found
+                    {loc("noCities", "No cities found")}
                   </div>
                 )}
               </div>
@@ -446,7 +456,7 @@ export default function LocationSelector({
           {value.stateCode && cities.length === 0 && (
             <div className="mt-2">
               <Input
-                placeholder="Enter city name manually"
+                placeholder={loc("enterCityManually", "Enter city name manually")}
                 value={value.city}
                 onChange={(e) => handleCityChange(e.target.value)}
                 className="text-sm"
@@ -460,11 +470,14 @@ export default function LocationSelector({
       {value.city && (
         <div>
           <Label htmlFor="subarea" className="text-sm font-medium">
-            Sub-area/District (Optional)
+            {loc("subArea", "Sub-area/District (Optional)")}
           </Label>
           <Input
             id="subarea"
-            placeholder="Enter area, district, or neighborhood"
+            placeholder={loc(
+              "subAreaPlaceholder",
+              "Enter area, district, or neighborhood"
+            )}
             value={value.subArea || ""}
             onChange={(e) => handleSubAreaChange(e.target.value)}
             className="mt-1"
@@ -476,14 +489,17 @@ export default function LocationSelector({
       {value.country && (
         <div>
           <Label htmlFor="zipcode" className="text-sm font-medium">
-            {value.country === "United States" ? "ZIP Code" : "Postal Code"} *
+            {value.country === "United States"
+              ? loc("zipCode", "ZIP Code")
+              : loc("postalCode", "Postal Code")}{" "}
+            *
           </Label>
           <Input
             id="zipcode"
             placeholder={
               value.country === "United States"
-                ? "Enter ZIP code (e.g., 12345)"
-                : "Enter postal code"
+                ? loc("zipPlaceholder", "Enter ZIP code (e.g., 12345)")
+                : loc("postalPlaceholder", "Enter postal code")
             }
             value={value.zipCode}
             onChange={(e) => handleZipChange(e.target.value)}

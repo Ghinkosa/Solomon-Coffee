@@ -1,5 +1,9 @@
+"use client";
+
 import { Crown, Star, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface PremiumBadgeProps {
   membershipType?: string;
@@ -12,6 +16,10 @@ export default function PremiumBadge({
   size = "md",
   variant = "default",
 }: PremiumBadgeProps) {
+  const dictionary = useDictionary();
+  const b = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.dashboard.badges.${path}`, fallback);
+
   const sizeClasses = {
     sm: "text-xs px-2 py-1",
     md: "text-sm px-3 py-1",
@@ -50,11 +58,11 @@ export default function PremiumBadge({
   const getBadgeText = () => {
     switch (membershipType) {
       case "vip":
-        return "VIP";
+        return b("vip", "VIP");
       case "premium":
-        return "Premium";
+        return b("premium", "Premium");
       default:
-        return "Member";
+        return b("member", "Member");
     }
   };
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { FC } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
@@ -13,6 +15,8 @@ import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { Button } from "./ui/button";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface OrderDetailsDialogProps {
   order: MY_ORDERS_QUERY_RESULT[number] | null;
@@ -25,36 +29,68 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
   isOpen,
   onClose,
 }) => {
+  const dictionary = useDictionary();
+  const d = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.dialog.${path}`, fallback);
+  const detail = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.detail.${path}`, fallback);
+  const l = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.list.${path}`, fallback);
+
+  const getStatusLabel = (status?: string | null) => {
+    if (!status) return l("status.pending", "Pending");
+    const key = status.toLowerCase().replace(/\s+/g, "_");
+    return l(`status.${key}`, status.charAt(0).toUpperCase() + status.slice(1));
+  };
+
+  const getPaymentStatusLabel = (status?: string | null) => {
+    if (!status) return detail("paymentStatus.pending", "Pending");
+    const key = status.toLowerCase();
+    return detail(`paymentStatus.${key}`, status);
+  };
+
+  const getPaymentMethodLabel = (method: string) => {
+    const key = method.toLowerCase();
+    return detail(`paymentMethods.${key}`, method.replace(/_/g, " "));
+  };
+
   if (!order) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-scroll">
         <DialogHeader>
-          <DialogTitle>Order Details - {order.orderNumber}</DialogTitle>
+          <DialogTitle>
+            {d("title", "Order Details - {number}").replace(
+              "{number}",
+              order.orderNumber ?? ""
+            )}
+          </DialogTitle>
         </DialogHeader>
         <div className="mt-4">
           <p>
-            <strong>Customer:</strong> {order.customerName}
+            <strong>{d("customer", "Customer:")}</strong> {order.customerName}
           </p>
           <p>
-            <strong>Email:</strong> {order.email}
+            <strong>{d("email", "Email:")}</strong> {order.email}
           </p>
           <p>
-            <strong>Date:</strong>{" "}
+            <strong>{d("date", "Date:")}</strong>{" "}
             {order.orderDate && new Date(order.orderDate).toLocaleDateString()}
           </p>
           <p>
-            <strong>Status:</strong>{" "}
-            <span className="capitalize text-green-600 font-medium">
-              {order.status}
+            <strong>{d("status", "Status:")}</strong>{" "}
+            <span className="text-green-600 font-medium">
+              {getStatusLabel(order.status)}
             </span>
           </p>
           {order?.paymentStatus && (
             <p>
-              <strong>Payment Status:</strong>{" "}
+              <strong>
+                {detail("paymentStatusLabel", "Payment Status:")}
+              </strong>{" "}
               <span
-                className={`capitalize font-medium ${
+                className={`font-medium ${
                   order.paymentStatus === "paid"
                     ? "text-green-600"
                     : order.paymentStatus === "failed"
@@ -62,23 +98,22 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
                     : "text-yellow-600"
                 }`}
               >
-                {order.paymentStatus}
+                {getPaymentStatusLabel(order.paymentStatus)}
               </span>
             </p>
           )}
           {order?.paymentMethod && (
             <p>
-              <strong>Payment Method:</strong>{" "}
-              <span className="capitalize">
-                {order.paymentMethod === "cash_on_delivery"
-                  ? "Cash on Delivery"
-                  : order.paymentMethod}
-              </span>
+              <strong>
+                {detail("paymentMethodLabel", "Payment Method:")}
+              </strong>{" "}
+              <span>{getPaymentMethodLabel(order.paymentMethod)}</span>
             </p>
           )}
           {order?.invoice?.number && (
             <p>
-              <strong>Invoice Number:</strong> {order?.invoice?.number}
+              <strong>{d("invoiceNumber", "Invoice Number:")}</strong>{" "}
+              {order?.invoice?.number}
             </p>
           )}
           {order?.invoice?.hosted_invoice_url && (
@@ -88,16 +123,16 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
                 window.open(order?.invoice?.hosted_invoice_url, "_blank")
               }
             >
-              View Invoice
+              {d("viewInvoice", "View Invoice")}
             </Button>
           )}
         </div>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>Quantity</TableHead>
-              <TableHead>Price</TableHead>
+              <TableHead>{l("table.products", "Products")}</TableHead>
+              <TableHead>{d("quantity", "Quantity")}</TableHead>
+              <TableHead>{d("price", "Price")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -107,7 +142,7 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
                   {product?.product?.images && (
                     <Image
                       src={urlFor(product?.product?.images[0]).url()}
-                      alt="productImage"
+                      alt={l("productAlt", "Product")}
                       width={50}
                       height={50}
                       className="border rounded-sm"
@@ -132,7 +167,7 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
           <div className="w-44 flex flex-col gap-1">
             {order?.amountDiscount !== 0 && (
               <div className="w-full flex items-center justify-between">
-                <strong>Discount: </strong>
+                <strong>{detail("discount", "Discount")}: </strong>
                 <PriceFormatter
                   amount={order?.amountDiscount}
                   className="text-black font-bold"
@@ -141,7 +176,7 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
             )}
             {order?.amountDiscount !== 0 && (
               <div className="w-full flex items-center justify-between">
-                <strong>Subtotal: </strong>
+                <strong>{detail("subtotal", "Subtotal")}: </strong>
                 <PriceFormatter
                   amount={
                     (order?.totalPrice as number) +
@@ -152,7 +187,7 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
               </div>
             )}
             <div className="w-full flex items-center justify-between">
-              <strong>Total: </strong>
+              <strong>{detail("total", "Total")}: </strong>
               <PriceFormatter
                 amount={order?.totalPrice}
                 className="text-black font-bold"

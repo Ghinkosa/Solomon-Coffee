@@ -6,15 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { User, Crown, Building2 } from "lucide-react";
+import { User, Crown } from "lucide-react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 export default function AdminUserManagement() {
+  const dictionary = useDictionary();
+  const p = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.manageUsersPage.${path}`, fallback);
+  const c = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.common.${path}`, fallback);
+
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSetPremium = async (setPremium: boolean) => {
     if (!email.trim()) {
-      toast.error("Please enter an email address");
+      toast.error(p("toasts.emailRequired", "Please enter an email address"));
       return;
     }
 
@@ -35,13 +43,13 @@ export default function AdminUserManagement() {
 
       if (response.ok) {
         toast.success(data.message);
-        setEmail(""); // Clear the input
+        setEmail("");
       } else {
-        toast.error(data.error || "Failed to manage user");
+        toast.error(data.error || p("toasts.manageFailed", "Failed to manage user"));
       }
     } catch (error) {
       console.error("Error managing user:", error);
-      toast.error("Error managing user");
+      toast.error(p("toasts.manageError", "Error managing user"));
     } finally {
       setLoading(false);
     }
@@ -51,10 +59,10 @@ export default function AdminUserManagement() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Admin User Management
+          {p("title", "Admin User Management")}
         </h1>
         <p className="text-gray-600">
-          Manage user premium status and account settings
+          {p("subtitle", "Manage user premium status and account settings")}
         </p>
       </div>
 
@@ -63,16 +71,16 @@ export default function AdminUserManagement() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="w-5 h-5" />
-              User Premium Status
+              {p("cardTitle", "User Premium Status")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="email">User Email</Label>
+              <Label htmlFor="email">{p("emailLabel", "User Email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="user@example.com"
+                placeholder={p("emailPlaceholder", "user@example.com")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1"
@@ -86,7 +94,9 @@ export default function AdminUserManagement() {
                 className="bg-yellow-600 hover:bg-yellow-700"
               >
                 <Crown className="w-4 h-4 mr-2" />
-                {loading ? "Processing..." : "Set as Premium User"}
+                {loading
+                  ? c("processing", "Processing...")
+                  : p("setPremium", "Set as Premium User")}
               </Button>
 
               <Button
@@ -95,18 +105,19 @@ export default function AdminUserManagement() {
                 variant="outline"
               >
                 <User className="w-4 h-4 mr-2" />
-                {loading ? "Processing..." : "Set as Standard User"}
+                {loading
+                  ? c("processing", "Processing...")
+                  : p("setStandard", "Set as Standard User")}
               </Button>
             </div>
 
             <div className="text-sm text-gray-600 space-y-1">
+              <p>{p("premiumHelp", "Premium User: isActive = true, gets premium features")}</p>
               <p>
-                <strong>Premium User:</strong> isActive = true, gets premium
-                features
-              </p>
-              <p>
-                <strong>Standard User:</strong> isActive = false, basic features
-                only
+                {p(
+                  "standardHelp",
+                  "Standard User: isActive = false, basic features only"
+                )}
               </p>
             </div>
           </CardContent>
@@ -116,7 +127,7 @@ export default function AdminUserManagement() {
       <div className="mt-8">
         <Card>
           <CardHeader>
-            <CardTitle>Quick Access</CardTitle>
+            <CardTitle>{p("quickAccess", "Quick Access")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -125,7 +136,7 @@ export default function AdminUserManagement() {
                 variant="outline"
                 size="sm"
               >
-                Set Admin User (admin@shebascoffee.com)
+                {p("setAdminUser", "Set Admin User (admin@shebascoffee.com)")}
               </Button>
             </div>
           </CardContent>

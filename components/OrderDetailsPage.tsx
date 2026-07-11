@@ -44,6 +44,9 @@ import {
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/utils";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { getGrindLabel } from "@/lib/i18n-nav";
 
 interface OrderDetailsPageProps {
   order: {
@@ -173,7 +176,33 @@ const getPaymentStatusColor = (status: string) => {
 };
 
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
+  const dictionary = useDictionary();
   const toLocalizedPath = useLocalizedPath();
+  const d = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.detail.${path}`, fallback);
+  const l = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.list.${path}`, fallback);
+
+  const getStatusLabel = (status?: string | null) => {
+    if (!status) return l("status.pending", "Pending");
+    const key = status.toLowerCase().replace(/\s+/g, "_");
+    if (key === "address_confirmed") {
+      return d("address_confirmed", "Address confirmed");
+    }
+    return l(`status.${key}`, status.charAt(0).toUpperCase() + status.slice(1));
+  };
+
+  const getPaymentStatusLabel = (status?: string | null) => {
+    if (!status) return d("paymentStatus.pending", "Pending");
+    const key = status.toLowerCase();
+    return d(`paymentStatus.${key}`, status);
+  };
+
+  const getPaymentMethodLabel = (method: string) => {
+    const key = method.toLowerCase();
+    return d(`paymentMethods.${key}`, method.replace(/_/g, " "));
+  };
+
   const [generatingInvoice, setGeneratingInvoice] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(order);
   const [isReordering, setIsReordering] = useState(false);
@@ -231,9 +260,15 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
       // Add all items to cart at once
       addMultipleItems(cartItems);
 
-      toast.success(`${order.products.length} items added to cart!`, {
-        description: "Redirecting to cart...",
-      });
+      toast.success(
+        d("toasts.reorderSuccess", "{count} items added to cart!").replace(
+          "{count}",
+          String(order.products.length)
+        ),
+        {
+          description: d("toasts.reorderRedirect", "Redirecting to cart..."),
+        }
+      );
 
       // Redirect to cart after a short delay
       setTimeout(() => {
@@ -241,7 +276,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
       }, 1000);
     } catch (error) {
       console.error("Error reordering:", error);
-      toast.error("Failed to reorder items. Please try again.");
+      toast.error(d("toasts.reorderFailed", "Failed to reorder items. Please try again."));
     } finally {
       setIsReordering(false);
     }
@@ -263,21 +298,28 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        toast.success(data.message || "Invoice generated successfully!");
+        toast.success(
+          data.message ||
+            d("toasts.invoiceGenerated", "Invoice generated successfully!")
+        );
         setCurrentOrder((prev) => ({
           ...prev,
           invoice: data.invoice,
         }));
       } else {
         console.error("Invoice generation failed:", data);
-        const errorMessage = data.error || "Failed to generate invoice";
+        const errorMessage =
+          data.error || d("toasts.invoiceFailed", "Failed to generate invoice");
         const details = data.details ? ` Details: ${data.details}` : "";
         toast.error(errorMessage + details);
       }
     } catch (error) {
       console.error("Invoice generation error:", error);
       toast.error(
-        "Network error: Failed to generate invoice. Please try again."
+        d(
+          "toasts.invoiceNetworkError",
+          "Network error: Failed to generate invoice. Please try again."
+        )
       );
     } finally {
       setGeneratingInvoice(false);
@@ -287,9 +329,10 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
   const handleCancelOrder = async () => {
     setIsCancelling(true);
     try {
+      const defaultReason = d("cancelledByCustomer", "Cancelled by customer");
       const result = await requestOrderCancellation(
         order._id,
-        cancellationReason || "Cancelled by customer"
+        cancellationReason || defaultReason
       );
 
       if (result.success) {
@@ -301,19 +344,25 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               cancellationRequested: true,
               cancellationRequestedAt: new Date().toISOString(),
               cancellationRequestReason:
-                cancellationReason || "Cancelled by customer",
+                cancellationReason || defaultReason,
             } as any)
         );
         setShowCancelDialog(false);
         setCancellationReason("");
         router.refresh();
       } else {
-        toast.error(result.message || "Failed to submit cancellation request");
+        toast.error(
+          result.message ||
+            d("toasts.cancelFailed", "Failed to submit cancellation request")
+        );
       }
     } catch (error) {
       console.error("Error requesting cancellation:", error);
       toast.error(
-        "An error occurred while submitting the cancellation request"
+        d(
+          "toasts.cancelError",
+          "An error occurred while submitting the cancellation request"
+        )
       );
     } finally {
       setIsCancelling(false);
@@ -334,9 +383,14 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {d("title", "Order Details")}
+          </h1>
           <p className="text-gray-600 mt-1">
-            Order #{currentOrder.orderNumber}
+            {d("orderNumber", "Order #{number}").replace(
+              "{number}",
+              currentOrder.orderNumber
+            )}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
@@ -348,7 +402,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                 rel="noopener noreferrer"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download Invoice
+                {d("downloadInvoice", "Download Invoice")}
               </Link>
             </Button>
           ) : currentOrder.paymentStatus === "paid" ||
@@ -361,12 +415,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               {generatingInvoice ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
-                  Generating...
+                  {d("generatingInvoice", "Generating...")}
                 </>
               ) : (
                 <>
                   <Download className="w-4 h-4 mr-2" />
-                  Generate Invoice
+                  {d("generateInvoice", "Generate Invoice")}
                 </>
               )}
             </Button>
@@ -380,12 +434,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             {isReordering ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-                Adding to Cart...
+                {d("addingToCart", "Adding to Cart...")}
               </>
             ) : (
               <>
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Reorder
+                {d("reorder", "Reorder")}
               </>
             )}
           </Button>
@@ -399,18 +453,20 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               {isCancelling ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2"></div>
-                  Cancelling...
+                  {d("cancelling", "Cancelling...")}
                 </>
               ) : (
                 <>
                   <XCircle className="w-4 h-4 mr-2" />
-                  Cancel Order
+                  {d("cancelOrder", "Cancel Order")}
                 </>
               )}
             </Button>
           )}
           <Button asChild>
-            <Link href={toLocalizedPath("/user/orders")}>← Back to Orders</Link>
+            <Link href={toLocalizedPath("/user/orders")}>
+              {d("backToOrders", "← Back to Orders")}
+            </Link>
           </Button>
         </div>
       </div>
@@ -424,20 +480,24 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               <CardHeader>
                 <CardTitle className="text-orange-800 flex items-center gap-2">
                   <Clock className="w-5 h-5" />
-                  Cancellation Request Pending
+                  {d("cancellationPendingTitle", "Cancellation Request Pending")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-orange-700">
-                  Your cancellation request has been submitted and is awaiting
-                  admin review. You will be notified once it has been processed.
+                  {d(
+                    "cancellationPendingDescription",
+                    "Your cancellation request has been submitted and is awaiting admin review. You will be notified once it has been processed."
+                  )}
                 </p>
                 {(currentOrder as any).cancellationRequestedAt && (
                   <p className="text-xs text-orange-600 mt-2">
-                    Requested on:{" "}
-                    {format(
-                      new Date((currentOrder as any).cancellationRequestedAt),
-                      "MMM dd, yyyy 'at' h:mm a"
+                    {d("requestedOn", "Requested on: {date}").replace(
+                      "{date}",
+                      format(
+                        new Date((currentOrder as any).cancellationRequestedAt),
+                        "MMM dd, yyyy 'at' h:mm a"
+                      )
                     )}
                   </p>
                 )}
@@ -450,39 +510,47 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {getStatusIcon(currentOrder.status)}
-                Order Status
+                {d("orderStatusTitle", "Order Status")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">Order Status</p>
+                  <p className="text-sm text-gray-600">
+                    {d("orderStatusLabel", "Order Status")}
+                  </p>
                   <Badge
                     className={`${getStatusColor(currentOrder.status)} mt-1`}
                   >
-                    {currentOrder.status}
+                    {getStatusLabel(currentOrder.status)}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Payment Status</p>
+                  <p className="text-sm text-gray-600">
+                    {d("paymentStatusLabel", "Payment Status")}
+                  </p>
                   <Badge
                     className={`${getPaymentStatusColor(
                       currentOrder.paymentStatus
                     )} mt-1 flex items-center gap-1 w-fit`}
                   >
                     {getPaymentStatusIcon(currentOrder.paymentStatus)}
-                    {currentOrder.paymentStatus}
+                    {getPaymentStatusLabel(currentOrder.paymentStatus)}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Payment Method</p>
-                  <p className="font-medium capitalize flex items-center gap-2">
+                  <p className="text-sm text-gray-600">
+                    {d("paymentMethodLabel", "Payment Method")}
+                  </p>
+                  <p className="font-medium flex items-center gap-2">
                     <CreditCard className="w-4 h-4" />
-                    {currentOrder.paymentMethod.replace("_", " ")}
+                    {getPaymentMethodLabel(currentOrder.paymentMethod)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Order Date</p>
+                  <p className="text-sm text-gray-600">
+                    {d("orderDateLabel", "Order Date")}
+                  </p>
                   <p className="font-medium flex items-center gap-2">
                     <CalendarDays className="w-4 h-4" />
                     {format(new Date(currentOrder.orderDate), "PPP")}
@@ -500,7 +568,10 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Order Items ({order.products.length})
+                {d("orderItems", "Order Items ({count})").replace(
+                  "{count}",
+                  String(order.products.length)
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -578,7 +649,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                           {item.weight && item.weight.value && (
                             <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                               <Scale className="w-3 h-3" />
-                              <span>Weight: {item.weight.value}</span>
+                              <span>
+                                {d("weight", "Weight: {value}").replace(
+                                  "{value}",
+                                  item.weight.value
+                                )}
+                              </span>
                               {item.weight.price > 0 && (
                                 <>
                                   <span className="text-gray-400">|</span>
@@ -592,7 +668,16 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                           {item.grind && item.grind.type && (
                             <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                               <Coffee className="w-3 h-3" />
-                              <span>Grind: {item.grind.label || item.grind.type}</span>
+                              <span>
+                                {d("grind", "Grind: {value}").replace(
+                                  "{value}",
+                                  item.grind.label ||
+                                    getGrindLabel(
+                                      dictionary,
+                                      item.grind.type
+                                    )
+                                )}
+                              </span>
                             </div>
                           )}
                           
@@ -600,7 +685,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                           {item.packaging && item.packaging.title && (
                             <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                               <Box className="w-3 h-3" />
-                              <span>Packaging: {item.packaging.title}</span>
+                              <span>
+                                {d("packaging", "Packaging: {value}").replace(
+                                  "{value}",
+                                  item.packaging.title
+                                )}
+                              </span>
                               {item.packaging.price > 0 && (
                                 <span className="text-gray-400">(+${item.packaging.price})</span>
                               )}
@@ -616,7 +706,10 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                           )}
                           <div className="flex items-center gap-4 mt-2">
                             <span className="text-sm text-gray-600">
-                              Qty: {item.quantity}
+                              {d("qty", "Qty: {count}").replace(
+                                "{count}",
+                                String(item.quantity)
+                              )}
                             </span>
                             <PriceFormatter
                               amount={item.product.price}
@@ -644,25 +737,25 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
           {/* Order Summary */}
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>{d("orderSummary", "Order Summary")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal</span>
+                  <span className="text-gray-600">{d("subtotal", "Subtotal")}</span>
                   <PriceFormatter amount={currentOrder.subtotal} />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tax</span>
+                  <span className="text-gray-600">{d("tax", "Tax")}</span>
                   <PriceFormatter amount={currentOrder.tax} />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
+                  <span className="text-gray-600">{d("shipping", "Shipping")}</span>
                   <PriceFormatter amount={currentOrder.shipping} />
                 </div>
                 {currentOrder.amountDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
+                    <span>{d("discount", "Discount")}</span>
                     <span>
                       -<PriceFormatter amount={currentOrder.amountDiscount} />
                     </span>
@@ -670,7 +763,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                 )}
                 <Separator />
                 <div className="flex justify-between font-medium text-lg">
-                  <span>Total</span>
+                  <span>{d("total", "Total")}</span>
                   <PriceFormatter amount={currentOrder.totalPrice} />
                 </div>
               </div>
@@ -682,7 +775,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="w-5 h-5" />
-                Shipping Address
+                {d("shippingAddress", "Shipping Address")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -700,7 +793,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
           {/* Customer Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
+              <CardTitle>{d("customerInformation", "Customer Information")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm space-y-2">
@@ -710,7 +803,9 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                 </div>
                 {currentOrder.paymentCompletedAt && (
                   <div className="pt-2 border-t">
-                    <p className="text-gray-600">Payment Completed</p>
+                    <p className="text-gray-600">
+                      {d("paymentCompleted", "Payment Completed")}
+                    </p>
                     <p className="font-medium">
                       {format(new Date(currentOrder.paymentCompletedAt), "PPp")}
                     </p>
@@ -732,7 +827,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             )}
           >
             <VisuallyHidden.Root>
-              <DialogTitle>Cancel Order Confirmation</DialogTitle>
+              <DialogTitle>{d("cancelDialogTitle", "Request Order Cancellation")}</DialogTitle>
             </VisuallyHidden.Root>
             <div className="text-center space-y-4">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-50 border-4 border-red-100">
@@ -740,11 +835,13 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-gray-900">
-                  Request Order Cancellation
+                  {d("cancelDialogTitle", "Request Order Cancellation")}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Your cancellation request will be submitted to our team for
-                  review.
+                  {d(
+                    "cancelDialogDescription",
+                    "Your cancellation request will be submitted to our team for review."
+                  )}
                 </p>
 
                 {/* Cancellation Reason Input */}
@@ -753,13 +850,16 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                     htmlFor="cancellationReason"
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    Reason for cancellation (optional)
+                    {d("cancelReasonLabel", "Reason for cancellation (optional)")}
                   </label>
                   <textarea
                     id="cancellationReason"
                     value={cancellationReason}
                     onChange={(e) => setCancellationReason(e.target.value)}
-                    placeholder="e.g., Changed my mind, found a better deal..."
+                    placeholder={d(
+                      "cancelReasonPlaceholder",
+                      "e.g., Changed my mind, found a better deal..."
+                    )}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                     rows={3}
                   />
@@ -773,19 +873,37 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                       </div>
                       <div className="text-left">
                         <p className="font-semibold text-blue-900">
-                          Refund Information
+                          {d("refundTitle", "Refund Information")}
                         </p>
                         <p className="text-sm text-blue-700 mt-1">
-                          If approved, your payment of{" "}
-                          <span className="font-bold">
-                            <PriceFormatter amount={currentOrder.totalPrice} />
-                          </span>{" "}
-                          will be added to your wallet balance.
+                          {d(
+                            "refundDescription",
+                            "If approved, your payment of {amount} will be added to your wallet balance."
+                          )
+                            .split("{amount}")
+                            .map((part, i, arr) =>
+                              i < arr.length - 1 ? (
+                                <React.Fragment key={i}>
+                                  {part}
+                                  <span className="font-bold">
+                                    <PriceFormatter
+                                      amount={currentOrder.totalPrice}
+                                    />
+                                  </span>
+                                </React.Fragment>
+                              ) : (
+                                part
+                              )
+                            )}
                         </p>
                         <ul className="text-sm text-blue-700 mt-2 space-y-1 list-disc list-inside">
-                          <li>Use it for future orders</li>
-                          <li>Request withdrawal anytime</li>
-                          <li>View balance in your dashboard</li>
+                          <li>{d("refundUseFuture", "Use it for future orders")}</li>
+                          <li>
+                            {d("refundWithdraw", "Request withdrawal anytime")}
+                          </li>
+                          <li>
+                            {d("refundDashboard", "View balance in your dashboard")}
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -803,7 +921,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                 disabled={isCancelling}
                 className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
               >
-                Keep Order
+                {d("keepOrder", "Keep Order")}
               </Button>
               <Button
                 variant="destructive"
@@ -814,19 +932,19 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                 {isCancelling ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Submitting...
+                    {d("submitting", "Submitting...")}
                   </>
                 ) : (
                   <>
                     <XCircle className="w-4 h-4 mr-2" />
-                    Submit Request
+                    {d("submitRequest", "Submit Request")}
                   </>
                 )}
               </Button>
             </div>
             <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
               <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{d("close", "Close")}</span>
             </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </DialogPortal>

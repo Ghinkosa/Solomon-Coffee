@@ -13,8 +13,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { checkSubscriptionStatus } from "@/actions/subscriptionActions";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 export default function NewsletterSubscription() {
+  const dictionary = useDictionary();
+  const n = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.settings.newsletter.${path}`, fallback);
+  const benefitsList = () => {
+    const segments = "userDashboard.settings.newsletter.benefits".split(".");
+    let node: unknown = dictionary;
+    for (const seg of segments) {
+      if (!node || typeof node !== "object") return [];
+      node = (node as Record<string, unknown>)[seg];
+    }
+    return Array.isArray(node)
+      ? node.filter((item): item is string => typeof item === "string")
+      : [];
+  };
+
   const { user } = useUser();
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +60,7 @@ export default function NewsletterSubscription() {
 
   const handleSubscribe = async () => {
     if (!userEmail) {
-      toast.error("Email not found");
+      toast.error(n("toasts.emailNotFound", "Email not found"));
       return;
     }
 
@@ -61,18 +78,23 @@ export default function NewsletterSubscription() {
 
       if (response.ok) {
         setIsSubscribed(true);
-        toast.success(data.message || "Successfully subscribed to newsletter!");
+        toast.success(
+          data.message ||
+            n("toasts.subscribeSuccess", "Successfully subscribed to newsletter!")
+        );
       } else {
         if (data.alreadySubscribed) {
           setIsSubscribed(true);
-          toast.info(data.error || "You're already subscribed!");
+          toast.info(
+            data.error || n("toasts.alreadySubscribed", "You're already subscribed!")
+          );
         } else {
-          toast.error(data.error || "Failed to subscribe");
+          toast.error(data.error || n("toasts.subscribeFailed", "Failed to subscribe"));
         }
       }
     } catch (error) {
       console.error("Error subscribing:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(n("toasts.genericError", "Something went wrong. Please try again."));
     } finally {
       setIsProcessing(false);
     }
@@ -80,7 +102,7 @@ export default function NewsletterSubscription() {
 
   const handleUnsubscribe = async () => {
     if (!userEmail) {
-      toast.error("Email not found");
+      toast.error(n("toasts.emailNotFound", "Email not found"));
       return;
     }
 
@@ -99,14 +121,17 @@ export default function NewsletterSubscription() {
       if (response.ok) {
         setIsSubscribed(false);
         toast.success(
-          data.message || "Successfully unsubscribed from newsletter"
+          data.message ||
+            n("toasts.unsubscribeSuccess", "Successfully unsubscribed from newsletter")
         );
       } else {
-        toast.error(data.error || "Failed to unsubscribe");
+        toast.error(
+          data.error || n("toasts.unsubscribeFailed", "Failed to unsubscribe")
+        );
       }
     } catch (error) {
       console.error("Error unsubscribing:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(n("toasts.genericError", "Something went wrong. Please try again."));
     } finally {
       setIsProcessing(false);
     }
@@ -118,7 +143,7 @@ export default function NewsletterSubscription() {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Mail className="mr-2 h-5 w-5" />
-            Newsletter Subscription
+            {n("title", "Newsletter Subscription")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -135,10 +160,10 @@ export default function NewsletterSubscription() {
       <CardHeader>
         <CardTitle className="flex items-center">
           <Mail className="mr-2 h-5 w-5" />
-          Newsletter Subscription
+          {n("title", "Newsletter Subscription")}
         </CardTitle>
         <CardDescription>
-          Manage your newsletter subscription preferences
+          {n("description", "Manage your newsletter subscription preferences")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -154,7 +179,7 @@ export default function NewsletterSubscription() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">
-                    Subscribed to Newsletter
+                    {n("subscribed", "Subscribed to Newsletter")}
                   </p>
                   <p className="text-sm text-gray-600">{userEmail}</p>
                 </div>
@@ -167,7 +192,9 @@ export default function NewsletterSubscription() {
                   </div>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Not Subscribed</p>
+                  <p className="font-medium text-gray-900">
+                    {n("notSubscribed", "Not Subscribed")}
+                  </p>
                   <p className="text-sm text-gray-600">{userEmail}</p>
                 </div>
               </>
@@ -179,29 +206,24 @@ export default function NewsletterSubscription() {
         {!isSubscribed && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-semibold text-blue-900 text-sm mb-3">
-              Newsletter Benefits:
+              {n("benefitsTitle", "Newsletter Benefits:")}
             </h4>
             <ul className="space-y-2 text-sm text-blue-800">
-              <li className="flex items-start">
-                <span className="mr-2">🎁</span>
-                <span>Exclusive deals & discounts up to 50% off</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">🚀</span>
-                <span>Early access to new products</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">📦</span>
-                <span>Free shipping offers</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">💡</span>
-                <span>Shopping tips & trends</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">🎂</span>
-                <span>Birthday surprises</span>
-              </li>
+              {(benefitsList().length > 0
+                ? benefitsList()
+                : [
+                    "Exclusive deals & discounts up to 50% off",
+                    "Early access to new products",
+                    "Free shipping offers",
+                    "Shopping tips & trends",
+                    "Birthday surprises",
+                  ]
+              ).map((benefit, index) => (
+                <li key={index} className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>{benefit}</span>
+                </li>
+              ))}
             </ul>
           </div>
         )}
@@ -218,12 +240,12 @@ export default function NewsletterSubscription() {
               {isProcessing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Unsubscribing...
+                  {n("unsubscribing", "Unsubscribing...")}
                 </>
               ) : (
                 <>
                   <XCircle className="mr-2 h-4 w-4" />
-                  Unsubscribe from Newsletter
+                  {n("unsubscribe", "Unsubscribe from Newsletter")}
                 </>
               )}
             </Button>
@@ -236,12 +258,12 @@ export default function NewsletterSubscription() {
               {isProcessing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Subscribing...
+                  {n("subscribing", "Subscribing...")}
                 </>
               ) : (
                 <>
                   <Mail className="mr-2 h-4 w-4" />
-                  Subscribe to Newsletter
+                  {n("subscribe", "Subscribe to Newsletter")}
                 </>
               )}
             </Button>
@@ -251,8 +273,11 @@ export default function NewsletterSubscription() {
         {/* Info Text */}
         <p className="text-xs text-gray-500 text-center">
           {isSubscribed
-            ? "You can resubscribe at any time"
-            : "Join 50,000+ subscribers and never miss a deal"}
+            ? n("footerSubscribed", "You can resubscribe at any time")
+            : n(
+                "footerNotSubscribed",
+                "Join 50,000+ subscribers and never miss a deal"
+              )}
         </p>
       </CardContent>
     </Card>

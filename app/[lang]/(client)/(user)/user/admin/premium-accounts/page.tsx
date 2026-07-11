@@ -16,6 +16,8 @@ import {
   Crown,
   AlertTriangle,
 } from "lucide-react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface PremiumAccount {
   _id: string;
@@ -34,6 +36,14 @@ interface PremiumAccount {
 
 export default function PremiumAccountsAdmin() {
   const { user } = useUser();
+  const dictionary = useDictionary();
+  const p = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.premiumAccountsPage.${path}`, fallback);
+  const c = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.common.${path}`, fallback);
+  const statusLabel = (key: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.status.${key}`, fallback);
+
   const [accounts, setAccounts] = useState<PremiumAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
@@ -49,11 +59,11 @@ export default function PremiumAccountsAdmin() {
         const data = await response.json();
         setAccounts(data.accounts || []);
       } else {
-        toast.error("Failed to fetch premium accounts");
+        toast.error(p("toasts.fetchFailed", "Failed to fetch premium accounts"));
       }
     } catch (error) {
       console.error("Error fetching premium accounts:", error);
-      toast.error("Error loading premium accounts");
+      toast.error(p("toasts.loadError", "Error loading premium accounts"));
     } finally {
       setLoading(false);
     }
@@ -81,16 +91,21 @@ export default function PremiumAccountsAdmin() {
 
       if (response.ok) {
         toast.success(
-          `Premium account ${approve ? "approved" : "rejected"} successfully`
+          approve
+            ? p("toasts.approved", "Premium account approved successfully")
+            : p("toasts.rejected", "Premium account rejected successfully")
         );
-        fetchPremiumAccounts(); // Refresh the list
+        fetchPremiumAccounts();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || "Failed to update premium account");
+        toast.error(
+          errorData.error ||
+            p("toasts.updateFailed", "Failed to update premium account")
+        );
       }
     } catch (error) {
       console.error("Error updating premium account:", error);
-      toast.error("Error updating premium account");
+      toast.error(p("toasts.updateError", "Error updating premium account"));
     } finally {
       setProcessing(null);
     }
@@ -102,28 +117,28 @@ export default function PremiumAccountsAdmin() {
         return (
           <Badge className="bg-green-100 text-green-700 border-green-200">
             <CheckCircle className="w-3 h-3 mr-1" />
-            Active
+            {statusLabel("active", "Active")}
           </Badge>
         );
       case "pending":
         return (
           <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
             <Clock className="w-3 h-3 mr-1" />
-            Pending
+            {statusLabel("pending", "Pending")}
           </Badge>
         );
       case "rejected":
         return (
           <Badge className="bg-red-100 text-red-700 border-red-200">
             <XCircle className="w-3 h-3 mr-1" />
-            Rejected
+            {statusLabel("rejected", "Rejected")}
           </Badge>
         );
       default:
         return (
           <Badge className="bg-gray-100 text-gray-700 border-gray-200">
             <User className="w-3 h-3 mr-1" />
-            None
+            {statusLabel("none", "None")}
           </Badge>
         );
     }
@@ -148,10 +163,10 @@ export default function PremiumAccountsAdmin() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Premium Account Management
+          {p("title", "Premium Account Management")}
         </h1>
         <p className="text-gray-600">
-          Manage and approve premium account applications
+          {p("subtitle", "Manage and approve premium account applications")}
         </p>
       </div>
 
@@ -160,10 +175,10 @@ export default function PremiumAccountsAdmin() {
           <CardContent className="py-12 text-center">
             <Crown className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No Premium Applications
+              {p("emptyTitle", "No Premium Applications")}
             </h3>
             <p className="text-gray-500">
-              No premium account applications found.
+              {p("emptyDescription", "No premium account applications found.")}
             </p>
           </CardContent>
         </Card>
@@ -194,10 +209,12 @@ export default function PremiumAccountsAdmin() {
                         {account.premiumAppliedAt && (
                           <div className="flex items-center">
                             <Calendar className="w-4 h-4 mr-1" />
-                            Applied{" "}
-                            {new Date(
-                              account.premiumAppliedAt
-                            ).toLocaleDateString()}
+                            {c("appliedOn", "Applied {date}").replace(
+                              "{date}",
+                              new Date(
+                                account.premiumAppliedAt
+                              ).toLocaleDateString()
+                            )}
                           </div>
                         )}
                       </div>
@@ -210,14 +227,14 @@ export default function PremiumAccountsAdmin() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-sm text-gray-600">
-                      Membership:{" "}
+                      {c("membership", "Membership:")}{" "}
                       <span className="font-medium capitalize">
                         {account.membershipType}
                       </span>
                     </p>
                     {account.premiumApprovedBy && (
                       <p className="text-sm text-gray-600">
-                        Processed by:{" "}
+                        {c("processedBy", "Processed by:")}{" "}
                         <span className="font-medium">
                           {account.premiumApprovedBy}
                         </span>
@@ -225,7 +242,7 @@ export default function PremiumAccountsAdmin() {
                     )}
                     {account.premiumApprovedAt && (
                       <p className="text-sm text-gray-600">
-                        Date:{" "}
+                        {c("date", "Date:")}{" "}
                         <span className="font-medium">
                           {new Date(
                             account.premiumApprovedAt
@@ -236,7 +253,10 @@ export default function PremiumAccountsAdmin() {
                     {account.rejectionReason && (
                       <p className="text-sm text-red-600 flex items-center">
                         <AlertTriangle className="w-4 h-4 mr-1" />
-                        Reason: {account.rejectionReason}
+                        {c("reason", "Reason: {reason}").replace(
+                          "{reason}",
+                          account.rejectionReason
+                        )}
                       </p>
                     )}
                   </div>
@@ -250,14 +270,17 @@ export default function PremiumAccountsAdmin() {
                           handleApproval(
                             account._id,
                             false,
-                            "Application does not meet requirements"
+                            p(
+                              "defaultRejectReason",
+                              "Application does not meet requirements"
+                            )
                           )
                         }
                         disabled={processing === account._id}
                         className="text-red-600 border-red-200 hover:bg-red-50"
                       >
                         <XCircle className="w-4 h-4 mr-1" />
-                        Reject
+                        {c("reject", "Reject")}
                       </Button>
                       <Button
                         size="sm"
@@ -266,7 +289,7 @@ export default function PremiumAccountsAdmin() {
                         className="bg-green-600 hover:bg-green-700"
                       >
                         <CheckCircle className="w-4 h-4 mr-1" />
-                        Approve
+                        {c("approve", "Approve")}
                       </Button>
                     </div>
                   )}

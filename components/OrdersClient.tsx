@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 interface OrdersClientProps {
   initialOrders: MY_ORDERS_QUERY_RESULT;
@@ -39,8 +40,11 @@ export default function OrdersClient({
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const router = useRouter();
   const dictionary = useDictionary();
+  const toLocalizedPath = useLocalizedPath();
   const o = (path: string, fallback: string) =>
     t(dictionary, `userDashboard.orders.${path}`, fallback);
+  const pg = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.pagination.${path}`, fallback);
 
   // Set initial load to false after first render
   useEffect(() => {
@@ -87,7 +91,7 @@ export default function OrdersClient({
 
   const handlePageChange = (page: number) => {
     startTransition(() => {
-      router.push(`/user/orders?page=${page}`);
+      router.push(`${toLocalizedPath("/user/orders")}?page=${page}`);
     });
   };
 
@@ -166,12 +170,14 @@ export default function OrdersClient({
       {/* Bottom Right Aligned Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-end">
-          <Pagination>
+          <Pagination aria-label={pg("navAria", "pagination")}>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
                   href="#"
                   size="default"
+                  label={pg("previous", "Previous")}
+                  aria-label={pg("previousAria", "Go to previous page")}
                   onClick={(e) => {
                     e.preventDefault();
                     if (hasPrevPage && !isPending)
@@ -188,7 +194,9 @@ export default function OrdersClient({
               {generatePaginationItems().map((item, index) => (
                 <PaginationItem key={index}>
                   {item === "ellipsis" ? (
-                    <PaginationEllipsis />
+                    <PaginationEllipsis
+                      srLabel={pg("morePages", "More pages")}
+                    />
                   ) : (
                     <PaginationLink
                       href="#"
@@ -217,6 +225,8 @@ export default function OrdersClient({
                 <PaginationNext
                   href="#"
                   size="default"
+                  label={pg("next", "Next")}
+                  aria-label={pg("nextAria", "Go to next page")}
                   onClick={(e) => {
                     e.preventDefault();
                     if (hasNextPage && !isPending)

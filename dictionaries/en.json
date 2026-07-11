@@ -998,17 +998,112 @@
       "adminTools": "Admin Tools"
     },
     "nav": {
-      "dashboard": { "title": "Dashboard", "description": "Overview & stats" },
-      "orders": { "title": "Orders", "description": "Track your orders" },
-      "profile": { "title": "Profile", "description": "Personal information" },
-      "notifications": { "title": "Notifications", "description": "Updates & alerts" },
-      "wishlist": { "title": "Wishlist", "description": "Saved items" },
-      "settings": { "title": "Settings", "description": "Account preferences" }
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Overview & stats"
+      },
+      "orders": {
+        "title": "Orders",
+        "description": "Track your orders"
+      },
+      "profile": {
+        "title": "Profile",
+        "description": "Personal information"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Updates & alerts"
+      },
+      "wishlist": {
+        "title": "Wishlist",
+        "description": "Saved items"
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Account preferences"
+      }
     },
     "admin": {
-      "manageUsers": { "title": "Manage Users", "description": "User premium status" },
-      "premiumAccounts": { "title": "Premium Accounts", "description": "Premium approvals" },
-      "businessAccounts": { "title": "Business Accounts", "description": "Business approvals" }
+      "manageUsers": {
+        "title": "Manage Users",
+        "description": "User premium status"
+      },
+      "premiumAccounts": {
+        "title": "Premium Accounts",
+        "description": "Premium approvals"
+      },
+      "businessAccounts": {
+        "title": "Business Accounts",
+        "description": "Business approvals"
+      },
+      "common": {
+        "processing": "Processing...",
+        "approve": "Approve",
+        "reject": "Reject",
+        "membership": "Membership:",
+        "reason": "Reason: {reason}",
+        "date": "Date:",
+        "appliedOn": "Applied {date}",
+        "joinedOn": "Joined {date}",
+        "approvedBy": "Approved by:",
+        "approvedOn": "Approved on:",
+        "processedBy": "Processed by:"
+      },
+      "status": {
+        "active": "Active",
+        "pending": "Pending",
+        "rejected": "Rejected",
+        "approved": "Approved",
+        "regular": "Regular",
+        "none": "None"
+      },
+      "manageUsersPage": {
+        "title": "Admin User Management",
+        "subtitle": "Manage user premium status and account settings",
+        "cardTitle": "User Premium Status",
+        "emailLabel": "User Email",
+        "emailPlaceholder": "user@example.com",
+        "setPremium": "Set as Premium User",
+        "setStandard": "Set as Standard User",
+        "premiumHelp": "Premium User: isActive = true, gets premium features",
+        "standardHelp": "Standard User: isActive = false, basic features only",
+        "quickAccess": "Quick Access",
+        "setAdminUser": "Set Admin User (admin@shebascoffee.com)",
+        "toasts": {
+          "emailRequired": "Please enter an email address",
+          "manageFailed": "Failed to manage user",
+          "manageError": "Error managing user"
+        }
+      },
+      "premiumAccountsPage": {
+        "title": "Premium Account Management",
+        "subtitle": "Manage and approve premium account applications",
+        "emptyTitle": "No Premium Applications",
+        "emptyDescription": "No premium account applications found.",
+        "defaultRejectReason": "Application does not meet requirements",
+        "toasts": {
+          "fetchFailed": "Failed to fetch premium accounts",
+          "loadError": "Error loading premium accounts",
+          "approved": "Premium account approved successfully",
+          "rejected": "Premium account rejected successfully",
+          "updateFailed": "Failed to update premium account",
+          "updateError": "Error updating premium account"
+        }
+      },
+      "businessAccountsPage": {
+        "title": "Business Account Management",
+        "subtitle": "Manage and approve business account requests",
+        "emptyTitle": "No Business Accounts",
+        "emptyDescription": "No business account requests found.",
+        "toasts": {
+          "fetchFailed": "Failed to fetch business accounts",
+          "loadError": "Error loading business accounts",
+          "approved": "Business account approved successfully",
+          "rejected": "Business account rejected successfully",
+          "updateFailed": "Failed to update business account",
+          "updateError": "Error updating business account"
+        }
+      }
     },
     "orders": {
       "title": "My Orders",
@@ -1052,6 +1147,189 @@
           "invoiceGenerated": "Invoice generated successfully!",
           "invoiceFailed": "Failed to generate invoice"
         }
+      },
+      "detail": {
+        "metaTitle": "Order {number}",
+        "metaNotFound": "Order Not Found",
+        "title": "Order Details",
+        "orderNumber": "Order #{number}",
+        "downloadInvoice": "Download Invoice",
+        "generatingInvoice": "Generating...",
+        "generateInvoice": "Generate Invoice",
+        "addingToCart": "Adding to Cart...",
+        "reorder": "Reorder",
+        "cancelling": "Cancelling...",
+        "cancelOrder": "Cancel Order",
+        "backToOrders": "← Back to Orders",
+        "cancellationPendingTitle": "Cancellation Request Pending",
+        "cancellationPendingDescription": "Your cancellation request has been submitted and is awaiting admin review. You will be notified once it has been processed.",
+        "requestedOn": "Requested on: {date}",
+        "orderStatusTitle": "Order Status",
+        "orderStatusLabel": "Order Status",
+        "paymentStatusLabel": "Payment Status",
+        "paymentMethodLabel": "Payment Method",
+        "orderDateLabel": "Order Date",
+        "orderItems": "Order Items ({count})",
+        "weight": "Weight: {value}",
+        "grind": "Grind: {value}",
+        "packaging": "Packaging: {value}",
+        "qty": "Qty: {count}",
+        "orderSummary": "Order Summary",
+        "subtotal": "Subtotal",
+        "tax": "Tax",
+        "shipping": "Shipping",
+        "discount": "Discount",
+        "total": "Total",
+        "shippingAddress": "Shipping Address",
+        "customerInformation": "Customer Information",
+        "paymentCompleted": "Payment Completed",
+        "cancelDialogTitle": "Request Order Cancellation",
+        "cancelDialogDescription": "Your cancellation request will be submitted to our team for review.",
+        "cancelReasonLabel": "Reason for cancellation (optional)",
+        "cancelReasonPlaceholder": "e.g., Changed my mind, found a better deal...",
+        "refundTitle": "Refund Information",
+        "refundDescription": "If approved, your payment of {amount} will be added to your wallet balance.",
+        "refundUseFuture": "Use it for future orders",
+        "refundWithdraw": "Request withdrawal anytime",
+        "refundDashboard": "View balance in your dashboard",
+        "keepOrder": "Keep Order",
+        "submitting": "Submitting...",
+        "submitRequest": "Submit Request",
+        "close": "Close",
+        "cancelledByCustomer": "Cancelled by customer",
+        "paymentStatus": {
+          "pending": "Pending",
+          "paid": "Paid",
+          "failed": "Failed",
+          "cancelled": "Cancelled"
+        },
+        "paymentMethods": {
+          "cash_on_delivery": "Cash on delivery",
+          "stripe": "Stripe",
+          "card": "Card"
+        },
+        "address_confirmed": "Address confirmed",
+        "toasts": {
+          "reorderSuccess": "{count} items added to cart!",
+          "reorderRedirect": "Redirecting to cart...",
+          "reorderFailed": "Failed to reorder items. Please try again.",
+          "invoiceGenerated": "Invoice generated successfully!",
+          "invoiceFailed": "Failed to generate invoice",
+          "invoiceNetworkError": "Network error: Failed to generate invoice. Please try again.",
+          "cancelFailed": "Failed to submit cancellation request",
+          "cancelError": "An error occurred while submitting the cancellation request"
+        }
+      },
+      "timeline": {
+        "title": "Order Timeline",
+        "inProgress": "IN PROGRESS",
+        "completed": "Completed",
+        "progress": "Progress",
+        "progressCount": "{completed} of {total} completed",
+        "events": {
+          "order_placed": {
+            "title": "Order Placed",
+            "description": "Your order has been received"
+          },
+          "order_cancelled": {
+            "title": "Order Cancelled",
+            "description": "This order has been cancelled"
+          },
+          "address_confirmed": {
+            "title": "Address Confirmed",
+            "description": "Delivery address verified",
+            "descriptionBy": "Confirmed by {name}"
+          },
+          "address_confirmation": {
+            "title": "Address Confirmation",
+            "description": "Waiting for address verification"
+          },
+          "order_confirmed": {
+            "title": "Order Confirmed",
+            "description": "Order has been confirmed",
+            "descriptionBy": "Confirmed by {name}"
+          },
+          "order_confirmation": {
+            "title": "Order Confirmation",
+            "description": "Pending order confirmation"
+          },
+          "order_packed": {
+            "title": "Order Packed",
+            "description": "Your order has been packed",
+            "descriptionBy": "Packed by {name}"
+          },
+          "order_packing": {
+            "title": "Order Packing",
+            "description": "Your order will be packed soon"
+          },
+          "out_for_delivery": {
+            "title": "Out for Delivery",
+            "description": "Order is out for delivery",
+            "descriptionAssigned": "Assigned to {name}",
+            "descriptionPending": "Your order will be dispatched for delivery"
+          },
+          "payment_collected": {
+            "title": "Payment Collected",
+            "description": "Cash on delivery payment received"
+          },
+          "payment_collection": {
+            "title": "Payment Collection",
+            "description": "Cash payment will be collected on delivery"
+          },
+          "payment_received": {
+            "title": "Payment Received",
+            "description": "Payment completed online"
+          },
+          "delivered": {
+            "title": "Delivered",
+            "description": "Order has been delivered successfully",
+            "descriptionBy": "Delivered by {name}",
+            "descriptionPending": "Your order will be delivered to your address"
+          }
+        }
+      },
+      "paymentModal": {
+        "title": "Secure Payment",
+        "subtitle": "Complete your payment securely with Stripe",
+        "verified": "Verified",
+        "orderNumber": "Order Number",
+        "totalAmount": "Total Amount",
+        "sslProtection": "Protected by 256-bit SSL encryption",
+        "stepSecure": "Secure",
+        "stepPay": "Pay",
+        "stepComplete": "Complete",
+        "cancel": "Cancel",
+        "processing": "Processing...",
+        "paySecurely": "Pay Securely Now",
+        "sslSecured": "SSL Secured",
+        "instant": "Instant",
+        "protected": "Protected",
+        "close": "Close",
+        "toasts": {
+          "redirecting": "Redirecting to secure payment...",
+          "failed": "Failed to process payment",
+          "initFailed": "Payment initialization failed",
+          "paymentFailed": "Payment failed"
+        }
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "previousAria": "Go to previous page",
+        "nextAria": "Go to next page",
+        "morePages": "More pages",
+        "navAria": "pagination"
+      },
+      "dialog": {
+        "title": "Order Details - {number}",
+        "customer": "Customer:",
+        "email": "Email:",
+        "date": "Date:",
+        "status": "Status:",
+        "invoiceNumber": "Invoice Number:",
+        "viewInvoice": "View Invoice",
+        "quantity": "Quantity",
+        "price": "Price"
       }
     },
     "settings": {
@@ -1086,7 +1364,36 @@
       "exported": "Data exported successfully",
       "exportFailed": "Failed to export data",
       "deleteInitiated": "Account deletion initiated",
-      "deleteFailed": "Failed to delete account"
+      "deleteFailed": "Failed to delete account",
+      "newsletter": {
+        "title": "Newsletter Subscription",
+        "description": "Manage your newsletter subscription preferences",
+        "subscribed": "Subscribed to Newsletter",
+        "notSubscribed": "Not Subscribed",
+        "benefitsTitle": "Newsletter Benefits:",
+        "benefits": [
+          "Exclusive deals & discounts up to 50% off",
+          "Early access to new products",
+          "Free shipping offers",
+          "Shopping tips & trends",
+          "Birthday surprises"
+        ],
+        "subscribe": "Subscribe to Newsletter",
+        "unsubscribe": "Unsubscribe from Newsletter",
+        "subscribing": "Subscribing...",
+        "unsubscribing": "Unsubscribing...",
+        "footerSubscribed": "You can resubscribe at any time",
+        "footerNotSubscribed": "Join 50,000+ subscribers and never miss a deal",
+        "toasts": {
+          "emailNotFound": "Email not found",
+          "subscribeSuccess": "Successfully subscribed to newsletter!",
+          "alreadySubscribed": "You're already subscribed!",
+          "subscribeFailed": "Failed to subscribe",
+          "unsubscribeSuccess": "Successfully unsubscribed from newsletter",
+          "unsubscribeFailed": "Failed to unsubscribe",
+          "genericError": "Something went wrong. Please try again."
+        }
+      }
     },
     "notificationsPage": {
       "title": "Notifications",
@@ -1252,6 +1559,34 @@
           "deletedMessage": "Your address has been successfully deleted.",
           "deleteErrorMessage": "Failed to delete address. Please try again."
         }
+      },
+      "locationSelector": {
+        "title": "Location Selection",
+        "country": "Country",
+        "selectCountry": "Select Country",
+        "state": "State",
+        "stateProvince": "State/Province",
+        "city": "City",
+        "subArea": "Sub-area/District (Optional)",
+        "zipCode": "ZIP Code",
+        "postalCode": "Postal Code",
+        "searchCountries": "Search countries...",
+        "searchStates": "Search states...",
+        "searchCities": "Search cities...",
+        "noCountries": "No countries found",
+        "noStates": "No states found",
+        "noCities": "No cities found",
+        "loadingStates": "Loading states...",
+        "noStatesAvailable": "No states available",
+        "selectState": "Select a state",
+        "selectStateProvince": "Select a state/province",
+        "loadingCities": "Loading cities...",
+        "noCitiesAvailable": "No cities available or enter manually below",
+        "selectCity": "Select a city",
+        "enterCityManually": "Enter city name manually",
+        "subAreaPlaceholder": "Enter area, district, or neighborhood",
+        "zipPlaceholder": "Enter ZIP code (e.g., 12345)",
+        "postalPlaceholder": "Enter postal code"
       }
     },
     "dashboard": {
@@ -1348,7 +1683,69 @@
           "cancelFailed": "Failed to cancel application",
           "cancelError": "Error cancelling application"
         }
+      },
+      "premiumBanner": {
+        "title": "Unlock Premium Benefits!",
+        "freeBadge": "Free",
+        "description": "Get access to exclusive offers, priority customer support, early access to sales, and personalized recommendations. Join our premium community today!",
+        "prioritySupport": "Priority Support",
+        "exclusiveOffers": "Exclusive Offers",
+        "earlyAccess": "Early Access",
+        "registering": "Registering...",
+        "applyButton": "Apply for Premium Services",
+        "toasts": {
+          "success": "Successfully registered for premium services!",
+          "successDescription": "Welcome to premium! Enjoy exclusive offers and priority support.",
+          "failed": "Failed to register for premium services",
+          "error": "Something went wrong. Please try again."
+        }
+      },
+      "applicationSuccess": {
+        "continueButton": "Continue to Dashboard",
+        "statusPending": "Status: Pending Review",
+        "whatNext": "What happens next?",
+        "benefitsUponApproval": "{type} Benefits (Upon Approval):",
+        "premiumType": "Premium",
+        "businessType": "Business",
+        "premiumSubtitle": "Congratulations {name}!",
+        "businessSubtitle": "Excellent choice {name}!",
+        "defaultUserName": "User"
+      },
+      "badges": {
+        "vip": "VIP",
+        "premium": "Premium",
+        "member": "Member"
       }
+    },
+    "checkoutSuccess": {
+      "title": "Order Placed Successfully!",
+      "thankYou": "Thank you for your purchase! Your order has been confirmed and we're preparing it for shipment. You'll receive a confirmation email",
+      "orderNumber": "Order Number:",
+      "whatNext": "What happens next?",
+      "steps": {
+        "processing": {
+          "title": "Order Processing",
+          "description": "We're preparing your items for shipment"
+        },
+        "shipping": {
+          "title": "Shipping",
+          "description": "Your order will be shipped within 2-3 business days"
+        },
+        "delivery": {
+          "title": "Delivery",
+          "description": "Delivered to your doorstep with tracking updates"
+        }
+      },
+      "recentOrders": "Your Recent Orders",
+      "orderLabel": "Order #",
+      "view": "View",
+      "showLess": "Show Less",
+      "showAll": "Show All {count} Orders",
+      "continueShopping": "Continue Shopping",
+      "trackOrder": "Track Order",
+      "trackOrders": "Track Orders",
+      "shopMore": "Shop More",
+      "notAvailable": "N/A"
     }
   },
   "breadcrumb": {

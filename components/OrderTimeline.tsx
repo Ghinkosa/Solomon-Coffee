@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import {
@@ -16,8 +16,26 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+
+type TimelineEventKey =
+  | "order_placed"
+  | "order_cancelled"
+  | "address_confirmed"
+  | "address_confirmation"
+  | "order_confirmed"
+  | "order_confirmation"
+  | "order_packed"
+  | "order_packing"
+  | "out_for_delivery"
+  | "payment_collected"
+  | "payment_collection"
+  | "payment_received"
+  | "delivered";
 
 interface TimelineEvent {
+  key: TimelineEventKey;
   title: string;
   description?: string;
   date?: string;
@@ -49,31 +67,31 @@ interface OrderTimelineProps {
 }
 
 const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
-  const [visibleItems, setVisibleItems] = useState<number>(0);
+  const dictionary = useDictionary();
+  const tl = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.timeline.${path}`, fallback);
+  const eventText = (
+    key: TimelineEventKey,
+    field: "title" | "description" | "descriptionBy" | "descriptionAssigned" | "descriptionPending",
+    fallback: string,
+    vars?: Record<string, string>
+  ) => {
+    let text = t(
+      dictionary,
+      `userDashboard.orders.timeline.events.${key}.${field}`,
+      fallback
+    );
+    if (vars) {
+      for (const [k, v] of Object.entries(vars)) {
+        text = text.replace(`{${k}}`, v);
+      }
+    }
+    return text;
+  };
 
-  useEffect(() => {
-    // Animate timeline items on mount
-    const timer = setInterval(() => {
-      setVisibleItems((prev) => {
-        const events = getTimelineEvents();
-        if (prev < events.length) {
-          return prev + 1;
-        }
-        clearInterval(timer);
-        return prev;
-      });
-    }, 150);
-
-    return () => clearInterval(timer);
-  }, [order]);
-
-  const getTimelineEvents = (): TimelineEvent[] => {
+  const getTimelineEvents = useCallback((): TimelineEvent[] => {
     const events: TimelineEvent[] = [];
-
-    // Check if order is cancelled
     const isCancelled = order.status === "cancelled";
-
-    // Determine current status for proper "current" highlighting
     const isAddressConfirmed = !!order.addressConfirmedAt;
     const isOrderConfirmed = !!order.orderConfirmedAt;
     const isPacked = !!order.packedAt;
@@ -84,34 +102,51 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
     const isDelivered = !!order.deliveredAt;
     const isCOD = order.paymentStatus === "pending";
 
-    // 1. Order Placed - Always completed
     events.push({
-      title: "Order Placed",
-      description: "Your order has been received",
+      key: "order_placed",
+      title: eventText("order_placed", "title", "Order Placed"),
+      description: eventText(
+        "order_placed",
+        "description",
+        "Your order has been received"
+      ),
       date: order.orderDate,
       status: "completed",
       icon: <ClipboardCheck className="w-5 h-5" />,
     });
 
-    // If order is cancelled, show cancellation and stop
     if (isCancelled) {
       events.push({
-        title: "Order Cancelled",
-        description: "This order has been cancelled",
+        key: "order_cancelled",
+        title: eventText("order_cancelled", "title", "Order Cancelled"),
+        description: eventText(
+          "order_cancelled",
+          "description",
+          "This order has been cancelled"
+        ),
         date: order.cancelledAt,
         status: "completed",
         icon: <XCircle className="w-5 h-5" />,
       });
-      return events; // Return early to stop showing further timeline steps
+      return events;
     }
 
-    // 2. Address Confirmation - Always show
     if (isAddressConfirmed) {
       events.push({
-        title: "Address Confirmed",
+        key: "address_confirmed",
+        title: eventText("address_confirmed", "title", "Address Confirmed"),
         description: order.addressConfirmedBy
-          ? `Confirmed by ${order.addressConfirmedBy}`
-          : "Delivery address verified",
+          ? eventText(
+              "address_confirmed",
+              "descriptionBy",
+              `Confirmed by ${order.addressConfirmedBy}`,
+              { name: order.addressConfirmedBy }
+            )
+          : eventText(
+              "address_confirmed",
+              "description",
+              "Delivery address verified"
+            ),
         date: order.addressConfirmedAt,
         status: "completed",
         icon: <MapPin className="w-5 h-5" />,
@@ -119,20 +154,38 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
       });
     } else {
       events.push({
-        title: "Address Confirmation",
-        description: "Waiting for address verification",
+        key: "address_confirmation",
+        title: eventText(
+          "address_confirmation",
+          "title",
+          "Address Confirmation"
+        ),
+        description: eventText(
+          "address_confirmation",
+          "description",
+          "Waiting for address verification"
+        ),
         status: "current",
         icon: <MapPin className="w-5 h-5" />,
       });
     }
 
-    // 3. Order Confirmation - Always show
     if (isOrderConfirmed) {
       events.push({
-        title: "Order Confirmed",
+        key: "order_confirmed",
+        title: eventText("order_confirmed", "title", "Order Confirmed"),
         description: order.orderConfirmedBy
-          ? `Confirmed by ${order.orderConfirmedBy}`
-          : "Order has been confirmed",
+          ? eventText(
+              "order_confirmed",
+              "descriptionBy",
+              `Confirmed by ${order.orderConfirmedBy}`,
+              { name: order.orderConfirmedBy }
+            )
+          : eventText(
+              "order_confirmed",
+              "description",
+              "Order has been confirmed"
+            ),
         date: order.orderConfirmedAt,
         status: "completed",
         icon: <CheckCircle className="w-5 h-5" />,
@@ -140,20 +193,38 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
       });
     } else {
       events.push({
-        title: "Order Confirmation",
-        description: "Pending order confirmation",
+        key: "order_confirmation",
+        title: eventText(
+          "order_confirmation",
+          "title",
+          "Order Confirmation"
+        ),
+        description: eventText(
+          "order_confirmation",
+          "description",
+          "Pending order confirmation"
+        ),
         status: isAddressConfirmed ? "current" : "pending",
         icon: <CheckCircle className="w-5 h-5" />,
       });
     }
 
-    // 4. Packing - Always show
     if (isPacked) {
       events.push({
-        title: "Order Packed",
+        key: "order_packed",
+        title: eventText("order_packed", "title", "Order Packed"),
         description: order.packedBy
-          ? `Packed by ${order.packedBy}`
-          : "Your order has been packed",
+          ? eventText(
+              "order_packed",
+              "descriptionBy",
+              `Packed by ${order.packedBy}`,
+              { name: order.packedBy }
+            )
+          : eventText(
+              "order_packed",
+              "description",
+              "Your order has been packed"
+            ),
         date: order.packedAt,
         status: "completed",
         icon: <PackageCheck className="w-5 h-5" />,
@@ -161,20 +232,34 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
       });
     } else {
       events.push({
-        title: "Order Packing",
-        description: "Your order will be packed soon",
+        key: "order_packing",
+        title: eventText("order_packing", "title", "Order Packing"),
+        description: eventText(
+          "order_packing",
+          "description",
+          "Your order will be packed soon"
+        ),
         status: isOrderConfirmed ? "current" : "pending",
         icon: <PackageCheck className="w-5 h-5" />,
       });
     }
 
-    // 5. Out for Delivery - Always show
     if (isDispatched) {
       events.push({
-        title: "Out for Delivery",
+        key: "out_for_delivery",
+        title: eventText("out_for_delivery", "title", "Out for Delivery"),
         description: order.assignedDeliverymanName
-          ? `Assigned to ${order.assignedDeliverymanName}`
-          : "Order is out for delivery",
+          ? eventText(
+              "out_for_delivery",
+              "descriptionAssigned",
+              `Assigned to ${order.assignedDeliverymanName}`,
+              { name: order.assignedDeliverymanName }
+            )
+          : eventText(
+              "out_for_delivery",
+              "description",
+              "Order is out for delivery"
+            ),
         date: order.dispatchedAt,
         status: "completed",
         icon: <Truck className="w-5 h-5" />,
@@ -182,49 +267,76 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
       });
     } else {
       events.push({
-        title: "Out for Delivery",
-        description: "Your order will be dispatched for delivery",
+        key: "out_for_delivery",
+        title: eventText("out_for_delivery", "title", "Out for Delivery"),
+        description: eventText(
+          "out_for_delivery",
+          "descriptionPending",
+          "Your order will be dispatched for delivery"
+        ),
         status: isPacked ? "current" : "pending",
         icon: <Truck className="w-5 h-5" />,
       });
     }
 
-    // 6. Payment Collection (for COD only) - Show when applicable
     if (isCOD) {
       if (isCashCollected) {
         events.push({
-          title: "Payment Collected",
-          description: "Cash on delivery payment received",
+          key: "payment_collected",
+          title: eventText("payment_collected", "title", "Payment Collected"),
+          description: eventText(
+            "payment_collected",
+            "description",
+            "Cash on delivery payment received"
+          ),
           date: order.cashCollectedAt,
           status: "completed",
           icon: <DollarSign className="w-5 h-5" />,
         });
       } else {
         events.push({
-          title: "Payment Collection",
-          description: "Cash payment will be collected on delivery",
+          key: "payment_collection",
+          title: eventText("payment_collection", "title", "Payment Collection"),
+          description: eventText(
+            "payment_collection",
+            "description",
+            "Cash payment will be collected on delivery"
+          ),
           status: isDispatched ? "current" : "pending",
           icon: <DollarSign className="w-5 h-5" />,
         });
       }
     } else if (order.paymentCompletedAt && !isCashCollected) {
-      // Online payment already completed
       events.push({
-        title: "Payment Received",
-        description: "Payment completed online",
+        key: "payment_received",
+        title: eventText("payment_received", "title", "Payment Received"),
+        description: eventText(
+          "payment_received",
+          "description",
+          "Payment completed online"
+        ),
         date: order.paymentCompletedAt,
         status: "completed",
         icon: <DollarSign className="w-5 h-5" />,
       });
     }
 
-    // 7. Delivered - Always show as final step
     if (isDelivered) {
       events.push({
-        title: "Delivered",
+        key: "delivered",
+        title: eventText("delivered", "title", "Delivered"),
         description: order.deliveredBy
-          ? `Delivered by ${order.deliveredBy}`
-          : "Order has been delivered successfully",
+          ? eventText(
+              "delivered",
+              "descriptionBy",
+              `Delivered by ${order.deliveredBy}`,
+              { name: order.deliveredBy }
+            )
+          : eventText(
+              "delivered",
+              "description",
+              "Order has been delivered successfully"
+            ),
         date: order.deliveredAt,
         status: "completed",
         icon: <Package className="w-5 h-5" />,
@@ -232,8 +344,13 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
       });
     } else {
       events.push({
-        title: "Delivered",
-        description: "Your order will be delivered to your address",
+        key: "delivered",
+        title: eventText("delivered", "title", "Delivered"),
+        description: eventText(
+          "delivered",
+          "descriptionPending",
+          "Your order will be delivered to your address"
+        ),
         status: (isCOD ? isCashCollected : isDispatched)
           ? "current"
           : "pending",
@@ -242,23 +359,39 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
     }
 
     return events;
-  };
+  }, [order, dictionary]);
 
+  const [visibleItems, setVisibleItems] = useState<number>(0);
   const events = getTimelineEvents();
+  const completedCount = events.filter((e) => e.status === "completed").length;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setVisibleItems((prev) => {
+        if (prev < events.length) {
+          return prev + 1;
+        }
+        clearInterval(timer);
+        return prev;
+      });
+    }, 150);
+
+    return () => clearInterval(timer);
+  }, [events.length]);
 
   return (
     <Card className="overflow-hidden">
       <CardHeader className="bg-linear-to-r from-shop_light_pink to-white">
         <CardTitle className="flex items-center gap-2 text-shop_dark_green">
           <Clock className="w-5 h-5" />
-          Order Timeline
+          {tl("title", "Order Timeline")}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="relative">
           {events.map((event, index) => (
             <div
-              key={index}
+              key={`${event.key}-${index}`}
               className={cn(
                 "relative pb-8 last:pb-0 transition-all duration-500 ease-in-out",
                 index < visibleItems
@@ -269,7 +402,6 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
                 transitionDelay: `${index * 80}ms`,
               }}
             >
-              {/* Vertical Line with animated growth */}
               {index !== events.length - 1 && (
                 <div className="absolute left-[18px] top-9 w-0.5 h-full bg-gray-200">
                   <div
@@ -287,15 +419,14 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
               )}
 
               <div className="flex items-start gap-4">
-                {/* Icon with pulse animation for current and pending */}
                 <div
                   className={cn(
                     "relative z-10 flex items-center justify-center w-9 h-9 rounded-full shrink-0 transition-all duration-500 transform",
                     event.status === "completed" &&
-                      event.title === "Order Cancelled" &&
+                      event.key === "order_cancelled" &&
                       "bg-red-500 text-white shadow-lg scale-100",
                     event.status === "completed" &&
-                      event.title !== "Order Cancelled" &&
+                      event.key !== "order_cancelled" &&
                       "bg-shop_dark_green text-white shadow-lg scale-100",
                     event.status === "current" &&
                       "bg-shop_orange text-white ring-4 ring-shop_orange/20 animate-pulse-slow scale-110",
@@ -309,18 +440,15 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
                 >
                   {event.icon}
 
-                  {/* Ripple effect for current status */}
                   {event.status === "current" && (
                     <span className="absolute inset-0 rounded-full bg-shop_orange animate-ping opacity-20" />
                   )}
 
-                  {/* Checkmark overlay for completed */}
                   {event.status === "completed" && (
                     <span className="absolute inset-0 rounded-full bg-shop_dark_green/10 animate-scale-in" />
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 pt-0.5">
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex-1 min-w-0">
@@ -328,10 +456,10 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
                         className={cn(
                           "font-semibold text-sm sm:text-base transition-colors duration-300",
                           event.status === "completed" &&
-                            event.title === "Order Cancelled" &&
+                            event.key === "order_cancelled" &&
                             "text-red-600",
                           event.status === "completed" &&
-                            event.title !== "Order Cancelled" &&
+                            event.key !== "order_cancelled" &&
                             "text-shop_dark_green",
                           event.status === "current" && "text-shop_orange",
                           event.status === "pending" && "text-gray-500"
@@ -360,10 +488,10 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
                           className={cn(
                             "text-xs border transition-all duration-300",
                             event.status === "completed" &&
-                              event.title === "Order Cancelled" &&
+                              event.key === "order_cancelled" &&
                               "border-red-300 bg-red-50 text-red-600",
                             event.status === "completed" &&
-                              event.title !== "Order Cancelled" &&
+                              event.key !== "order_cancelled" &&
                               "border-shop_dark_green/30 bg-shop_dark_green/5 text-shop_dark_green",
                             event.status === "current" &&
                               "border-shop_orange/30 bg-shop_orange/5 text-shop_orange",
@@ -377,7 +505,6 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
                     )}
                   </div>
 
-                  {/* Current status indicator with animation */}
                   {event.status === "current" && (
                     <div className="mt-3 animate-slide-in-bottom">
                       <div className="flex items-center gap-2 px-3 py-2 bg-shop_orange/10 rounded-lg border border-shop_orange/20">
@@ -386,18 +513,17 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
                           <div className="absolute w-2 h-2 bg-shop_orange rounded-full animate-ping" />
                         </div>
                         <span className="text-xs text-shop_orange font-semibold tracking-wide">
-                          IN PROGRESS
+                          {tl("inProgress", "IN PROGRESS")}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  {/* Completed checkmark animation */}
                   {event.status === "completed" &&
                     index === visibleItems - 1 && (
                       <div className="mt-2 flex items-center gap-2 text-shop_dark_green text-xs font-medium animate-fade-in">
                         <CheckCircle className="w-3.5 h-3.5" />
-                        <span>Completed</span>
+                        <span>{tl("completed", "Completed")}</span>
                       </div>
                     )}
                 </div>
@@ -406,24 +532,20 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
           ))}
         </div>
 
-        {/* Progress indicator */}
         <div className="mt-6 pt-4 border-t border-gray-100">
           <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
-            <span className="font-medium">Progress</span>
+            <span className="font-medium">{tl("progress", "Progress")}</span>
             <span className="font-semibold text-shop_dark_green">
-              {events.filter((e) => e.status === "completed").length} of{" "}
-              {events.length} completed
+              {tl("progressCount", "{completed} of {total} completed")
+                .replace("{completed}", String(completedCount))
+                .replace("{total}", String(events.length))}
             </span>
           </div>
           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-linear-to-r from-shop_dark_green to-shop_light_green transition-all duration-1000 ease-out rounded-full"
               style={{
-                width: `${
-                  (events.filter((e) => e.status === "completed").length /
-                    events.length) *
-                  100
-                }%`,
+                width: `${(completedCount / events.length) * 100}%`,
               }}
             />
           </div>

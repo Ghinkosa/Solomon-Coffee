@@ -14,6 +14,8 @@ import { useEffect, useState, Suspense } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 import type { QueryResult } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import { defineQuery } from "next-sanity";
@@ -27,6 +29,21 @@ import { format } from "date-fns";
 
 const SuccessContent = () => {
   const toLocalizedPath = useLocalizedPath();
+  const dictionary = useDictionary();
+  const s = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.checkoutSuccess.${path}`, fallback);
+  const getStatusLabel = (status?: string | null) => {
+    if (!status) {
+      return t(dictionary, "userDashboard.orders.list.status.pending", "Pending");
+    }
+    const key = status.toLowerCase().replace(/\s+/g, "_");
+    return t(
+      dictionary,
+      `userDashboard.orders.list.status.${key}`,
+      status.charAt(0).toUpperCase() + status.slice(1)
+    );
+  };
+
   const [orders, setOrders] = useState<QueryResult>([]);
   const [showAllOrders, setShowAllOrders] = useState(false);
   const searchParams = useSearchParams();
@@ -95,20 +112,23 @@ const SuccessContent = () => {
           </motion.div>
 
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Order Placed Successfully!
+            {s("title", "Order Placed Successfully!")}
           </h1>
 
           <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-            Thank you for your purchase! Your order has been confirmed and
-            we&apos;re preparing it for shipment. You&apos;ll receive a
-            confirmation email
+            {s(
+              "thankYou",
+              "Thank you for your purchase! Your order has been confirmed and we're preparing it for shipment. You'll receive a confirmation email"
+            )}
           </p>
 
           {orderNumber && (
             <div className="bg-white rounded-lg p-6 shadow-md inline-block">
               <div className="flex items-center justify-center gap-3">
                 <Package className="w-5 h-5 text-green-600" />
-                <span className="text-gray-700 font-medium">Order Number:</span>
+                <span className="text-gray-700 font-medium">
+                  {s("orderNumber", "Order Number:")}
+                </span>
                 <span className="text-xl font-bold text-green-600">
                   {orderNumber}
                 </span>
@@ -126,7 +146,9 @@ const SuccessContent = () => {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-center">What happens next?</CardTitle>
+              <CardTitle className="text-center">
+                {s("whatNext", "What happens next?")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6 text-center">
@@ -135,28 +157,41 @@ const SuccessContent = () => {
                     <Package className="w-6 h-6 text-blue-600" />
                   </div>
                   <h3 className="font-semibold text-gray-900">
-                    Order Processing
+                    {s("steps.processing.title", "Order Processing")}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    We&apos;re preparing your items for shipment
+                    {s(
+                      "steps.processing.description",
+                      "We're preparing your items for shipment"
+                    )}
                   </p>
                 </div>
                 <div className="space-y-3">
                   <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto">
                     <ShoppingBag className="w-6 h-6 text-yellow-600" />
                   </div>
-                  <h3 className="font-semibold text-gray-900">Shipping</h3>
+                  <h3 className="font-semibold text-gray-900">
+                    {s("steps.shipping.title", "Shipping")}
+                  </h3>
                   <p className="text-sm text-gray-600">
-                    Your order will be shipped within 2-3 business days
+                    {s(
+                      "steps.shipping.description",
+                      "Your order will be shipped within 2-3 business days"
+                    )}
                   </p>
                 </div>
                 <div className="space-y-3">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                     <Check className="w-6 h-6 text-green-600" />
                   </div>
-                  <h3 className="font-semibold text-gray-900">Delivery</h3>
+                  <h3 className="font-semibold text-gray-900">
+                    {s("steps.delivery.title", "Delivery")}
+                  </h3>
                   <p className="text-sm text-gray-600">
-                    Delivered to your doorstep with tracking updates
+                    {s(
+                      "steps.delivery.description",
+                      "Delivered to your doorstep with tracking updates"
+                    )}
                   </p>
                 </div>
               </div>
@@ -176,7 +211,7 @@ const SuccessContent = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="w-5 h-5" />
-                  Your Recent Orders
+                  {s("recentOrders", "Your Recent Orders")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -193,7 +228,7 @@ const SuccessContent = () => {
                           </div>
                           <div>
                             <p className="font-semibold text-gray-900">
-                              Order #
+                              {s("orderLabel", "Order #")}
                               {order.orderNumber?.slice(-8) ||
                                 order._id.slice(-8)}
                             </p>
@@ -205,7 +240,7 @@ const SuccessContent = () => {
                                       new Date(order.orderDate),
                                       "MMM dd, yyyy",
                                     )
-                                  : "N/A"}
+                                  : s("notAvailable", "N/A")}
                               </div>
                               <PriceFormatter amount={order.totalPrice || 0} />
                             </div>
@@ -221,12 +256,12 @@ const SuccessContent = () => {
                             }
                             className="capitalize"
                           >
-                            {order.status || "pending"}
+                            {getStatusLabel(order.status)}
                           </Badge>
                           <Button asChild size="sm" variant="outline">
                             <Link href={toLocalizedPath(`/user/orders/${order._id}`)}>
                               <Eye className="w-3 h-3 mr-1" />
-                              View
+                              {s("view", "View")}
                             </Link>
                           </Button>
                         </div>
@@ -242,8 +277,11 @@ const SuccessContent = () => {
                         className="text-sm"
                       >
                         {showAllOrders
-                          ? "Show Less"
-                          : `Show All ${orders.length} Orders`}
+                          ? s("showLess", "Show Less")
+                          : s("showAll", "Show All {count} Orders").replace(
+                              "{count}",
+                              String(orders.length)
+                            )}
                       </Button>
                     </div>
                   )}
@@ -263,7 +301,7 @@ const SuccessContent = () => {
           <Button asChild size="lg" className="h-12">
             <Link href={toLocalizedPath("/")} className="flex items-center justify-center gap-2">
               <Home className="w-5 h-5" />
-              Continue Shopping
+              {s("continueShopping", "Continue Shopping")}
             </Link>
           </Button>
 
@@ -277,7 +315,9 @@ const SuccessContent = () => {
               className="flex items-center justify-center gap-2"
             >
               <Package className="w-5 h-5" />
-              {isGuestOrder || !user ? "Track Order" : "Track Orders"}
+              {isGuestOrder || !user
+                ? s("trackOrder", "Track Order")
+                : s("trackOrders", "Track Orders")}
             </Link>
           </Button>
 
@@ -287,7 +327,7 @@ const SuccessContent = () => {
               className="flex items-center justify-center gap-2"
             >
               <ShoppingBag className="w-5 h-5" />
-              Shop More
+              {s("shopMore", "Shop More")}
             </Link>
           </Button>
         </motion.div>

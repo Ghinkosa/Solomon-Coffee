@@ -15,6 +15,8 @@ import {
   Clock,
   Building2,
 } from "lucide-react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface BusinessAccount {
   _id: string;
@@ -30,6 +32,14 @@ interface BusinessAccount {
 
 export default function BusinessAccountsAdmin() {
   const { user } = useUser();
+  const dictionary = useDictionary();
+  const p = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.businessAccountsPage.${path}`, fallback);
+  const c = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.common.${path}`, fallback);
+  const statusLabel = (key: string, fallback: string) =>
+    t(dictionary, `userDashboard.admin.status.${key}`, fallback);
+
   const [accounts, setAccounts] = useState<BusinessAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
@@ -45,11 +55,13 @@ export default function BusinessAccountsAdmin() {
         const data = await response.json();
         setAccounts(data.accounts || []);
       } else {
-        toast.error("Failed to fetch business accounts");
+        toast.error(
+          p("toasts.fetchFailed", "Failed to fetch business accounts")
+        );
       }
     } catch (error) {
       console.error("Error fetching business accounts:", error);
-      toast.error("Error loading business accounts");
+      toast.error(p("toasts.loadError", "Error loading business accounts"));
     } finally {
       setLoading(false);
     }
@@ -72,16 +84,21 @@ export default function BusinessAccountsAdmin() {
 
       if (response.ok) {
         toast.success(
-          `Business account ${approve ? "approved" : "rejected"} successfully`
+          approve
+            ? p("toasts.approved", "Business account approved successfully")
+            : p("toasts.rejected", "Business account rejected successfully")
         );
-        fetchBusinessAccounts(); // Refresh the list
+        fetchBusinessAccounts();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || "Failed to update business account");
+        toast.error(
+          errorData.error ||
+            p("toasts.updateFailed", "Failed to update business account")
+        );
       }
     } catch (error) {
       console.error("Error updating business account:", error);
-      toast.error("Error updating business account");
+      toast.error(p("toasts.updateError", "Error updating business account"));
     } finally {
       setProcessing(null);
     }
@@ -92,21 +109,21 @@ export default function BusinessAccountsAdmin() {
       return (
         <Badge className="bg-green-100 text-green-700 border-green-200">
           <CheckCircle className="w-3 h-3 mr-1" />
-          Approved
+          {statusLabel("approved", "Approved")}
         </Badge>
       );
     } else if (account.isBusiness) {
       return (
         <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
           <Clock className="w-3 h-3 mr-1" />
-          Pending
+          {statusLabel("pending", "Pending")}
         </Badge>
       );
     } else {
       return (
         <Badge className="bg-gray-100 text-gray-700 border-gray-200">
           <User className="w-3 h-3 mr-1" />
-          Regular
+          {statusLabel("regular", "Regular")}
         </Badge>
       );
     }
@@ -131,10 +148,10 @@ export default function BusinessAccountsAdmin() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Business Account Management
+          {p("title", "Business Account Management")}
         </h1>
         <p className="text-gray-600">
-          Manage and approve business account requests
+          {p("subtitle", "Manage and approve business account requests")}
         </p>
       </div>
 
@@ -143,9 +160,11 @@ export default function BusinessAccountsAdmin() {
           <CardContent className="py-12 text-center">
             <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No Business Accounts
+              {p("emptyTitle", "No Business Accounts")}
             </h3>
-            <p className="text-gray-500">No business account requests found.</p>
+            <p className="text-gray-500">
+              {p("emptyDescription", "No business account requests found.")}
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -174,8 +193,10 @@ export default function BusinessAccountsAdmin() {
                         </div>
                         <div className="flex items-center">
                           <Calendar className="w-4 h-4 mr-1" />
-                          Joined{" "}
-                          {new Date(account.createdAt).toLocaleDateString()}
+                          {c("joinedOn", "Joined {date}").replace(
+                            "{date}",
+                            new Date(account.createdAt).toLocaleDateString()
+                          )}
                         </div>
                       </div>
                     </div>
@@ -187,14 +208,14 @@ export default function BusinessAccountsAdmin() {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-sm text-gray-600">
-                      Membership:{" "}
+                      {c("membership", "Membership:")}{" "}
                       <span className="font-medium capitalize">
                         {account.membershipType}
                       </span>
                     </p>
                     {account.businessApprovedBy && (
                       <p className="text-sm text-gray-600">
-                        Approved by:{" "}
+                        {c("approvedBy", "Approved by:")}{" "}
                         <span className="font-medium">
                           {account.businessApprovedBy}
                         </span>
@@ -202,7 +223,7 @@ export default function BusinessAccountsAdmin() {
                     )}
                     {account.businessApprovedAt && (
                       <p className="text-sm text-gray-600">
-                        Approved on:{" "}
+                        {c("approvedOn", "Approved on:")}{" "}
                         <span className="font-medium">
                           {new Date(
                             account.businessApprovedAt
@@ -222,7 +243,7 @@ export default function BusinessAccountsAdmin() {
                         className="text-red-600 border-red-200 hover:bg-red-50"
                       >
                         <XCircle className="w-4 h-4 mr-1" />
-                        Reject
+                        {c("reject", "Reject")}
                       </Button>
                       <Button
                         size="sm"
@@ -231,7 +252,7 @@ export default function BusinessAccountsAdmin() {
                         className="bg-green-600 hover:bg-green-700"
                       >
                         <CheckCircle className="w-4 h-4 mr-1" />
-                        Approve
+                        {c("approve", "Approve")}
                       </Button>
                     </div>
                   )}

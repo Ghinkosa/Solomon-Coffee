@@ -5,6 +5,8 @@ import { X, Star, Zap, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface PremiumBannerProps {
   onRegister: () => void;
@@ -15,6 +17,10 @@ export default function PremiumBanner({
   onRegister,
   onDismiss,
 }: PremiumBannerProps) {
+  const dictionary = useDictionary();
+  const b = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.dashboard.premiumBanner.${path}`, fallback);
+
   const [isRegistering, setIsRegistering] = useState(false);
 
   const handleRegister = async () => {
@@ -27,21 +33,27 @@ export default function PremiumBanner({
       if (response.ok) {
         const data = await response.json();
         toast.success(
-          data.message || "Successfully registered for premium services!",
+          data.message ||
+            b("toasts.success", "Successfully registered for premium services!"),
           {
-            description:
-              "Welcome to premium! Enjoy exclusive offers and priority support.",
+            description: b(
+              "toasts.successDescription",
+              "Welcome to premium! Enjoy exclusive offers and priority support."
+            ),
             duration: 5000,
           }
         );
         onRegister();
       } else {
         const error = await response.json();
-        toast.error(error.error || "Failed to register for premium services");
+        toast.error(
+          error.error ||
+            b("toasts.failed", "Failed to register for premium services")
+        );
       }
     } catch (error) {
       console.error("Error registering for premium:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(b("toasts.error", "Something went wrong. Please try again."));
     } finally {
       setIsRegistering(false);
     }
@@ -65,33 +77,34 @@ export default function PremiumBanner({
 
         <div className="flex-1">
           <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-            Unlock Premium Benefits!
+            {b("title", "Unlock Premium Benefits!")}
             <Badge
               variant="secondary"
               className="bg-yellow-400 text-yellow-900"
             >
-              Free
+              {b("freeBadge", "Free")}
             </Badge>
           </h3>
 
           <p className="text-white/90 text-sm mb-4">
-            Get access to exclusive offers, priority customer support, early
-            access to sales, and personalized recommendations. Join our premium
-            community today!
+            {b(
+              "description",
+              "Get access to exclusive offers, priority customer support, early access to sales, and personalized recommendations. Join our premium community today!"
+            )}
           </p>
 
           <div className="flex flex-wrap gap-4 mb-4 text-sm">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-yellow-300" />
-              <span>Priority Support</span>
+              <span>{b("prioritySupport", "Priority Support")}</span>
             </div>
             <div className="flex items-center gap-2">
               <Gift className="h-4 w-4 text-yellow-300" />
-              <span>Exclusive Offers</span>
+              <span>{b("exclusiveOffers", "Exclusive Offers")}</span>
             </div>
             <div className="flex items-center gap-2">
               <Star className="h-4 w-4 text-yellow-300" />
-              <span>Early Access</span>
+              <span>{b("earlyAccess", "Early Access")}</span>
             </div>
           </div>
 
@@ -100,7 +113,9 @@ export default function PremiumBanner({
             disabled={isRegistering}
             className="bg-white text-shop_dark_green hover:bg-white/90 font-semibold"
           >
-            {isRegistering ? "Registering..." : "Apply for Premium Services"}
+            {isRegistering
+              ? b("registering", "Registering...")
+              : b("applyButton", "Apply for Premium Services")}
           </Button>
         </div>
       </div>

@@ -817,6 +817,74 @@
       "businessAccounts": {
         "title": "Cuentas comerciales",
         "description": "Aprobaciones comerciales"
+      },
+      "common": {
+        "processing": "Procesando...",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "membership": "Membresía:",
+        "reason": "Motivo: {reason}",
+        "date": "Fecha:",
+        "appliedOn": "Solicitado {date}",
+        "joinedOn": "Registrado {date}",
+        "approvedBy": "Aprobado por:",
+        "approvedOn": "Aprobado el:",
+        "processedBy": "Procesado por:"
+      },
+      "status": {
+        "active": "Activo",
+        "pending": "Pendiente",
+        "rejected": "Rechazado",
+        "approved": "Aprobado",
+        "regular": "Regular",
+        "none": "Ninguno"
+      },
+      "manageUsersPage": {
+        "title": "Gestión de usuarios admin",
+        "subtitle": "Gestiona el estado premium y la configuración de cuentas",
+        "cardTitle": "Estado premium del usuario",
+        "emailLabel": "Correo del usuario",
+        "emailPlaceholder": "usuario@ejemplo.com",
+        "setPremium": "Establecer como usuario premium",
+        "setStandard": "Establecer como usuario estándar",
+        "premiumHelp": "Usuario premium: isActive = true, accede a funciones premium",
+        "standardHelp": "Usuario estándar: isActive = false, solo funciones básicas",
+        "quickAccess": "Acceso rápido",
+        "setAdminUser": "Establecer admin (admin@shebascoffee.com)",
+        "toasts": {
+          "emailRequired": "Introduce una dirección de correo",
+          "manageFailed": "Error al gestionar el usuario",
+          "manageError": "Error al gestionar el usuario"
+        }
+      },
+      "premiumAccountsPage": {
+        "title": "Gestión de cuentas premium",
+        "subtitle": "Gestiona y aprueba solicitudes de cuentas premium",
+        "emptyTitle": "Sin solicitudes premium",
+        "emptyDescription": "No se encontraron solicitudes de cuentas premium.",
+        "defaultRejectReason": "La solicitud no cumple los requisitos",
+        "toasts": {
+          "fetchFailed": "Error al obtener cuentas premium",
+          "loadError": "Error al cargar cuentas premium",
+          "approved": "Cuenta premium aprobada correctamente",
+          "rejected": "Cuenta premium rechazada correctamente",
+          "updateFailed": "Error al actualizar la cuenta premium",
+          "updateError": "Error al actualizar la cuenta premium"
+        }
+      },
+      "businessAccountsPage": {
+        "title": "Gestión de cuentas business",
+        "subtitle": "Gestiona y aprueba solicitudes de cuentas business",
+        "emptyTitle": "Sin cuentas business",
+        "emptyDescription": "No se encontraron solicitudes de cuentas business.",
+        "toasts": {
+          "fetchFailed": "Error al obtener cuentas business",
+          "loadError": "Error al cargar cuentas business",
+          "approved": "Cuenta business aprobada correctamente",
+          "rejected": "Cuenta business rechazada correctamente",
+          "updateFailed": "Error al actualizar la cuenta business",
+          "updateError": "Error al actualizar la cuenta business"
+        }
       }
     },
     "orders": {
@@ -861,6 +929,189 @@
           "invoiceGenerated": "¡Factura generada correctamente!",
           "invoiceFailed": "Error al generar la factura"
         }
+      },
+      "detail": {
+        "metaTitle": "Pedido {number}",
+        "metaNotFound": "Pedido no encontrado",
+        "title": "Detalles del pedido",
+        "orderNumber": "Pedido #{number}",
+        "downloadInvoice": "Descargar factura",
+        "generatingInvoice": "Generando...",
+        "generateInvoice": "Generar factura",
+        "addingToCart": "Añadiendo al carrito...",
+        "reorder": "Volver a pedir",
+        "cancelling": "Cancelando...",
+        "cancelOrder": "Cancelar pedido",
+        "backToOrders": "← Volver a pedidos",
+        "cancellationPendingTitle": "Solicitud de cancelación pendiente",
+        "cancellationPendingDescription": "Tu solicitud de cancelación se envió y está en revisión. Te avisaremos cuando se procese.",
+        "requestedOn": "Solicitado el: {date}",
+        "orderStatusTitle": "Estado del pedido",
+        "orderStatusLabel": "Estado del pedido",
+        "paymentStatusLabel": "Estado del pago",
+        "paymentMethodLabel": "Método de pago",
+        "orderDateLabel": "Fecha del pedido",
+        "orderItems": "Artículos del pedido ({count})",
+        "weight": "Peso: {value}",
+        "grind": "Molienda: {value}",
+        "packaging": "Embalaje: {value}",
+        "qty": "Cant.: {count}",
+        "orderSummary": "Resumen del pedido",
+        "subtotal": "Subtotal",
+        "tax": "Impuestos",
+        "shipping": "Envío",
+        "discount": "Descuento",
+        "total": "Total",
+        "shippingAddress": "Dirección de envío",
+        "customerInformation": "Información del cliente",
+        "paymentCompleted": "Pago completado",
+        "cancelDialogTitle": "Solicitar cancelación del pedido",
+        "cancelDialogDescription": "Tu solicitud de cancelación se enviará a nuestro equipo para revisión.",
+        "cancelReasonLabel": "Motivo de cancelación (opcional)",
+        "cancelReasonPlaceholder": "p. ej., Cambié de opinión, encontré mejor oferta...",
+        "refundTitle": "Información del reembolso",
+        "refundDescription": "Si se aprueba, tu pago de {amount} se añadirá al saldo de tu cartera.",
+        "refundUseFuture": "Úsalo en pedidos futuros",
+        "refundWithdraw": "Solicita retiro cuando quieras",
+        "refundDashboard": "Consulta el saldo en tu panel",
+        "keepOrder": "Mantener pedido",
+        "submitting": "Enviando...",
+        "submitRequest": "Enviar solicitud",
+        "close": "Cerrar",
+        "cancelledByCustomer": "Cancelado por el cliente",
+        "paymentStatus": {
+          "pending": "Pendiente",
+          "paid": "Pagado",
+          "failed": "Fallido",
+          "cancelled": "Cancelado"
+        },
+        "paymentMethods": {
+          "cash_on_delivery": "Contra reembolso",
+          "stripe": "Stripe",
+          "card": "Tarjeta"
+        },
+        "address_confirmed": "Dirección confirmada",
+        "toasts": {
+          "reorderSuccess": "¡{count} artículos añadidos al carrito!",
+          "reorderRedirect": "Redirigiendo al carrito...",
+          "reorderFailed": "Error al volver a pedir. Inténtalo de nuevo.",
+          "invoiceGenerated": "¡Factura generada correctamente!",
+          "invoiceFailed": "Error al generar la factura",
+          "invoiceNetworkError": "Error de red: no se pudo generar la factura. Inténtalo de nuevo.",
+          "cancelFailed": "Error al enviar la solicitud de cancelación",
+          "cancelError": "Ocurrió un error al enviar la solicitud de cancelación"
+        }
+      },
+      "timeline": {
+        "title": "Cronología del pedido",
+        "inProgress": "EN PROGRESO",
+        "completed": "Completado",
+        "progress": "Progreso",
+        "progressCount": "{completed} de {total} completados",
+        "events": {
+          "order_placed": {
+            "title": "Pedido realizado",
+            "description": "Hemos recibido tu pedido"
+          },
+          "order_cancelled": {
+            "title": "Pedido cancelado",
+            "description": "Este pedido ha sido cancelado"
+          },
+          "address_confirmed": {
+            "title": "Dirección confirmada",
+            "description": "Dirección de entrega verificada",
+            "descriptionBy": "Confirmado por {name}"
+          },
+          "address_confirmation": {
+            "title": "Confirmación de dirección",
+            "description": "Esperando verificación de la dirección"
+          },
+          "order_confirmed": {
+            "title": "Pedido confirmado",
+            "description": "El pedido ha sido confirmado",
+            "descriptionBy": "Confirmado por {name}"
+          },
+          "order_confirmation": {
+            "title": "Confirmación del pedido",
+            "description": "Confirmación del pedido pendiente"
+          },
+          "order_packed": {
+            "title": "Pedido empaquetado",
+            "description": "Tu pedido ha sido empaquetado",
+            "descriptionBy": "Empaquetado por {name}"
+          },
+          "order_packing": {
+            "title": "Empaquetado del pedido",
+            "description": "Tu pedido se empaquetará pronto"
+          },
+          "out_for_delivery": {
+            "title": "En reparto",
+            "description": "El pedido está en reparto",
+            "descriptionAssigned": "Asignado a {name}",
+            "descriptionPending": "Tu pedido se enviará pronto para la entrega"
+          },
+          "payment_collected": {
+            "title": "Pago recibido",
+            "description": "Pago contra reembolso recibido"
+          },
+          "payment_collection": {
+            "title": "Cobro del pago",
+            "description": "El pago en efectivo se cobrará en la entrega"
+          },
+          "payment_received": {
+            "title": "Pago recibido",
+            "description": "Pago completado en línea"
+          },
+          "delivered": {
+            "title": "Entregado",
+            "description": "El pedido se entregó correctamente",
+            "descriptionBy": "Entregado por {name}",
+            "descriptionPending": "Tu pedido se entregará en tu dirección"
+          }
+        }
+      },
+      "paymentModal": {
+        "title": "Pago seguro",
+        "subtitle": "Completa tu pago de forma segura con Stripe",
+        "verified": "Verificado",
+        "orderNumber": "Número de pedido",
+        "totalAmount": "Importe total",
+        "sslProtection": "Protegido con cifrado SSL de 256 bits",
+        "stepSecure": "Seguro",
+        "stepPay": "Pagar",
+        "stepComplete": "Completar",
+        "cancel": "Cancelar",
+        "processing": "Procesando...",
+        "paySecurely": "Pagar de forma segura",
+        "sslSecured": "SSL seguro",
+        "instant": "Instantáneo",
+        "protected": "Protegido",
+        "close": "Cerrar",
+        "toasts": {
+          "redirecting": "Redirigiendo al pago seguro...",
+          "failed": "Error al procesar el pago",
+          "initFailed": "Error al iniciar el pago",
+          "paymentFailed": "Pago fallido"
+        }
+      },
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "previousAria": "Ir a la página anterior",
+        "nextAria": "Ir a la página siguiente",
+        "morePages": "Más páginas",
+        "navAria": "paginación"
+      },
+      "dialog": {
+        "title": "Detalles del pedido - {number}",
+        "customer": "Cliente:",
+        "email": "Correo:",
+        "date": "Fecha:",
+        "status": "Estado:",
+        "invoiceNumber": "Número de factura:",
+        "viewInvoice": "Ver factura",
+        "quantity": "Cantidad",
+        "price": "Precio"
       }
     },
     "settings": {
@@ -895,7 +1146,36 @@
       "exported": "Datos exportados correctamente",
       "exportFailed": "Error al exportar los datos",
       "deleteInitiated": "Eliminación de cuenta iniciada",
-      "deleteFailed": "Error al eliminar la cuenta"
+      "deleteFailed": "Error al eliminar la cuenta",
+      "newsletter": {
+        "title": "Suscripción al boletín",
+        "description": "Gestiona tus preferencias de suscripción al boletín",
+        "subscribed": "Suscrito al boletín",
+        "notSubscribed": "No suscrito",
+        "benefitsTitle": "Beneficios del boletín:",
+        "benefits": [
+          "Ofertas y descuentos exclusivos de hasta 50%",
+          "Acceso anticipado a nuevos productos",
+          "Ofertas de envío gratis",
+          "Consejos y tendencias de compra",
+          "Sorpresas de cumpleaños"
+        ],
+        "subscribe": "Suscribirse al boletín",
+        "unsubscribe": "Cancelar suscripción al boletín",
+        "subscribing": "Suscribiendo...",
+        "unsubscribing": "Cancelando suscripción...",
+        "footerSubscribed": "Puedes volver a suscribirte en cualquier momento",
+        "footerNotSubscribed": "Únete a más de 50.000 suscriptores y no te pierdas ninguna oferta",
+        "toasts": {
+          "emailNotFound": "Correo no encontrado",
+          "subscribeSuccess": "¡Suscripción al boletín completada!",
+          "alreadySubscribed": "¡Ya estás suscrito!",
+          "subscribeFailed": "Error al suscribirse",
+          "unsubscribeSuccess": "Suscripción cancelada correctamente",
+          "unsubscribeFailed": "Error al cancelar la suscripción",
+          "genericError": "Algo salió mal. Inténtalo de nuevo."
+        }
+      }
     },
     "dashboard": {
       "welcome": "¡Bienvenido de nuevo, {name}!",
@@ -991,6 +1271,38 @@
           "cancelFailed": "Error al cancelar la solicitud",
           "cancelError": "Error al cancelar la solicitud"
         }
+      },
+      "premiumBanner": {
+        "title": "¡Desbloquea beneficios premium!",
+        "freeBadge": "Gratis",
+        "description": "Accede a ofertas exclusivas, soporte prioritario, acceso anticipado a rebajas y recomendaciones personalizadas. ¡Únete hoy!",
+        "prioritySupport": "Soporte prioritario",
+        "exclusiveOffers": "Ofertas exclusivas",
+        "earlyAccess": "Acceso anticipado",
+        "registering": "Registrando...",
+        "applyButton": "Solicitar servicios premium",
+        "toasts": {
+          "success": "¡Registro en servicios premium completado!",
+          "successDescription": "¡Bienvenido a premium! Disfruta ofertas exclusivas y soporte prioritario.",
+          "failed": "Error al registrarse en servicios premium",
+          "error": "Algo salió mal. Inténtalo de nuevo."
+        }
+      },
+      "applicationSuccess": {
+        "continueButton": "Continuar al panel",
+        "statusPending": "Estado: revisión pendiente",
+        "whatNext": "¿Qué sigue?",
+        "benefitsUponApproval": "Beneficios {type} (al aprobar):",
+        "premiumType": "Premium",
+        "businessType": "Business",
+        "premiumSubtitle": "¡Felicidades {name}!",
+        "businessSubtitle": "¡Excelente elección {name}!",
+        "defaultUserName": "Usuario"
+      },
+      "badges": {
+        "vip": "VIP",
+        "premium": "Premium",
+        "member": "Miembro"
       }
     },
     "notificationsPage": {
@@ -1157,7 +1469,65 @@
           "deletedMessage": "Tu dirección se eliminó correctamente.",
           "deleteErrorMessage": "Error al eliminar la dirección. Inténtalo de nuevo."
         }
+      },
+      "locationSelector": {
+        "title": "Selección de ubicación",
+        "country": "País",
+        "selectCountry": "Seleccionar país",
+        "state": "Estado",
+        "stateProvince": "Estado/Provincia",
+        "city": "Ciudad",
+        "subArea": "Subzona/Distrito (opcional)",
+        "zipCode": "Código postal",
+        "postalCode": "Código postal",
+        "searchCountries": "Buscar países...",
+        "searchStates": "Buscar estados...",
+        "searchCities": "Buscar ciudades...",
+        "noCountries": "No se encontraron países",
+        "noStates": "No se encontraron estados",
+        "noCities": "No se encontraron ciudades",
+        "loadingStates": "Cargando estados...",
+        "noStatesAvailable": "No hay estados disponibles",
+        "selectState": "Selecciona un estado",
+        "selectStateProvince": "Selecciona un estado/provincia",
+        "loadingCities": "Cargando ciudades...",
+        "noCitiesAvailable": "No hay ciudades disponibles o introduce manualmente",
+        "selectCity": "Selecciona una ciudad",
+        "enterCityManually": "Introduce el nombre de la ciudad manualmente",
+        "subAreaPlaceholder": "Introduce zona, distrito o barrio",
+        "zipPlaceholder": "Introduce código postal (p. ej., 12345)",
+        "postalPlaceholder": "Introduce código postal"
       }
+    },
+    "checkoutSuccess": {
+      "title": "¡Pedido realizado con éxito!",
+      "thankYou": "¡Gracias por tu compra! Tu pedido está confirmado y lo estamos preparando para el envío. Recibirás un correo de confirmación",
+      "orderNumber": "Número de pedido:",
+      "whatNext": "¿Qué sigue?",
+      "steps": {
+        "processing": {
+          "title": "Procesamiento del pedido",
+          "description": "Estamos preparando tus artículos para el envío"
+        },
+        "shipping": {
+          "title": "Envío",
+          "description": "Tu pedido se enviará en 2-3 días hábiles"
+        },
+        "delivery": {
+          "title": "Entrega",
+          "description": "Entregado en tu puerta con actualizaciones de seguimiento"
+        }
+      },
+      "recentOrders": "Tus pedidos recientes",
+      "orderLabel": "Pedido #",
+      "view": "Ver",
+      "showLess": "Mostrar menos",
+      "showAll": "Mostrar los {count} pedidos",
+      "continueShopping": "Seguir comprando",
+      "trackOrder": "Rastrear pedido",
+      "trackOrders": "Rastrear pedidos",
+      "shopMore": "Comprar más",
+      "notAvailable": "N/D"
     }
   },
   "breadcrumb": {
