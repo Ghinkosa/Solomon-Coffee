@@ -11,12 +11,12 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { firstName, lastName, phone, dateOfBirth, clerkUserId } = body;
+    const { firstName, lastName, phone, dateOfBirth } = body;
 
-    // Update or create user in Sanity
+    // Always bind to the authenticated user — never trust a client-supplied id.
     const sanityUser = {
       _type: "user",
-      clerkUserId: clerkUserId || userId,
+      clerkUserId: userId,
       email: "", // We'll get this from Clerk
       firstName,
       lastName,
@@ -27,8 +27,8 @@ export async function PUT(request: NextRequest) {
 
     // Check if user exists in Sanity
     const existingUser = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId][0]`,
-      { clerkUserId: clerkUserId || userId }
+      `*[_type in ["user", "userType"] && clerkUserId == $clerkUserId][0]`,
+      { clerkUserId: userId }
     );
 
     let result;

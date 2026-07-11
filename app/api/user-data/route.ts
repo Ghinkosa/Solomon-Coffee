@@ -1,25 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
 import {
   getUserAddressesByEmail,
   getUserOrdersByEmail,
 } from "@/sanity/queries/emailUserQueries";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // Check authentication
-    const { userId } = await auth();
-    if (!userId) {
+    // Check authentication and use the session's own email — a client must not
+    // be able to request another user's addresses/orders by passing an email.
+    const user = await currentUser();
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get email from query parameters
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email");
+    const email = user.emailAddresses[0]?.emailAddress;
 
     if (!email) {
       return NextResponse.json(
-        { error: "Email parameter is required" },
+        { error: "User email not found" },
         { status: 400 }
       );
     }

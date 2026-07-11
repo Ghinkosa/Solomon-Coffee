@@ -48,16 +48,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Prepare the update data to cancel the account
+    // Prepare the update data to cancel the account. Also clear the activation
+    // flag (isActive for premium, isBusiness for business) and downgrade
+    // membership so the checkout discount / benefits stop applying immediately.
     const updateData =
       type === "premium"
         ? {
             premiumStatus: "cancelled",
+            isActive: false,
+            membershipType: existingUser.isBusiness ? "business" : "standard",
             premiumCancelledAt: new Date().toISOString(),
             premiumCancellationReason: reason,
           }
         : {
             businessStatus: "cancelled",
+            isBusiness: false,
+            membershipType: existingUser.isActive ? "premium" : "standard",
             businessCancelledAt: new Date().toISOString(),
             businessCancellationReason: reason,
           };

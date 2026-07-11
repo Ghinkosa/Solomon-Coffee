@@ -104,8 +104,10 @@ export async function GET() {
           allStats.lastMonthOrders || 0
         ).toFixed(1)
       ),
-      usersChange: totalUsers > 0 ? 5.2 : 0,
-      productsChange: allStats.totalProducts > 0 ? 2.1 : 0,
+      // No historical user/product snapshots yet — omit the delta rather than
+      // showing a fabricated growth percentage.
+      usersChange: null,
+      productsChange: null,
       paymentBreakdown: {
         cardRevenue: Number(cardRevenue.toFixed(2)),
         codPaidRevenue: Number(codPaidRevenue.toFixed(2)),

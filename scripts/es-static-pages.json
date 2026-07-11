@@ -1,0 +1,576 @@
+{
+  "wholesalers": {
+    "hero": {
+      "badge": "Asóciate con nosotros",
+      "title": "Programa de café al por mayor",
+      "description": "Sirve café etíope excepcional en tu cafetería, restaurante o punto de venta. Sheba Cup Coffee ofrece granos recién tostados, volúmenes flexibles y soporte dedicado para socios mayoristas."
+    },
+    "info": {
+      "title": "Detalles del programa",
+      "salesTitle": "Ventas al por mayor",
+      "quickResponse": "Respuesta rápida",
+      "quickResponseText": "Nuestro equipo mayorista suele responder en 1–2 días hábiles con precios, mínimos y próximos pasos."
+    },
+    "benefits": {
+      "items": [
+        {
+          "title": "Café tostado premium",
+          "description": "Tostados consistentes en pequeños lotes, seleccionados con cuidado: perfiles de claro a oscuro para cada menú."
+        },
+        {
+          "title": "Cumplimiento confiable",
+          "description": "Entregas programadas y opciones de volumen diseñadas para cafeterías y equipos de hostelería con mucho movimiento."
+        },
+        {
+          "title": "Pensado para negocios",
+          "description": "Precios mayoristas, opciones de empaque y molienda adaptadas a tu equipo."
+        },
+        {
+          "title": "Soporte dedicado",
+          "description": "Nuestro equipo te ayuda a elegir orígenes, planificar ofertas de temporada y mantener el stock."
+        }
+      ]
+    },
+    "form": {
+      "title": "Solicitar información mayorista",
+      "subtitle": "Cuéntanos sobre tu negocio y nuestro equipo mayorista te contactará con precios, mínimos y próximos pasos.",
+      "name": "Nombre completo",
+      "namePlaceholder": "Tu nombre",
+      "email": "Correo empresarial",
+      "emailPlaceholder": "tu@tunegocio.com",
+      "businessName": "Nombre del negocio",
+      "businessNamePlaceholder": "Tu cafetería, restaurante o empresa",
+      "phone": "Teléfono",
+      "phonePlaceholder": "+1 (555) 000-0000",
+      "businessType": "Tipo de negocio",
+      "businessTypePlaceholder": "Selecciona el tipo de negocio",
+      "estimatedOrderQuantity": "Volumen mensual estimado",
+      "estimatedOrderQuantityPlaceholder": "p. ej. 20 lbs / mes",
+      "message": "Detalles adicionales",
+      "messagePlaceholder": "Cuéntanos sobre tu menú, equipo o necesidades de entrega...",
+      "sendButton": "Solicitar información",
+      "sending": "Enviando...",
+      "successTitle": "¡Solicitud recibida!",
+      "successMessage": "Gracias por tu interés en el programa mayorista de Sheba Cup Coffee. Nuestro equipo se pondrá en contacto en 1–2 días hábiles.",
+      "close": "Cerrar",
+      "privacyNote": "Solo usamos tus datos para responder sobre oportunidades mayoristas. Nunca compartimos tu información con terceros."
+    },
+    "faq": {
+      "title": "Preguntas frecuentes mayoristas",
+      "description": "Respuestas a preguntas comunes sobre asociarse con Sheba Cup Coffee.",
+      "questions": [
+        {
+          "q": "¿Para quién es el programa mayorista?",
+          "a": "Cafeterías, restaurantes, hoteles, oficinas y minoristas que buscan café etíope de especialidad consistente con cumplimiento confiable."
+        },
+        {
+          "q": "¿Qué ocurre después de enviar el formulario?",
+          "a": "Nuestro equipo revisa tu solicitud y te envía un correo en 1–2 días hábiles con precios, detalles de pedido mínimo y pasos de incorporación."
+        },
+        {
+          "q": "¿Pueden adaptar la molienda y el empaque a nuestro equipo?",
+          "a": "Sí. Ofrecemos empaque flexible, opciones de peso y perfiles de molienda adaptados a tu método de preparación y necesidades operativas."
+        },
+        {
+          "q": "¿Envían fuera de mi zona local?",
+          "a": "Trabajamos con socios en varias regiones. Indica tu ubicación al contactar con nuestro equipo y confirmaremos las opciones de entrega."
+        }
+      ]
+    }
+  },
+  "aboutPage": {
+    "meta": {
+      "title": "Sobre nosotros",
+      "description": "Conoce más sobre Sheba Cup Coffee, nuestra historia, valores y el equipo detrás de tu destino de café favorito."
+    },
+    "hero": {
+      "badge": "Est. 2025",
+      "title": "Sobre Sheba Cup Coffee",
+      "description": "Seleccionamos, tostamos y entregamos café premium con un servicio excepcional, educación práctica de preparación y un profundo enfoque en la calidad."
+    },
+    "stats": [
+      { "number": "10K+", "label": "Clientes satisfechos" },
+      { "number": "500+", "label": "Productos de café" },
+      { "number": "50+", "label": "Productores asociados" },
+      { "number": "99%", "label": "Satisfacción" }
+    ],
+    "values": {
+      "badge": "Nuestros valores",
+      "title": "Lo que defendemos",
+      "description": "Estos valores guían cómo seleccionamos, tostamos y servimos café cada día.",
+      "items": [
+        {
+          "title": "El cliente primero",
+          "description": "Cada decisión que tomamos comienza pensando en los amantes del café."
+        },
+        {
+          "title": "Calidad del café",
+          "description": "Cada tueste se selecciona y prueba para cumplir nuestros estándares."
+        },
+        {
+          "title": "Artesanía e innovación",
+          "description": "Combinamos tradición y preparación moderna para un mejor café."
+        },
+        {
+          "title": "Sostenibilidad",
+          "description": "Comprometidos con un abastecimiento responsable y empaque ecológico."
+        }
+      ]
+    },
+    "team": {
+      "badge": "Equipo directivo",
+      "title": "Conoce a las mentes detrás de Sheba Cup Coffee",
+      "description": "Nuestro equipo centrado en el café trabaja cada día para ofrecer calidad, consistencia y un excelente soporte.",
+      "members": [
+        {
+          "name": "Equipo de tostaduría",
+          "role": "Tostado y calidad",
+          "description": "Elaborando tostados equilibrados y perfiles de sabor consistentes."
+        },
+        {
+          "name": "Equipo de educación en preparación",
+          "role": "Guía de preparación",
+          "description": "Ayudando a los clientes a preparar mejor café en casa y en el trabajo."
+        },
+        {
+          "name": "Equipo de atención al cliente",
+          "role": "Soporte al cliente",
+          "description": "Ofreciendo un soporte amable desde el pedido hasta el primer sorbo."
+        }
+      ]
+    },
+    "cta": {
+      "title": "¿Listo para experimentar la diferencia?",
+      "description": "Únete a miles de clientes satisfechos que confían en Sheba's Coffee para sus preparaciones diarias y esenciales.",
+      "getInTouch": "Contáctanos",
+      "startShopping": "Empezar a comprar",
+      "contactUs": "Contáctanos"
+    }
+  },
+  "helpPage": {
+    "meta": {
+      "title": "Centro de ayuda",
+      "description": "Encuentra respuestas y soporte sobre pedidos, envíos, pagos y preparación."
+    },
+    "hero": {
+      "badge": "Soporte 24/7",
+      "title": "Centro de ayuda",
+      "description": "Encuentra respuestas, obtén soporte y resuelve problemas rápidamente. Estamos aquí para ayudarte a disfrutar la mejor experiencia de café."
+    },
+    "search": {
+      "placeholder": "Busca temas de ayuda, pedidos o problemas...",
+      "button": "Buscar"
+    },
+    "quickActions": {
+      "title": "Acciones rápidas",
+      "items": [
+        {
+          "title": "Rastrea tu pedido",
+          "description": "Consulta el estado de tus compras recientes",
+          "action": "Rastrear pedido"
+        },
+        {
+          "title": "Contactar soporte",
+          "description": "Obtén ayuda de nuestro equipo de atención al cliente",
+          "action": "Contáctanos"
+        },
+        {
+          "title": "Reportar un problema con el pedido",
+          "description": "Avísanos si tu pedido llegó dañado, incorrecto o por debajo de los estándares de calidad",
+          "action": "Reportar problema"
+        }
+      ]
+    },
+    "categories": {
+      "title": "Explorar temas de ayuda",
+      "items": [
+        {
+          "title": "Primeros pasos",
+          "description": "Aprende lo básico para pedir café con nosotros",
+          "links": [
+            "Cómo crear una cuenta",
+            "Realizar tu primer pedido de café",
+            "Configurar métodos de pago",
+            "Gestionar tu perfil"
+          ]
+        },
+        {
+          "title": "Pedidos y café",
+          "description": "Todo sobre realizar y gestionar pedidos",
+          "links": [
+            "Cómo realizar un pedido",
+            "Modificar tu pedido",
+            "Seguimiento del pedido",
+            "Productos agotados"
+          ]
+        },
+        {
+          "title": "Pagos y facturación",
+          "description": "Métodos de pago, facturación y reembolsos",
+          "links": [
+            "Métodos de pago aceptados",
+            "Seguridad de pagos",
+            "Cuándo se te cobrará",
+            "Reembolsos y devoluciones"
+          ]
+        },
+        {
+          "title": "Envío y entrega",
+          "description": "Opciones de envío, costos e información de entrega",
+          "links": [
+            "Costos de envío",
+            "Tiempos de entrega",
+            "Envío internacional",
+            "Paquetes perdidos o dañados"
+          ]
+        },
+        {
+          "title": "Calidad y resolución de problemas",
+          "description": "Cómo gestionamos problemas de café dañado, incorrecto o de calidad",
+          "links": [
+            "Promesa de calidad",
+            "Reportar un problema con el pedido",
+            "Plazo de resolución",
+            "Solicitudes de reemplazo"
+          ]
+        },
+        {
+          "title": "Cuenta y seguridad",
+          "description": "Gestión de cuenta y funciones de seguridad",
+          "links": [
+            "Seguridad de la cuenta",
+            "Restablecer contraseña",
+            "Actualizar información",
+            "Eliminar cuenta"
+          ]
+        }
+      ]
+    },
+    "support": {
+      "title": "Obtén soporte personalizado",
+      "responseLabel": "Respuesta:",
+      "channels": [
+        {
+          "title": "Chat en vivo",
+          "description": "Chatea con nuestro equipo de soporte en tiempo real",
+          "availability": "Disponible 24/7",
+          "response": "Respuesta instantánea",
+          "action": "Iniciar chat"
+        },
+        {
+          "title": "Soporte por correo",
+          "description": "Envíanos un mensaje detallado sobre tu problema",
+          "availability": "Siempre abierto",
+          "response": "En menos de 2 horas",
+          "action": "Enviar correo"
+        },
+        {
+          "title": "Soporte telefónico",
+          "description": "Habla directamente con un representante de soporte",
+          "availability": "Lun–Vie 9AM–6PM EST",
+          "response": "Inmediata",
+          "action": "Llamar ahora"
+        }
+      ]
+    },
+    "resources": {
+      "title": "¿Necesitas más ayuda?",
+      "description": "Explora nuestros recursos y documentación completos",
+      "viewFaq": "Ver preguntas frecuentes",
+      "contactUs": "Contáctanos",
+      "videoGuides": "Guías en video"
+    }
+  },
+  "faqsPage": {
+    "meta": {
+      "title": "Preguntas frecuentes",
+      "description": "Preguntas frecuentes sobre pedidos, envíos y calidad de Sheba Cup Coffee."
+    },
+    "hero": {
+      "title": "Preguntas frecuentes",
+      "description": "Respuestas rápidas a las preguntas más comunes sobre Sheba's Coffee.",
+      "badge": "Información esencial"
+    },
+    "content": {
+      "title": "Preguntas y respuestas comunes"
+    },
+    "questions": [
+      {
+        "question": "¿Qué ofrece Sheba Cup Coffee?",
+        "answer": "Sheba Cup Coffee ofrece café tostado premium, esenciales de preparación y accesorios seleccionados para los amantes del café del día a día."
+      },
+      {
+        "question": "¿Cómo puedo obtener soporte para los productos de Sheba Cup Coffee?",
+        "answer": "Puedes contactar a nuestro equipo de soporte a través de nuestra página de contacto o escribiendo a support@shebascoffee.com."
+      },
+      {
+        "question": "¿Sheba Cup Coffee ofrece guía de preparación?",
+        "answer": "Sí, compartimos consejos prácticos de preparación para nuestros productos de café y ayudarte a obtener la mejor taza cada vez."
+      },
+      {
+        "question": "¿Para quién es Sheba Cup Coffee?",
+        "answer": "Sheba Cup Coffee atiende a clientes individuales, oficinas y equipos de hostelería que buscan café de calidad y un servicio confiable."
+      },
+      {
+        "question": "¿Cómo protege Sheba Cup Coffee los datos de los clientes?",
+        "answer": "Empleamos medidas de seguridad estándar de la industria y cumplimos con todas las regulaciones de protección de datos pertinentes para garantizar la seguridad de los datos de nuestros clientes."
+      }
+    ],
+    "cta": {
+      "title": "¿Necesitas más ayuda?",
+      "description": "¿No encuentras la respuesta que buscas? Consulta nuestra sección completa de preguntas frecuentes o contacta a nuestro equipo de soporte.",
+      "detailedFaq": "Preguntas frecuentes detalladas",
+      "contactSupport": "Contactar soporte"
+    }
+  },
+  "faqPage": {
+    "meta": {
+      "title": "Preguntas frecuentes",
+      "description": "Encuentra respuestas a preguntas comunes sobre Sheba Cup Coffee, envíos, pagos y más."
+    },
+    "hero": {
+      "title": "Preguntas frecuentes",
+      "description": "Encuentra respuestas a preguntas comunes sobre pedidos de café, pagos, envíos y más. ¿No encuentras lo que buscas? Contacta a nuestro equipo de soporte.",
+      "badge": "Actualizado a diario"
+    },
+    "search": {
+      "placeholder": "Buscar respuestas...",
+      "resultsFound": "Se encontró {count} resultado para \"{term}\"",
+      "resultsFoundPlural": "Se encontraron {count} resultados para \"{term}\""
+    },
+    "sidebar": {
+      "title": "Categorías",
+      "description": "Explorar por tema"
+    },
+    "categories": [
+      { "id": "all", "label": "Todas las preguntas" },
+      { "id": "shopping", "label": "Compras" },
+      { "id": "payment", "label": "Pago" },
+      { "id": "shipping", "label": "Envío" },
+      { "id": "returns", "label": "Problemas de calidad" },
+      { "id": "account", "label": "Cuenta" }
+    ],
+    "questions": [
+      {
+        "id": "shopping-1",
+        "category": "shopping",
+        "question": "¿Cómo realizo un pedido?",
+        "answer": "Para realizar un pedido, explora nuestra colección de café, añade artículos al carrito y procede al pago. Puedes crear una cuenta o iniciar sesión, luego añadir tus datos de entrega y método de pago para completar la compra."
+      },
+      {
+        "id": "shopping-2",
+        "category": "shopping",
+        "question": "¿Puedo modificar o cancelar mi pedido después de realizarlo?",
+        "answer": "Puedes modificar o cancelar tu pedido dentro de los 30 minutos posteriores a realizarlo. Después de eso, contacta al soporte de inmediato. Una vez que el tostado, empaque o envío haya comenzado, es posible que no se puedan hacer cambios."
+      },
+      {
+        "id": "shopping-3",
+        "category": "shopping",
+        "question": "¿Cómo rastreo mi pedido?",
+        "answer": "Una vez que tu pedido se envíe, recibirás un número de seguimiento por correo. También puedes rastrear tu pedido iniciando sesión en tu cuenta y visitando la sección 'Mis pedidos'. La información de seguimiento en tiempo real estará disponible allí."
+      },
+      {
+        "id": "shopping-4",
+        "category": "shopping",
+        "question": "¿Qué pasa si un artículo que quiero está agotado?",
+        "answer": "Si un artículo está agotado, puedes registrarte para recibir notificaciones de reposición en la página del producto. Te enviaremos un correo en cuanto vuelva a estar disponible."
+      },
+      {
+        "id": "payment-1",
+        "category": "payment",
+        "question": "¿Qué métodos de pago aceptan?",
+        "answer": "Aceptamos todas las tarjetas de crédito principales (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay y transferencias bancarias. Todos los pagos se procesan de forma segura a través de nuestro sistema de pago cifrado."
+      },
+      {
+        "id": "payment-2",
+        "category": "payment",
+        "question": "¿Mi información de pago es segura?",
+        "answer": "Sí, absolutamente. Usamos cifrado SSL estándar de la industria y cumplimos con PCI DSS. Tu información de pago nunca se almacena en nuestros servidores y se procesa de forma segura a través de pasarelas de confianza como Stripe."
+      },
+      {
+        "id": "payment-3",
+        "category": "payment",
+        "question": "¿Cuándo se me cobrará el pedido?",
+        "answer": "Tu método de pago se cargará inmediatamente al realizar el pedido. Para pedidos anticipados, se te cobrará cuando el artículo se envíe. Si hay algún problema con el procesamiento del pago, te contactaremos en 24 horas."
+      },
+      {
+        "id": "payment-4",
+        "category": "payment",
+        "question": "¿Puedo obtener un reembolso si no estoy satisfecho?",
+        "answer": "Si tu pedido llega dañado, incorrecto o con un problema de calidad, contáctanos dentro de los 7 días posteriores a la entrega y lo resolveremos."
+      },
+      {
+        "id": "shipping-1",
+        "category": "shipping",
+        "question": "¿Cuánto cuesta el envío?",
+        "answer": "Los costos de envío varían según tu ubicación y el método de envío que elijas. El envío estándar es gratuito para pedidos superiores a $50. Las opciones de envío express están disponibles en el pago con sus respectivos costos."
+      },
+      {
+        "id": "shipping-2",
+        "category": "shipping",
+        "question": "¿Cuánto tarda la entrega?",
+        "answer": "El envío estándar suele tardar de 3 a 7 días hábiles dentro de EE. UU. continental. El envío express tarda de 1 a 3 días hábiles. El envío internacional puede tardar de 7 a 14 días hábiles según el país de destino."
+      },
+      {
+        "id": "shipping-3",
+        "category": "shipping",
+        "question": "¿Envían internacionalmente?",
+        "answer": "Sí, enviamos a la mayoría de países del mundo. Los costos y plazos de envío internacional varían según el destino. Los aranceles e impuestos aduaneros pueden aplicarse y son responsabilidad del destinatario."
+      },
+      {
+        "id": "shipping-4",
+        "category": "shipping",
+        "question": "¿Qué pasa si mi paquete llega dañado o se pierde?",
+        "answer": "Si tu paquete llega dañado o se pierde, contáctanos de inmediato con tu número de pedido. Trabajaremos con la empresa de envío para resolver el problema y reemplazar tus artículos o proporcionar un reembolso completo."
+      },
+      {
+        "id": "returns-1",
+        "category": "returns",
+        "question": "¿Aceptan devoluciones?",
+        "answer": "No ofrecemos devoluciones generales. Si tu café llega dañado, incorrecto o con un problema de calidad, contáctanos y lo revisaremos y resolveremos rápidamente."
+      },
+      {
+        "id": "returns-2",
+        "category": "returns",
+        "question": "¿Cómo reporto un problema con el pedido?",
+        "answer": "Inicia sesión en tu cuenta, abre el pedido y envía un reporte con fotos y detalles. Nuestro equipo evaluará el caso y te guiará en el siguiente paso."
+      },
+      {
+        "id": "returns-3",
+        "category": "returns",
+        "question": "¿Cuánto tarda la resolución de un problema?",
+        "answer": "La mayoría de los casos se revisan en 1–2 días hábiles. Si se aprueba, los plazos de reemplazo o reembolso dependen del proveedor de pago y la ubicación de envío."
+      },
+      {
+        "id": "returns-4",
+        "category": "returns",
+        "question": "¿Puedo solicitar un reemplazo?",
+        "answer": "Sí. Para problemas de daño, error o calidad confirmada, comparte los detalles de tu pedido y fotos. Proporcionaremos un reemplazo cuando sea elegible."
+      },
+      {
+        "id": "account-1",
+        "category": "account",
+        "question": "¿Cómo creo una cuenta?",
+        "answer": "Haz clic en 'Registrarse' en la parte superior de cualquier página, proporciona tu correo y crea una contraseña. También puedes registrarte con tu cuenta de Google o Facebook para un registro más rápido. Crear una cuenta es gratuito y te da acceso al seguimiento de pedidos, listas de deseos y ofertas exclusivas."
+      },
+      {
+        "id": "account-2",
+        "category": "account",
+        "question": "Olvidé mi contraseña. ¿Cómo la restablezco?",
+        "answer": "Haz clic en 'Iniciar sesión' y luego en 'Olvidé mi contraseña'. Introduce tu correo y te enviaremos un enlace para restablecerla. Sigue las instrucciones del correo para crear una nueva contraseña. Si no recibes el correo, revisa tu carpeta de spam."
+      },
+      {
+        "id": "account-3",
+        "category": "account",
+        "question": "¿Cómo actualizo la información de mi cuenta?",
+        "answer": "Inicia sesión en tu cuenta y ve a 'Configuración de cuenta' o 'Perfil'. Aquí puedes actualizar tu información personal, direcciones de envío, métodos de pago y preferencias de comunicación. Los cambios se guardan automáticamente."
+      },
+      {
+        "id": "account-4",
+        "category": "account",
+        "question": "¿Puedo eliminar mi cuenta?",
+        "answer": "Sí, puedes eliminar tu cuenta en cualquier momento desde la configuración de tu cuenta. Ten en cuenta que esta acción es permanente y eliminará todo tu historial de pedidos, listas de deseos e información guardada. Contacta al soporte si necesitas ayuda."
+      }
+    ],
+    "empty": {
+      "title": "No se encontraron resultados",
+      "description": "Intenta ajustar los términos de búsqueda o explorar otras categorías.",
+      "clearSearch": "Borrar búsqueda"
+    },
+    "support": {
+      "title": "¿Aún necesitas ayuda?",
+      "description": "Nuestro equipo de soporte está aquí para ayudarte con cualquier pregunta no cubierta en nuestras preguntas frecuentes.",
+      "contactSupport": "Contactar soporte",
+      "helpCenter": "Centro de ayuda"
+    }
+  },
+  "missionPage": {
+    "meta": {
+      "title": "Nuestra misión | Sheba Cup Coffee - Café con propósito",
+      "description": "Cada bolsa de Sheba Cup Coffee apoya la atención del cáncer infantil en Etiopía a través de la Fundación Mathiwos Wondu. Tu compra ayuda a proporcionar cribados, apoyo al tratamiento y cuidado para las familias."
+    },
+    "hero": {
+      "titleLine1": "Café con",
+      "titleAccent": "un propósito"
+    },
+    "mission": {
+      "title": "Nuestra misión:",
+      "titleAccent": "Atención que salva vidas",
+      "paragraph1Before": "Cada bolsa que compras apoya atención que salva vidas. Una parte de cada venta va a la",
+      "foundationName": "Fundación Mathiwos Wondu Etiopía",
+      "paragraph1After": ", una organización centrada en la atención del cáncer infantil.",
+      "paragraph2": "Tu compra ayuda a proporcionar cribados, apoyo al tratamiento y cuidado para las familias.",
+      "closing": "Sheba Cup Coffee representa un gran café con un propósito.",
+      "tags": [
+        { "text": "Atención del cáncer infantil" },
+        { "text": "Apoyo al tratamiento" },
+        { "text": "Cuidado familiar" }
+      ],
+      "imageAlts": {
+        "main": "Apoyando la atención del cáncer infantil en Etiopía",
+        "care": "Café recién tostado que apoya nuestra misión",
+        "community": "Comunidad y cuidado a través de cada compra"
+      }
+    },
+    "vision": {
+      "badge": "Detrás del nombre",
+      "title": "Nuestra visión:",
+      "titleAccent": "De la finca a la taza",
+      "paragraph1": "Sheba Cup Coffee lleva café arábica etíope orgánico de especialidad auténtico de la finca a la taza en todo el mundo.",
+      "paragraph2Before": "Nuestra familia tiene más de 30 años de experiencia en cultivo de café. Trabajamos directamente con",
+      "birbirsaFarm": "Finca de café Birbirsa",
+      "and": "y",
+      "shakichaFarm": "Finca de café Shakicha",
+      "paragraph2After": "Estas alianzas apoyan la calidad, la agricultura sostenible y el patrimonio cafetero de Etiopía.",
+      "organicTitle": "Orgánico y sostenible",
+      "organicDescription": "Arábica etíope de especialidad auténtica",
+      "communityTitle": "Crecimiento comunitario",
+      "communityDescription": "Programas de educación y desarrollo",
+      "quote": "Nuestro objetivo va más allá del café. El crecimiento de nuestro negocio apoya programas de educación y desarrollo para mujeres y niños, ayudando a construir comunidades más fuertes para la próxima generación.",
+      "badges": ["30+ años", "Finca Birbirsa", "Finca Shakicha"],
+      "imageAlts": {
+        "farm": "Finca de café Birbirsa - cultivo de café etíope",
+        "practice": "Prácticas sostenibles de cultivo de café",
+        "heritage": "Patrimonio cafetero etíope"
+      }
+    },
+    "impact": {
+      "badge": "Nuestro impacto",
+      "title": "Marcando la diferencia juntos",
+      "description": "Cada compra apoya directamente programas vitales en Etiopía",
+      "cards": [
+        {
+          "title": "Atención del cáncer infantil",
+          "description": "Apoyando a la Fundación Mathiwos Wondu Etiopía en la provisión de cribados críticos, apoyo al tratamiento y cuidado para niños y sus familias que luchan contra el cáncer.",
+          "imageAlt": "Sheba Cup Coffee apoyando la atención del cáncer infantil"
+        },
+        {
+          "title": "Educación para todos",
+          "description": "Financiando programas de desarrollo que ofrecen oportunidades educativas para mujeres y niños, ayudando a construir comunidades más fuertes para la próxima generación.",
+          "imageAlt": "Educación y desarrollo comunitario"
+        },
+        {
+          "title": "Futuro sostenible",
+          "description": "Las alianzas directas con las fincas Birbirsa y Shakicha garantizan prácticas agrícolas sostenibles de calidad que honran el rico patrimonio cafetero de Etiopía.",
+          "imageAlt": "Cultivo sostenible de café etíope"
+        }
+      ]
+    },
+    "foundation": {
+      "title": "Sobre la Fundación Mathiwos Wondu",
+      "overlayTitle": "Fundación Mathiwos Wondu Etiopía",
+      "paragraph1": "La Fundación Mathiwos Wondu está dedicada a mejorar la atención del cáncer infantil en Etiopía. A través de cribados, apoyo al tratamiento y programas de cuidado familiar, brindan asistencia crítica a niños y familias que luchan contra el cáncer.",
+      "paragraph2": "Sheba Cup Coffee se enorgullece de asociarse con esta increíble organización, donando una parte de cada venta para apoyar su trabajo que salva vidas.",
+      "cta": "Más información sobre la Fundación Mathiwos Wondu",
+      "imageAlt": "Fundación Mathiwos Wondu Etiopía"
+    },
+    "cta": {
+      "titleLine1": "Gran café",
+      "titleLine2": "con un propósito aún mayor",
+      "description": "Cada taza que disfrutas ayuda a proporcionar atención que salva vidas, educación y esperanza para las comunidades en Etiopía. Únete a nosotros para marcar la diferencia, bolsa a bolsa.",
+      "shopCoffee": "Compra café, genera impacto",
+      "discoverRoasting": "Descubre nuestro proceso de tostado →",
+      "footnote": "Aprende cómo llevamos el sabor auténtico de la finca etíope a cada taza"
+    }
+  }
+}

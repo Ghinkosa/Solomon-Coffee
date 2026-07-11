@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default function OrdersRedirect() {
-  redirect("/user/orders");
+export default async function OrdersRedirect({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  redirect(`/${lang}/user/orders`);
 }

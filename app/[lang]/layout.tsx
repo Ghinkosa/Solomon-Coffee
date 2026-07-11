@@ -114,7 +114,11 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider>
-      <html lang={lang} suppressHydrationWarning>
+      <html
+        lang={lang}
+        dir={lang === "ar" ? "rtl" : "ltr"}
+        suppressHydrationWarning
+      >
         <body
           className={`${poppins.variable} ${raleway.variable} ${opensans.variable} antialiased`}
         >

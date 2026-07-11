@@ -3222,7 +3222,8 @@
     "selectAddress": "Please select a shipping address",
     "cartEmpty": "Cart is empty",
     "insufficientStock": "Insufficient Stock",
-    "orderFailed": "Order Failed"
+    "orderFailed": "Order Failed",
+    "paymentSessionFailed": "We couldn't start the payment. Your order was saved — you can pay it from My Orders."
   },
   "shopMeta": {
     "title": "Shop",

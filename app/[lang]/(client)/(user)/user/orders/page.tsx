@@ -20,7 +20,7 @@ async function UserOrdersPage({ params, searchParams }: OrdersPageProps) {
   const user = await currentUser();
 
   if (!user) {
-    redirect("/sign-in");
+    redirect(`/${lang}/sign-in`);
   }
 
   const { page } = await searchParams;

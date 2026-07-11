@@ -222,9 +222,18 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
     <div className="space-y-4 p-4">
       {/* Header */}
       <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-        <h3 className="text-lg font-semibold">
-          Products Management (Read-Only)
-        </h3>
+        <div>
+          <h3 className="text-lg font-semibold">
+            Products Management (Read-Only)
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            To add or edit products, use Sanity Studio at{" "}
+            <a href="/studio" className="underline hover:text-shop_dark_green">
+              /studio
+            </a>
+            .
+          </p>
+        </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-2 sm:space-y-0">
           <Input
             placeholder="Search products..."

@@ -274,13 +274,13 @@ export async function GET(req: NextRequest) {
         },
         customers: {
           total: totalUsers,
-          change: 5.2, // Placeholder since we don't have historical user data
-          active: Math.floor(totalUsers * 0.8), // Estimated
-          new: Math.floor(totalUsers * 0.1), // Estimated
+          change: null, // No historical user snapshots — don't fabricate growth
+          active: null,
+          new: null,
         },
         products: {
           total: totalProducts,
-          change: 2.1, // Placeholder
+          change: null, // No historical product snapshots
           lowStock: 0, // Would need inventory data
           outOfStock: 0, // Would need inventory data
         },

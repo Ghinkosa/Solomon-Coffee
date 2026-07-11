@@ -216,8 +216,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
       const orderId = orderResult.order._id;
       const orderNumber = orderResult.order.orderNumber;
 
-      resetCart();
-
       setOrderPlacementState(true, "emailing");
 
       // ✅ Prepare Email Data with ALL selections (Weight, Grind, Packaging)
@@ -273,6 +271,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
       // Handle redirect based on payment method
       if (selectedPaymentMethod === PAYMENT_METHODS.STRIPE) {
         if (redirectToCheckout) {
+          resetCart();
           return {
             success: true,
             orderId,
@@ -303,16 +302,43 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           });
 
           const stripeResult = await stripeResponse.json();
+
+          // Only clear the cart once Stripe returns a redirect URL. If the
+          // session failed, keep the cart so the customer can retry payment
+          // (the order exists as pending and can be paid from /user/orders).
+          if (!stripeResult.url) {
+            toast.error(
+              t(dictionary, "checkoutPlacement.orderFailed", "Order Failed"),
+              {
+                description: t(
+                  dictionary,
+                  "checkoutPlacement.paymentSessionFailed",
+                  "We couldn't start the payment. Your order was saved — you can pay it from My Orders.",
+                ),
+              },
+            );
+            setOrderPlacementState(true, "redirecting");
+            return {
+              success: true,
+              orderId,
+              orderNumber,
+              redirectTo: localizedPath("/user/orders", lang),
+              isStripeRedirect: false,
+            };
+          }
+
+          resetCart();
           return {
             success: true,
             orderId,
             orderNumber,
-            redirectTo: stripeResult.url || localizedPath("/user/orders", lang),
-            isStripeRedirect: !!stripeResult.url,
+            redirectTo: stripeResult.url,
+            isStripeRedirect: true,
           };
         }
       } else {
         // COD Logic
+        resetCart();
         const targetPath = redirectToCheckout
           ? localizedPath("/checkout", lang)
           : localizedPath("/success", lang);

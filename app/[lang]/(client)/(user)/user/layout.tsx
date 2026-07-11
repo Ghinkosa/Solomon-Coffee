@@ -45,9 +45,9 @@ const adminItems: {
   href: string;
   icon: LucideIcon;
 }[] = [
-  { key: "manageUsers", href: "/user/admin/manage-users", icon: Users },
-  { key: "premiumAccounts", href: "/user/admin/premium-accounts", icon: Shield },
-  { key: "businessAccounts", href: "/user/admin/business-accounts", icon: Building2 },
+  { key: "manageUsers", href: "/admin/users", icon: Users },
+  { key: "premiumAccounts", href: "/admin/account-requests", icon: Shield },
+  { key: "businessAccounts", href: "/admin/account-requests", icon: Building2 },
 ];
 
 export default function UserLayout({

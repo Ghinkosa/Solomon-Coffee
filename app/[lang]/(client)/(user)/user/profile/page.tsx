@@ -42,17 +42,22 @@ interface SanityUser {
   updatedAt?: string;
 }
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
   const { userId } = await auth();
 
   if (!userId) {
-    redirect("/sign-in");
+    redirect(`/${lang}/sign-in`);
   }
 
   const clerkUser = await currentUser();
 
   if (!clerkUser) {
-    redirect("/sign-in");
+    redirect(`/${lang}/sign-in`);
   }
 
   // Fetch user data from Sanity

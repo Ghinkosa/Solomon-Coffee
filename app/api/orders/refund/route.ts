@@ -53,9 +53,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (["delivered", "completed"].includes(order.status)) {
+    // Customers may only self-cancel (and trigger an automatic refund) while the
+    // order is still early in fulfillment. Once it is packed/shipped/out for
+    // delivery/delivered, it must go through an admin-reviewed cancellation.
+    const SELF_CANCELLABLE_STATUSES = ["pending", "processing"];
+    if (!SELF_CANCELLABLE_STATUSES.includes(order.status)) {
       return NextResponse.json(
-        { error: "Cannot cancel delivered or completed orders" },
+        {
+          error:
+            "This order is already being prepared for delivery and can no longer be cancelled automatically. Please contact support to request a cancellation.",
+        },
         { status: 400 },
       );
     }

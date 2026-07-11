@@ -17,8 +17,10 @@ import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) => {
+  const toLocalizedPath = useLocalizedPath();
   const [payingOrderId] = useState<string | null>(null);
   const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(
     null
@@ -232,7 +234,7 @@ const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) => {
                         variant="outline"
                         className="h-8 px-2 text-xs"
                       >
-                        <Link href={`/user/orders/${order._id}`}>
+                        <Link href={toLocalizedPath(`/user/orders/${order._id}`)}>
                           <Eye className="w-3 h-3 sm:mr-1" />
                           <span className="hidden sm:inline">View</span>
                         </Link>

@@ -30,10 +30,10 @@ interface DashboardStats {
   totalOrders: number;
   totalUsers: number;
   totalProducts: number;
-  revenueChange: number;
-  ordersChange: number;
-  usersChange: number;
-  productsChange: number;
+  revenueChange: number | null;
+  ordersChange: number | null;
+  usersChange: number | null;
+  productsChange: number | null;
 }
 
 interface AccountRequestsSummary {
@@ -96,7 +96,7 @@ const AdminDashboardOverview = () => {
     {
       title: "Total Revenue",
       value: stats?.totalRevenue || 0,
-      change: stats?.revenueChange || 0,
+      change: stats?.revenueChange ?? null,
       icon: DollarSign,
       format: "currency",
       color: "from-green-500 to-emerald-600",
@@ -105,7 +105,7 @@ const AdminDashboardOverview = () => {
     {
       title: "Total Orders",
       value: stats?.totalOrders || 0,
-      change: stats?.ordersChange || 0,
+      change: stats?.ordersChange ?? null,
       icon: ShoppingCart,
       format: "number",
       color: "from-blue-500 to-cyan-600",
@@ -114,7 +114,7 @@ const AdminDashboardOverview = () => {
     {
       title: "Total Users",
       value: stats?.totalUsers || 0,
-      change: stats?.usersChange || 0,
+      change: stats?.usersChange ?? null,
       icon: Users,
       format: "number",
       color: "from-purple-500 to-pink-600",
@@ -123,7 +123,7 @@ const AdminDashboardOverview = () => {
     {
       title: "Total Products",
       value: stats?.totalProducts || 0,
-      change: stats?.productsChange || 0,
+      change: stats?.productsChange ?? null,
       icon: Package,
       format: "number",
       color: "from-orange-500 to-red-600",
@@ -165,7 +165,7 @@ const AdminDashboardOverview = () => {
     },
     {
       title: "Product Catalog",
-      description: "Manage inventory",
+      description: "View products (read-only)",
       icon: Package,
       href: "/admin/products",
       color: "from-shop_light_pink to-shop_orange",
@@ -235,7 +235,8 @@ const AdminDashboardOverview = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
-          const isPositive = stat.change >= 0;
+          const hasChange = stat.change !== null && stat.change !== undefined;
+          const isPositive = (stat.change ?? 0) >= 0;
 
           return (
             <motion.div
@@ -260,23 +261,25 @@ const AdminDashboardOverview = () => {
                     <div className="text-2xl font-bold text-dark-color">
                       {formatValue(stat.value, stat.format)}
                     </div>
-                    <div className="flex items-center gap-2">
-                      {isPositive ? (
-                        <ArrowUpRight className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <ArrowDownRight className="w-4 h-4 text-red-500" />
-                      )}
-                      <Badge
-                        variant={isPositive ? "default" : "destructive"}
-                        className="text-xs"
-                      >
-                        {isPositive ? "+" : ""}
-                        {stat.change}%
-                      </Badge>
-                      <span className="text-xs text-light-color">
-                        vs last month
-                      </span>
-                    </div>
+                    {hasChange && (
+                      <div className="flex items-center gap-2">
+                        {isPositive ? (
+                          <ArrowUpRight className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <ArrowDownRight className="w-4 h-4 text-red-500" />
+                        )}
+                        <Badge
+                          variant={isPositive ? "default" : "destructive"}
+                          className="text-xs"
+                        >
+                          {isPositive ? "+" : ""}
+                          {stat.change}%
+                        </Badge>
+                        <span className="text-xs text-light-color">
+                          vs last month
+                        </span>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </Link>

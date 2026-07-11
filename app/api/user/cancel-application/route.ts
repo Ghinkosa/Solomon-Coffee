@@ -1,20 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { writeClient, client } from "@/sanity/lib/client";
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { email, applicationType } = await request.json(); // applicationType: "premium" | "business"
+    const { applicationType } = await request.json(); // applicationType: "premium" | "business"
+
+    // Derive the email from the authenticated session — never trust the body.
+    const email = user.emailAddresses[0]?.emailAddress;
 
     if (!email || !applicationType) {
       return NextResponse.json(
-        { error: "Email and application type are required" },
+        { error: "Application type is required" },
         { status: 400 }
       );
     }

@@ -52,7 +52,25 @@ export async function POST(req: NextRequest) {
       // Get orderId from session metadata
       const orderId = session.metadata?.orderId;
 
+      // Only treat the order as paid when Stripe confirms payment.
+      if (session.payment_status && session.payment_status !== "paid") {
+        return NextResponse.json({ received: true, skipped: "unpaid" });
+      }
+
       if (orderId) {
+        // Idempotency guard: if this order is already paid, skip re-processing
+        // (stock decrement, invoice, notifications) on webhook retries.
+        const alreadyProcessed = await backendClient.fetch<{
+          paymentStatus?: string;
+        } | null>(
+          `*[_type == "order" && _id == $orderId][0]{ paymentStatus }`,
+          { orderId },
+        );
+
+        if (alreadyProcessed?.paymentStatus === PAYMENT_STATUSES.PAID) {
+          return NextResponse.json({ received: true, skipped: "duplicate" });
+        }
+
         // Generate invoice if not already exists
         let invoice: Stripe.Invoice | null = null;
 
@@ -295,6 +313,7 @@ async function updateOrderWithPaymentCompletion(
         orderNumber,
         clerkUserId,
         status,
+        paymentMethod,
         products,
         user -> {
           clerkUserId
@@ -304,8 +323,10 @@ async function updateOrderWithPaymentCompletion(
     );
 
     if (order) {
-      // Update stock levels for purchased products
-      if (order.products) {
+      // Update stock levels for purchased products.
+      // COD orders already decremented stock at creation — skip to avoid
+      // double-decrement if a COD order is later paid online.
+      if (order.products && order.paymentMethod !== "cash_on_delivery") {
         await decrementOrderStock(order.products);
       }
 
