@@ -45,7 +45,7 @@ export const userAccountData = [
 export const supportData = [
   { title: "Help Center", href: "/help" },
   { title: "Customer Service", href: "/support" },
-  { title: "Track Your Order", href: "/track-order" },
+  { title: "Track Your Order", href: "/order/track" },
   { title: "Coffee Quality Promise", href: "/faqs#returns-1" },
   { title: "Shipping Info", href: "/shipping" },
   { title: "Brewing Guide", href: "/education" },

@@ -25,8 +25,7 @@ export async function GET() {
           _id,
           email,
           role,
-          isEmployee,
-          walletBalance
+          isEmployee
         }`,
         { userId }
       ),
@@ -50,7 +49,6 @@ export async function GET() {
         ordersCount: orders || 0,
         isEmployee: user?.isEmployee || false,
         unreadNotifications: notifications?.length || 0,
-        walletBalance: user?.walletBalance || 0,
       },
       {
         status: 200,
@@ -69,7 +67,6 @@ export async function GET() {
         ordersCount: 0,
         isEmployee: false,
         unreadNotifications: 0,
-        walletBalance: 0,
       },
       { status: 200 }
     );

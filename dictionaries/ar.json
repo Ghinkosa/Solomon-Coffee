@@ -527,7 +527,8 @@
     "helpSupport": "المساعدة والدعم",
     "adminPanel": "لوحة التحكم",
     "signOut": "تسجيل الخروج",
-    "language": "لغة"
+    "language": "لغة",
+    "myWallet": "محفظتي"
   },
   "premium": {
     "title": "احصل على بريميوم",
@@ -1148,6 +1149,10 @@
       "settings": {
         "title": "الإعدادات",
         "description": "تفضيلات الحساب"
+      },
+      "wallet": {
+        "title": "المحفظة",
+        "description": "الرصيد والسحب"
       }
     },
     "admin": {
@@ -1315,10 +1320,10 @@
         "cancelReasonLabel": "سبب الإلغاء (اختياري)",
         "cancelReasonPlaceholder": "مثال: غيّرت رأيي، وجدت عرضاً أفضل...",
         "refundTitle": "معلومات الاسترداد",
-        "refundDescription": "إذا وُوفق على الطلب، سيُضاف مبلغ {amount} إلى رصيد محفظتك.",
-        "refundUseFuture": "استخدمه في الطلبات المستقبلية",
-        "refundWithdraw": "اطلب السحب في أي وقت",
-        "refundDashboard": "اعرض الرصيد في لوحة التحكم",
+        "refundDescription": "إذا وُوفق على الطلب، سيُسترد مبلغ {amount} إلى طريقة الدفع الأصلية.",
+        "refundTimeline": "عادةً ما تستغرق المبالغ المستردة من 5 إلى 10 أيام عمل",
+        "refundContact": "تواصل مع الدعم إذا لم يظهر المبلغ المسترد",
+        "refundReview": "يراجع فريقنا كل طلب إلغاء",
         "keepOrder": "الإبقاء على الطلب",
         "submitting": "جاري الإرسال...",
         "submitRequest": "إرسال الطلب",
@@ -1648,7 +1653,8 @@
         "vip": "VIP",
         "premium": "Premium",
         "member": "عضو"
-      }
+      },
+      "viewWallet": "عرض المحفظة"
     },
     "notificationsPage": {
       "title": "الإشعارات",
@@ -1873,6 +1879,53 @@
       "trackOrders": "تتبع الطلبات",
       "shopMore": "تسوق المزيد",
       "notAvailable": "غ/م"
+    },
+    "wallet": {
+      "pageTitle": "محفظتي",
+      "pageDescription": "اعرض رصيدك، واطلب السحب، وتابع سجل المعاملات.",
+      "loading": "جاري تحميل المحفظة...",
+      "balanceTitle": "رصيد المحفظة",
+      "balanceDescription": "الرصيد المتاح في محفظتك",
+      "balanceHint": "يمكن استخدامه في الطلبات المستقبلية أو سحبه",
+      "withdraw": "سحب",
+      "withdrawTitle": "سحب الأموال",
+      "withdrawDescription": "الحد الأدنى للسحب هو 10 دولارات. سيتم تحويل الأموال خلال 3-5 أيام عمل.",
+      "amount": "المبلغ",
+      "amountPlaceholder": "أدخل المبلغ",
+      "available": "المتاح:",
+      "withdrawalMethod": "طريقة السحب",
+      "bankTransfer": "تحويل بنكي",
+      "paypal": "PayPal",
+      "accountHolderName": "اسم صاحب الحساب",
+      "bankName": "اسم البنك",
+      "accountNumber": "رقم الحساب",
+      "routingNumber": "رقم التوجيه",
+      "paypalEmail": "البريد الإلكتروني لـ PayPal",
+      "requestWithdrawal": "طلب سحب",
+      "withdrawalRequests": "طلبات السحب",
+      "trackWithdrawals": "تابع طلبات السحب الخاصة بك",
+      "reason": "السبب: {reason}",
+      "transactionHistory": "سجل المعاملات",
+      "allTransactions": "جميع معاملات المحفظة",
+      "noTransactions": "لا توجد معاملات بعد",
+      "balanceLabel": "الرصيد: {before} → {after}",
+      "viewWallet": "عرض المحفظة",
+      "status": {
+        "completed": "مكتمل",
+        "pending": "قيد الانتظار",
+        "failed": "فشل",
+        "cancelled": "ملغى",
+        "approved": "موافق عليه",
+        "processing": "قيد المعالجة",
+        "rejected": "مرفوض"
+      },
+      "toasts": {
+        "loadFailed": "تعذر تحميل بيانات المحفظة",
+        "minWithdrawal": "الحد الأدنى للسحب هو 10 دولارات",
+        "insufficientBalance": "الرصيد غير كافٍ",
+        "fillBankDetails": "يرجى إكمال جميع البيانات البنكية",
+        "paypalEmailRequired": "يرجى إدخال بريد PayPal"
+      }
     }
   },
   "breadcrumb": {

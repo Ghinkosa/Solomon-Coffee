@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
       unreadNotifications:
         userNotifications?.filter((n: Notification) => !n.read)?.length || 0,
       rewardPoints: userData?.rewardPoints || 0,
-      walletBalance: userData?.walletBalance || 0,
     };
 
     // Create recent activity from real data

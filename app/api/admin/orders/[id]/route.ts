@@ -3,7 +3,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { isUserAdmin } from "@/lib/adminUtils";
 import { writeClient } from "@/sanity/lib/client";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
-import { addWalletCredit } from "@/actions/walletActions";
+import { refundOrderPayment, buildRefundMessage } from "@/lib/stripeRefund";
 
 export async function PATCH(
   req: NextRequest,
@@ -43,6 +43,8 @@ export async function PATCH(
         orderNumber,
         status,
         paymentStatus,
+        paymentMethod,
+        stripePaymentIntentId,
         totalPrice,
         amountPaid,
         clerkUserId,
@@ -113,69 +115,32 @@ export async function PATCH(
     // Add update timestamp
     filteredUpdateData._updatedAt = new Date().toISOString();
 
-    // Handle order cancellation and wallet refund
-    let walletRefunded = false;
+    // Handle order cancellation and Stripe refund
+    let stripeRefunded = false;
     let refundAmount = 0;
+    let manualRefundRequired = false;
 
     if (
       updateData.status === "cancelled" &&
       currentOrder.status !== "cancelled"
     ) {
-      // Order is being cancelled, check if we need to refund
-      const isPaidOrder = currentOrder.paymentStatus === "paid";
-      const amountToRefund =
-        currentOrder.amountPaid || currentOrder.totalPrice || 0;
+      const refundResult = await refundOrderPayment(currentOrder);
 
-      if (isPaidOrder && amountToRefund > 0) {
-        // Get the user's clerkUserId
-        const userClerkId =
-          currentOrder.clerkUserId || currentOrder.user?.clerkUserId;
+      stripeRefunded = refundResult.stripeRefunded;
+      refundAmount = refundResult.refundAmount;
+      manualRefundRequired = refundResult.manualRefundRequired;
 
-        if (userClerkId) {
-          try {
-            const refundResult = await addWalletCredit(
-              userClerkId,
-              amountToRefund,
-              `Refund for cancelled order #${currentOrder.orderNumber}`,
-              id,
-              userEmail || "admin"
-            );
-
-            if (refundResult.success) {
-              walletRefunded = true;
-              refundAmount = amountToRefund;
-
-              // Add refund information to the update
-              filteredUpdateData.refundedToWallet = true;
-              filteredUpdateData.refundAmount = refundAmount;
-              filteredUpdateData.cancelledAt = new Date().toISOString();
-              filteredUpdateData.cancelledBy = userEmail || "admin";
-              filteredUpdateData.paymentStatus = "refunded";
-
-              console.log(
-                `✅ Refunded $${refundAmount} to user wallet for order ${currentOrder.orderNumber}`
-              );
-            } else {
-              console.error(
-                "Failed to add refund to wallet:",
-                refundResult.message
-              );
-            }
-          } catch (walletError) {
-            console.error("Error processing wallet refund:", walletError);
-          }
-        } else {
-          console.warn(
-            `⚠️ Cannot process refund: No clerkUserId found for order ${id}`
-          );
+      if (stripeRefunded) {
+        filteredUpdateData.refundAmount = refundAmount;
+        if (refundResult.stripeRefundId) {
+          filteredUpdateData.stripeRefundId = refundResult.stripeRefundId;
         }
+        filteredUpdateData.paymentStatus = "refunded";
       }
 
-      // Always add cancellation metadata
-      if (!filteredUpdateData.cancelledAt) {
-        filteredUpdateData.cancelledAt = new Date().toISOString();
-        filteredUpdateData.cancelledBy = userEmail || "admin";
-      }
+      filteredUpdateData.refundedToWallet = false;
+      filteredUpdateData.cancelledAt = new Date().toISOString();
+      filteredUpdateData.cancelledBy = userEmail || "admin";
     }
 
     // Update the order in Sanity
@@ -240,15 +205,19 @@ export async function PATCH(
       }
     }
 
+    const refundResult = {
+      stripeRefunded,
+      manualRefundRequired,
+      refundAmount,
+    };
+
     return NextResponse.json({
-      message: walletRefunded
-        ? `Order updated successfully. $${refundAmount.toFixed(
-            2
-          )} refunded to customer's wallet.`
-        : "Order updated successfully",
+      message: buildRefundMessage(refundResult, { adminContext: true }),
       order: updatedOrder,
-      walletRefunded,
-      refundAmount: walletRefunded ? refundAmount : 0,
+      stripeRefunded,
+      manualRefundRequired,
+      refundAmount:
+        stripeRefunded || manualRefundRequired ? refundAmount : 0,
     });
   } catch (error) {
     console.error("Error updating order:", error);

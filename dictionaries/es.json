@@ -938,6 +938,10 @@
       "settings": {
         "title": "Ajustes",
         "description": "Preferencias de cuenta"
+      },
+      "wallet": {
+        "title": "Cartera",
+        "description": "Saldo y retiros"
       }
     },
     "admin": {
@@ -1105,10 +1109,10 @@
         "cancelReasonLabel": "Motivo de cancelación (opcional)",
         "cancelReasonPlaceholder": "p. ej., Cambié de opinión, encontré mejor oferta...",
         "refundTitle": "Información del reembolso",
-        "refundDescription": "Si se aprueba, tu pago de {amount} se añadirá al saldo de tu cartera.",
-        "refundUseFuture": "Úsalo en pedidos futuros",
-        "refundWithdraw": "Solicita retiro cuando quieras",
-        "refundDashboard": "Consulta el saldo en tu panel",
+        "refundDescription": "Si se aprueba, tu pago de {amount} se reembolsará a tu método de pago original.",
+        "refundTimeline": "Los reembolsos suelen tardar de 5 a 10 días hábiles",
+        "refundContact": "Contacta con soporte si no ves el reembolso",
+        "refundReview": "Nuestro equipo revisa cada solicitud de cancelación",
         "keepOrder": "Mantener pedido",
         "submitting": "Enviando...",
         "submitRequest": "Enviar solicitud",
@@ -1438,7 +1442,8 @@
         "vip": "VIP",
         "premium": "Premium",
         "member": "Miembro"
-      }
+      },
+      "viewWallet": "Ver cartera"
     },
     "notificationsPage": {
       "title": "Notificaciones",
@@ -1663,6 +1668,53 @@
       "trackOrders": "Rastrear pedidos",
       "shopMore": "Comprar más",
       "notAvailable": "N/D"
+    },
+    "wallet": {
+      "pageTitle": "Mi Cartera",
+      "pageDescription": "Consulta tu saldo, solicita retiros y revisa el historial de transacciones.",
+      "loading": "Cargando cartera...",
+      "balanceTitle": "Saldo de Cartera",
+      "balanceDescription": "Saldo disponible en tu cartera",
+      "balanceHint": "Puede usarse en futuros pedidos o retirarse",
+      "withdraw": "Retirar",
+      "withdrawTitle": "Retirar Fondos",
+      "withdrawDescription": "El monto mínimo de retiro es $10. Los fondos se transferirán en 3-5 días hábiles.",
+      "amount": "Monto",
+      "amountPlaceholder": "Ingresa el monto",
+      "available": "Disponible:",
+      "withdrawalMethod": "Método de Retiro",
+      "bankTransfer": "Transferencia Bancaria",
+      "paypal": "PayPal",
+      "accountHolderName": "Nombre del Titular",
+      "bankName": "Nombre del Banco",
+      "accountNumber": "Número de Cuenta",
+      "routingNumber": "Número de Ruta",
+      "paypalEmail": "Correo de PayPal",
+      "requestWithdrawal": "Solicitar Retiro",
+      "withdrawalRequests": "Solicitudes de Retiro",
+      "trackWithdrawals": "Sigue tus solicitudes de retiro",
+      "reason": "Motivo: {reason}",
+      "transactionHistory": "Historial de Transacciones",
+      "allTransactions": "Todas las transacciones de la cartera",
+      "noTransactions": "Aún no hay transacciones",
+      "balanceLabel": "Saldo: {before} → {after}",
+      "viewWallet": "Ver cartera",
+      "status": {
+        "completed": "Completado",
+        "pending": "Pendiente",
+        "failed": "Fallido",
+        "cancelled": "Cancelado",
+        "approved": "Aprobado",
+        "processing": "Procesando",
+        "rejected": "Rechazado"
+      },
+      "toasts": {
+        "loadFailed": "No se pudieron cargar los datos de la cartera",
+        "minWithdrawal": "El monto mínimo de retiro es $10",
+        "insufficientBalance": "Saldo insuficiente",
+        "fillBankDetails": "Completa todos los datos bancarios",
+        "paypalEmailRequired": "Ingresa el correo de PayPal"
+      }
     }
   },
   "breadcrumb": {
@@ -2249,5 +2301,8 @@
   },
   "premium": {
     "closeAria": "Cerrar"
+  },
+  "userDropdown": {
+    "myWallet": "Mi Cartera"
   }
 }

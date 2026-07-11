@@ -526,7 +526,8 @@
     "helpSupport": "Help & Support",
     "adminPanel": "Admin Panel",
     "signOut": "Sign Out",
-    "language": "Language"
+    "language": "Language",
+    "myWallet": "My Wallet"
   },
   "premium": {
     "title": "Go Premium",
@@ -1157,6 +1158,10 @@
       "settings": {
         "title": "Settings",
         "description": "Account preferences"
+      },
+      "wallet": {
+        "title": "Wallet",
+        "description": "Balance & withdrawals"
       }
     },
     "admin": {
@@ -1324,10 +1329,10 @@
         "cancelReasonLabel": "Reason for cancellation (optional)",
         "cancelReasonPlaceholder": "e.g., Changed my mind, found a better deal...",
         "refundTitle": "Refund Information",
-        "refundDescription": "If approved, your payment of {amount} will be added to your wallet balance.",
-        "refundUseFuture": "Use it for future orders",
-        "refundWithdraw": "Request withdrawal anytime",
-        "refundDashboard": "View balance in your dashboard",
+        "refundDescription": "If approved, your payment of {amount} will be refunded to your original payment method.",
+        "refundTimeline": "Refunds typically take 5–10 business days",
+        "refundContact": "Contact support if you do not see the refund",
+        "refundReview": "Our team reviews each cancellation request",
         "keepOrder": "Keep Order",
         "submitting": "Submitting...",
         "submitRequest": "Submit Request",
@@ -1851,7 +1856,8 @@
         "vip": "VIP",
         "premium": "Premium",
         "member": "Member"
-      }
+      },
+      "viewWallet": "View wallet"
     },
     "checkoutSuccess": {
       "title": "Order Placed Successfully!",
@@ -1882,6 +1888,53 @@
       "trackOrders": "Track Orders",
       "shopMore": "Shop More",
       "notAvailable": "N/A"
+    },
+    "wallet": {
+      "pageTitle": "My Wallet",
+      "pageDescription": "View your balance, request withdrawals, and track transaction history.",
+      "loading": "Loading wallet...",
+      "balanceTitle": "Wallet Balance",
+      "balanceDescription": "Available balance in your wallet",
+      "balanceHint": "Can be used for future orders or withdrawn",
+      "withdraw": "Withdraw",
+      "withdrawTitle": "Withdraw Funds",
+      "withdrawDescription": "Minimum withdrawal amount is $10. Funds will be transferred within 3-5 business days.",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "available": "Available:",
+      "withdrawalMethod": "Withdrawal Method",
+      "bankTransfer": "Bank Transfer",
+      "paypal": "PayPal",
+      "accountHolderName": "Account Holder Name",
+      "bankName": "Bank Name",
+      "accountNumber": "Account Number",
+      "routingNumber": "Routing Number",
+      "paypalEmail": "PayPal Email",
+      "requestWithdrawal": "Request Withdrawal",
+      "withdrawalRequests": "Withdrawal Requests",
+      "trackWithdrawals": "Track your withdrawal requests",
+      "reason": "Reason: {reason}",
+      "transactionHistory": "Transaction History",
+      "allTransactions": "All wallet transactions",
+      "noTransactions": "No transactions yet",
+      "balanceLabel": "Balance: {before} → {after}",
+      "viewWallet": "View wallet",
+      "status": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "approved": "Approved",
+        "processing": "Processing",
+        "rejected": "Rejected"
+      },
+      "toasts": {
+        "loadFailed": "Failed to load wallet data",
+        "minWithdrawal": "Minimum withdrawal amount is $10",
+        "insufficientBalance": "Insufficient balance",
+        "fillBankDetails": "Please fill in all bank details",
+        "paypalEmailRequired": "Please enter PayPal email"
+      }
     }
   },
   "breadcrumb": {

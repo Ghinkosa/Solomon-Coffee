@@ -49,7 +49,7 @@ export const contactConfig = {
   support: {
     helpCenter: "/help",
     faq: "/faqs",
-    trackOrder: "/track-order",
+    trackOrder: "/order/track",
     returns: "/returns",
     shipping: "/shipping",
     sizeGuide: "/size-guide",

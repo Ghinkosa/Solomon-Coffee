@@ -12,7 +12,6 @@ import {
   Logs,
   Shield,
   Briefcase,
-  Wallet,
   Bell,
   Languages,
   ChevronRight,
@@ -56,7 +55,6 @@ const UserDropdown = ({
   const {
     ordersCount,
     isEmployee,
-    walletBalance,
     isLoading: isLoadingOrders,
   } = useUserData();
 
@@ -168,22 +166,6 @@ const UserDropdown = ({
             </div>
 
             <div className="p-2">
-              {walletBalance > 0 && (
-                <div className="mb-2 mx-2 p-3 rounded-lg bg-linear-to-r from-shop_light_green/10 to-shop_dark_green/10 border border-shop_light_green/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Wallet className="w-4 h-4 text-shop_dark_green" />
-                      <span className="text-sm font-medium text-gray-700">
-                        {t.walletBalance}
-                      </span>
-                    </div>
-                    <span className="text-lg font-bold text-shop_dark_green">
-                      ${walletBalance.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              )}
-
               <Link
                 href={localizedPath("/user/profile", lang)}
                 onClick={handleLinkClick}

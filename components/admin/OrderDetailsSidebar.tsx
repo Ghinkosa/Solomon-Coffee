@@ -191,14 +191,20 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
       });
 
       // Show success message with refund info if applicable
-      if (result.walletRefunded && result.refundAmount) {
+      if (result.stripeRefunded && result.refundAmount > 0) {
         showToast.success(
           `Order updated successfully! $${result.refundAmount.toFixed(
-            2
-          )} refunded to customer's wallet.`
+            2,
+          )} refunded to the customer's card.`,
+        );
+      } else if (result.manualRefundRequired && result.refundAmount > 0) {
+        showToast.success(
+          `Order cancelled. Process a $${result.refundAmount.toFixed(
+            2,
+          )} refund manually.`,
         );
       } else {
-        showToast.success("Order updated successfully");
+        showToast.success(result.message || "Order updated successfully");
       }
 
       // Refresh the orders list immediately to get the latest data

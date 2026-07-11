@@ -13,7 +13,6 @@ interface UserData {
   ordersCount: number;
   isEmployee: boolean;
   unreadNotifications: number;
-  walletBalance: number;
   isLoading: boolean;
 }
 
@@ -22,13 +21,12 @@ interface UserDataContextType extends UserData {
 }
 
 const UserDataContext = createContext<UserDataContextType | undefined>(
-  undefined
+  undefined,
 );
 
-// Cache for user data to prevent unnecessary API calls
 let cachedData: UserData | null = null;
 let cacheTimestamp = 0;
-const CACHE_DURATION = 30000; // 30 seconds
+const CACHE_DURATION = 30000;
 
 export function UserDataProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoaded } = useUser();
@@ -36,7 +34,6 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
     ordersCount: 0,
     isEmployee: false,
     unreadNotifications: 0,
-    walletBalance: 0,
     isLoading: false,
   });
 
@@ -44,7 +41,6 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
     async (forceRefresh = false) => {
       if (!user || !isLoaded) return;
 
-      // Use cached data if available and not expired
       const now = Date.now();
       if (
         !forceRefresh &&
@@ -58,7 +54,6 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
       setUserData((prev) => ({ ...prev, isLoading: true }));
 
       try {
-        // Fetch all user data in a single optimized API call
         const response = await fetch("/api/user/combined-data", {
           headers: { "Content-Type": "application/json" },
           cache: "no-store",
@@ -71,11 +66,9 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
             ordersCount: data.ordersCount || 0,
             isEmployee: data.isEmployee || false,
             unreadNotifications: data.unreadNotifications || 0,
-            walletBalance: data.walletBalance || 0,
             isLoading: false,
           };
 
-          // Update cache
           cachedData = newUserData;
           cacheTimestamp = now;
 
@@ -88,7 +81,7 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
         setUserData((prev) => ({ ...prev, isLoading: false }));
       }
     },
-    [user, isLoaded]
+    [user, isLoaded],
   );
 
   useEffect(() => {

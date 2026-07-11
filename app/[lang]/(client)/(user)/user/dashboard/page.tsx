@@ -14,7 +14,6 @@ import {
   ArrowRight,
   User,
   CheckCircle,
-  Wallet,
 } from "lucide-react";
 import {
   Card,
@@ -39,7 +38,6 @@ interface UserStats {
   notificationsCount: number;
   unreadNotifications: number;
   rewardPoints: number;
-  walletBalance: number;
 }
 
 interface RecentActivity {
@@ -109,7 +107,6 @@ export default function UserDashboardPage() {
     notificationsCount: 0,
     unreadNotifications: 0,
     rewardPoints: 0,
-    walletBalance: 0,
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -762,25 +759,6 @@ export default function UserDashboardPage() {
             </p>
           </CardContent>
         </Card>
-
-        {stats.walletBalance > 0 && (
-          <Card className="bg-linear-to-br from-emerald-500 to-teal-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-medium">
-                {d("walletBalance", "Wallet Balance")}
-              </CardTitle>
-              <Wallet className="h-5 w-5" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-1">
-                ${stats.walletBalance.toFixed(2)}
-              </div>
-              <p className="text-xs text-emerald-100">
-                {d("fromRefunds", "From refunds")}
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       {/* Content Section with Proper Spacing */}

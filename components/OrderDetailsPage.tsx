@@ -18,7 +18,6 @@ import {
   CheckCircle,
   AlertTriangle,
   X,
-  Wallet,
   Scale,
   Coffee,
   Box,
@@ -869,7 +868,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                   <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex items-start gap-3">
                       <div className="shrink-0">
-                        <Wallet className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <CreditCard className="h-5 w-5 text-blue-600 mt-0.5" />
                       </div>
                       <div className="text-left">
                         <p className="font-semibold text-blue-900">
@@ -878,7 +877,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                         <p className="text-sm text-blue-700 mt-1">
                           {d(
                             "refundDescription",
-                            "If approved, your payment of {amount} will be added to your wallet balance."
+                            "If approved, your payment of {amount} will be refunded to your original payment method."
                           )
                             .split("{amount}")
                             .map((part, i, arr) =>
@@ -897,12 +896,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                             )}
                         </p>
                         <ul className="text-sm text-blue-700 mt-2 space-y-1 list-disc list-inside">
-                          <li>{d("refundUseFuture", "Use it for future orders")}</li>
+                          <li>{d("refundTimeline", "Refunds typically take 5–10 business days")}</li>
                           <li>
-                            {d("refundWithdraw", "Request withdrawal anytime")}
+                            {d("refundContact", "Contact support if you do not see the refund")}
                           </li>
                           <li>
-                            {d("refundDashboard", "View balance in your dashboard")}
+                            {d("refundReview", "Our team reviews each cancellation request")}
                           </li>
                         </ul>
                       </div>
