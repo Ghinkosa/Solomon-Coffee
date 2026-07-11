@@ -825,7 +825,59 @@
       "review": "مراجعة",
       "reviews": "مراجعات",
       "noReviewsYet": "لا توجد مراجعات بعد",
-      "signInToReview": "سجّل الدخول لكتابة مراجعة"
+      "signInToReview": "سجّل الدخول لكتابة مراجعة",
+      "loading": "جاري تحميل المراجعات...",
+      "title": "مراجعات العملاء",
+      "basedOn": "بناءً على {count} {unit}",
+      "writeReview": "اكتب مراجعة",
+      "alreadyReviewed": "لقد راجعت هذا المنتج بالفعل",
+      "recentReviews": "المراجعات الأخيرة ({count})",
+      "showLess": "عرض أقل",
+      "viewAll": "عرض كل المراجعات",
+      "verifiedPurchase": "شراء موثّق",
+      "helpful": "مفيد ({count})",
+      "emptyPrompt": "لا توجد مراجعات بعد. كن أول من يراجع هذا المنتج!",
+      "writeFirstReview": "اكتب أول مراجعة",
+      "toasts": {
+        "loadFailed": "فشل تحميل المراجعات",
+        "signInHelpful": "سجّل الدخول لوضع علامة مفيد على المراجعات",
+        "updateFailed": "فشل تحديث المراجعة",
+        "signInWrite": "سجّل الدخول لكتابة مراجعة"
+      },
+      "sidebar": {
+        "title": "اكتب مراجعة",
+        "description": "شارك تجربتك مع {product}",
+        "verifiedNotice": "✓ سيتم وضع علامة شراء موثّق",
+        "yourRating": "تقييمك",
+        "clickToRate": "انقر لتقييم هذا المنتج",
+        "star": "نجمة",
+        "stars": "نجوم",
+        "rateStarsAria": "قيّم بـ {count} نجوم",
+        "reviewTitle": "عنوان المراجعة",
+        "titlePlaceholder": "لخّص تجربتك في بضع كلمات",
+        "titleCharsNeeded": "مطلوب {count} حرف إضافي",
+        "titleGood": "✓ العنوان جيد",
+        "yourReview": "مراجعتك",
+        "contentPlaceholder": "أخبرنا المزيد عن تجربتك مع هذا المنتج... ما الذي أعجبك؟ ما الذي يمكن تحسينه؟",
+        "contentCharsNeeded": "مطلوب {count} حرف إضافي",
+        "contentGood": "✓ المراجعة مفصّلة بما يكفي",
+        "guidelinesTitle": "إرشادات المراجعة",
+        "guidelines": [
+          "كن صادقاً وبنّاءً في ملاحظاتك",
+          "ركّز على تجربتك مع المنتج",
+          "ستُنشر مراجعتك بعد موافقة المشرف",
+          "تجنّب اللغة المسيئة أو الهجمات الشخصية"
+        ],
+        "cancel": "إلغاء",
+        "submitting": "جاري الإرسال...",
+        "submitReview": "إرسال المراجعة",
+        "toasts": {
+          "selectRating": "يرجى اختيار تقييم",
+          "titleMin": "يجب أن يكون العنوان 5 أحرف على الأقل",
+          "reviewMin": "يجب أن تكون المراجعة 20 حرفاً على الأقل",
+          "submitFailed": "فشل إرسال المراجعة. يرجى المحاولة مرة أخرى."
+        }
+      }
     },
     "delivery": {
       "title": "التوصيل والإرجاع",
@@ -862,6 +914,58 @@
     "meta": {
       "notFoundTitle": "المنتج غير موجود",
       "notFoundDescription": "المنتج الذي تبحث عنه غير موجود."
+    },
+    "specs": {
+      "coffeeProfile": "ملف القهوة",
+      "roastDate": "تاريخ التحميص:",
+      "brand": "العلامة:",
+      "producer": "المُنتِج:",
+      "altitude": "الارتفاع:",
+      "package": "العبوة:",
+      "code": "الرمز:",
+      "shipping": "الشحن",
+      "freeShipping": "✓ شحن مجاني",
+      "estimatedDelivery": "التقدير: 2-5 أيام عمل",
+      "expressDelivery": "سريع: 1-2 أيام عمل",
+      "brewingDetails": "تفاصيل التحضير",
+      "brewRatio": "نسبة التحضير:",
+      "grind": "الطحن:",
+      "brewMethods": "طرق التحضير:",
+      "flavorNotes": "ملاحظات النكهة:",
+      "quality": "الجودة",
+      "qualityTested": "✓ جودة مُختبرة",
+      "authenticProduct": "✓ منتج أصلي",
+      "securePackaging": "✓ تعبئة آمنة",
+      "notAvailable": "—",
+      "currentHarvest": "محصول حالي"
+    },
+    "characteristics": {
+      "title": "{name}: الخصائص",
+      "brand": "العلامة:",
+      "collection": "المجموعة:",
+      "type": "النوع:",
+      "origin": "المنشأ:",
+      "process": "المعالجة:",
+      "lotType": "نوع الدفعة:",
+      "beanFormat": "شكل الحبوب:",
+      "caffeine": "الكافيين:"
+    },
+    "expandedDetails": {
+      "roast": "التحميص",
+      "origin": "المنشأ",
+      "producer": "المُنتِج",
+      "process": "المعالجة",
+      "lot": "الدفعة",
+      "notes": "ملاحظات",
+      "brew": "التحضير",
+      "grind": "الطحن",
+      "altitude": "الارتفاع"
+    },
+    "detailsPanel": {
+      "quickLook": "نظرة سريعة",
+      "coffeeDetails": "تفاصيل القهوة",
+      "closeAria": "إغلاق التفاصيل",
+      "viewFullDetails": "عرض التفاصيل الكاملة"
     }
   },
   "checkout": {

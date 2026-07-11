@@ -11,6 +11,8 @@ import { getProductReviewsAPI, markReviewHelpfulAPI } from "@/lib/reviewAPI";
 import { canUserReviewProduct } from "@/actions/reviewActions";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface Review {
   _id: string;
@@ -39,6 +41,10 @@ interface ProductReviewsProps {
 
 const ProductReviews = React.memo(
   ({ productId, productName }: ProductReviewsProps) => {
+    const dictionary = useDictionary();
+    const r = (path: string, fallback: string) =>
+      t(dictionary, `product.reviews.${path}`, fallback);
+
     const { isSignedIn } = useAuth();
     const [reviews, setReviews] = useState<Review[]>([]);
     const [averageRating, setAverageRating] = useState(0);
@@ -68,11 +74,11 @@ const ProductReviews = React.memo(
         }
       } catch (error) {
         console.error("Error loading reviews:", error);
-        toast.error("Failed to load reviews");
+        toast.error(r("toasts.loadFailed", "Failed to load reviews"));
       } finally {
         setIsLoading(false);
       }
-    }, [productId]);
+    }, [productId, dictionary]);
 
     const checkCanReview = useCallback(async () => {
       if (!isSignedIn) {
@@ -98,24 +104,25 @@ const ProductReviews = React.memo(
     const handleMarkHelpful = useCallback(
       async (reviewId: string) => {
         if (!isSignedIn) {
-          toast.error("Please sign in to mark reviews as helpful");
+          toast.error(
+            r("toasts.signInHelpful", "Please sign in to mark reviews as helpful")
+          );
           return;
         }
 
         try {
           const result = await markReviewHelpfulAPI(reviewId);
           if (result.success) {
-            // Reload reviews to get updated helpful count
             await loadReviews();
           } else {
             toast.error(result.message);
           }
         } catch (error) {
           console.error("Error marking review as helpful:", error);
-          toast.error("Failed to update review");
+          toast.error(r("toasts.updateFailed", "Failed to update review"));
         }
       },
-      [isSignedIn, loadReviews]
+      [isSignedIn, loadReviews, dictionary]
     );
 
     const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
@@ -130,28 +137,32 @@ const ProductReviews = React.memo(
 
     const handleOpenReviewSidebar = useCallback(() => {
       if (!isSignedIn) {
-        toast.error("Please sign in to write a review");
+        toast.error(r("toasts.signInWrite", "Please sign in to write a review"));
         return;
       }
       setIsReviewSidebarOpen(true);
-    }, [isSignedIn]);
+    }, [isSignedIn, dictionary]);
 
     const handleCloseReviewSidebar = useCallback(() => {
       setIsReviewSidebarOpen(false);
     }, []);
 
     const handleReviewSubmitted = useCallback(() => {
-      // Reload reviews after successful submission
       loadReviews();
       checkCanReview();
     }, [loadReviews, checkCanReview]);
+
+    const reviewUnit =
+      totalReviews === 1
+        ? r("review", "review")
+        : r("reviews", "reviews");
 
     if (isLoading) {
       return (
         <div className="mt-12">
           <Card>
             <CardContent className="py-12 text-center text-gray-500">
-              Loading reviews...
+              {r("loading", "Loading reviews...")}
             </CardContent>
           </Card>
         </div>
@@ -163,13 +174,11 @@ const ProductReviews = React.memo(
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-shop_dark_green">
-              Customer Reviews
+              {r("title", "Customer Reviews")}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Rating Summary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* Overall Rating */}
               <div className="text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                   <span className="text-4xl font-bold text-shop_dark_green">
@@ -191,10 +200,10 @@ const ProductReviews = React.memo(
                 </div>
                 <p className="text-gray-600">
                   {totalReviews === 0
-                    ? "No reviews yet"
-                    : `Based on ${totalReviews} ${
-                        totalReviews === 1 ? "review" : "reviews"
-                      }`}
+                    ? r("noReviewsYet", "No reviews yet")
+                    : r("basedOn", "Based on {count} {unit}")
+                        .replace("{count}", String(totalReviews))
+                        .replace("{unit}", reviewUnit)}
                 </p>
                 {isSignedIn ? (
                   canReview ? (
@@ -203,21 +212,23 @@ const ProductReviews = React.memo(
                       className="mt-4 bg-shop_dark_green hover:bg-shop_light_green text-white"
                       size="sm"
                     >
-                      Write a Review
+                      {r("writeReview", "Write a Review")}
                     </Button>
                   ) : hasReviewed ? (
                     <p className="mt-4 text-sm text-gray-500">
-                      You have already reviewed this product
+                      {r(
+                        "alreadyReviewed",
+                        "You have already reviewed this product"
+                      )}
                     </p>
                   ) : null
                 ) : (
                   <p className="mt-4 text-sm text-gray-500">
-                    Sign in to write a review
+                    {r("signInToReview", "Sign in to write a review")}
                   </p>
                 )}
               </div>
 
-              {/* Rating Distribution */}
               <div className="space-y-2">
                 {ratingData.map((rating) => {
                   const percentage =
@@ -240,12 +251,14 @@ const ProductReviews = React.memo(
               </div>
             </div>
 
-            {/* Individual Reviews */}
             {reviews.length > 0 ? (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-shop_dark_green">
-                    Recent Reviews ({totalReviews})
+                    {r("recentReviews", "Recent Reviews ({count})").replace(
+                      "{count}",
+                      String(totalReviews)
+                    )}
                   </h3>
                   {reviews.length > 3 && (
                     <Button
@@ -253,7 +266,9 @@ const ProductReviews = React.memo(
                       size="sm"
                       onClick={() => setShowAll(!showAll)}
                     >
-                      {showAll ? "Show Less" : "View All Reviews"}
+                      {showAll
+                        ? r("showLess", "Show Less")
+                        : r("viewAll", "View All Reviews")}
                     </Button>
                   )}
                 </div>
@@ -282,7 +297,7 @@ const ProductReviews = React.memo(
                           </h4>
                           {review.isVerifiedPurchase && (
                             <Badge className="bg-green-100 text-green-700 hover:bg-green-200 text-xs">
-                              Verified Purchase
+                              {r("verifiedPurchase", "Verified Purchase")}
                             </Badge>
                           )}
                         </div>
@@ -318,7 +333,10 @@ const ProductReviews = React.memo(
                             disabled={!isSignedIn}
                           >
                             <ThumbsUp size={14} />
-                            Helpful ({review.helpful})
+                            {r("helpful", "Helpful ({count})").replace(
+                              "{count}",
+                              String(review.helpful)
+                            )}
                           </button>
                         </div>
                       </div>
@@ -329,14 +347,17 @@ const ProductReviews = React.memo(
             ) : (
               <div className="text-center py-12">
                 <p className="text-gray-500 mb-4">
-                  No reviews yet. Be the first to review this product!
+                  {r(
+                    "emptyPrompt",
+                    "No reviews yet. Be the first to review this product!"
+                  )}
                 </p>
                 {isSignedIn && canReview && (
                   <Button
                     onClick={handleOpenReviewSidebar}
                     className="bg-shop_dark_green hover:bg-shop_light_green text-white"
                   >
-                    Write the First Review
+                    {r("writeFirstReview", "Write the First Review")}
                   </Button>
                 )}
               </div>
@@ -344,7 +365,6 @@ const ProductReviews = React.memo(
           </CardContent>
         </Card>
 
-        {/* Review Sidebar */}
         <ReviewSidebar
           productId={productId}
           productName={productName}

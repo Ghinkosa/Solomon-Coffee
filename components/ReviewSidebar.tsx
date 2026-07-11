@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { StarIcon, Loader2, Star } from "lucide-react";
 import { submitReviewAPI } from "@/lib/reviewAPI";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface ReviewSidebarProps {
   productId: string;
@@ -35,6 +37,27 @@ const ReviewSidebar = React.memo(
     onClose,
     onReviewSubmitted,
   }: ReviewSidebarProps) => {
+    const dictionary = useDictionary();
+    const s = (path: string, fallback: string) =>
+      t(dictionary, `product.reviews.sidebar.${path}`, fallback);
+
+    const guidelines = (() => {
+      const segments = "product.reviews.sidebar.guidelines".split(".");
+      let node: unknown = dictionary;
+      for (const seg of segments) {
+        if (!node || typeof node !== "object") return [];
+        node = (node as Record<string, unknown>)[seg];
+      }
+      return Array.isArray(node)
+        ? node.filter((item): item is string => typeof item === "string")
+        : [
+            "Be honest and constructive in your feedback",
+            "Focus on your experience with the product",
+            "Your review will be published after admin approval",
+            "Avoid offensive language or personal attacks",
+          ];
+    })();
+
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [title, setTitle] = useState("");
@@ -53,17 +76,21 @@ const ReviewSidebar = React.memo(
         e.preventDefault();
 
         if (rating === 0) {
-          toast.error("Please select a rating");
+          toast.error(s("toasts.selectRating", "Please select a rating"));
           return;
         }
 
         if (title.trim().length < 5) {
-          toast.error("Title must be at least 5 characters");
+          toast.error(
+            s("toasts.titleMin", "Title must be at least 5 characters")
+          );
           return;
         }
 
         if (content.trim().length < 20) {
-          toast.error("Review must be at least 20 characters");
+          toast.error(
+            s("toasts.reviewMin", "Review must be at least 20 characters")
+          );
           return;
         }
 
@@ -88,13 +115,15 @@ const ReviewSidebar = React.memo(
             toast.error(result.message);
           }
         } catch (error) {
-          toast.error("Failed to submit review. Please try again.");
+          toast.error(
+            s("toasts.submitFailed", "Failed to submit review. Please try again.")
+          );
           console.error("Error submitting review:", error);
         } finally {
           setIsSubmitting(false);
         }
       },
-      [rating, title, content, productId, onClose, onReviewSubmitted, resetForm]
+      [rating, title, content, productId, onClose, onReviewSubmitted, resetForm, dictionary]
     );
 
     const handleRatingClick = useCallback((value: number) => {
@@ -113,7 +142,6 @@ const ReviewSidebar = React.memo(
       (open: boolean) => {
         if (!open && !isSubmitting) {
           onClose();
-          // Reset form when closing
           setTimeout(resetForm, 300);
         }
       },
@@ -134,16 +162,21 @@ const ReviewSidebar = React.memo(
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-shop_dark_green">
               <Star className="w-5 h-5" />
-              Write a Review
+              {s("title", "Write a Review")}
             </SheetTitle>
             <SheetDescription className="text-left">
-              Share your experience with{" "}
-              <span className="font-semibold">{productName}</span>
+              {s("description", "Share your experience with {product}").replace(
+                "{product}",
+                productName
+              )}
             </SheetDescription>
             {isVerifiedPurchase && (
               <div className="bg-green-50 border border-green-200 rounded-md p-3 mt-2">
                 <p className="text-sm text-green-700 font-medium">
-                  ✓ This will be marked as a verified purchase
+                  {s(
+                    "verifiedNotice",
+                    "✓ This will be marked as a verified purchase"
+                  )}
                 </p>
               </div>
             )}
@@ -154,13 +187,13 @@ const ReviewSidebar = React.memo(
             className="flex flex-col h-[calc(100vh-180px)] mt-6"
           >
             <div className="flex-1 space-y-6 overflow-y-auto px-4">
-              {/* Rating Section */}
               <div className="space-y-3">
                 <Label
                   htmlFor="rating"
                   className="text-base font-semibold text-shop_dark_green"
                 >
-                  Your Rating <span className="text-red-500">*</span>
+                  {s("yourRating", "Your Rating")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2">
@@ -172,7 +205,10 @@ const ReviewSidebar = React.memo(
                         onMouseEnter={() => handleRatingHover(value)}
                         onMouseLeave={handleRatingLeave}
                         className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-shop_light_green focus:ring-offset-2 rounded"
-                        aria-label={`Rate ${value} stars`}
+                        aria-label={s("rateStarsAria", "Rate {count} stars").replace(
+                          "{count}",
+                          String(value)
+                        )}
                         disabled={isSubmitting}
                       >
                         <StarIcon
@@ -195,29 +231,35 @@ const ReviewSidebar = React.memo(
                         />
                       </div>
                       <span className="text-sm font-medium text-shop_dark_green min-w-[80px]">
-                        {rating} {rating === 1 ? "star" : "stars"}
+                        {rating}{" "}
+                        {rating === 1
+                          ? s("star", "star")
+                          : s("stars", "stars")}
                       </span>
                     </div>
                   )}
                   {rating === 0 && (
                     <p className="text-sm text-gray-500">
-                      Click to rate this product
+                      {s("clickToRate", "Click to rate this product")}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Title Section */}
               <div className="space-y-2">
                 <Label
                   htmlFor="title"
                   className="text-base font-semibold text-shop_dark_green"
                 >
-                  Review Title <span className="text-red-500">*</span>
+                  {s("reviewTitle", "Review Title")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="title"
-                  placeholder="Sum up your experience in a few words"
+                  placeholder={s(
+                    "titlePlaceholder",
+                    "Sum up your experience in a few words"
+                  )}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   maxLength={100}
@@ -238,24 +280,30 @@ const ReviewSidebar = React.memo(
                     }`}
                   >
                     {titleLength < 5
-                      ? `${5 - titleLength} more characters needed`
-                      : "✓ Title looks good"}
+                      ? s("titleCharsNeeded", "{count} more characters needed").replace(
+                          "{count}",
+                          String(5 - titleLength)
+                        )
+                      : s("titleGood", "✓ Title looks good")}
                   </p>
                   <p className="text-xs text-gray-500">{titleLength}/100</p>
                 </div>
               </div>
 
-              {/* Content Section */}
               <div className="space-y-2">
                 <Label
                   htmlFor="content"
                   className="text-base font-semibold text-shop_dark_green"
                 >
-                  Your Review <span className="text-red-500">*</span>
+                  {s("yourReview", "Your Review")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
                   id="content"
-                  placeholder="Tell us more about your experience with this product... What did you like? What could be improved?"
+                  placeholder={s(
+                    "contentPlaceholder",
+                    "Tell us more about your experience with this product..."
+                  )}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   maxLength={1000}
@@ -277,28 +325,28 @@ const ReviewSidebar = React.memo(
                     }`}
                   >
                     {contentLength < 20
-                      ? `${20 - contentLength} more characters needed`
-                      : "✓ Review is detailed enough"}
+                      ? s(
+                          "contentCharsNeeded",
+                          "{count} more characters needed"
+                        ).replace("{count}", String(20 - contentLength))
+                      : s("contentGood", "✓ Review is detailed enough")}
                   </p>
                   <p className="text-xs text-gray-500">{contentLength}/1000</p>
                 </div>
               </div>
 
-              {/* Guidelines */}
               <div className="bg-blue-50 border border-blue-200 rounded-md p-4 space-y-2">
                 <h4 className="text-sm font-semibold text-blue-900">
-                  Review Guidelines
+                  {s("guidelinesTitle", "Review Guidelines")}
                 </h4>
                 <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
-                  <li>Be honest and constructive in your feedback</li>
-                  <li>Focus on your experience with the product</li>
-                  <li>Your review will be published after admin approval</li>
-                  <li>Avoid offensive language or personal attacks</li>
+                  {guidelines.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </div>
             </div>
 
-            {/* Footer with Actions */}
             <SheetFooter className="mt-6 pt-6 border-t flex-shrink-0">
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 <Button
@@ -308,7 +356,7 @@ const ReviewSidebar = React.memo(
                   disabled={isSubmitting}
                   className="w-full sm:w-auto"
                 >
-                  Cancel
+                  {s("cancel", "Cancel")}
                 </Button>
                 <Button
                   type="submit"
@@ -323,10 +371,10 @@ const ReviewSidebar = React.memo(
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
+                      {s("submitting", "Submitting...")}
                     </>
                   ) : (
-                    "Submit Review"
+                    s("submitReview", "Submit Review")
                   )}
                 </Button>
               </div>

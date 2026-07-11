@@ -7,13 +7,27 @@ import {
   getCoffeeOrigin,
 } from "@/lib/product-coffee-details";
 import { toPlainText } from "@/lib/sanity-text";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface ProductExpandedDetailsProps {
   product: Product;
   variant?: "default" | "compact" | "side";
 }
 
+type ChipKey =
+  | "roast"
+  | "origin"
+  | "producer"
+  | "process"
+  | "lot"
+  | "notes"
+  | "brew"
+  | "grind"
+  | "altitude";
+
 interface SpecChipProps {
+  keyId: ChipKey;
   label: string;
   value: string;
 }
@@ -51,17 +65,16 @@ function SpecChip({
   );
 }
 
-const COMPACT_DETAIL_KEYS = [
-  "Roast",
-  "Origin",
-  "Process",
-  "Notes",
-] as const;
+const COMPACT_DETAIL_KEYS: ChipKey[] = ["roast", "origin", "process", "notes"];
 
 export function ProductExpandedDetails({
   product,
   variant = "default",
 }: ProductExpandedDetailsProps) {
+  const dictionary = useDictionary();
+  const e = (path: string, fallback: string) =>
+    t(dictionary, `product.expandedDetails.${path}`, fallback);
+
   const isCompact = variant === "compact";
   const isSide = variant === "side";
   const chipTone = "dark";
@@ -76,51 +89,71 @@ export function ProductExpandedDetails({
   const specChips: SpecChipProps[] = [];
 
   if (product.variant) {
-    specChips.push({ label: "Roast", value: product.variant });
+    specChips.push({
+      keyId: "roast",
+      label: e("roast", "Roast"),
+      value: product.variant,
+    });
   }
   if (origin) {
-    specChips.push({ label: "Origin", value: origin });
+    specChips.push({
+      keyId: "origin",
+      label: e("origin", "Origin"),
+      value: origin,
+    });
   }
   if (coffeeDetails?.producer && !isCompact) {
-    specChips.push({ label: "Producer", value: coffeeDetails.producer });
+    specChips.push({
+      keyId: "producer",
+      label: e("producer", "Producer"),
+      value: coffeeDetails.producer,
+    });
   }
   if (coffeeDetails?.processingMethod) {
     specChips.push({
-      label: "Process",
+      keyId: "process",
+      label: e("process", "Process"),
       value: formatCoffeeLabel(coffeeDetails.processingMethod),
     });
   }
   if (coffeeDetails?.lotType && !isCompact) {
     specChips.push({
-      label: "Lot",
+      keyId: "lot",
+      label: e("lot", "Lot"),
       value: formatCoffeeLabel(coffeeDetails.lotType),
     });
   }
   if (flavorNotes) {
-    specChips.push({ label: "Notes", value: flavorNotes });
+    specChips.push({
+      keyId: "notes",
+      label: e("notes", "Notes"),
+      value: flavorNotes,
+    });
   }
   if (brewMethods && !isCompact) {
-    specChips.push({ label: "Brew", value: brewMethods });
+    specChips.push({
+      keyId: "brew",
+      label: e("brew", "Brew"),
+      value: brewMethods,
+    });
   }
   if (coffeeDetails?.grindRecommendation && !isCompact) {
     specChips.push({
-      label: "Grind",
+      keyId: "grind",
+      label: e("grind", "Grind"),
       value: formatCoffeeLabel(coffeeDetails.grindRecommendation),
     });
   }
   if (coffeeDetails?.altitudeMeters && !isCompact) {
     specChips.push({
-      label: "Altitude",
+      keyId: "altitude",
+      label: e("altitude", "Altitude"),
       value: `${coffeeDetails.altitudeMeters}m`,
     });
   }
 
   const visibleChips = isCompact
-    ? specChips.filter((chip) =>
-        COMPACT_DETAIL_KEYS.includes(
-          chip.label as (typeof COMPACT_DETAIL_KEYS)[number],
-        ),
-      )
+    ? specChips.filter((chip) => COMPACT_DETAIL_KEYS.includes(chip.keyId))
     : isSide
       ? specChips.slice(0, 4)
       : specChips;
@@ -169,7 +202,8 @@ export function ProductExpandedDetails({
         >
           {visibleChips.map((chip) => (
             <SpecChip
-              key={chip.label}
+              key={chip.keyId}
+              keyId={chip.keyId}
               label={chip.label}
               value={chip.value}
               tone={chipTone}

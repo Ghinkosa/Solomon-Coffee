@@ -8,6 +8,8 @@ import type { DetailPanelPosition } from "@/hooks/useProductDetailsPanel";
 import PriceView from "@/components/PriceView";
 import AddToCartButton from "@/components/AddToCartButton";
 import { ProductExpandedDetails } from "./ProductExpandedDetails";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface ProductDetailsPanelProps {
   expandedProduct: Product | null;
@@ -28,6 +30,10 @@ export function ProductDetailsPanel({
   variant = "default",
   lang,
 }: ProductDetailsPanelProps) {
+  const dictionary = useDictionary();
+  const d = (path: string, fallback: string) =>
+    t(dictionary, `product.detailsPanel.${path}`, fallback);
+
   const isCompact = variant === "compact";
   const isSidePanel = detailPanelPosition?.placement === "side";
 
@@ -91,14 +97,16 @@ export function ProductDetailsPanel({
                 <Coffee size={14} />
               </span>
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#e4c290]">
-                {isSidePanel ? "Quick look" : "Coffee details"}
+                {isSidePanel
+                  ? d("quickLook", "Quick look")
+                  : d("coffeeDetails", "Coffee details")}
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
               className="rounded-full p-1.5 text-[#e4c290]/80 transition-colors hover:bg-[#2a1810]/70 hover:text-[#fdf6e8]"
-              aria-label="Close details"
+              aria-label={d("closeAria", "Close details")}
             >
               <X size={15} />
             </button>
@@ -128,7 +136,7 @@ export function ProductDetailsPanel({
                 href={`/${lang || "en"}/product/${expandedProduct.slug.current}`}
                 className="group inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-[#e4c290] transition-colors hover:text-[#fdf6e8]"
               >
-                View full details
+                {d("viewFullDetails", "View full details")}
                 <ArrowRight
                   size={14}
                   className="transition-transform group-hover:translate-x-0.5"

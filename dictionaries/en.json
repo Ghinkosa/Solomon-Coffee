@@ -834,7 +834,59 @@
       "review": "review",
       "reviews": "reviews",
       "noReviewsYet": "No reviews yet",
-      "signInToReview": "Sign in to write a review"
+      "signInToReview": "Sign in to write a review",
+      "loading": "Loading reviews...",
+      "title": "Customer Reviews",
+      "basedOn": "Based on {count} {unit}",
+      "writeReview": "Write a Review",
+      "alreadyReviewed": "You have already reviewed this product",
+      "recentReviews": "Recent Reviews ({count})",
+      "showLess": "Show Less",
+      "viewAll": "View All Reviews",
+      "verifiedPurchase": "Verified Purchase",
+      "helpful": "Helpful ({count})",
+      "emptyPrompt": "No reviews yet. Be the first to review this product!",
+      "writeFirstReview": "Write the First Review",
+      "toasts": {
+        "loadFailed": "Failed to load reviews",
+        "signInHelpful": "Please sign in to mark reviews as helpful",
+        "updateFailed": "Failed to update review",
+        "signInWrite": "Please sign in to write a review"
+      },
+      "sidebar": {
+        "title": "Write a Review",
+        "description": "Share your experience with {product}",
+        "verifiedNotice": "✓ This will be marked as a verified purchase",
+        "yourRating": "Your Rating",
+        "clickToRate": "Click to rate this product",
+        "star": "star",
+        "stars": "stars",
+        "rateStarsAria": "Rate {count} stars",
+        "reviewTitle": "Review Title",
+        "titlePlaceholder": "Sum up your experience in a few words",
+        "titleCharsNeeded": "{count} more characters needed",
+        "titleGood": "✓ Title looks good",
+        "yourReview": "Your Review",
+        "contentPlaceholder": "Tell us more about your experience with this product... What did you like? What could be improved?",
+        "contentCharsNeeded": "{count} more characters needed",
+        "contentGood": "✓ Review is detailed enough",
+        "guidelinesTitle": "Review Guidelines",
+        "guidelines": [
+          "Be honest and constructive in your feedback",
+          "Focus on your experience with the product",
+          "Your review will be published after admin approval",
+          "Avoid offensive language or personal attacks"
+        ],
+        "cancel": "Cancel",
+        "submitting": "Submitting...",
+        "submitReview": "Submit Review",
+        "toasts": {
+          "selectRating": "Please select a rating",
+          "titleMin": "Title must be at least 5 characters",
+          "reviewMin": "Review must be at least 20 characters",
+          "submitFailed": "Failed to submit review. Please try again."
+        }
+      }
     },
     "delivery": {
       "title": "Delivery & Return",
@@ -871,6 +923,58 @@
     "meta": {
       "notFoundTitle": "Product Not Found",
       "notFoundDescription": "The product you are looking for does not exist."
+    },
+    "specs": {
+      "coffeeProfile": "Coffee Profile",
+      "roastDate": "Roast Date:",
+      "brand": "Brand:",
+      "producer": "Producer:",
+      "altitude": "Altitude:",
+      "package": "Package:",
+      "code": "Code:",
+      "shipping": "Shipping",
+      "freeShipping": "✓ Free Shipping",
+      "estimatedDelivery": "Estimated: 2-5 business days",
+      "expressDelivery": "Express: 1-2 business days",
+      "brewingDetails": "Brewing Details",
+      "brewRatio": "Brew Ratio:",
+      "grind": "Grind:",
+      "brewMethods": "Brew Methods:",
+      "flavorNotes": "Flavor Notes:",
+      "quality": "Quality",
+      "qualityTested": "✓ Quality Tested",
+      "authenticProduct": "✓ Authentic Product",
+      "securePackaging": "✓ Secure Packaging",
+      "notAvailable": "—",
+      "currentHarvest": "Current Harvest"
+    },
+    "characteristics": {
+      "title": "{name}: Characteristics",
+      "brand": "Brand:",
+      "collection": "Collection:",
+      "type": "Type:",
+      "origin": "Origin:",
+      "process": "Process:",
+      "lotType": "Lot Type:",
+      "beanFormat": "Bean Format:",
+      "caffeine": "Caffeine:"
+    },
+    "expandedDetails": {
+      "roast": "Roast",
+      "origin": "Origin",
+      "producer": "Producer",
+      "process": "Process",
+      "lot": "Lot",
+      "notes": "Notes",
+      "brew": "Brew",
+      "grind": "Grind",
+      "altitude": "Altitude"
+    },
+    "detailsPanel": {
+      "quickLook": "Quick look",
+      "coffeeDetails": "Coffee details",
+      "closeAria": "Close details",
+      "viewFullDetails": "View full details"
     }
   },
   "checkout": {

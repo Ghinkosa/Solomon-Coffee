@@ -615,8 +615,60 @@
     "reviews": {
       "review": "reseña",
       "reviews": "reseñas",
-      "noReviewsYet": "Aún no hay reseñas",
-      "signInToReview": "Inicia sesión para escribir una reseña"
+      "noReviewsYet": "Sin reseñas aún",
+      "signInToReview": "Inicia sesión para escribir una reseña",
+      "loading": "Cargando reseñas...",
+      "title": "Opiniones de clientes",
+      "basedOn": "Basado en {count} {unit}",
+      "writeReview": "Escribir reseña",
+      "alreadyReviewed": "Ya has reseñado este producto",
+      "recentReviews": "Reseñas recientes ({count})",
+      "showLess": "Mostrar menos",
+      "viewAll": "Ver todas las reseñas",
+      "verifiedPurchase": "Compra verificada",
+      "helpful": "Útil ({count})",
+      "emptyPrompt": "Sin reseñas aún. ¡Sé el primero en reseñar este producto!",
+      "writeFirstReview": "Escribir la primera reseña",
+      "toasts": {
+        "loadFailed": "Error al cargar reseñas",
+        "signInHelpful": "Inicia sesión para marcar reseñas como útiles",
+        "updateFailed": "Error al actualizar la reseña",
+        "signInWrite": "Inicia sesión para escribir una reseña"
+      },
+      "sidebar": {
+        "title": "Escribir reseña",
+        "description": "Comparte tu experiencia con {product}",
+        "verifiedNotice": "✓ Se marcará como compra verificada",
+        "yourRating": "Tu valoración",
+        "clickToRate": "Haz clic para valorar este producto",
+        "star": "estrella",
+        "stars": "estrellas",
+        "rateStarsAria": "Valorar con {count} estrellas",
+        "reviewTitle": "Título de la reseña",
+        "titlePlaceholder": "Resume tu experiencia en pocas palabras",
+        "titleCharsNeeded": "Faltan {count} caracteres",
+        "titleGood": "✓ El título está bien",
+        "yourReview": "Tu reseña",
+        "contentPlaceholder": "Cuéntanos más sobre tu experiencia con este producto... ¿Qué te gustó? ¿Qué se podría mejorar?",
+        "contentCharsNeeded": "Faltan {count} caracteres",
+        "contentGood": "✓ La reseña tiene suficiente detalle",
+        "guidelinesTitle": "Directrices de reseñas",
+        "guidelines": [
+          "Sé honesto y constructivo en tus comentarios",
+          "Céntrate en tu experiencia con el producto",
+          "Tu reseña se publicará tras la aprobación del administrador",
+          "Evita lenguaje ofensivo o ataques personales"
+        ],
+        "cancel": "Cancelar",
+        "submitting": "Enviando...",
+        "submitReview": "Enviar reseña",
+        "toasts": {
+          "selectRating": "Selecciona una valoración",
+          "titleMin": "El título debe tener al menos 5 caracteres",
+          "reviewMin": "La reseña debe tener al menos 20 caracteres",
+          "submitFailed": "Error al enviar la reseña. Inténtalo de nuevo."
+        }
+      }
     },
     "delivery": {
       "title": "Envío y devoluciones",
@@ -653,6 +705,58 @@
     "meta": {
       "notFoundTitle": "Producto no encontrado",
       "notFoundDescription": "El producto que buscas no existe."
+    },
+    "specs": {
+      "coffeeProfile": "Perfil del café",
+      "roastDate": "Fecha de tueste:",
+      "brand": "Marca:",
+      "producer": "Productor:",
+      "altitude": "Altitud:",
+      "package": "Paquete:",
+      "code": "Código:",
+      "shipping": "Envío",
+      "freeShipping": "✓ Envío gratis",
+      "estimatedDelivery": "Estimado: 2-5 días hábiles",
+      "expressDelivery": "Express: 1-2 días hábiles",
+      "brewingDetails": "Detalles de preparación",
+      "brewRatio": "Proporción:",
+      "grind": "Molienda:",
+      "brewMethods": "Métodos:",
+      "flavorNotes": "Notas de sabor:",
+      "quality": "Calidad",
+      "qualityTested": "✓ Calidad verificada",
+      "authenticProduct": "✓ Producto auténtico",
+      "securePackaging": "✓ Embalaje seguro",
+      "notAvailable": "—",
+      "currentHarvest": "Cosecha actual"
+    },
+    "characteristics": {
+      "title": "{name}: Características",
+      "brand": "Marca:",
+      "collection": "Colección:",
+      "type": "Tipo:",
+      "origin": "Origen:",
+      "process": "Proceso:",
+      "lotType": "Tipo de lote:",
+      "beanFormat": "Formato:",
+      "caffeine": "Cafeína:"
+    },
+    "expandedDetails": {
+      "roast": "Tueste",
+      "origin": "Origen",
+      "producer": "Productor",
+      "process": "Proceso",
+      "lot": "Lote",
+      "notes": "Notas",
+      "brew": "Preparación",
+      "grind": "Molienda",
+      "altitude": "Altitud"
+    },
+    "detailsPanel": {
+      "quickLook": "Vista rápida",
+      "coffeeDetails": "Detalles del café",
+      "closeAria": "Cerrar detalles",
+      "viewFullDetails": "Ver detalles completos"
     }
   },
   "checkout": {
