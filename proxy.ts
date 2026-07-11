@@ -103,6 +103,39 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
   }
 
+  // 4. Admin pages require admin identity, not just authentication.
+  // (The access-denied page itself lives under /admin, so exclude it to
+  // avoid a redirect loop for signed-in non-admins.)
+  if (isAdminRoute(req) && !pathname.includes("/admin/access-denied")) {
+    const authResult = await auth();
+
+    const deniedRedirect = () => {
+      const locale =
+        i18n.locales.find(
+          (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`,
+        ) ?? i18n.defaultLocale;
+      return NextResponse.redirect(
+        new URL(`/${locale}/admin/access-denied`, req.url),
+      );
+    };
+
+    if (!authResult.userId) {
+      return deniedRedirect();
+    }
+
+    try {
+      const clerk = await clerkClient();
+      const user = await clerk.users.getUser(authResult.userId);
+      const email = user.primaryEmailAddress?.emailAddress;
+
+      if (!email || !isUserAdmin(email)) {
+        return deniedRedirect();
+      }
+    } catch {
+      return deniedRedirect();
+    }
+  }
+
   return NextResponse.next();
 });
 

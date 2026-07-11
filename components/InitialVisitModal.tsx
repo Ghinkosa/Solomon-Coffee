@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { X, Code, Coffee, ExternalLink, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";

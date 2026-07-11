@@ -60,14 +60,39 @@ export async function POST(req: NextRequest) {
       if (orderId) {
         // Idempotency guard: if this order is already paid, skip re-processing
         // (stock decrement, invoice, notifications) on webhook retries.
-        const alreadyProcessed = await backendClient.fetch<{
+        const existing = await backendClient.fetch<{
+          _rev?: string;
           paymentStatus?: string;
         } | null>(
-          `*[_type == "order" && _id == $orderId][0]{ paymentStatus }`,
+          `*[_type == "order" && _id == $orderId][0]{ _rev, paymentStatus }`,
           { orderId },
         );
 
-        if (alreadyProcessed?.paymentStatus === PAYMENT_STATUSES.PAID) {
+        if (!existing?._rev) {
+          // Order not created yet — return 400 so Stripe retries later.
+          return NextResponse.json(
+            { error: "Order not found for session" },
+            { status: 400 },
+          );
+        }
+
+        if (existing.paymentStatus === PAYMENT_STATUSES.PAID) {
+          return NextResponse.json({ received: true, skipped: "duplicate" });
+        }
+
+        // Atomically claim this order using optimistic locking. If a concurrent
+        // webhook delivery already flipped the revision, this commit throws and
+        // we skip — guaranteeing stock/invoice/notifications run exactly once.
+        try {
+          await backendClient
+            .patch(orderId)
+            .ifRevisionId(existing._rev)
+            .set({
+              paymentStatus: PAYMENT_STATUSES.PAID,
+              paymentCompletedAt: new Date().toISOString(),
+            })
+            .commit();
+        } catch {
           return NextResponse.json({ received: true, skipped: "duplicate" });
         }
 
@@ -182,7 +207,9 @@ async function createAndFinalizeInvoice(
       console.warn(`Unsupported currency: ${currency}, defaulting to USD`);
     }
 
-    // Create the invoice
+    // Create the invoice as a RECEIPT for an order already paid via Checkout.
+    // Use send_invoice (not charge_automatically) so finalizing never attempts
+    // a second charge against the customer's payment method.
     const invoice = await stripe.invoices.create({
       customer: stripeCustomerId,
       description: `Invoice for Order ${orderData.orderNumber || orderId}`,
@@ -192,7 +219,8 @@ async function createAndFinalizeInvoice(
         source: "webhook",
       },
       auto_advance: false,
-      collection_method: "charge_automatically",
+      collection_method: "send_invoice",
+      days_until_due: 30,
     });
 
     // Add invoice items for products
@@ -260,6 +288,22 @@ async function createAndFinalizeInvoice(
     }
 
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+
+    // The order was already paid through Checkout — mark the receipt invoice as
+    // paid out of band so it isn't left "open" and never triggers a charge.
+    if (finalizedInvoice.id) {
+      try {
+        return await stripe.invoices.pay(finalizedInvoice.id, {
+          paid_out_of_band: true,
+        });
+      } catch (payError) {
+        console.error(
+          `Failed to mark invoice ${finalizedInvoice.id} paid out of band:`,
+          payError,
+        );
+        return finalizedInvoice;
+      }
+    }
 
     return finalizedInvoice;
   } catch (error) {

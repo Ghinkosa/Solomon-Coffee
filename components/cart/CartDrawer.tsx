@@ -25,13 +25,14 @@ import { cn } from "@/lib/utils";
 import {
   buildCheckoutPricingItems,
   calculateCheckoutTotals,
+  getFreeShippingThreshold,
 } from "@/lib/checkout-pricing";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import { useUserData } from "@/contexts/UserDataContext";
 
-const FREE_SHIPPING_THRESHOLD = 100;
+const FREE_SHIPPING_THRESHOLD = getFreeShippingThreshold();
 
 function getItemUnitPrice(item: CartItem): number {
   return item.selectedWeight?.price ?? item.product.price ?? 0;

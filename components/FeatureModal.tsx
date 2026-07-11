@@ -2,7 +2,7 @@
 
 import { X, Check, LucideIcon } from "lucide-react";
 import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 interface FeatureDetail {
   icon: LucideIcon;

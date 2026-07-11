@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { writeClient } from "@/sanity/lib/client";
 
 export async function POST(request: NextRequest) {
@@ -10,7 +10,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { accountId, approve, adminEmail, reason } = await request.json();
+    // Derive the acting admin's email from the authenticated session — never
+    // trust a client-supplied adminEmail. (Admin identity is enforced upstream
+    // by the proxy for /api/admin/*.)
+    const clerk = await clerkClient();
+    const clerkUser = await clerk.users.getUser(userId);
+    const adminEmail = clerkUser.primaryEmailAddress?.emailAddress;
+
+    const { accountId, approve, reason } = await request.json();
 
     if (!accountId || typeof approve !== "boolean" || !adminEmail) {
       return NextResponse.json(
@@ -18,9 +25,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Check if user is admin (implement your own admin check logic)
-    // For now, we'll assume the request is valid
 
     if (approve) {
       // Approve the business account

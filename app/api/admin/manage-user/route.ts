@@ -17,6 +17,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
+    // Interpret setPremium as the explicit desired premium state.
+    const premium = Boolean(setPremium);
+
     // Check if user exists
     const existingUser = await client.fetch(
       `*[${USER_BY_EMAIL_FILTER}][0]`,
@@ -24,11 +27,18 @@ export async function POST(request: NextRequest) {
     );
 
     if (existingUser) {
-      // Update existing user
+      // Update existing user. Set the flags checkout actually reads
+      // (getAccountDiscount requires isActive AND premiumStatus === "active").
       const result = await writeClient
         .patch(existingUser._id)
         .set({
-          isActive: setPremium || existingUser.isActive,
+          isActive: premium,
+          premiumStatus: premium ? "active" : "inactive",
+          membershipType: premium
+            ? "premium"
+            : existingUser.isBusiness
+              ? "business"
+              : "standard",
           updatedAt: new Date().toISOString(),
         })
         .commit();
@@ -36,7 +46,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: `User premium status updated to: ${
-          setPremium ? "Active" : "Inactive"
+          premium ? "Active" : "Inactive"
         }`,
         user: result,
       });
@@ -46,13 +56,14 @@ export async function POST(request: NextRequest) {
         _type: SANITY_USER_TYPE,
         clerkUserId: `admin-managed-${email}`,
         email,
-        isActive: setPremium || true, // Default to premium
+        isActive: premium,
+        premiumStatus: premium ? "active" : "inactive",
         isBusiness: false,
-        membershipType: setPremium ? "premium" : "standard",
+        membershipType: premium ? "premium" : "standard",
         activatedAt: new Date().toISOString(),
         activatedBy: "admin-creation",
         rewardPoints: 0,
-        loyaltyPoints: setPremium ? 100 : 0,
+        loyaltyPoints: premium ? 100 : 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         preferences: {
@@ -66,7 +77,9 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: "User created successfully with premium status",
+        message: premium
+          ? "User created successfully with premium status"
+          : "User created successfully",
         user: newUser,
       });
     }

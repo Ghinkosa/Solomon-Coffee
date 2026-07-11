@@ -2,7 +2,7 @@
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { emptyCart } from "@/images";
 import Image from "next/image";
 import { useDictionary } from "@/lib/dictionary-context";

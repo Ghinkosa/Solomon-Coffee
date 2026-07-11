@@ -38,6 +38,22 @@ export interface CheckoutPricingResult {
 const DEFAULT_FREE_SHIPPING_THRESHOLD = 100;
 const DEFAULT_SHIPPING_FEE = 10;
 
+/** Free-shipping threshold, overridable via NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD. */
+export function getFreeShippingThreshold(): number {
+  const parsed = parseFloat(
+    process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD || "",
+  );
+  return Number.isFinite(parsed) && parsed >= 0
+    ? parsed
+    : DEFAULT_FREE_SHIPPING_THRESHOLD;
+}
+
+/** Flat shipping fee, overridable via NEXT_PUBLIC_SHIPPING_FEE. */
+export function getFlatShippingFee(): number {
+  const parsed = parseFloat(process.env.NEXT_PUBLIC_SHIPPING_FEE || "");
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_SHIPPING_FEE;
+}
+
 // Account-level discount rates applied to the post-product-discount subtotal.
 export const BUSINESS_DISCOUNT_RATE = 0.02;
 export const PREMIUM_DISCOUNT_RATE = 0.05;
@@ -102,8 +118,8 @@ export function calculateCheckoutTotals(
     items,
     businessDiscountRate = 0,
     taxRate = getTaxRate(),
-    freeShippingThreshold = DEFAULT_FREE_SHIPPING_THRESHOLD,
-    flatShippingFee = DEFAULT_SHIPPING_FEE,
+    freeShippingThreshold = getFreeShippingThreshold(),
+    flatShippingFee = getFlatShippingFee(),
   } = options;
 
   let subtotal = 0;
@@ -128,7 +144,7 @@ export function calculateCheckoutTotals(
     subtotalAfterProductDiscount - businessDiscount;
   const subtotalWithPackaging = subtotalAfterBusinessDiscount + packagingFee;
   const shipping =
-    subtotalWithPackaging > freeShippingThreshold ? 0 : flatShippingFee;
+    subtotalWithPackaging >= freeShippingThreshold ? 0 : flatShippingFee;
   const tax = subtotalWithPackaging * taxRate;
   const total = subtotalWithPackaging + shipping + tax;
 

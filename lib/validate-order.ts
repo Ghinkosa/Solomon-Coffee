@@ -107,7 +107,10 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
       quantity: item.quantity,
       unitPrice,
       discountPercent: product.discount ?? 0,
-      packagingPrice: packagingFromDb?.price ?? item.packaging?.price ?? 0,
+      // Only ever trust the server-side packaging price. Never fall back to the
+      // client-supplied price — an unmatched packaging id contributes $0 and the
+      // total check below will reject a tampered cart.
+      packagingPrice: packagingFromDb?.price ?? 0,
     });
   }
 

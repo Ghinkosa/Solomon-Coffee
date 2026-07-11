@@ -287,6 +287,7 @@ export const POST = async (request: NextRequest) => {
           createdOrder.products as Array<{
             product: { _ref: string };
             quantity: number;
+            weight?: { value?: string; price?: number };
           }>,
         );
       } catch (stockError) {

@@ -105,7 +105,7 @@ const UserDropdown = ({
           className={
             isDark
               ? "group flex h-9 w-9 items-center justify-center transition-colors hover:text-shop_orange hoverEffect sm:h-10 sm:w-auto sm:gap-2 sm:px-1.5"
-              : "group flex h-9 w-9 items-center justify-center border-0 bg-transparent p-0 transition-colors hover:text-shop_light_green hoverEffect sm:h-10 sm:w-auto sm:gap-2 sm:border sm:border-stone-200 sm:bg-stone-50 sm:px-2 sm:py-1 sm:hover:border-shop_light_green/40 sm:hover:bg-white"
+              : "group flex h-9 w-9 items-center justify-center border-0 bg-transparent p-0 transition-colors hover:text-shop_light_green hoverEffect sm:h-10 sm:w-auto sm:gap-2"
           }
         >
           <div className="relative">

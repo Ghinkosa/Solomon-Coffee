@@ -123,10 +123,6 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
     return field[lang] || field["en"] || "";
   };
 
-  if (!banners || banners.length === 0) {
-    return null;
-  }
-
   const heroShopLink = `/${lang || "en"}/shop`;
 
   const getSlideDelay = (banner: Banner) => {
@@ -164,6 +160,10 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
     disableVideoForUser,
     videoDurations,
   ]);
+
+  if (!banners || banners.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative isolate group">

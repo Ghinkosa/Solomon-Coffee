@@ -81,6 +81,7 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
 
             <ClerkLoaded>
               <SignedIn>
+                <div className="hidden h-7 w-px bg-stone-200 md:block" />
                 <UserDropdown dictionary={dictionary} lang={lang} />
               </SignedIn>
               <SignedOut>

@@ -227,10 +227,6 @@ const AdminUsers: React.FC = () => {
       ...prev,
       user: updatedUser,
     }));
-
-    // Update counts
-    setSanityUsersCount((prev) => prev + 1);
-    setActiveUsersCount((prev) => prev + 1);
   };
 
   // User deletion from Sanity

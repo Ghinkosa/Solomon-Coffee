@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";

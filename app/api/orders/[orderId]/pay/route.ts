@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
-import Stripe from "stripe";
+import stripe from "@/lib/stripe";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { getBaseUrl } from "@/lib/get-base-url";
 
@@ -9,8 +9,6 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
   try {
     // Check authentication
     const { userId } = await auth();
