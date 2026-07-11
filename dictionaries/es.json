@@ -823,7 +823,45 @@
       "title": "Mis pedidos",
       "showing": "Mostrando {count} de {total} pedidos",
       "emptyTitle": "No se encontraron pedidos.",
-      "emptyDescription": "Empieza a comprar para ver tus pedidos aquí."
+      "emptyDescription": "Empieza a comprar para ver tus pedidos aquí.",
+      "list": {
+        "orderNumber": "Pedido #{number}...",
+        "notAvailable": "N/D",
+        "products": "Productos:",
+        "invoice": "Factura:",
+        "generate": "Generar",
+        "generating": "Gen...",
+        "noInvoice": "----",
+        "view": "Ver",
+        "payNow": "Pagar ahora",
+        "paying": "Pagando...",
+        "productAlt": "Producto",
+        "table": {
+          "orderNumber": "Pedido #",
+          "date": "Fecha",
+          "customer": "Cliente",
+          "email": "Correo",
+          "products": "Productos",
+          "total": "Total",
+          "status": "Estado",
+          "invoice": "Factura",
+          "actions": "Acciones"
+        },
+        "status": {
+          "pending": "Pendiente",
+          "processing": "En proceso",
+          "paid": "Pagado",
+          "shipped": "Enviado",
+          "out_for_delivery": "En reparto",
+          "delivered": "Entregado",
+          "cancelled": "Cancelado",
+          "completed": "Completado"
+        },
+        "toasts": {
+          "invoiceGenerated": "¡Factura generada correctamente!",
+          "invoiceFailed": "Error al generar la factura"
+        }
+      }
     },
     "settings": {
       "title": "Ajustes",
@@ -1058,6 +1096,67 @@
         "bulkDeletedTitle": "Direcciones eliminadas",
         "bulkDeletedMessage": "Se eliminaron correctamente {count} {unit}.",
         "bulkDeleteErrorMessage": "Error al eliminar algunas direcciones. Inténtalo de nuevo."
+      },
+      "editSidebar": {
+        "title": "Editar perfil",
+        "description": "Actualiza tu información personal. Los datos de Clerk son de solo lectura.",
+        "clerkSection": "Cuenta Clerk (solo lectura)",
+        "editableSection": "Información adicional (editable)",
+        "firstNameOverride": "Nombre (sobrescribir)",
+        "firstNameOverrideHint": "Sobrescribe el nombre de Clerk para mostrar",
+        "lastNameOverride": "Apellido (sobrescribir)",
+        "lastNameOverrideHint": "Sobrescribe el apellido de Clerk para mostrar",
+        "firstNamePlaceholder": "Introduce el nombre",
+        "lastNamePlaceholder": "Introduce el apellido",
+        "phonePlaceholder": "Introduce el teléfono",
+        "saving": "Guardando...",
+        "saveChanges": "Guardar cambios",
+        "toasts": {
+          "updatedTitle": "Perfil actualizado",
+          "updatedMessage": "Tu perfil se actualizó correctamente.",
+          "errorTitle": "Error",
+          "errorMessage": "Error al actualizar el perfil. Inténtalo de nuevo."
+        }
+      },
+      "addressSidebar": {
+        "addTitle": "Añadir dirección de envío",
+        "editTitle": "Editar dirección de envío",
+        "addDescription": "Añade una nueva dirección de envío a tu cuenta.",
+        "editDescription": "Actualiza la información de tu dirección de envío.",
+        "addressName": "Nombre de la dirección *",
+        "addressNamePlaceholder": "p. ej., Casa, Oficina, Casa de mamá",
+        "phonePlaceholder": "p. ej., (555) 123-4567",
+        "addressType": "Tipo de dirección",
+        "addressTypePlaceholder": "Selecciona el tipo de dirección",
+        "types": {
+          "home": "Casa",
+          "office": "Oficina",
+          "other": "Otro"
+        },
+        "streetAddress": "Dirección *",
+        "streetAddressPlaceholder": "Introduce tu dirección (número, calle, apartamento/unidad)",
+        "defaultAddress": "Establecer como dirección predeterminada",
+        "defaultAddressHint": "Esta dirección se usará como tu dirección de envío principal",
+        "updating": "Actualizando...",
+        "adding": "Añadiendo...",
+        "updateAddress": "Actualizar dirección",
+        "addAddressButton": "Añadir dirección",
+        "toasts": {
+          "validationTitle": "Error de validación",
+          "validationMessage": "Completa todos los campos obligatorios, incluida la ubicación.",
+          "updatedTitle": "Dirección actualizada",
+          "addedTitle": "Dirección añadida",
+          "savedMessage": "Tu dirección se {action} correctamente.",
+          "updatedAction": "actualizó",
+          "addedAction": "añadió",
+          "errorTitle": "Error",
+          "updateFailed": "Error al actualizar la dirección",
+          "addFailed": "Error al añadir la dirección",
+          "retryMessage": "Inténtalo de nuevo.",
+          "deletedTitle": "Dirección eliminada",
+          "deletedMessage": "Tu dirección se eliminó correctamente.",
+          "deleteErrorMessage": "Error al eliminar la dirección. Inténtalo de nuevo."
+        }
       }
     }
   },

@@ -1014,7 +1014,45 @@
       "title": "My Orders",
       "showing": "Showing {count} of {total} orders",
       "emptyTitle": "No orders found.",
-      "emptyDescription": "Start shopping to see your orders here."
+      "emptyDescription": "Start shopping to see your orders here.",
+      "list": {
+        "orderNumber": "Order #{number}...",
+        "notAvailable": "N/A",
+        "products": "Products:",
+        "invoice": "Invoice:",
+        "generate": "Generate",
+        "generating": "Gen...",
+        "noInvoice": "----",
+        "view": "View",
+        "payNow": "Pay Now",
+        "paying": "Paying...",
+        "productAlt": "Product",
+        "table": {
+          "orderNumber": "Order #",
+          "date": "Date",
+          "customer": "Customer",
+          "email": "Email",
+          "products": "Products",
+          "total": "Total",
+          "status": "Status",
+          "invoice": "Invoice",
+          "actions": "Actions"
+        },
+        "status": {
+          "pending": "Pending",
+          "processing": "Processing",
+          "paid": "Paid",
+          "shipped": "Shipped",
+          "out_for_delivery": "Out for delivery",
+          "delivered": "Delivered",
+          "cancelled": "Cancelled",
+          "completed": "Completed"
+        },
+        "toasts": {
+          "invoiceGenerated": "Invoice generated successfully!",
+          "invoiceFailed": "Failed to generate invoice"
+        }
+      }
     },
     "settings": {
       "title": "Settings",
@@ -1153,6 +1191,67 @@
         "bulkDeletedTitle": "Addresses Deleted",
         "bulkDeletedMessage": "Successfully deleted {count} {unit}.",
         "bulkDeleteErrorMessage": "Failed to delete some addresses. Please try again."
+      },
+      "editSidebar": {
+        "title": "Edit Profile",
+        "description": "Update your personal information. Clerk data is read-only.",
+        "clerkSection": "Clerk Account (Read-only)",
+        "editableSection": "Additional Information (Editable)",
+        "firstNameOverride": "First Name (Override)",
+        "firstNameOverrideHint": "Override Clerk first name for display",
+        "lastNameOverride": "Last Name (Override)",
+        "lastNameOverrideHint": "Override Clerk last name for display",
+        "firstNamePlaceholder": "Enter first name",
+        "lastNamePlaceholder": "Enter last name",
+        "phonePlaceholder": "Enter phone number",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "toasts": {
+          "updatedTitle": "Profile Updated",
+          "updatedMessage": "Your profile has been successfully updated.",
+          "errorTitle": "Error",
+          "errorMessage": "Failed to update profile. Please try again."
+        }
+      },
+      "addressSidebar": {
+        "addTitle": "Add Shipping Address",
+        "editTitle": "Edit Shipping Address",
+        "addDescription": "Add a new shipping address to your account.",
+        "editDescription": "Update your shipping address information.",
+        "addressName": "Address Name *",
+        "addressNamePlaceholder": "e.g., Home, Office, Mom's House",
+        "phonePlaceholder": "e.g., (555) 123-4567",
+        "addressType": "Address Type",
+        "addressTypePlaceholder": "Select address type",
+        "types": {
+          "home": "Home",
+          "office": "Office",
+          "other": "Other"
+        },
+        "streetAddress": "Street Address *",
+        "streetAddressPlaceholder": "Enter your street address (house number, street name, apartment/unit)",
+        "defaultAddress": "Set as Default Address",
+        "defaultAddressHint": "This address will be used as your primary shipping address",
+        "updating": "Updating...",
+        "adding": "Adding...",
+        "updateAddress": "Update Address",
+        "addAddressButton": "Add Address",
+        "toasts": {
+          "validationTitle": "Validation Error",
+          "validationMessage": "Please fill in all required fields including location details.",
+          "updatedTitle": "Address Updated",
+          "addedTitle": "Address Added",
+          "savedMessage": "Your address has been successfully {action}.",
+          "updatedAction": "updated",
+          "addedAction": "added",
+          "errorTitle": "Error",
+          "updateFailed": "Failed to update address",
+          "addFailed": "Failed to add address",
+          "retryMessage": "Please try again.",
+          "deletedTitle": "Address Deleted",
+          "deletedMessage": "Your address has been successfully deleted.",
+          "deleteErrorMessage": "Failed to delete address. Please try again."
+        }
       }
     },
     "dashboard": {

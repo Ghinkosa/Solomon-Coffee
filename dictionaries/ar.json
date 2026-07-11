@@ -1032,7 +1032,45 @@
       "title": "طلباتي",
       "showing": "عرض {count} من {total} طلبات",
       "emptyTitle": "لم يتم العثور على طلبات.",
-      "emptyDescription": "ابدأ التسوق لرؤية طلباتك هنا."
+      "emptyDescription": "ابدأ التسوق لرؤية طلباتك هنا.",
+      "list": {
+        "orderNumber": "طلب #{number}...",
+        "notAvailable": "غ/م",
+        "products": "المنتجات:",
+        "invoice": "الفاتورة:",
+        "generate": "إنشاء",
+        "generating": "جاري...",
+        "noInvoice": "----",
+        "view": "عرض",
+        "payNow": "ادفع الآن",
+        "paying": "جاري الدفع...",
+        "productAlt": "منتج",
+        "table": {
+          "orderNumber": "رقم الطلب",
+          "date": "التاريخ",
+          "customer": "العميل",
+          "email": "البريد",
+          "products": "المنتجات",
+          "total": "الإجمالي",
+          "status": "الحالة",
+          "invoice": "الفاتورة",
+          "actions": "إجراءات"
+        },
+        "status": {
+          "pending": "قيد الانتظار",
+          "processing": "قيد المعالجة",
+          "paid": "مدفوع",
+          "shipped": "تم الشحن",
+          "out_for_delivery": "خارج للتسليم",
+          "delivered": "تم التسليم",
+          "cancelled": "ملغى",
+          "completed": "مكتمل"
+        },
+        "toasts": {
+          "invoiceGenerated": "تم إنشاء الفاتورة بنجاح!",
+          "invoiceFailed": "فشل إنشاء الفاتورة"
+        }
+      }
     },
     "settings": {
       "title": "الإعدادات",
@@ -1267,6 +1305,67 @@
         "bulkDeletedTitle": "تم حذف العناوين",
         "bulkDeletedMessage": "تم حذف {count} {unit} بنجاح.",
         "bulkDeleteErrorMessage": "فشل حذف بعض العناوين. يرجى المحاولة مرة أخرى."
+      },
+      "editSidebar": {
+        "title": "تعديل الملف الشخصي",
+        "description": "حدّث معلوماتك الشخصية. بيانات Clerk للقراءة فقط.",
+        "clerkSection": "حساب Clerk (للقراءة فقط)",
+        "editableSection": "معلومات إضافية (قابلة للتعديل)",
+        "firstNameOverride": "الاسم الأول (تجاوز)",
+        "firstNameOverrideHint": "تجاوز اسم Clerk المعروض",
+        "lastNameOverride": "اسم العائلة (تجاوز)",
+        "lastNameOverrideHint": "تجاوز اسم العائلة المعروض",
+        "firstNamePlaceholder": "أدخل الاسم الأول",
+        "lastNamePlaceholder": "أدخل اسم العائلة",
+        "phonePlaceholder": "أدخل رقم الهاتف",
+        "saving": "جاري الحفظ...",
+        "saveChanges": "حفظ التغييرات",
+        "toasts": {
+          "updatedTitle": "تم تحديث الملف الشخصي",
+          "updatedMessage": "تم تحديث ملفك الشخصي بنجاح.",
+          "errorTitle": "خطأ",
+          "errorMessage": "فشل تحديث الملف الشخصي. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "addressSidebar": {
+        "addTitle": "إضافة عنوان شحن",
+        "editTitle": "تعديل عنوان الشحن",
+        "addDescription": "أضف عنوان شحن جديداً إلى حسابك.",
+        "editDescription": "حدّث معلومات عنوان الشحن.",
+        "addressName": "اسم العنوان *",
+        "addressNamePlaceholder": "مثال: المنزل، المكتب، منزل الأم",
+        "phonePlaceholder": "مثال: (555) 123-4567",
+        "addressType": "نوع العنوان",
+        "addressTypePlaceholder": "اختر نوع العنوان",
+        "types": {
+          "home": "منزل",
+          "office": "مكتب",
+          "other": "أخرى"
+        },
+        "streetAddress": "عنوان الشارع *",
+        "streetAddressPlaceholder": "أدخل عنوان الشارع (رقم المنزل، الشارع، الشقة/الوحدة)",
+        "defaultAddress": "تعيين كعنوان افتراضي",
+        "defaultAddressHint": "سيُستخدم هذا العنوان كعنوان الشحن الرئيسي",
+        "updating": "جاري التحديث...",
+        "adding": "جاري الإضافة...",
+        "updateAddress": "تحديث العنوان",
+        "addAddressButton": "إضافة عنوان",
+        "toasts": {
+          "validationTitle": "خطأ في التحقق",
+          "validationMessage": "يرجى ملء جميع الحقول المطلوبة بما في ذلك الموقع.",
+          "updatedTitle": "تم تحديث العنوان",
+          "addedTitle": "تمت إضافة العنوان",
+          "savedMessage": "تم {action} عنوانك بنجاح.",
+          "updatedAction": "تحديث",
+          "addedAction": "إضافة",
+          "errorTitle": "خطأ",
+          "updateFailed": "فشل تحديث العنوان",
+          "addFailed": "فشل إضافة العنوان",
+          "retryMessage": "يرجى المحاولة مرة أخرى.",
+          "deletedTitle": "تم حذف العنوان",
+          "deletedMessage": "تم حذف عنوانك بنجاح.",
+          "deleteErrorMessage": "فشل حذف العنوان. يرجى المحاولة مرة أخرى."
+        }
       }
     }
   },

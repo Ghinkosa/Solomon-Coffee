@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/sheet";
 import { showToast } from "@/lib/toast";
 import { User, Phone, Calendar, Save, X } from "lucide-react";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface EmailAddress {
   emailAddress: string;
@@ -83,6 +85,12 @@ export default function ProfileEditSidebar({
   onClose,
   userData,
 }: ProfileEditSidebarProps) {
+  const dictionary = useDictionary();
+  const p = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.profile.${path}`, fallback);
+  const e = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.profile.editSidebar.${path}`, fallback);
+
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: userData.sanity?.firstName || "",
@@ -91,8 +99,8 @@ export default function ProfileEditSidebar({
     dateOfBirth: userData.sanity?.dateOfBirth || "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
 
     try {
@@ -109,18 +117,20 @@ export default function ProfileEditSidebar({
 
       if (response.ok) {
         showToast.success(
-          "Profile Updated",
-          "Your profile has been successfully updated."
+          e("toasts.updatedTitle", "Profile Updated"),
+          e("toasts.updatedMessage", "Your profile has been successfully updated."),
         );
         onClose();
-        // Refresh the page to show updated data
         window.location.reload();
       } else {
         throw new Error("Failed to update profile");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      showToast.error("Error", "Failed to update profile. Please try again.");
+      showToast.error(
+        e("toasts.errorTitle", "Error"),
+        e("toasts.errorMessage", "Failed to update profile. Please try again."),
+      );
     } finally {
       setLoading(false);
     }
@@ -139,115 +149,119 @@ export default function ProfileEditSidebar({
         <SheetHeader>
           <SheetTitle className="flex items-center space-x-2">
             <User className="h-5 w-5" />
-            <span>Edit Profile</span>
+            <span>{e("title", "Edit Profile")}</span>
           </SheetTitle>
           <SheetDescription>
-            Update your personal information. Clerk data is read-only.
+            {e(
+              "description",
+              "Update your personal information. Clerk data is read-only.",
+            )}
           </SheetDescription>
         </SheetHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-6">
-          {/* Clerk Data (Read-only) */}
           <div className="space-y-4">
             <div className="border rounded-lg p-4 bg-gray-50">
               <h3 className="font-medium text-gray-900 mb-3 flex items-center">
                 <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-                Clerk Account (Read-only)
+                {e("clerkSection", "Clerk Account (Read-only)")}
               </h3>
 
               <div className="space-y-3">
                 <div>
-                  <Label className="text-sm text-gray-600">First Name</Label>
+                  <Label className="text-sm text-gray-600">
+                    {p("firstName", "First Name")}
+                  </Label>
                   <div className="text-gray-900 bg-white p-2 rounded border text-sm">
-                    {userData.clerk.firstName || "Not provided"}
+                    {userData.clerk.firstName || p("notProvided", "Not provided")}
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-sm text-gray-600">Last Name</Label>
+                  <Label className="text-sm text-gray-600">
+                    {p("lastName", "Last Name")}
+                  </Label>
                   <div className="text-gray-900 bg-white p-2 rounded border text-sm">
-                    {userData.clerk.lastName || "Not provided"}
+                    {userData.clerk.lastName || p("notProvided", "Not provided")}
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-sm text-gray-600">Email</Label>
+                  <Label className="text-sm text-gray-600">
+                    {p("email", "Email")}
+                  </Label>
                   <div className="text-gray-900 bg-white p-2 rounded border text-sm">
                     {userData.clerk.emailAddresses?.[0]?.emailAddress ||
-                      "Not provided"}
+                      p("notProvided", "Not provided")}
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Editable Sanity Data */}
           <div className="space-y-4">
             <div className="border rounded-lg p-4">
               <h3 className="font-medium text-gray-900 mb-3 flex items-center">
                 <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                Additional Information (Editable)
+                {e("editableSection", "Additional Information (Editable)")}
               </h3>
 
               <div className="space-y-4">
                 <div>
-                  <Label
-                    htmlFor="firstName"
-                    className="flex items-center space-x-1"
-                  >
+                  <Label htmlFor="firstName" className="flex items-center space-x-1">
                     <User className="h-4 w-4" />
-                    <span>First Name (Override)</span>
+                    <span>{e("firstNameOverride", "First Name (Override)")}</span>
                   </Label>
                   <Input
                     id="firstName"
                     value={formData.firstName}
-                    onChange={(e) =>
-                      handleInputChange("firstName", e.target.value)
+                    onChange={(event) =>
+                      handleInputChange("firstName", event.target.value)
                     }
-                    placeholder="Enter first name"
+                    placeholder={e("firstNamePlaceholder", "Enter first name")}
                     className="mt-1"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Override Clerk first name for display
+                    {e(
+                      "firstNameOverrideHint",
+                      "Override Clerk first name for display",
+                    )}
                   </p>
                 </div>
 
                 <div>
-                  <Label
-                    htmlFor="lastName"
-                    className="flex items-center space-x-1"
-                  >
+                  <Label htmlFor="lastName" className="flex items-center space-x-1">
                     <User className="h-4 w-4" />
-                    <span>Last Name (Override)</span>
+                    <span>{e("lastNameOverride", "Last Name (Override)")}</span>
                   </Label>
                   <Input
                     id="lastName"
                     value={formData.lastName}
-                    onChange={(e) =>
-                      handleInputChange("lastName", e.target.value)
+                    onChange={(event) =>
+                      handleInputChange("lastName", event.target.value)
                     }
-                    placeholder="Enter last name"
+                    placeholder={e("lastNamePlaceholder", "Enter last name")}
                     className="mt-1"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Override Clerk last name for display
+                    {e(
+                      "lastNameOverrideHint",
+                      "Override Clerk last name for display",
+                    )}
                   </p>
                 </div>
 
                 <div>
-                  <Label
-                    htmlFor="phone"
-                    className="flex items-center space-x-1"
-                  >
+                  <Label htmlFor="phone" className="flex items-center space-x-1">
                     <Phone className="h-4 w-4" />
-                    <span>Phone Number</span>
+                    <span>{p("phoneNumber", "Phone Number")}</span>
                   </Label>
                   <Input
                     id="phone"
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    placeholder="Enter phone number"
+                    onChange={(event) => handleInputChange("phone", event.target.value)}
+                    placeholder={e("phonePlaceholder", "Enter phone number")}
                     className="mt-1"
                   />
                 </div>
@@ -258,14 +272,14 @@ export default function ProfileEditSidebar({
                     className="flex items-center space-x-1"
                   >
                     <Calendar className="h-4 w-4" />
-                    <span>Date of Birth</span>
+                    <span>{p("dateOfBirth", "Date of Birth")}</span>
                   </Label>
                   <Input
                     id="dateOfBirth"
                     type="date"
                     value={formData.dateOfBirth}
-                    onChange={(e) =>
-                      handleInputChange("dateOfBirth", e.target.value)
+                    onChange={(event) =>
+                      handleInputChange("dateOfBirth", event.target.value)
                     }
                     className="mt-1"
                   />
@@ -274,18 +288,17 @@ export default function ProfileEditSidebar({
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex space-x-3 pt-6 border-t">
             <Button type="submit" className="flex-1" disabled={loading}>
               {loading ? (
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Saving...</span>
+                  <span>{e("saving", "Saving...")}</span>
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
                   <Save className="h-4 w-4" />
-                  <span>Save Changes</span>
+                  <span>{e("saveChanges", "Save Changes")}</span>
                 </div>
               )}
             </Button>
@@ -297,7 +310,7 @@ export default function ProfileEditSidebar({
               disabled={loading}
             >
               <X className="h-4 w-4 mr-2" />
-              Cancel
+              {p("cancel", "Cancel")}
             </Button>
           </div>
         </form>

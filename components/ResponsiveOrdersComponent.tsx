@@ -13,24 +13,41 @@ import { urlFor } from "@/sanity/lib/image";
 import PriceFormatter from "./PriceFormatter";
 import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import DirectPaymentModal from "./DirectPaymentModal";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
+import { useLocalizedPath } from "@/hooks/useLocale";
 
 const ResponsiveOrdersComponent = ({
   orders,
 }: {
   orders: MY_ORDERS_QUERY_RESULT;
 }) => {
+  const dictionary = useDictionary();
+  const toLocalizedPath = useLocalizedPath();
+  const l = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.list.${path}`, fallback);
+
+  const getStatusLabel = (status?: string | null) => {
+    if (!status) return l("status.pending", "Pending");
+    const key = status.toLowerCase().replace(/\s+/g, "_");
+    return l(`status.${key}`, status.charAt(0).toUpperCase() + status.slice(1));
+  };
+
+  const formatOrderNumber = (orderNumber?: string | null) => {
+    const suffix = orderNumber?.slice(-10) ?? l("notAvailable", "N/A");
+    return l("orderNumber", "Order #{number}...").replace("{number}", suffix);
+  };
+
   const [payingOrderId] = useState<string | null>(null);
   const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(
-    null
+    null,
   );
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<
     MY_ORDERS_QUERY_RESULT[0] | null
   >(null);
 
-  // Helper function to render product images with stacked layout
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderProductImages = (products: any[], isCard = false) => {
+  const renderProductImages = (products: unknown[], isCard = false) => {
     if (!products || products.length === 0) return null;
 
     const maxVisible = isCard ? 2 : 3;
@@ -42,7 +59,15 @@ const ResponsiveOrdersComponent = ({
       <div className="flex items-center">
         <div className="flex items-center">
           {displayProducts.map((item, index) => {
-            const imageUrl = item.product?.images?.[0] || item.product?.image;
+            const productItem = item as {
+              product?: {
+                name?: string;
+                images?: unknown[];
+                image?: unknown;
+              };
+            };
+            const imageUrl =
+              productItem.product?.images?.[0] || productItem.product?.image;
             return (
               <div
                 key={index}
@@ -54,7 +79,7 @@ const ResponsiveOrdersComponent = ({
                 {imageUrl ? (
                   <Image
                     src={urlFor(imageUrl).url()}
-                    alt={item.product?.name || "Product"}
+                    alt={productItem.product?.name || l("productAlt", "Product")}
                     fill
                     className="object-cover"
                   />
@@ -87,7 +112,6 @@ const ResponsiveOrdersComponent = ({
   const handlePayNow = async (orderId: string) => {
     if (!orderId) return;
 
-    // Find the order to get details for the modal
     const order = orders.find((o) => o._id === orderId);
     if (order) {
       setSelectedOrder(order);
@@ -115,14 +139,19 @@ const ResponsiveOrdersComponent = ({
       const data = await response.json();
 
       if (response.ok && data.success) {
-        toast.success(data.message || "Invoice generated successfully!");
+        toast.success(
+          data.message ||
+            l("toasts.invoiceGenerated", "Invoice generated successfully!"),
+        );
         window.location.reload();
       } else {
-        toast.error(data.error || "Failed to generate invoice");
+        toast.error(
+          data.error || l("toasts.invoiceFailed", "Failed to generate invoice"),
+        );
       }
     } catch (error) {
       console.error("Invoice generation error:", error);
-      toast.error("Failed to generate invoice");
+      toast.error(l("toasts.invoiceFailed", "Failed to generate invoice"));
     } finally {
       setGeneratingInvoiceId(null);
     }
@@ -179,26 +208,25 @@ const ResponsiveOrdersComponent = ({
           {generatingInvoiceId === order._id ? (
             <>
               <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600 mr-1"></div>
-              Gen...
+              {l("generating", "Gen...")}
             </>
           ) : (
-            "Generate"
+            l("generate", "Generate")
           )}
         </Button>
       );
     } else {
-      return <span className="text-xs text-gray-400">----</span>;
+      return <span className="text-xs text-gray-400">{l("noInvoice", "----")}</span>;
     }
   };
 
-  // Mobile Card View Component
   const OrderCard = ({ order }: { order: MY_ORDERS_QUERY_RESULT[0] }) => (
     <Card className="w-full shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="space-y-1 flex-1 min-w-0">
             <div className="font-medium text-sm truncate">
-              Order #{order.orderNumber?.slice(-10) ?? "N/A"}...
+              {formatOrderNumber(order.orderNumber)}
             </div>
             <div className="text-xs text-gray-500">
               {order?.orderDate &&
@@ -207,27 +235,23 @@ const ResponsiveOrdersComponent = ({
           </div>
           <Badge
             className={`${getStatusBadgeVariant(
-              order
+              order,
             )} text-xs font-medium px-2 py-1 rounded-full shrink-0 ml-2`}
           >
-            {order?.status
-              ? order.status.charAt(0).toUpperCase() + order.status.slice(1)
-              : "Pending"}
+            {getStatusLabel(order?.status)}
           </Badge>
         </div>
-      </CardHeader>{" "}
+      </CardHeader>
       <CardContent className="space-y-4">
-        {/* Customer Info */}
         <div className="flex items-center gap-2 text-sm">
           <div className="font-medium">{order.customerName}</div>
           <div className="text-gray-500">•</div>
           <div className="text-gray-600 truncate">{order.email}</div>
         </div>
 
-        {/* Products */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Products:</span>
+            <span className="text-sm text-gray-500">{l("products", "Products:")}</span>
             {renderProductImages(order.products || [], true)}
           </div>
           <div className="font-semibold">
@@ -235,14 +259,12 @@ const ResponsiveOrdersComponent = ({
           </div>
         </div>
 
-        {/* Invoice Section */}
         <div className="space-y-3 pt-2 border-t">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Invoice:</span>
+            <span className="text-sm text-gray-500">{l("invoice", "Invoice:")}</span>
             {renderInvoiceSection(order)}
           </div>
 
-          {/* Actions */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <Button
               asChild
@@ -250,11 +272,11 @@ const ResponsiveOrdersComponent = ({
               className="flex-1 sm:flex-none min-w-20 h-10"
             >
               <Link
-                href={`/user/orders/${order._id}`}
+                href={toLocalizedPath(`/user/orders/${order._id}`)}
                 className="flex items-center justify-center"
               >
                 <Eye className="w-4 h-4 mr-2" />
-                <span className="text-sm">View</span>
+                <span className="text-sm">{l("view", "View")}</span>
               </Link>
             </Button>
             {isOrderPayable(order) && (
@@ -266,12 +288,12 @@ const ResponsiveOrdersComponent = ({
                 {payingOrderId === order._id ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    <span className="text-sm font-medium">Paying...</span>
+                    <span className="text-sm font-medium">{l("paying", "Paying...")}</span>
                   </>
                 ) : (
                   <>
                     <CreditCard className="w-4 h-4 mr-2 shrink-0" />
-                    <span className="text-sm font-medium">Pay Now</span>
+                    <span className="text-sm font-medium">{l("payNow", "Pay Now")}</span>
                   </>
                 )}
               </Button>
@@ -284,7 +306,6 @@ const ResponsiveOrdersComponent = ({
 
   return (
     <div>
-      {/* Payment Modal */}
       {selectedOrder && selectedOrder._id && selectedOrder.orderNumber && (
         <DirectPaymentModal
           isOpen={paymentModalOpen}
@@ -295,45 +316,43 @@ const ResponsiveOrdersComponent = ({
         />
       )}
 
-      {/* Mobile Card View - Hidden on large screens */}
       <div className="lg:hidden space-y-4">
         {orders.map((order) => (
           <OrderCard key={order._id} order={order} />
         ))}
       </div>
 
-      {/* Desktop Table View - Hidden on small screens */}
       <div className="hidden lg:block">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b">
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Order #
+                  {l("table.orderNumber", "Order #")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Date
+                  {l("table.date", "Date")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Customer
+                  {l("table.customer", "Customer")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Email
+                  {l("table.email", "Email")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Products
+                  {l("table.products", "Products")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Total
+                  {l("table.total", "Total")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Status
+                  {l("table.status", "Status")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Invoice
+                  {l("table.invoice", "Invoice")}
                 </th>
                 <th className="text-left py-3 px-2 font-medium text-sm text-gray-700">
-                  Actions
+                  {l("table.actions", "Actions")}
                 </th>
               </tr>
             </thead>
@@ -345,7 +364,7 @@ const ResponsiveOrdersComponent = ({
                 >
                   <td className="py-4 px-2">
                     <div className="font-medium text-sm">
-                      {order.orderNumber?.slice(-10) ?? "N/A"}...
+                      {order.orderNumber?.slice(-10) ?? l("notAvailable", "N/A")}...
                     </div>
                   </td>
                   <td className="py-4 px-2 text-sm">
@@ -353,9 +372,7 @@ const ResponsiveOrdersComponent = ({
                       format(new Date(order.orderDate), "dd/MM/yyyy")}
                   </td>
                   <td className="py-4 px-2">
-                    <div className="font-medium text-sm">
-                      {order.customerName}
-                    </div>
+                    <div className="font-medium text-sm">{order.customerName}</div>
                   </td>
                   <td className="py-4 px-2 text-sm text-gray-600">
                     <div className="truncate max-w-40">{order.email}</div>
@@ -372,13 +389,10 @@ const ResponsiveOrdersComponent = ({
                   <td className="py-4 px-2">
                     <Badge
                       className={`${getStatusBadgeVariant(
-                        order
+                        order,
                       )} text-xs font-medium px-2 py-1 rounded-full`}
                     >
-                      {order?.status
-                        ? order.status.charAt(0).toUpperCase() +
-                          order.status.slice(1)
-                        : "Pending"}
+                      {getStatusLabel(order?.status)}
                     </Badge>
                   </td>
                   <td className="py-4 px-2">{renderInvoiceSection(order)}</td>
@@ -391,11 +405,11 @@ const ResponsiveOrdersComponent = ({
                         className="min-w-[70px] xl:min-w-20"
                       >
                         <Link
-                          href={`/user/orders/${order._id}`}
+                          href={toLocalizedPath(`/user/orders/${order._id}`)}
                           className="flex items-center justify-center"
                         >
                           <Eye className="w-3 h-3 xl:mr-1" />
-                          <span className="hidden xl:inline ml-1">View</span>
+                          <span className="hidden xl:inline ml-1">{l("view", "View")}</span>
                         </Link>
                       </Button>
                       {isOrderPayable(order) && (
@@ -409,14 +423,14 @@ const ResponsiveOrdersComponent = ({
                             <>
                               <div className="animate-spin rounded-full h-3 w-3 xl:mr-1"></div>
                               <span className="hidden xl:inline ml-1 text-xs">
-                                Paying...
+                                {l("paying", "Paying...")}
                               </span>
                             </>
                           ) : (
                             <>
                               <CreditCard className="w-3 h-3 xl:mr-1 shrink-0" />
                               <span className="hidden xl:inline ml-1 text-xs font-medium">
-                                Pay Now
+                                {l("payNow", "Pay Now")}
                               </span>
                             </>
                           )}
