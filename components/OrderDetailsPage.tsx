@@ -829,11 +829,11 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               <DialogTitle>{d("cancelDialogTitle", "Request Order Cancellation")}</DialogTitle>
             </VisuallyHidden.Root>
             <div className="text-center space-y-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-50 border-4 border-red-100">
-                <AlertTriangle className="h-8 w-8 text-red-600 animate-pulse" />
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-shop_orange/10 border-4 border-shop_orange/25">
+                <AlertTriangle className="h-8 w-8 text-shop_orange animate-pulse" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-bold text-gray-900">
+                <h3 className="text-xl font-bold text-shop_dark_green">
                   {d("cancelDialogTitle", "Request Order Cancellation")}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
@@ -859,22 +859,22 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                       "cancelReasonPlaceholder",
                       "e.g., Changed my mind, found a better deal..."
                     )}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-shop_light_green resize-none"
                     rows={3}
                   />
                 </div>
 
                 {currentOrder.paymentStatus === "paid" && (
-                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="mt-4 p-4 bg-shop_light_bg border border-shop_light_green/30 rounded-lg">
                     <div className="flex items-start gap-3">
                       <div className="shrink-0">
-                        <CreditCard className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <CreditCard className="h-5 w-5 text-shop_light_green mt-0.5" />
                       </div>
                       <div className="text-left">
-                        <p className="font-semibold text-blue-900">
+                        <p className="font-semibold text-shop_dark_green">
                           {d("refundTitle", "Refund Information")}
                         </p>
-                        <p className="text-sm text-blue-700 mt-1">
+                        <p className="text-sm text-shop_btn_dark_green mt-1">
                           {d(
                             "refundDescription",
                             "If approved, your payment of {amount} will be refunded to your original payment method."
@@ -895,7 +895,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                               )
                             )}
                         </p>
-                        <ul className="text-sm text-blue-700 mt-2 space-y-1 list-disc list-inside">
+                        <ul className="text-sm text-shop_btn_dark_green mt-2 space-y-1 list-disc list-inside">
                           <li>{d("refundTimeline", "Refunds typically take 5–10 business days")}</li>
                           <li>
                             {d("refundContact", "Contact support if you do not see the refund")}
@@ -923,10 +923,9 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                 {d("keepOrder", "Keep Order")}
               </Button>
               <Button
-                variant="destructive"
                 onClick={handleCancelOrder}
                 disabled={isCancelling}
-                className="flex-1 bg-orange-600 hover:bg-orange-700 focus:ring-orange-500 font-semibold shadow-lg hover:shadow-orange-200"
+                className="flex-1 bg-shop_light_green hover:bg-shop_dark_green text-white focus:ring-shop_light_green font-semibold shadow-lg hover:shadow-shop_light_green/30"
               >
                 {isCancelling ? (
                   <>

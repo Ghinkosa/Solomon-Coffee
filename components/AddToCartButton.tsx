@@ -149,7 +149,12 @@ const AddToCartButton = memo(({
   }
 
   return (
-    <div className={cn("w-full", compact ? "min-h-10" : "h-12 flex items-center")}>
+    <div
+      className={cn(
+        "w-full",
+        itemCount ? "" : compact ? "min-h-10" : "h-12 flex items-center",
+      )}
+    >
       {itemCount ? (
         compact ? (
           <div

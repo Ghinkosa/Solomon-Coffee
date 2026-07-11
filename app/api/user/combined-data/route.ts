@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
+import { getAccountDiscount } from "@/lib/checkout-pricing";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -11,14 +12,17 @@ export const revalidate = 0;
  */
 export async function GET() {
   try {
-    const { userId } = await auth();
+    const clerkUser = await currentUser();
 
-    if (!userId) {
+    if (!clerkUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = clerkUser.id;
+    const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+
     // Fetch all data in parallel
-    const [user, orders, notifications] = await Promise.all([
+    const [user, orders, notifications, accountProfile] = await Promise.all([
       // Get user data including employee status
       client.fetch(
         `*[_type == "user" && clerkUserId == $userId][0]{
@@ -41,7 +45,17 @@ export async function GET() {
         }`,
         { userId }
       ),
+      // Get account tier profile (premium/business) used for checkout discounts.
+      // This lives on the separate `userType` document keyed by email.
+      email
+        ? client.fetch(
+            `*[_type == "userType" && email == $email][0]{ isBusiness, businessStatus, isActive }`,
+            { email }
+          )
+        : Promise.resolve(null),
     ]);
+
+    const accountDiscount = getAccountDiscount(accountProfile);
 
     return NextResponse.json(
       {
@@ -49,6 +63,8 @@ export async function GET() {
         ordersCount: orders || 0,
         isEmployee: user?.isEmployee || false,
         unreadNotifications: notifications?.length || 0,
+        accountDiscountRate: accountDiscount.rate,
+        accountDiscountType: accountDiscount.type,
       },
       {
         status: 200,
@@ -67,6 +83,8 @@ export async function GET() {
         ordersCount: 0,
         isEmployee: false,
         unreadNotifications: 0,
+        accountDiscountRate: 0,
+        accountDiscountType: null,
       },
       { status: 200 }
     );

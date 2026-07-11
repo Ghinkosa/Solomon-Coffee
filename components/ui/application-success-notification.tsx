@@ -98,7 +98,7 @@ export default function ApplicationSuccessNotification({
       iconBg: "bg-blue-100",
       iconColor: "text-blue-600",
       benefits: listAt("business.pendingBenefits", [
-        "2% additional discount on all orders",
+        "2% discount on all orders",
         "Priority customer support",
         "Bulk order management",
         "Business invoicing capabilities",

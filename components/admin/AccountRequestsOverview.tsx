@@ -148,7 +148,7 @@ export default function AccountRequestsOverview({
               </div>
               <ul className="text-xs text-purple-700 space-y-1 pl-1">
                 <li>• All Premium benefits</li>
-                <li>• 2% additional discount</li>
+                <li>• 2% discount</li>
                 <li>• Bulk order capabilities</li>
                 <li>• Dedicated account manager</li>
               </ul>

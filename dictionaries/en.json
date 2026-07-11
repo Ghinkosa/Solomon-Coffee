@@ -1035,6 +1035,7 @@
     "cardDescription": "Pay securely with your credit or debit card via Stripe",
     "addressSelected": "Selected",
     "businessDiscount": "Business Account Discount (2%)",
+    "premiumDiscount": "Premium Member Discount (5%)",
     "packaging": "Packaging",
     "packagingExtra": "packaging",
     "subtotalWithCount": "Subtotal ({count} items)",
@@ -1788,9 +1789,9 @@
         },
         "business": {
           "upgradeTitle": "Upgrade to Business Account",
-          "upgradeDescription": "Get 2% additional discount on all orders with our Business Account plan. Perfect for companies and bulk purchases.",
+          "upgradeDescription": "Get 2% off all orders with our Business Account plan. Perfect for companies and bulk purchases.",
           "upgradeBenefits": [
-            "2% additional discount on all orders",
+            "2% discount on all orders",
             "Priority customer support",
             "Bulk order management",
             "Business invoicing"
@@ -1800,7 +1801,7 @@
           "pendingDescription": "Excellent! Your business account application has been submitted successfully and is currently under administrative review.",
           "pendingBenefitsTitle": "Business Account Benefits (Upon Approval):",
           "pendingBenefits": [
-            "2% additional discount on all orders",
+            "2% discount on all orders",
             "Priority customer support",
             "Bulk order management",
             "Business invoicing capabilities"
@@ -1811,7 +1812,7 @@
           "activeDescription": "Fantastic! Your business account is now active and you're enjoying exclusive business benefits.",
           "activeBenefitsTitle": "Active Business Benefits:",
           "activeBenefits": [
-            "2% additional discount automatically applied at checkout",
+            "2% discount automatically applied at checkout",
             "Priority customer support",
             "Advanced bulk order management",
             "Professional business invoicing"

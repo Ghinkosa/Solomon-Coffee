@@ -556,7 +556,7 @@ export const userType = defineType({
       type: "boolean",
       initialValue: false,
       description:
-        "Whether the user has business account status with 2% additional discount (Admin approval required)",
+        "Whether the user has business account status with 2% discount (Admin approval required)",
     }),
     defineField({
       name: "businessStatus",

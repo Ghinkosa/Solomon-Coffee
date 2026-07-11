@@ -38,6 +38,44 @@ export interface CheckoutPricingResult {
 const DEFAULT_FREE_SHIPPING_THRESHOLD = 100;
 const DEFAULT_SHIPPING_FEE = 10;
 
+// Account-level discount rates applied to the post-product-discount subtotal.
+export const BUSINESS_DISCOUNT_RATE = 0.02;
+export const PREMIUM_DISCOUNT_RATE = 0.05;
+
+export type AccountDiscountType = "business" | "premium" | null;
+
+export interface AccountDiscountProfile {
+  isBusiness?: boolean;
+  businessStatus?: string;
+  // Premium account is marked active via the `isActive` flag once approved.
+  isActive?: boolean;
+}
+
+/**
+ * Resolve the account-level discount for a user profile.
+ * Business and premium do NOT stack — the higher applicable rate wins.
+ */
+export function getAccountDiscount(profile?: AccountDiscountProfile | null): {
+  rate: number;
+  type: AccountDiscountType;
+} {
+  if (!profile) return { rate: 0, type: null };
+
+  const businessRate =
+    profile.isBusiness && profile.businessStatus === "active"
+      ? BUSINESS_DISCOUNT_RATE
+      : 0;
+  const premiumRate = profile.isActive ? PREMIUM_DISCOUNT_RATE : 0;
+
+  if (businessRate === 0 && premiumRate === 0) {
+    return { rate: 0, type: null };
+  }
+
+  return premiumRate >= businessRate
+    ? { rate: premiumRate, type: "premium" }
+    : { rate: businessRate, type: "business" };
+}
+
 export function getTaxRate(): number {
   return parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0;
 }

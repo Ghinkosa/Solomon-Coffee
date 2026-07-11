@@ -815,6 +815,7 @@
     "cardDescription": "Paga de forma segura con tarjeta de crédito o débito vía Stripe",
     "addressSelected": "Seleccionada",
     "businessDiscount": "Descuento cuenta comercial (2%)",
+    "premiumDiscount": "Descuento miembro premium (5%)",
     "packaging": "Empaque",
     "packagingExtra": "empaque",
     "subtotalWithCount": "Subtotal ({count} artículos)",
@@ -1374,9 +1375,9 @@
         },
         "business": {
           "upgradeTitle": "Actualizar a cuenta comercial",
-          "upgradeDescription": "Obtén un 2% de descuento adicional en todos los pedidos. Ideal para empresas y compras al por mayor.",
+          "upgradeDescription": "Obtén un 2% de descuento en todos los pedidos. Ideal para empresas y compras al por mayor.",
           "upgradeBenefits": [
-            "2% de descuento adicional en todos los pedidos",
+            "2% de descuento en todos los pedidos",
             "Soporte prioritario",
             "Gestión de pedidos al por mayor",
             "Facturación comercial"
@@ -1386,7 +1387,7 @@
           "pendingDescription": "¡Excelente! Tu solicitud de cuenta comercial se envió correctamente y está en revisión administrativa.",
           "pendingBenefitsTitle": "Beneficios comerciales (tras aprobación):",
           "pendingBenefits": [
-            "2% de descuento adicional en todos los pedidos",
+            "2% de descuento en todos los pedidos",
             "Soporte prioritario",
             "Gestión de pedidos al por mayor",
             "Capacidades de facturación comercial"
@@ -1397,7 +1398,7 @@
           "activeDescription": "¡Fantástico! Tu cuenta comercial está activa y disfrutas de beneficios exclusivos.",
           "activeBenefitsTitle": "Beneficios comerciales activos:",
           "activeBenefits": [
-            "2% de descuento adicional aplicado automáticamente al pagar",
+            "2% de descuento aplicado automáticamente al pagar",
             "Soporte prioritario",
             "Gestión avanzada de pedidos al por mayor",
             "Facturación comercial profesional"

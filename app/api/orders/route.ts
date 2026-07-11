@@ -8,6 +8,7 @@ import {
   PAYMENT_METHODS,
 } from "@/lib/orderStatus";
 import { validateOrderPricing } from "@/lib/validate-order";
+import { getAccountDiscount } from "@/lib/checkout-pricing";
 import {
   isShippingAddressValid,
   normalizeShippingAddress,
@@ -150,14 +151,13 @@ export const POST = async (request: NextRequest) => {
       const profile = await readClient.fetch<{
         isBusiness?: boolean;
         businessStatus?: string;
+        isActive?: boolean;
       }>(
-        `*[_type == "userType" && email == $email][0]{ isBusiness, businessStatus }`,
+        `*[_type == "userType" && email == $email][0]{ isBusiness, businessStatus, isActive }`,
         { email: userEmail },
       );
 
-      if (profile?.isBusiness && profile.businessStatus === "active") {
-        businessDiscountRate = 0.02;
-      }
+      businessDiscountRate = getAccountDiscount(profile).rate;
     }
 
     const pricingValidation = await validateOrderPricing({

@@ -173,9 +173,6 @@ export default function UserDashboardPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: user.emailAddresses[0].emailAddress,
-        }),
       });
 
       const data = await response.json();
@@ -500,11 +497,10 @@ export default function UserDashboardPage() {
             </div>
           )}
 
-        {userProfile &&
-          userProfile.isActive &&
-          !userProfile.isBusiness &&
-          userProfile.businessStatus !== "pending" &&
-          userProfile.businessStatus !== "rejected" && (
+        {(!userProfile ||
+          (!userProfile.isBusiness &&
+            userProfile.businessStatus !== "pending" &&
+            userProfile.businessStatus !== "rejected")) && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start justify-between">
                 <div>
@@ -514,12 +510,12 @@ export default function UserDashboardPage() {
                   <p className="text-blue-700 text-sm mb-3">
                     {a(
                       "business.upgradeDescription",
-                      "Get 2% additional discount on all orders with our Business Account plan. Perfect for companies and bulk purchases.",
+                      "Get 2% off all orders with our Business Account plan. Perfect for companies and bulk purchases.",
                     )}
                   </p>
                   <ul className="text-blue-600 text-sm space-y-1 mb-4">
                     {list("business.upgradeBenefits", [
-                      "2% additional discount on all orders",
+                      "2% discount on all orders",
                       "Priority customer support",
                       "Bulk order management",
                       "Business invoicing",
@@ -579,7 +575,7 @@ export default function UserDashboardPage() {
                   </h4>
                   <ul className="text-blue-700 text-xs space-y-1">
                     {list("business.pendingBenefits", [
-                      "2% additional discount on all orders",
+                        "2% discount on all orders",
                       "Priority customer support",
                       "Bulk order management",
                       "Business invoicing capabilities",
@@ -632,7 +628,7 @@ export default function UserDashboardPage() {
                     </h4>
                     <ul className="text-emerald-700 text-xs space-y-1">
                       {list("business.activeBenefits", [
-                        "2% additional discount automatically applied at checkout",
+                        "2% discount automatically applied at checkout",
                         "Priority customer support",
                         "Advanced bulk order management",
                         "Professional business invoicing",

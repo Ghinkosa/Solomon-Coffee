@@ -51,6 +51,7 @@ import Link from "next/link";
 import {
   buildCheckoutPricingItems,
   calculateCheckoutTotals,
+  getAccountDiscount,
 } from "@/lib/checkout-pricing";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
@@ -188,40 +189,28 @@ export function CheckoutContent() {
   const checkoutTotals = useMemo(() => {
     const lines = cart.map((item) => resolveCheckoutLine(item, selectionsData));
 
-    const businessDiscountRate =
-      userProfile?.isBusiness && userProfile.businessStatus === "active"
-        ? 0.02
-        : 0;
+    const accountDiscount = getAccountDiscount(userProfile);
 
-    return calculateCheckoutTotals({
-      items: buildCheckoutPricingItems(lines),
-      businessDiscountRate,
-    });
+    return {
+      ...calculateCheckoutTotals({
+        items: buildCheckoutPricingItems(lines),
+        businessDiscountRate: accountDiscount.rate,
+      }),
+      accountDiscountType: accountDiscount.type,
+    };
   }, [cart, selectionsData, userProfile]);
 
   const grossSubtotal = checkoutTotals.subtotal;
   const totalDiscount = checkoutTotals.productDiscount;
   const currentSubtotal = grossSubtotal - totalDiscount;
   const businessDiscount = checkoutTotals.businessDiscount;
+  const accountDiscountType = checkoutTotals.accountDiscountType;
   const totalPackagingFee = checkoutTotals.packagingFee;
   const subtotalWithPackaging =
     currentSubtotal - businessDiscount + totalPackagingFee;
   const shipping = checkoutTotals.shipping;
   const tax = checkoutTotals.tax;
   const total = checkoutTotals.total;
-
-  console.log("📍 CheckoutContent - Calculations:", {
-    grossSubtotal,
-    totalDiscount,
-    currentSubtotal,
-    totalPackagingFee,
-    businessDiscount,
-    subtotalWithPackaging,
-    shipping,
-    tax,
-    total
-  });
-
   // Fetch user profile for business account status
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -779,10 +768,23 @@ export function CheckoutContent() {
             {businessDiscount > 0 && (
               <div className="flex justify-between text-blue-600">
                 <span>
-                  {String(
-                    checkoutCopy.businessDiscount ??
-                      t(dictionary, "checkout.businessDiscount", "Business Account Discount (2%)"),
-                  )}
+                  {accountDiscountType === "premium"
+                    ? String(
+                        checkoutCopy.premiumDiscount ??
+                          t(
+                            dictionary,
+                            "checkout.premiumDiscount",
+                            "Premium Member Discount (5%)",
+                          ),
+                      )
+                    : String(
+                        checkoutCopy.businessDiscount ??
+                          t(
+                            dictionary,
+                            "checkout.businessDiscount",
+                            "Business Account Discount (2%)",
+                          ),
+                      )}
                 </span>
                 <span>
                   -<PriceFormatter amount={businessDiscount} />

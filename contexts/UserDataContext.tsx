@@ -9,10 +9,14 @@ import React, {
 } from "react";
 import { useUser } from "@clerk/nextjs";
 
+type AccountDiscountType = "business" | "premium" | null;
+
 interface UserData {
   ordersCount: number;
   isEmployee: boolean;
   unreadNotifications: number;
+  accountDiscountRate: number;
+  accountDiscountType: AccountDiscountType;
   isLoading: boolean;
 }
 
@@ -34,6 +38,8 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
     ordersCount: 0,
     isEmployee: false,
     unreadNotifications: 0,
+    accountDiscountRate: 0,
+    accountDiscountType: null,
     isLoading: false,
   });
 
@@ -66,6 +72,8 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
             ordersCount: data.ordersCount || 0,
             isEmployee: data.isEmployee || false,
             unreadNotifications: data.unreadNotifications || 0,
+            accountDiscountRate: data.accountDiscountRate || 0,
+            accountDiscountType: data.accountDiscountType || null,
             isLoading: false,
           };
 

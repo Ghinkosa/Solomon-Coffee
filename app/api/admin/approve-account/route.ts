@@ -64,23 +64,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // For business accounts, ensure user has premium status first
-    if (type === "business" && user.premiumStatus !== "active") {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "User must have an active premium account before applying for business account",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Update the user status
-    const updateData: Record<string, string | null> = {
+    // Update the user status. Also flip the activation flag the rest of the
+    // app relies on (isActive for premium, isBusiness for business) so the
+    // account discount actually applies at checkout.
+    const updateData: Record<string, string | boolean | null> = {
       [`${type}Status`]: "active",
       [`${type}ApprovedAt`]: new Date().toISOString(),
     };
+
+    if (type === "premium") {
+      updateData.isActive = true;
+    } else {
+      updateData.isBusiness = true;
+      updateData.membershipType = "business";
+    }
 
     // Clear rejection reason if it exists
     if (user.rejectionReason) {

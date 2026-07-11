@@ -29,6 +29,7 @@ import {
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
+import { useUserData } from "@/contexts/UserDataContext";
 
 const FREE_SHIPPING_THRESHOLD = 100;
 
@@ -144,6 +145,7 @@ export default function CartDrawer() {
     cartDrawerHighlightKey,
     closeCartDrawer,
   } = useCartStore();
+  const { accountDiscountRate, accountDiscountType } = useUserData();
 
   const checkoutTotals = useMemo(
     () =>
@@ -156,8 +158,9 @@ export default function CartDrawer() {
             packagingPrice: item.selectedPackaging?.price ?? 0,
           })),
         ),
+        businessDiscountRate: accountDiscountRate,
       }),
-    [items],
+    [items, accountDiscountRate],
   );
 
   const itemQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -285,9 +288,7 @@ export default function CartDrawer() {
                   </span>
                   <PriceFormatter
                     amount={
-                      checkoutTotals.subtotal -
-                      checkoutTotals.productDiscount +
-                      checkoutTotals.packagingFee
+                      checkoutTotals.subtotal + checkoutTotals.packagingFee
                     }
                   />
                 </div>
@@ -296,6 +297,26 @@ export default function CartDrawer() {
                     <span>{drawerCopy.discount ?? "Discount"}</span>
                     <span>
                       -<PriceFormatter amount={checkoutTotals.productDiscount} />
+                    </span>
+                  </div>
+                )}
+                {checkoutTotals.businessDiscount > 0 && (
+                  <div className="flex items-center justify-between text-shop_light_green">
+                    <span>
+                      {accountDiscountType === "premium"
+                        ? t(
+                            dictionary,
+                            "checkout.premiumDiscount",
+                            "Premium Member Discount (5%)",
+                          )
+                        : t(
+                            dictionary,
+                            "checkout.businessDiscount",
+                            "Business Account Discount (2%)",
+                          )}
+                    </span>
+                    <span>
+                      -<PriceFormatter amount={checkoutTotals.businessDiscount} />
                     </span>
                   </div>
                 )}
