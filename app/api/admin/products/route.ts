@@ -38,12 +38,19 @@ export async function GET(req: NextRequest) {
     const sortBy = searchParams.get("sortBy") || "_createdAt";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    console.log("API Params - category:", category, "search:", search);
+    const allowedSortFields = new Set([
+      "_createdAt",
+      "name",
+      "price",
+      "stock",
+    ]);
+    const sortField = allowedSortFields.has(sortBy) ? sortBy : "_createdAt";
+    const sortDir = sortOrder === "asc" ? "asc" : "desc";
 
     // If requesting a specific product by ID, return full details
     if (productId) {
-      const productQuery = `
-        *[_type == "product" && _id == "${productId}"][0] {
+      const product = await client.fetch(
+        `*[_type == "product" && _id == $productId][0] {
           _id,
           _type,
           _createdAt,
@@ -75,10 +82,9 @@ export async function GET(req: NextRequest) {
           status,
           variant,
           isFeatured
-        }
-      `;
-
-      const product = await client.fetch(productQuery);
+        }`,
+        { productId },
+      );
 
       if (!product) {
         return NextResponse.json(
@@ -112,25 +118,27 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ product: transformedProduct });
     }
 
-    // Build filter conditions
-    const filterConditions = [];
+    // Build filter conditions using GROQ parameters (never interpolate user input).
+    const filters = [`_type == "product"`];
+    const params: Record<string, unknown> = {
+      offset,
+      limitEnd: offset + limit,
+    };
+
     if (category) {
-      // Use references to filter by category
-      filterConditions.push(
-        `references(*[_type == "category" && title == "${category}"]._id)`
+      filters.push(
+        `references(*[_type == "category" && title == $category]._id)`,
       );
+      params.category = category;
     }
     if (search) {
-      filterConditions.push(
-        `(name match "${search}*" || description match "${search}*")`
-      );
-    } // Build GROQ query
+      filters.push(`(name match $search || description match $search)`);
+      params.search = `${search}*`;
+    }
+
+    const filterClause = filters.join(" && ");
     const query = `
-      *[_type == "product"${
-        filterConditions.length > 0
-          ? ` && (${filterConditions.join(" && ")})`
-          : ""
-      }] | order(${sortBy} ${sortOrder}) [${offset}...${offset + limit}] {
+      *[${filterClause}] | order(${sortField} ${sortDir}) [$offset...$limitEnd] {
         _id,
         _createdAt,
         name,
@@ -163,19 +171,11 @@ export async function GET(req: NextRequest) {
       }
     `;
 
-    // Get count query
-    const countQuery = `
-      count(*[_type == "product"${
-        filterConditions.length > 0
-          ? ` && (${filterConditions.join(" && ")})`
-          : ""
-      }])
-    `;
+    const countQuery = `count(*[${filterClause}])`;
 
-    // Execute queries
     const [products, totalCount] = await Promise.all([
-      client.fetch(query),
-      client.fetch(countQuery),
+      client.fetch(query, params),
+      client.fetch(countQuery, params),
     ]);
 
     return NextResponse.json({

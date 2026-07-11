@@ -49,7 +49,7 @@ export async function GET() {
       // Get account tier profile (premium/business) used for checkout discounts.
       email
         ? client.fetch(
-            `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive }`,
+            `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive, premiumStatus }`,
             { email }
           )
         : Promise.resolve(null),

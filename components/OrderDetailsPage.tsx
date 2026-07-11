@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -212,21 +212,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
   const { addMultipleItems } = useCartStore();
   const router = useRouter();
 
-  // Debug logging to see what data we have
-  useEffect(() => {
-    console.log("🔍 Order Details Debug:");
-    console.log("Full order object:", order);
-    console.log("Products array:", order.products);
-    order.products?.forEach((product, idx) => {
-      console.log(`Product ${idx}:`, {
-        name: product.product.name,
-        weight: product.weight,
-        grind: product.grind,
-        packaging: product.packaging,
-      });
-    });
-  }, [order]);
-
   const handleReorder = async () => {
     setIsReordering(true);
     try {
@@ -253,8 +238,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
           default: false,
         } : undefined,
       }));
-
-      console.log("🔄 Reorder cart items:", cartItems);
 
       // Add all items to cart at once
       addMultipleItems(cartItems);
@@ -604,17 +587,6 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                     },
                     index: number
                   ) => {
-                    // Debug each item
-                    console.log(`Rendering item ${index}:`, {
-                      name: item.product.name,
-                      hasWeight: !!item.weight,
-                      weightData: item.weight,
-                      hasGrind: !!item.grind,
-                      grindData: item.grind,
-                      hasPackaging: !!item.packaging,
-                      packagingData: item.packaging,
-                    });
-
                     return (
                       <div
                         key={index}

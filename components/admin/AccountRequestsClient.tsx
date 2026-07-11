@@ -955,6 +955,16 @@ export default function AccountRequestsClient() {
             Rejected
           </Badge>
         );
+      case "cancelled":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-gray-100 text-gray-700 border-gray-300"
+          >
+            <XCircle className="w-3 h-3 mr-1" />
+            Cancelled
+          </Badge>
+        );
       default:
         return null;
     }

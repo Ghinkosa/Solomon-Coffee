@@ -38,10 +38,6 @@ function getLocale(request: NextRequest): string | undefined {
 export default clerkMiddleware(async (auth, req) => {
   const pathname = req.nextUrl.pathname;
   const searchParams = req.nextUrl.searchParams;
-  
-  // Log incoming request for debugging
-  console.log("📍 Middleware - Incoming URL:", req.url);
-  console.log("📍 Middleware - Search params:", Object.fromEntries(searchParams));
 
   // 1. Check if locale is missing (I18n Middleware Logic)
   if (
@@ -70,10 +66,7 @@ export default clerkMiddleware(async (auth, req) => {
       searchParams.forEach((value, key) => {
         newUrl.searchParams.set(key, value);
       });
-      
-      console.log("🔄 Middleware - Redirecting to:", newUrl.toString());
-      console.log("🔄 Middleware - Preserved params:", Object.fromEntries(newUrl.searchParams));
-      
+
       return NextResponse.redirect(newUrl);
     }
   }

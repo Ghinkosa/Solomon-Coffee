@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CreditCard, Package, Box, ShoppingBag } from "lucide-react";
 import useCartStore, { CartItem } from "@/store";
@@ -70,10 +70,6 @@ export function CheckoutButton({
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [actionType, setActionType] = useState<"checkout" | "order" | null>(null);
 
-  useEffect(() => {
-    console.log("✅ CheckoutButton - cart items:", cart.length);
-  }, [cart.length]);
-
   // Calculate cart totals with shared checkout pricing
   const checkoutTotals = calculateCheckoutTotals({
     items: buildCheckoutPricingItems(
@@ -130,7 +126,6 @@ export function CheckoutButton({
 
   const handleProceedToCheckout = async (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("🚀 PROCEED TO CHECKOUT clicked");
     
     if (!isGuestCheckout && !selectedAddress) {
       toast.error(
@@ -173,8 +168,6 @@ export function CheckoutButton({
   };
 
   const handlePlaceOrder = async () => {
-    console.log("🚀 PLACE ORDER (Pay Later) clicked");
-
     if (hasOutOfStockItems) {
       toast.error(
         btn?.outOfStock ??
@@ -237,7 +230,6 @@ export function CheckoutButton({
     );
 
     if (result?.success && result.redirectTo) {
-      console.log("✅ Order placed successfully, redirecting to:", result.redirectTo);
       if (result.orderNumber) {
         sessionStorage.setItem("completedOrder", result.orderNumber);
       }

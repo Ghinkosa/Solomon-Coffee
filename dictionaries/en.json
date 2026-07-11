@@ -2056,7 +2056,16 @@
     "breadcrumbHome": "Home",
     "breadcrumbTrack": "Track Order",
     "orderNotFound": "Order not found",
-    "lookupFailed": "Failed to look up order. Please try again."
+    "lookupFailed": "Failed to look up order. Please try again.",
+    "statusLabels": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "paid": "Paid",
+      "shipped": "Shipped",
+      "out_for_delivery": "Out for delivery",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    }
   },
   "aboutPage": {
     "meta": {
@@ -3223,7 +3232,8 @@
     "cartEmpty": "Cart is empty",
     "insufficientStock": "Insufficient Stock",
     "orderFailed": "Order Failed",
-    "paymentSessionFailed": "We couldn't start the payment. Your order was saved — you can pay it from My Orders."
+    "paymentSessionFailed": "We couldn't start the payment. Your order was saved — you can pay it from My Orders.",
+    "staleCartPrices": "Your cart prices are out of date. Please refresh the page or clear your cart and try again."
   },
   "shopMeta": {
     "title": "Shop",

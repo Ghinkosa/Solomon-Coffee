@@ -76,37 +76,50 @@ export async function POST(req: NextRequest) {
 
         if (session.invoice) {
           invoice = await stripe.invoices.retrieve(session.invoice as string);
-        } else if (session.customer && session.payment_intent) {
-          // Get order details for invoice creation
-          const order = await backendClient.fetch(
-            `*[_type == "order" && _id == $orderId][0]{
-              _id,
-              orderNumber,
-              products[]{ product->{_id, name, price, currency}, quantity },
-              subtotal,
-              tax,
-              shipping,
-              totalPrice,
-              currency
-            }`,
-            { orderId }
-          );
+        } else if (session.payment_intent) {
+          let stripeCustomerId = session.customer as string | null;
 
-          if (order) {
-            // Create and finalize invoice
-            invoice = await createAndFinalizeInvoice(
-              orderId,
-              session.customer as string,
-              order.products || [],
-              {
-                totalAmount: order.totalAmount || 0,
-                customerEmail: order.email || "",
-                orderNumber: order.orderNumber,
-                currency: order.currency,
-                tax: order.tax || 0,
-                shipping: order.shipping || 0,
-              }
+          // Checkout may only have customer_details when no Stripe customer exists yet.
+          if (!stripeCustomerId && session.customer_details?.email) {
+            const customer = await stripe.customers.create({
+              email: session.customer_details.email,
+              name: session.customer_details.name || undefined,
+            });
+            stripeCustomerId = customer.id;
+          }
+
+          if (stripeCustomerId) {
+            const order = await backendClient.fetch(
+              `*[_type == "order" && _id == $orderId][0]{
+                _id,
+                orderNumber,
+                email,
+                products[]{ product->{_id, name, price, currency}, quantity },
+                subtotal,
+                tax,
+                shipping,
+                totalPrice,
+                totalAmount,
+                currency
+              }`,
+              { orderId },
             );
+
+            if (order) {
+              invoice = await createAndFinalizeInvoice(
+                orderId,
+                stripeCustomerId,
+                order.products || [],
+                {
+                  totalAmount: order.totalAmount || order.totalPrice || 0,
+                  customerEmail: order.email || session.customer_details?.email || "",
+                  orderNumber: order.orderNumber,
+                  currency: order.currency,
+                  tax: order.tax || 0,
+                  shipping: order.shipping || 0,
+                },
+              );
+            }
           }
         }
 
@@ -273,6 +286,11 @@ async function updateOrderWithPaymentCompletion(
   );
 
   // Prepare update data
+  const amountPaid =
+    typeof session.amount_total === "number"
+      ? session.amount_total / 100
+      : undefined;
+
   const updateData: Record<string, unknown> = {
     paymentStatus: PAYMENT_STATUSES.PAID,
     stripeCheckoutSessionId: id,
@@ -280,6 +298,10 @@ async function updateOrderWithPaymentCompletion(
     stripeCustomerId: customer as string, // Store the correct Stripe customer ID
     paymentCompletedAt: new Date().toISOString(),
   };
+
+  if (amountPaid !== undefined) {
+    updateData.amountPaid = amountPaid;
+  }
 
   // Order status logic:
   // 1. For COD orders paid later: Keep current delivery status (packed, out_for_delivery, etc.)

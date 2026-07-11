@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useIsAdmin } from "@/lib/adminUtils";
 import Container from "@/components/Container";
 
@@ -13,13 +13,15 @@ interface AdminAuthGuardProps {
 const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  const params = useParams();
+  const lang = typeof params?.lang === "string" ? params.lang : "en";
   const isAdmin = useIsAdmin(user?.primaryEmailAddress?.emailAddress);
 
   useEffect(() => {
     if (isLoaded && !isAdmin) {
-      router.push("/admin/access-denied");
+      router.push(`/${lang}/admin/access-denied`);
     }
-  }, [isLoaded, isAdmin, router]);
+  }, [isLoaded, isAdmin, router, lang]);
 
   if (!isLoaded) {
     return (

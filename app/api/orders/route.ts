@@ -80,8 +80,6 @@ export const POST = async (request: NextRequest) => {
       packagingFee,
     } = reqBody;
 
-    console.log("📦 Order API received items:", JSON.stringify(items, null, 2));
-
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: "No items provided" }, { status: 400 });
@@ -154,8 +152,9 @@ export const POST = async (request: NextRequest) => {
         isBusiness?: boolean;
         businessStatus?: string;
         isActive?: boolean;
+        premiumStatus?: string;
       }>(
-        `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive }`,
+        `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive, premiumStatus }`,
         { email: userEmail },
       );
 
@@ -174,7 +173,10 @@ export const POST = async (request: NextRequest) => {
 
     if (!pricingValidation.valid) {
       return NextResponse.json(
-        { error: pricingValidation.error },
+        {
+          error: pricingValidation.error,
+          code: "code" in pricingValidation ? pricingValidation.code : undefined,
+        },
         { status: 400 },
       );
     }
@@ -275,12 +277,8 @@ export const POST = async (request: NextRequest) => {
       }),
     };
 
-    console.log("📦 Creating order with data:", JSON.stringify(orderData, null, 2));
-
     // Create order in Sanity using writeClient
     const createdOrder = await writeClient.create(orderData);
-
-    console.log("✅ Order created successfully:", createdOrder._id);
 
     // COD orders skip the Stripe webhook — decrement stock at placement time.
     if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY && createdOrder.products) {

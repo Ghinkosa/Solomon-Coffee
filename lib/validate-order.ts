@@ -120,11 +120,12 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
     console.error("Order pricing mismatch:", {
       clientTotal: input.totalAmount,
       serverTotal: calculated.total,
-      calculated,
     });
     return {
       valid: false as const,
-      error: "Order total does not match server pricing",
+      code: "PRICE_MISMATCH",
+      error:
+        "Your cart prices are out of date. Please refresh the page or clear your cart and add the items again.",
       calculated,
     };
   }

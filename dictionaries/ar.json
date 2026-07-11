@@ -2057,7 +2057,16 @@
     "breadcrumbHome": "الرئيسية",
     "breadcrumbTrack": "تتبع الطلب",
     "orderNotFound": "الطلب غير موجود",
-    "lookupFailed": "فشل البحث عن الطلب. يرجى المحاولة مرة أخرى."
+    "lookupFailed": "فشل البحث عن الطلب. يرجى المحاولة مرة أخرى.",
+    "statusLabels": {
+      "pending": "قيد الانتظار",
+      "processing": "قيد المعالجة",
+      "paid": "مدفوع",
+      "shipped": "تم الشحن",
+      "out_for_delivery": "خارج للتسليم",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغى"
+    }
   },
   "aboutPage": {
     "meta": {
@@ -2940,7 +2949,8 @@
     "cartEmpty": "السلة فارغة",
     "insufficientStock": "مخزون غير كافٍ",
     "orderFailed": "فشل الطلب",
-    "paymentSessionFailed": "تعذّر بدء الدفع. تم حفظ طلبك — يمكنك دفعه من صفحة طلباتي."
+    "paymentSessionFailed": "تعذّر بدء الدفع. تم حفظ طلبك — يمكنك دفعه من صفحة طلباتي.",
+    "staleCartPrices": "أسعار سلتك قديمة. يرجى تحديث الصفحة أو إفراغ السلة والمحاولة مرة أخرى."
   },
   "shopMeta": {
     "title": "المتجر",

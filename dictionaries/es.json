@@ -1902,7 +1902,16 @@
     "breadcrumbHome": "Inicio",
     "breadcrumbTrack": "Rastrear pedido",
     "orderNotFound": "Pedido no encontrado",
-    "lookupFailed": "No se pudo buscar el pedido. Inténtalo de nuevo."
+    "lookupFailed": "No se pudo buscar el pedido. Inténtalo de nuevo.",
+    "statusLabels": {
+      "pending": "Pendiente",
+      "processing": "En proceso",
+      "paid": "Pagado",
+      "shipped": "Enviado",
+      "out_for_delivery": "En reparto",
+      "delivered": "Entregado",
+      "cancelled": "Cancelado"
+    }
   },
   "aboutPage": {
     "meta": {
@@ -2862,7 +2871,8 @@
     "cartEmpty": "El carrito está vacío",
     "insufficientStock": "Stock insuficiente",
     "orderFailed": "Error en el pedido",
-    "paymentSessionFailed": "No pudimos iniciar el pago. Tu pedido se guardó — puedes pagarlo desde Mis Pedidos."
+    "paymentSessionFailed": "No pudimos iniciar el pago. Tu pedido se guardó — puedes pagarlo desde Mis Pedidos.",
+    "staleCartPrices": "Los precios de tu carrito están desactualizados. Actualiza la página o vacía el carrito e inténtalo de nuevo."
   },
   "shopMeta": {
     "title": "Tienda",

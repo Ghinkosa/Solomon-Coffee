@@ -47,8 +47,8 @@ export type AccountDiscountType = "business" | "premium" | null;
 export interface AccountDiscountProfile {
   isBusiness?: boolean;
   businessStatus?: string;
-  // Premium account is marked active via the `isActive` flag once approved.
   isActive?: boolean;
+  premiumStatus?: string;
 }
 
 /**
@@ -65,7 +65,10 @@ export function getAccountDiscount(profile?: AccountDiscountProfile | null): {
     profile.isBusiness && profile.businessStatus === "active"
       ? BUSINESS_DISCOUNT_RATE
       : 0;
-  const premiumRate = profile.isActive ? PREMIUM_DISCOUNT_RATE : 0;
+  const premiumRate =
+    profile.isActive && profile.premiumStatus === "active"
+      ? PREMIUM_DISCOUNT_RATE
+      : 0;
 
   if (businessRate === 0 && premiumRate === 0) {
     return { rate: 0, type: null };

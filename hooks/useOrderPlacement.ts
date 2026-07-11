@@ -199,8 +199,6 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         tax,
       };
 
-      console.log("📦 Order Data being sent (with Weight, Grind, Packaging):", JSON.stringify(orderData, null, 2));
-
       const orderResponse = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -209,6 +207,17 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
       if (!orderResponse.ok) {
         const errorData = await orderResponse.json();
+        if (errorData.code === "PRICE_MISMATCH") {
+          toast.error(
+            t(
+              dictionary,
+              "checkoutPlacement.staleCartPrices",
+              "Your cart prices are out of date. Please refresh the page or clear your cart and try again.",
+            ),
+          );
+          setOrderPlacementState(false, "validating");
+          return { success: false };
+        }
         throw new Error(errorData.error || "Failed to create order");
       }
 

@@ -43,22 +43,33 @@ export async function GET(req: NextRequest) {
     const sortBy = searchParams.get("sortBy") || "orderDate";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    // Build filter conditions
-    const filterConditions = [];
+    const allowedSortFields = new Set([
+      "orderDate",
+      "_createdAt",
+      "totalPrice",
+      "status",
+    ]);
+    const sortField = allowedSortFields.has(sortBy) ? sortBy : "orderDate";
+    const sortDir = sortOrder === "asc" ? "asc" : "desc";
+
+    const filters = [`_type == "order"`];
+    const params: Record<string, unknown> = {
+      offset,
+      limitEnd: offset + limit,
+    };
+
     if (status) {
-      filterConditions.push(`status == "${status}"`);
+      filters.push(`status == $status`);
+      params.status = status;
     }
     if (paymentMethod) {
-      filterConditions.push(`paymentMethod == "${paymentMethod}"`);
+      filters.push(`paymentMethod == $paymentMethod`);
+      params.paymentMethod = paymentMethod;
     }
 
-    // Build GROQ query
+    const filterClause = filters.join(" && ");
     const query = `
-      *[_type == "order"${
-        filterConditions.length > 0
-          ? ` && (${filterConditions.join(" && ")})`
-          : ""
-      }] | order(${sortBy} ${sortOrder}) [${offset}...${offset + limit}] {
+      *[${filterClause}] | order(${sortField} ${sortDir}) [$offset...$limitEnd] {
         _id,
         _createdAt,
         orderNumber,
@@ -91,23 +102,14 @@ export async function GET(req: NextRequest) {
       }
     `;
 
-    // Get count query
-    const countQuery = `
-      count(*[_type == "order"${
-        filterConditions.length > 0
-          ? ` && (${filterConditions.join(" && ")})`
-          : ""
-      }])
-    `;
+    const countQuery = `count(*[${filterClause}])`;
 
-    // Execute queries with perspective 'published' to avoid draft content
     const [orders, totalCount] = await Promise.all([
-      client.fetch(query, {}, { cache: "no-store", next: { revalidate: 0 } }),
-      client.fetch(
-        countQuery,
-        {},
-        { cache: "no-store", next: { revalidate: 0 } }
-      ),
+      client.fetch(query, params, { cache: "no-store", next: { revalidate: 0 } }),
+      client.fetch(countQuery, params, {
+        cache: "no-store",
+        next: { revalidate: 0 },
+      }),
     ]);
 
     return NextResponse.json(

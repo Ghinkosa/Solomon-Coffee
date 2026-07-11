@@ -16,8 +16,6 @@ import {
   MapPin,
   Check,
   X,
-  Plus,
-  Trash2,
   Loader2,
   Edit,
   Save,
@@ -70,7 +68,6 @@ export default function OrderDetailSheet({
   const [editableProducts, setEditableProducts] = useState<EditableProduct[]>(
     []
   );
-  const [isEditing, setIsEditing] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [editableAddress, setEditableAddress] = useState({
@@ -187,31 +184,6 @@ export default function OrderDetailSheet({
       });
     }
     setIsEditingAddress(false);
-  };
-
-  const handleQuantityChange = (key: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-
-    setEditableProducts((prev) =>
-      prev.map((item) =>
-        item._key === key ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const handleRemoveProduct = (key: string) => {
-    setEditableProducts((prev) => prev.filter((item) => item._key !== key));
-  };
-
-  const handleSaveProducts = async () => {
-    // TODO: Implement updateOrderProducts server action
-    toast.info("Save products functionality coming soon");
-    setIsEditing(false);
-  };
-
-  const handleCancelEdit = () => {
-    setEditableProducts(order.products);
-    setIsEditing(false);
   };
 
   const calculateTotal = () => {
@@ -529,37 +501,7 @@ export default function OrderDetailSheet({
 
           {/* Products Section with Edit Capability */}
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold">Order Items</h3>
-              {!isOrderConfirmed && (
-                <div className="flex gap-2">
-                  {isEditing ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleCancelEdit}
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Cancel
-                      </Button>
-                      <Button size="sm" onClick={handleSaveProducts}>
-                        <Check className="h-4 w-4 mr-1" />
-                        Save
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      Edit Products
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
+            <h3 className="font-semibold mb-3">Order Items</h3>
 
             <div className="space-y-3">
               {editableProducts.map((item, index) => (
@@ -591,52 +533,7 @@ export default function OrderDetailSheet({
                     </p>
                   </div>
 
-                  {isEditing ? (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="h-7 w-7"
-                        onClick={() =>
-                          handleQuantityChange(item._key, item.quantity - 1)
-                        }
-                      >
-                        -
-                      </Button>
-                      <Input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleQuantityChange(
-                            item._key,
-                            parseInt(e.target.value) || 1
-                          )
-                        }
-                        className="w-16 h-7 text-center"
-                        min="1"
-                      />
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="h-7 w-7"
-                        onClick={() =>
-                          handleQuantityChange(item._key, item.quantity + 1)
-                        }
-                      >
-                        +
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="destructive"
-                        className="h-7 w-7"
-                        onClick={() => handleRemoveProduct(item._key)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="text-sm font-medium">x{item.quantity}</div>
-                  )}
+                  <div className="text-sm font-medium">x{item.quantity}</div>
 
                   <div className="text-sm font-semibold">
                     <PriceFormatter

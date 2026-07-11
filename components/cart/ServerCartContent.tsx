@@ -87,30 +87,22 @@ const getGrindOptions = (product: any): GrindOption[] => {
 };
 
 const getPackagingOptions = (product: any): PackagingOption[] => {
-  console.log("🔍 Debug - Full product object:", product);
-  console.log("🔍 Debug - product.packagingOptions:", product.packagingOptions);
-  
   if (!product.packagingOptions || !Array.isArray(product.packagingOptions)) {
-    console.log("❌ No packagingOptions found on product");
     return [];
   }
-  
+
   const packagingList = product.packagingOptions
     .filter((ref: any) => {
-      console.log("🔍 Debug - Processing ref:", ref);
       if (!ref.packaging) {
-        console.log("❌ No packaging in ref:", ref);
         return false;
       }
       if (ref.available === false) {
-        console.log("❌ Packaging not available:", ref.packaging);
         return false;
       }
       return true;
     })
     .map((ref: any) => {
       const pkg = ref.packaging;
-      console.log("✅ Processing packaging:", pkg);
       
       let imageUrl = "";
       if (pkg.imageUrl) {
@@ -133,7 +125,6 @@ const getPackagingOptions = (product: any): PackagingOption[] => {
       } as PackagingOption;
     });
   
-  console.log("📦 Final packaging options:", packagingList);
   return packagingList;
 };
 
@@ -179,18 +170,6 @@ export function ServerCartContent({
   useEffect(() => {
     setOrderPlacementState(false, "validating");
   }, [setOrderPlacementState]);
-
-  // Debug useEffect - now getPackagingOptions is defined above
-  useEffect(() => {
-    console.log("🛒 Full cart data:", JSON.stringify(cart, null, 2));
-    cart.forEach((item, idx) => {
-      console.log(`📦 Item ${idx}:`, {
-        name: item.product.name,
-        packagingOptionsRaw: (item.product as any).packagingOptions,
-        packagingOptionsProcessed: getPackagingOptions(item.product),
-      });
-    });
-  }, [cart]);
 
   const handleResetCart = () => setShowClearModal(true);
 
@@ -240,13 +219,6 @@ export function ServerCartContent({
             const weightOptions = getWeightOptions(item.product);
             const grindOptions = getGrindOptions(item.product);
             const packagingOptions = getPackagingOptions(item.product);
-            
-            console.log(`🎯 Rendering ${item.product.name} with:`, {
-              weightOptionsCount: weightOptions.length,
-              grindOptionsCount: grindOptions.length,
-              packagingOptionsCount: packagingOptions.length,
-              packagingOptions: packagingOptions,
-            });
             
             return (
               <div 
@@ -315,7 +287,6 @@ export function ServerCartContent({
                         selectedGrind={item.selectedGrind}
                         selectedPackaging={item.selectedPackaging}
                         onWeightChange={(weight) => {
-                          console.log("Weight changed:", weight);
                           updateCartItemWeight(
                             item.product._id,
                             weight,
@@ -325,7 +296,6 @@ export function ServerCartContent({
                           );
                         }}
                         onGrindChange={(grind) => {
-                          console.log("Grind changed:", grind);
                           updateCartItemGrind(
                             item.product._id,
                             grind,
@@ -335,7 +305,6 @@ export function ServerCartContent({
                           );
                         }}
                         onPackagingChange={(packaging) => {
-                          console.log("Packaging changed:", packaging);
                           updateCartItemPackaging(
                             item.product._id,
                             packaging,

@@ -36,6 +36,18 @@ interface GuestOrder {
 
 export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
   const t = dictionary?.ordersTrack ?? {};
+  const statusLabels = (t.statusLabels ?? {}) as Record<string, string>;
+
+  const formatOrderStatus = (status?: string) => {
+    if (!status) {
+      return statusLabels.pending ?? "Pending";
+    }
+    return (
+      statusLabels[status] ??
+      status.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())
+    );
+  };
+
   const [orderNumber, setOrderNumber] = useState("");
   const [email, setEmail] = useState("");
   const [order, setOrder] = useState<GuestOrder | null>(null);
@@ -139,7 +151,9 @@ export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
                   <Package className="w-5 h-5" />
                   {order.orderNumber}
                 </span>
-                <Badge className="capitalize">{order.status || "pending"}</Badge>
+                <Badge className="capitalize">
+                  {formatOrderStatus(order.status)}
+                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

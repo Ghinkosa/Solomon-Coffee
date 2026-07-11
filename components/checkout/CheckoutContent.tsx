@@ -167,12 +167,10 @@ export function CheckoutContent() {
   // Parse selections from URL params
   useEffect(() => {
     const selectionsParam = searchParams.get("selections");
-    console.log("📍 CheckoutContent - Raw selections param:", selectionsParam);
-    
+
     if (selectionsParam) {
       try {
         const decodedSelections = JSON.parse(decodeURIComponent(selectionsParam));
-        console.log("📍 CheckoutContent - Parsed selections:", decodedSelections);
         setSelectionsData(decodedSelections);
       } catch (error) {
         console.error("Error parsing selections from URL:", error);
