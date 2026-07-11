@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     // Find user
     const existingUser = await backendClient.fetch(
-      `*[_type == "userType" && email == $email][0]`,
+      `*[_type in ["user", "userType"] && email == $email][0]`,
       { email: userEmail }
     );
 

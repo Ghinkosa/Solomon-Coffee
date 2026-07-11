@@ -12,7 +12,7 @@ export async function GET() {
 
     // Fetch all users with premium applications
     const query = `
-      *[_type == "userType" && premiumStatus in ["pending", "active", "rejected"]] {
+      *[_type in ["user", "userType"] && premiumStatus in ["pending", "active", "rejected"]] {
         _id,
         email,
         firstName,

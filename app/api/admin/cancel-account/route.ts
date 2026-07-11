@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     // First, verify the user document exists and has active status
     const existingUser = await backendClient.fetch(
-      `*[_type == "userType" && _id == $accountId][0]`,
+      `*[_type in ["user", "userType"] && _id == $accountId][0]`,
       { accountId }
     );
 

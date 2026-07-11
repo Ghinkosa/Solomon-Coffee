@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { writeClient } from "@/sanity/lib/client";
 import stripe from "@/lib/stripe";
-import { urlFor } from "@/sanity/lib/image";
+import { getBaseUrl } from "@/lib/get-base-url";
 
 export async function POST(
   request: NextRequest,
@@ -128,64 +128,27 @@ export async function POST(
 
     // Create Stripe checkout session for the order
     const currency = (order.currency || "USD").toLowerCase();
+    const baseUrl = getBaseUrl();
 
     try {
-      // Prepare line items for the checkout session
-      const lineItems = order.products.map(
-        (item: {
-          product: { name: string; images?: string[]; price?: number };
-          quantity: number;
-        }) => ({
-          price_data: {
-            currency,
-            product_data: {
-              name: item.product.name,
-              images:
-                item.product.images && item.product.images.length > 0
-                  ? [urlFor(item.product.images[0]).url()]
-                  : [],
-            },
-            unit_amount: Math.round((item.product.price || 0) * 100),
-          },
-          quantity: item.quantity,
-        })
-      );
-
-      // Add tax as a line item if exists
-      if (order.tax && order.tax > 0) {
-        lineItems.push({
-          price_data: {
-            currency,
-            product_data: {
-              name: "Tax",
-            },
-            unit_amount: Math.round(order.tax * 100),
-          },
-          quantity: 1,
-        });
-      }
-
-      // Add shipping as a line item if exists
-      if (order.shipping && order.shipping > 0) {
-        lineItems.push({
-          price_data: {
-            currency,
-            product_data: {
-              name: "Shipping",
-            },
-            unit_amount: Math.round(order.shipping * 100),
-          },
-          quantity: 1,
-        });
-      }
-
       const checkoutSession = await stripe.checkout.sessions.create({
         customer: stripeCustomerId,
         payment_method_types: ["card"],
-        line_items: lineItems,
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency,
+              unit_amount: Math.round(order.totalPrice * 100),
+              product_data: {
+                name: `Order ${order.orderNumber || order._id}`,
+              },
+            },
+          },
+        ],
         mode: "payment",
-        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}&orderId=${order._id}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/orders`,
+        success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&orderId=${order._id}`,
+        cancel_url: `${baseUrl}/orders`,
         metadata: {
           orderId: order._id,
           orderNumber: order.orderNumber || "",

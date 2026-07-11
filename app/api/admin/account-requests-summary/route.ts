@@ -11,12 +11,12 @@ export async function GET() {
 
     // Get count of pending premium requests
     const pendingPremiumCount = await client.fetch(`
-      count(*[_type == "userType" && premiumStatus == "pending"])
+      count(*[_type in ["user", "userType"] && premiumStatus == "pending"])
     `);
 
     // Get count of pending business requests
     const pendingBusinessCount = await client.fetch(`
-      count(*[_type == "userType" && businessStatus == "pending"])
+      count(*[_type in ["user", "userType"] && businessStatus == "pending"])
     `);
 
     // Get recent requests (last 7 days)
@@ -24,7 +24,7 @@ export async function GET() {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const recentRequests = await client.fetch(`
-      count(*[_type == "userType" && (
+      count(*[_type in ["user", "userType"] && (
         (premiumStatus == "pending" && premiumAppliedAt > "${sevenDaysAgo.toISOString()}") ||
         (businessStatus == "pending" && businessAppliedAt > "${sevenDaysAgo.toISOString()}")
       )])

@@ -13,7 +13,7 @@ export async function GET() {
     // Check if user is admin (you can implement your own admin check logic)
     // For now, we'll fetch all users with business account requests
     const query = `
-      *[_type == "userType" && businessStatus in ["pending", "active", "rejected"]] {
+      *[_type in ["user", "userType"] && businessStatus in ["pending", "active", "rejected"]] {
         _id,
         email,
         firstName,

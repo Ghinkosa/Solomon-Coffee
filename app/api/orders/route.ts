@@ -9,6 +9,8 @@ import {
 } from "@/lib/orderStatus";
 import { validateOrderPricing } from "@/lib/validate-order";
 import { getAccountDiscount } from "@/lib/checkout-pricing";
+import { decrementOrderStock } from "@/lib/stock";
+import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
 import {
   isShippingAddressValid,
   normalizeShippingAddress,
@@ -153,7 +155,7 @@ export const POST = async (request: NextRequest) => {
         businessStatus?: string;
         isActive?: boolean;
       }>(
-        `*[_type == "userType" && email == $email][0]{ isBusiness, businessStatus, isActive }`,
+        `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive }`,
         { email: userEmail },
       );
 
@@ -279,7 +281,20 @@ export const POST = async (request: NextRequest) => {
     const createdOrder = await writeClient.create(orderData);
 
     console.log("✅ Order created successfully:", createdOrder._id);
-    console.log("✅ Order products with options:", JSON.stringify(createdOrder.products, null, 2));
+
+    // COD orders skip the Stripe webhook — decrement stock at placement time.
+    if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY && createdOrder.products) {
+      try {
+        await decrementOrderStock(
+          createdOrder.products as Array<{
+            product: { _ref: string };
+            quantity: number;
+          }>,
+        );
+      } catch (stockError) {
+        console.error("Failed to decrement stock for COD order:", stockError);
+      }
+    }
 
     // Track order placed event
     try {

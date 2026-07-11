@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { readClient, writeClient } from "@/sanity/lib/client";
+import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
 
 export async function GET() {
   try {
@@ -16,7 +17,7 @@ export async function GET() {
     // Check if user exists in Sanity
     const userEmail = user.emailAddresses[0]?.emailAddress;
     const sanityUser = await readClient.fetch(
-      `*[_type == "userType" && email == $email][0]{
+      `*[${USER_BY_EMAIL_FILTER}][0]{
         _id,
         email,
         firstName,
@@ -72,7 +73,7 @@ export async function POST() {
 
     // Check if user already exists in Sanity
     const existingSanityUser = await readClient.fetch(
-      `*[_type == "userType" && email == $email][0]`,
+      `*[${USER_BY_EMAIL_FILTER}][0]`,
       { email: userEmail }
     );
 
@@ -129,7 +130,8 @@ export async function POST() {
 
     // Create new user with pending premium status
     const newUser = await writeClient.create({
-      _type: "userType",
+      _type: SANITY_USER_TYPE,
+      clerkUserId: user.id,
       email: userEmail,
       firstName: user.firstName,
       lastName: user.lastName,

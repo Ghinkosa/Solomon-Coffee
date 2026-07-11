@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     // Verify user exists and has pending status
     const user = await client.fetch(
       `
-      *[_type == "userType" && _id == $userId][0] {
+      *[_type in ["user", "userType"] && _id == $userId][0] {
         _id,
         firstName,
         lastName,

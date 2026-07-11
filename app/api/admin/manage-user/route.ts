@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { writeClient, client } from "@/sanity/lib/client";
+import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user exists
     const existingUser = await client.fetch(
-      `*[_type == "userType" && email == $email][0]`,
+      `*[${USER_BY_EMAIL_FILTER}][0]`,
       { email }
     );
 
@@ -42,7 +43,8 @@ export async function POST(request: NextRequest) {
     } else {
       // Create new user
       const newUser = await writeClient.create({
-        _type: "userType",
+        _type: SANITY_USER_TYPE,
+        clerkUserId: `admin-managed-${email}`,
         email,
         isActive: setPremium || true, // Default to premium
         isBusiness: false,

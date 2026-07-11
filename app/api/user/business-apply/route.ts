@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { writeClient, client } from "@/sanity/lib/client";
+import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
 
 export async function POST() {
   try {
@@ -21,7 +22,7 @@ export async function POST() {
 
     // Check if user exists in Sanity
     const existingUser = await client.fetch(
-      `*[_type == "userType" && email == $email][0]`,
+      `*[${USER_BY_EMAIL_FILTER}][0]`,
       { email },
     );
 
@@ -71,7 +72,8 @@ export async function POST() {
     // New user (never registered for premium): create the record directly
     // with a pending business application. Premium is no longer a prerequisite.
     const newUser = await writeClient.create({
-      _type: "userType",
+      _type: SANITY_USER_TYPE,
+      clerkUserId: user.id,
       email,
       firstName: user.firstName,
       lastName: user.lastName,

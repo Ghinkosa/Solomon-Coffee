@@ -1,6 +1,8 @@
 // Admin utility functions
 export const getAdminEmails = (): string[] => {
-  const adminEmailsEnv = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  // Prefer server-only ADMIN_EMAIL; fall back during migration from NEXT_PUBLIC_ADMIN_EMAIL.
+  const adminEmailsEnv =
+    process.env.ADMIN_EMAIL ?? process.env.NEXT_PUBLIC_ADMIN_EMAIL;
   if (!adminEmailsEnv) return [];
 
   try {

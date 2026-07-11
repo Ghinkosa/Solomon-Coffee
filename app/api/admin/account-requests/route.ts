@@ -11,7 +11,7 @@ export async function GET() {
 
     // Fetch users with pending premium requests
     const premiumRequests = await client.fetch(`
-      *[_type == "userType" && premiumStatus == "pending"] {
+      *[_type in ["user", "userType"] && premiumStatus == "pending"] {
         _id,
         firstName,
         lastName,
@@ -28,7 +28,7 @@ export async function GET() {
 
     // Fetch users with pending business requests
     const businessRequests = await client.fetch(`
-      *[_type == "userType" && businessStatus == "pending"] {
+      *[_type in ["user", "userType"] && businessStatus == "pending"] {
         _id,
         firstName,
         lastName,
@@ -45,7 +45,7 @@ export async function GET() {
 
     // Fetch users with approved premium accounts
     const approvedPremiumAccounts = await client.fetch(`
-      *[_type == "userType" && premiumStatus == "active"] {
+      *[_type in ["user", "userType"] && premiumStatus == "active"] {
         _id,
         firstName,
         lastName,
@@ -62,7 +62,7 @@ export async function GET() {
 
     // Fetch users with approved business accounts
     const approvedBusinessAccounts = await client.fetch(`
-      *[_type == "userType" && businessStatus == "active"] {
+      *[_type in ["user", "userType"] && businessStatus == "active"] {
         _id,
         firstName,
         lastName,
@@ -79,7 +79,7 @@ export async function GET() {
 
     // Fetch all users with any account status for statistics
     const allUsers = await client.fetch(`
-      *[_type == "userType" && (premiumStatus != "none" || businessStatus != "none")] {
+      *[_type in ["user", "userType"] && (premiumStatus != "none" || businessStatus != "none")] {
         _id,
         firstName,
         lastName,

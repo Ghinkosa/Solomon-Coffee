@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       try {
         // Fetch the user
         const user = await writeClient.fetch(
-          `*[_type == "user" && _id == $userId][0]`,
+          `*[_type in ["user", "userType"] && _id == $userId][0]`,
           { userId: userIdToReject }
         );
 

@@ -5,6 +5,7 @@ import stripe from "@/lib/stripe";
 import { backendClient } from "@/sanity/lib/backendClient";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
+import { decrementOrderStock } from "@/lib/stock";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -305,7 +306,7 @@ async function updateOrderWithPaymentCompletion(
     if (order) {
       // Update stock levels for purchased products
       if (order.products) {
-        await updateStockLevels(order.products);
+        await decrementOrderStock(order.products);
       }
 
       // Send payment confirmation notification
@@ -331,40 +332,5 @@ async function updateOrderWithPaymentCompletion(
   } catch (error) {
     console.error(`Failed to update order ${orderId}:`, error);
     throw error;
-  }
-}
-
-// Function to update stock levels
-async function updateStockLevels(
-  orderProducts: Array<{
-    product: { _ref: string };
-    quantity: number;
-  }>
-) {
-  for (const orderProduct of orderProducts) {
-    try {
-      const productId = orderProduct.product._ref;
-      const quantity = orderProduct.quantity;
-
-      // Fetch current stock
-      const product = await backendClient.getDocument(productId);
-
-      if (!product || typeof product.stock !== "number") {
-        console.warn(
-          `Product with ID ${productId} not found or stock is invalid.`
-        );
-        continue;
-      }
-
-      const newStock = Math.max(product.stock - quantity, 0); // Ensure stock does not go negative
-
-      // Update stock in Sanity
-      await backendClient.patch(productId).set({ stock: newStock }).commit();
-    } catch (error) {
-      console.error(
-        `Failed to update stock for product ${orderProduct.product._ref}:`,
-        error
-      );
-    }
   }
 }

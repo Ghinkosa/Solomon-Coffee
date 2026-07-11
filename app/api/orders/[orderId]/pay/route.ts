@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import Stripe from "stripe";
-import { urlFor } from "@/sanity/lib/image";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
+import { getBaseUrl } from "@/lib/get-base-url";
 
 export async function POST(
   request: NextRequest,
@@ -74,68 +74,33 @@ export async function POST(
       );
     }
 
-    // Convert order products to Stripe line items
-    const lineItems = order.products.map(
-      (item: {
-        product?: {
-          _id?: string;
-          name?: string;
-          price?: number;
-          images?: string[];
-        };
-        quantity?: number;
-      }) => {
-        const itemPrice = item.product?.price || 0;
-        const unitAmount = Math.round(itemPrice * 100); // Convert to cents
+    if (!order.totalPrice || order.totalPrice <= 0) {
+      return NextResponse.json(
+        { error: "Invalid order total" },
+        { status: 400 },
+      );
+    }
 
-        // Convert Sanity image objects to URLs for Stripe
-        let productImages: string[] = [];
-        if (
-          item.product?.images &&
-          Array.isArray(item.product.images) &&
-          item.product.images.length > 0
-        ) {
-          try {
-            const imageUrl = urlFor(item.product.images[0])
-              .width(800)
-              .height(600)
-              .url();
-            if (imageUrl) {
-              productImages = [imageUrl];
-            }
-          } catch (error) {
-            console.warn("Failed to convert image URL:", error);
-            productImages = [];
-          }
-        }
+    const baseUrl = getBaseUrl();
+    const currency = (order.currency || "USD").toLowerCase();
 
-        return {
-          quantity: item.quantity || 1,
-          price_data: {
-            currency: order.currency?.toLowerCase() || "usd",
-            unit_amount: unitAmount,
-            product_data: {
-              name: item.product?.name || "Product",
-              description: `Product from order ${order.orderNumber}`,
-              images: productImages,
-              metadata: {
-                productId: item.product?._id?.toString() || "",
-                orderId: order._id,
-                quantity: item.quantity?.toString() || "1",
-              },
-            },
-          },
-        };
-      }
-    );
-
-    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: lineItems,
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency,
+            unit_amount: Math.round(order.totalPrice * 100),
+            product_data: {
+              name: `Order ${order.orderNumber || order._id}`,
+            },
+          },
+        },
+      ],
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL}/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order._id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL}/orders?payment=cancelled`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order._id}`,
+      cancel_url: `${baseUrl}/orders?payment=cancelled`,
       metadata: {
         orderId: order._id,
         email: order.email,

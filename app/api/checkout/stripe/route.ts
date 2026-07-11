@@ -1,129 +1,97 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
-import { urlFor } from "@/sanity/lib/image";
+import stripe from "@/lib/stripe";
+import { readClient } from "@/sanity/lib/client";
+import { getBaseUrl } from "@/lib/get-base-url";
 
 export const POST = async (request: NextRequest) => {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
   try {
     const reqBody = await request.json();
-    const { 
-      orderId, 
-      orderNumber, 
-      items, 
-      email, 
-      shippingAddress, 
-      orderAmount,
-      shipping,
-      tax,
-      isGuest,
-    } = reqBody;
+    const { orderId, orderNumber, email, isGuest } = reqBody;
 
-    // Validate required fields
     if (!orderId) {
       return NextResponse.json(
         { error: "Order ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json({ error: "No items provided" }, { status: 400 });
+    // Authoritative pricing comes from the server-stored order — never client items.
+    const order = await readClient.fetch<{
+      _id: string;
+      orderNumber: string;
+      totalPrice: number;
+      paymentStatus: string;
+      email?: string;
+      currency?: string;
+    }>(
+      `*[_type == "order" && _id == $orderId][0]{
+        _id,
+        orderNumber,
+        totalPrice,
+        paymentStatus,
+        email,
+        currency
+      }`,
+      { orderId },
+    );
+
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    // Convert cart items to Stripe line items
-    const lineItems: any[] = [];
-
-    // Add products
-    for (const item of items) {
-      const productPrice = item.product?.price || 0;
-      const packagingPrice = item.packaging?.price || 0;
-      const totalPrice = productPrice + packagingPrice;
-      const unitAmount = Math.round(totalPrice * 100);
-
-      let productName = item.product?.name || "Product";
-      if (item.packaging?.title) {
-        productName = `${productName} (${item.packaging.title})`;
-      }
-
-      let productImages: string[] = [];
-      if (item.product?.images?.[0]) {
-        try {
-          const imageUrl = urlFor(item.product.images[0]).width(800).height(600).url();
-          if (imageUrl) {
-            productImages = [imageUrl];
-          }
-        } catch (error) {
-          console.warn("Failed to convert image URL:", error);
-        }
-      }
-
-      lineItems.push({
-        quantity: item.quantity,
-        price_data: {
-          currency: "usd",
-          unit_amount: unitAmount,
-          product_data: {
-            name: productName,
-            images: productImages,
-          },
-        },
-      });
+    if (order.paymentStatus === "paid") {
+      return NextResponse.json(
+        { error: "Order is already paid" },
+        { status: 400 },
+      );
     }
 
-    // Add shipping
-    if (shipping && shipping > 0) {
-      lineItems.push({
-        quantity: 1,
-        price_data: {
-          currency: "usd",
-          unit_amount: Math.round(shipping * 100),
-          product_data: {
-            name: "Shipping Fee",
-          },
-        },
-      });
+    if (!order.totalPrice || order.totalPrice <= 0) {
+      return NextResponse.json(
+        { error: "Invalid order total" },
+        { status: 400 },
+      );
     }
 
-    // Add tax
-    if (tax && tax > 0) {
-      lineItems.push({
-        quantity: 1,
-        price_data: {
-          currency: "usd",
-          unit_amount: Math.round(tax * 100),
-          product_data: {
-            name: "Tax",
-          },
-        },
-      });
-    }
+    const baseUrl = getBaseUrl();
+    const currency = (order.currency || "USD").toLowerCase();
+    const resolvedOrderNumber = order.orderNumber || orderNumber || orderId;
+    const customerEmail = order.email || email;
 
-    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: lineItems,
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency,
+            unit_amount: Math.round(order.totalPrice * 100),
+            product_data: {
+              name: `Order ${resolvedOrderNumber}`,
+            },
+          },
+        },
+      ],
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}&orderNumber=${orderNumber}${isGuest ? "&guest=true" : ""}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout?cancelled=true`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}&orderNumber=${resolvedOrderNumber}${isGuest ? "&guest=true" : ""}`,
+      cancel_url: `${baseUrl}/checkout?cancelled=true`,
       metadata: {
         orderId: String(orderId),
-        orderNumber: String(orderNumber || ""),
-        email: String(email || ""),
-        isGuest: String(reqBody.isGuest || false),
+        orderNumber: String(resolvedOrderNumber),
+        email: String(customerEmail || ""),
+        isGuest: String(isGuest || false),
       },
-      customer_email: email,
+      customer_email: customerEmail || undefined,
     });
 
     return NextResponse.json({
       success: true,
       url: session.url,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Stripe checkout error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create Stripe checkout session" },
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error ? error.message : "Failed to create Stripe checkout session";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 };

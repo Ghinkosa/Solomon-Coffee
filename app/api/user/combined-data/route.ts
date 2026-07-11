@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import { getAccountDiscount } from "@/lib/checkout-pricing";
+import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -46,10 +47,9 @@ export async function GET() {
         { userId }
       ),
       // Get account tier profile (premium/business) used for checkout discounts.
-      // This lives on the separate `userType` document keyed by email.
       email
         ? client.fetch(
-            `*[_type == "userType" && email == $email][0]{ isBusiness, businessStatus, isActive }`,
+            `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive }`,
             { email }
           )
         : Promise.resolve(null),

@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       try {
         // Fetch the user
         const user = await writeClient.fetch(
-          `*[_type == "user" && _id == $userId][0]`,
+          `*[_type in ["user", "userType"] && _id == $userId][0]`,
           { userId: userIdToApprove }
         );
 
@@ -79,16 +79,25 @@ export async function POST(req: NextRequest) {
         }
 
         // Update user status to active
-        await writeClient
-          .patch(userIdToApprove)
-          .set({
+        const patchData: Record<string, string | boolean> = {
             [finalAccountType === "premium"
               ? "premiumStatus"
               : "businessStatus"]: "active",
             [finalAccountType === "premium"
               ? "premiumApprovedAt"
               : "businessApprovedAt"]: new Date().toISOString(),
-          })
+          };
+
+        if (finalAccountType === "premium") {
+          patchData.isActive = true;
+        } else {
+          patchData.isBusiness = true;
+          patchData.membershipType = "business";
+        }
+
+        await writeClient
+          .patch(userIdToApprove)
+          .set(patchData)
           .commit();
 
         results.successful.push(userIdToApprove);

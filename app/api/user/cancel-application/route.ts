@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user exists
     const existingUser = await client.fetch(
-      `*[_type == "userType" && email == $email][0]`,
+      `*[_type in ["user", "userType"] && email == $email][0]`,
       { email }
     );
 
