@@ -73,6 +73,35 @@ export default function UserDashboardPage() {
   const dictionary = useDictionary();
   const d = (path: string, fallback: string) =>
     t(dictionary, `userDashboard.dashboard.${path}`, fallback);
+  const a = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.dashboard.applications.${path}`, fallback);
+  const list = (path: string, fallback: string[]) => {
+    const segments = `userDashboard.dashboard.applications.${path}`.split(".");
+    let node: unknown = dictionary;
+    for (const seg of segments) {
+      if (!node || typeof node !== "object") return fallback;
+      node = (node as Record<string, unknown>)[seg];
+    }
+    return Array.isArray(node)
+      ? node.filter((item): item is string => typeof item === "string")
+      : fallback;
+  };
+  const formatLocaleDate = (value: string) =>
+    new Date(value).toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  const formatApprovedDate = (value: string) =>
+    new Date(value).toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   const toLocalizedPath = useLocalizedPath();
   const [stats, setStats] = useState<UserStats>({
     ordersCount: 0,
@@ -136,7 +165,7 @@ export default function UserDashboardPage() {
 
   const handleBusinessAccountApply = async () => {
     if (!user?.emailAddresses?.[0]?.emailAddress) {
-      toast.error("Unable to get user email");
+      toast.error(a("toasts.noEmail", "Unable to get user email"));
       return;
     }
 
@@ -164,12 +193,13 @@ export default function UserDashboardPage() {
         }, 2000);
       } else {
         toast.error(
-          data.error || "Failed to submit business account application"
+          data.error ||
+            a("toasts.businessApplyFailed", "Failed to submit business account application"),
         );
       }
     } catch (error) {
       console.error("Error applying for business account:", error);
-      toast.error("Error submitting application");
+      toast.error(a("toasts.applicationError", "Error submitting application"));
     } finally {
       setIsApplyingBusiness(false);
     }
@@ -179,7 +209,7 @@ export default function UserDashboardPage() {
     applicationType: "premium" | "business"
   ) => {
     if (!user?.emailAddresses?.[0]?.emailAddress) {
-      toast.error("Unable to get user email");
+      toast.error(a("toasts.noEmail", "Unable to get user email"));
       return;
     }
 
@@ -203,11 +233,11 @@ export default function UserDashboardPage() {
         // Refresh user profile
         window.location.reload();
       } else {
-        toast.error(data.error || "Failed to cancel application");
+        toast.error(data.error || a("toasts.cancelFailed", "Failed to cancel application"));
       }
     } catch (error) {
       console.error("Error cancelling application:", error);
-      toast.error("Error cancelling application");
+      toast.error(a("toasts.cancelError", "Error cancelling application"));
     } finally {
       setIsApplyingBusiness(false);
     }
@@ -234,11 +264,20 @@ export default function UserDashboardPage() {
     );
 
     if (diffInMinutes < 60) {
-      return `${diffInMinutes}m ago`;
+      return d("timeAgo.minutesAgo", "{count}m ago").replace(
+        "{count}",
+        String(diffInMinutes),
+      );
     } else if (diffInMinutes < 1440) {
-      return `${Math.floor(diffInMinutes / 60)}h ago`;
+      return d("timeAgo.hoursAgo", "{count}h ago").replace(
+        "{count}",
+        String(Math.floor(diffInMinutes / 60)),
+      );
     } else {
-      return `${Math.floor(diffInMinutes / 1440)}d ago`;
+      return d("timeAgo.daysAgo", "{count}d ago").replace(
+        "{count}",
+        String(Math.floor(diffInMinutes / 1440)),
+      );
     }
   };
 
@@ -332,49 +371,37 @@ export default function UserDashboardPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="font-bold text-amber-900 text-lg">
-                    🎉 Premium Application Submitted!
+                    {a("premium.pendingTitle", "Premium Application Submitted!")}
                   </h3>
                   <div className="px-3 py-1 bg-amber-200 text-amber-800 text-xs font-medium rounded-full">
-                    PENDING REVIEW
+                    {a("pendingReview", "PENDING REVIEW")}
                   </div>
                 </div>
                 <p className="text-amber-800 text-sm mb-3">
-                  Great news! Your premium account application has been
-                  successfully submitted and is currently under administrative
-                  review.
+                  {a(
+                    "premium.pendingDescription",
+                    "Great news! Your premium account application has been successfully submitted and is currently under administrative review.",
+                  )}
                 </p>
                 <div className="bg-white/60 p-3 rounded-md border border-amber-200">
                   <h4 className="font-semibold text-amber-900 text-sm mb-2">
-                    What happens next?
+                    {a("premium.whatNext", "What happens next?")}
                   </h4>
                   <ul className="text-amber-700 text-xs space-y-1">
-                    <li>
-                      • Our admin team will review your application within 24-48
-                      hours
-                    </li>
-                    <li>
-                      • You&apos;ll receive an email notification once your
-                      status changes
-                    </li>
-                    <li>
-                      • Upon approval, you&apos;ll unlock premium features
-                      immediately
-                    </li>
+                    {list("premium.pendingSteps", [
+                      "Our admin team will review your application within 24-48 hours",
+                      "You'll receive an email notification once your status changes",
+                      "Upon approval, you'll unlock premium features immediately",
+                    ]).map((step) => (
+                      <li key={step}>• {step}</li>
+                    ))}
                   </ul>
                 </div>
                 {userProfile.premiumAppliedAt && (
                   <p className="text-amber-600 text-xs mt-3">
-                    Applied on:{" "}
-                    {new Date(userProfile.premiumAppliedAt).toLocaleDateString(
-                      "en-US",
-                      {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
+                    {a("appliedOn", "Applied on: {date}").replace(
+                      "{date}",
+                      formatLocaleDate(userProfile.premiumAppliedAt),
                     )}
                   </p>
                 )}
@@ -388,15 +415,20 @@ export default function UserDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-red-900">
-                  Premium Application Rejected
+                  {a("premium.rejectedTitle", "Premium Application Rejected")}
                 </h3>
                 <p className="text-red-700 text-sm">
-                  Your premium account application was not approved. You can
-                  cancel to apply again.
+                  {a(
+                    "premium.rejectedDescription",
+                    "Your premium account application was not approved. You can cancel to apply again.",
+                  )}
                 </p>
                 {userProfile.rejectionReason && (
                   <p className="text-red-600 text-xs mt-1">
-                    Reason: {userProfile.rejectionReason}
+                    {a("reason", "Reason: {reason}").replace(
+                      "{reason}",
+                      userProfile.rejectionReason,
+                    )}
                   </p>
                 )}
               </div>
@@ -407,7 +439,7 @@ export default function UserDashboardPage() {
                 size="sm"
                 className="text-blue-600 border-blue-200 hover:bg-blue-50"
               >
-                Cancel & Reapply
+                {a("cancelReapply", "Cancel & Reapply")}
               </Button>
             </div>
           </div>
@@ -428,39 +460,42 @@ export default function UserDashboardPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="font-bold text-green-900 text-lg">
-                      ✨ Premium Account Active!
+                      {a("premium.activeTitle", "Premium Account Active!")}
                     </h3>
                     <div className="px-3 py-1 bg-green-200 text-green-800 text-xs font-medium rounded-full">
-                      APPROVED
+                      {a("approved", "APPROVED")}
                     </div>
                   </div>
                   <p className="text-green-800 text-sm mb-3">
-                    Congratulations! Your premium account is now active and you
-                    have access to all premium features.
+                    {a(
+                      "premium.activeDescription",
+                      "Congratulations! Your premium account is now active and you have access to all premium features.",
+                    )}
                   </p>
                   <div className="bg-white/60 p-3 rounded-md border border-green-200">
                     <h4 className="font-semibold text-green-900 text-sm mb-2">
-                      Premium Benefits:
+                      {a("premium.benefitsTitle", "Premium Benefits:")}
                     </h4>
                     <ul className="text-green-700 text-xs space-y-1">
-                      <li>• Exclusive access to premium features</li>
-                      <li>• Priority customer support</li>
-                      <li>• Enhanced rewards and loyalty points</li>
-                      <li>• Eligible for Business Account upgrade</li>
+                      {list("premium.activeBenefits", [
+                        "Exclusive access to premium features",
+                        "Priority customer support",
+                        "Enhanced rewards and loyalty points",
+                        "Eligible for Business Account upgrade",
+                      ]).map((benefit) => (
+                        <li key={benefit}>• {benefit}</li>
+                      ))}
                     </ul>
                   </div>
                   {userProfile.premiumApprovedAt &&
                     userProfile.premiumApprovedBy && (
                       <p className="text-green-600 text-xs mt-3">
-                        Approved by {userProfile.premiumApprovedBy} on{" "}
-                        {new Date(
-                          userProfile.premiumApprovedAt
-                        ).toLocaleDateString("en-US", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {a("approvedByOn", "Approved by {name} on {date}")
+                          .replace("{name}", userProfile.premiumApprovedBy)
+                          .replace(
+                            "{date}",
+                            formatApprovedDate(userProfile.premiumApprovedAt),
+                          )}
                       </p>
                     )}
                 </div>
@@ -468,7 +503,6 @@ export default function UserDashboardPage() {
             </div>
           )}
 
-        {/* Business Account Application - Only for active premium users who are not business users */}
         {userProfile &&
           userProfile.isActive &&
           !userProfile.isBusiness &&
@@ -478,17 +512,23 @@ export default function UserDashboardPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold text-blue-900 mb-2">
-                    Upgrade to Business Account
+                    {a("business.upgradeTitle", "Upgrade to Business Account")}
                   </h3>
                   <p className="text-blue-700 text-sm mb-3">
-                    Get 2% additional discount on all orders with our Business
-                    Account plan. Perfect for companies and bulk purchases.
+                    {a(
+                      "business.upgradeDescription",
+                      "Get 2% additional discount on all orders with our Business Account plan. Perfect for companies and bulk purchases.",
+                    )}
                   </p>
                   <ul className="text-blue-600 text-sm space-y-1 mb-4">
-                    <li>• 2% additional discount on all orders</li>
-                    <li>• Priority customer support</li>
-                    <li>• Bulk order management</li>
-                    <li>• Business invoicing</li>
+                    {list("business.upgradeBenefits", [
+                      "2% additional discount on all orders",
+                      "Priority customer support",
+                      "Bulk order management",
+                      "Business invoicing",
+                    ]).map((benefit) => (
+                      <li key={benefit}>• {benefit}</li>
+                    ))}
                   </ul>
                 </div>
                 <Button
@@ -499,10 +539,10 @@ export default function UserDashboardPage() {
                   {isApplyingBusiness ? (
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Applying...
+                      {a("applying", "Applying...")}
                     </div>
                   ) : (
-                    "Apply for Business Account"
+                    a("business.applyButton", "Apply for Business Account")
                   )}
                 </Button>
               </div>
@@ -521,41 +561,41 @@ export default function UserDashboardPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="font-bold text-blue-900 text-lg">
-                    🚀 Business Application Submitted!
+                    {a("business.pendingTitle", "Business Application Submitted!")}
                   </h3>
                   <div className="px-3 py-1 bg-blue-200 text-blue-800 text-xs font-medium rounded-full">
-                    PENDING REVIEW
+                    {a("pendingReview", "PENDING REVIEW")}
                   </div>
                 </div>
                 <p className="text-blue-800 text-sm mb-3">
-                  Excellent! Your business account application has been
-                  submitted successfully and is currently under administrative
-                  review.
+                  {a(
+                    "business.pendingDescription",
+                    "Excellent! Your business account application has been submitted successfully and is currently under administrative review.",
+                  )}
                 </p>
                 <div className="bg-white/60 p-3 rounded-md border border-blue-200">
                   <h4 className="font-semibold text-blue-900 text-sm mb-2">
-                    Business Account Benefits (Upon Approval):
+                    {a(
+                      "business.pendingBenefitsTitle",
+                      "Business Account Benefits (Upon Approval):",
+                    )}
                   </h4>
                   <ul className="text-blue-700 text-xs space-y-1">
-                    <li>• 2% additional discount on all orders</li>
-                    <li>• Priority customer support</li>
-                    <li>• Bulk order management</li>
-                    <li>• Business invoicing capabilities</li>
+                    {list("business.pendingBenefits", [
+                      "2% additional discount on all orders",
+                      "Priority customer support",
+                      "Bulk order management",
+                      "Business invoicing capabilities",
+                    ]).map((benefit) => (
+                      <li key={benefit}>• {benefit}</li>
+                    ))}
                   </ul>
                 </div>
                 {userProfile.businessAppliedAt && (
                   <p className="text-blue-600 text-xs mt-3">
-                    Applied on:{" "}
-                    {new Date(userProfile.businessAppliedAt).toLocaleDateString(
-                      "en-US",
-                      {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
+                    {a("appliedOn", "Applied on: {date}").replace(
+                      "{date}",
+                      formatLocaleDate(userProfile.businessAppliedAt),
                     )}
                   </p>
                 )}
@@ -564,7 +604,6 @@ export default function UserDashboardPage() {
           </div>
         )}
 
-        {/* Business Account Active Status */}
         {userProfile &&
           userProfile.isBusiness &&
           userProfile.businessStatus === "active" && (
@@ -578,42 +617,42 @@ export default function UserDashboardPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="font-bold text-emerald-900 text-lg">
-                      💼 Business Account Active!
+                      {a("business.activeTitle", "Business Account Active!")}
                     </h3>
                     <div className="px-3 py-1 bg-emerald-200 text-emerald-800 text-xs font-medium rounded-full">
-                      APPROVED
+                      {a("approved", "APPROVED")}
                     </div>
                   </div>
                   <p className="text-emerald-800 text-sm mb-3">
-                    Fantastic! Your business account is now active and
-                    you&apos;re enjoying exclusive business benefits.
+                    {a(
+                      "business.activeDescription",
+                      "Fantastic! Your business account is now active and you're enjoying exclusive business benefits.",
+                    )}
                   </p>
                   <div className="bg-white/60 p-3 rounded-md border border-emerald-200">
                     <h4 className="font-semibold text-emerald-900 text-sm mb-2">
-                      Active Business Benefits:
+                      {a("business.activeBenefitsTitle", "Active Business Benefits:")}
                     </h4>
                     <ul className="text-emerald-700 text-xs space-y-1">
-                      <li>
-                        • 2% additional discount automatically applied at
-                        checkout
-                      </li>
-                      <li>• Priority customer support</li>
-                      <li>• Advanced bulk order management</li>
-                      <li>• Professional business invoicing</li>
+                      {list("business.activeBenefits", [
+                        "2% additional discount automatically applied at checkout",
+                        "Priority customer support",
+                        "Advanced bulk order management",
+                        "Professional business invoicing",
+                      ]).map((benefit) => (
+                        <li key={benefit}>• {benefit}</li>
+                      ))}
                     </ul>
                   </div>
                   {userProfile.businessApprovedAt &&
                     userProfile.businessApprovedBy && (
                       <p className="text-emerald-600 text-xs mt-3">
-                        Approved by {userProfile.businessApprovedBy} on{" "}
-                        {new Date(
-                          userProfile.businessApprovedAt
-                        ).toLocaleDateString("en-US", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {a("approvedByOn", "Approved by {name} on {date}")
+                          .replace("{name}", userProfile.businessApprovedBy)
+                          .replace(
+                            "{date}",
+                            formatApprovedDate(userProfile.businessApprovedAt),
+                          )}
                       </p>
                     )}
                 </div>
@@ -626,15 +665,20 @@ export default function UserDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-red-900">
-                  Business Application Rejected
+                  {a("business.rejectedTitle", "Business Application Rejected")}
                 </h3>
                 <p className="text-red-700 text-sm">
-                  Your business account application was not approved. You can
-                  cancel to apply again.
+                  {a(
+                    "business.rejectedDescription",
+                    "Your business account application was not approved. You can cancel to apply again.",
+                  )}
                 </p>
                 {userProfile.rejectionReason && (
                   <p className="text-red-600 text-xs mt-1">
-                    Reason: {userProfile.rejectionReason}
+                    {a("reason", "Reason: {reason}").replace(
+                      "{reason}",
+                      userProfile.rejectionReason,
+                    )}
                   </p>
                 )}
               </div>
@@ -645,7 +689,7 @@ export default function UserDashboardPage() {
                 size="sm"
                 className="text-blue-600 border-blue-200 hover:bg-blue-50"
               >
-                Cancel & Reapply
+                {a("cancelReapply", "Cancel & Reapply")}
               </Button>
             </div>
           </div>

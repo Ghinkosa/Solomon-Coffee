@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface Notification {
   id: string;
@@ -48,6 +50,9 @@ const NOTIFICATIONS_PER_PAGE = 10;
 
 export default function UserNotificationsPage() {
   const { user } = useUser();
+  const dictionary = useDictionary();
+  const n = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.notificationsPage.${path}`, fallback);
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +87,7 @@ export default function UserNotificationsPage() {
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
-      toast.error("Failed to fetch notifications");
+      toast.error(n("toasts.fetchFailed", "Failed to fetch notifications"));
     } finally {
       setLoading(false);
     }
@@ -183,19 +188,19 @@ export default function UserNotificationsPage() {
           prev.filter((id) => id !== notificationId)
         );
 
-        toast.success("Notification deleted");
+        toast.success(n("toasts.deleted", "Notification deleted"));
       } else {
-        toast.error("Failed to delete notification");
+        toast.error(n("toasts.deleteFailed", "Failed to delete notification"));
       }
     } catch (error) {
       console.error("Error deleting notification:", error);
-      toast.error("Failed to delete notification");
+      toast.error(n("toasts.deleteFailed", "Failed to delete notification"));
     }
   };
 
   const handleBulkDelete = async () => {
     if (selectedNotifications.length === 0) {
-      toast.error("No notifications selected");
+      toast.error(n("toasts.noneSelected", "No notifications selected"));
       return;
     }
 
@@ -222,7 +227,12 @@ export default function UserNotificationsPage() {
         setUnreadCount((prev) => Math.max(0, prev - deletedUnreadCount));
 
         setSelectedNotifications([]);
-        toast.success(`${successCount} notification(s) deleted`);
+        toast.success(
+          n("toasts.bulkDeleted", "{count} notification(s) deleted").replace(
+            "{count}",
+            String(successCount),
+          ),
+        );
 
         // Adjust page if needed
         if (
@@ -235,12 +245,17 @@ export default function UserNotificationsPage() {
 
       if (results.length > successCount) {
         toast.error(
-          `Failed to delete ${results.length - successCount} notification(s)`
+          n(
+            "toasts.bulkDeletePartial",
+            "Failed to delete {count} notification(s)",
+          ).replace("{count}", String(results.length - successCount)),
         );
       }
     } catch (error) {
       console.error("Error deleting notifications:", error);
-      toast.error("Failed to delete notifications");
+      toast.error(
+        n("toasts.bulkDeleteFailed", "Failed to delete notifications"),
+      );
     } finally {
       setIsDeletingBulk(false);
     }
@@ -303,30 +318,33 @@ export default function UserNotificationsPage() {
       case "urgent":
         return (
           <Badge variant="destructive" className="text-xs">
-            Urgent
+            {n("priority.urgent", "Urgent")}
           </Badge>
         );
       case "high":
         return (
           <Badge className="bg-orange-500 hover:bg-orange-600 text-xs">
-            High
+            {n("priority.high", "High")}
           </Badge>
         );
       case "medium":
         return (
           <Badge className="bg-yellow-500 hover:bg-yellow-600 text-xs">
-            Medium
+            {n("priority.medium", "Medium")}
           </Badge>
         );
       case "low":
       default:
         return (
           <Badge variant="secondary" className="text-xs">
-            Low
+            {n("priority.low", "Low")}
           </Badge>
         );
     }
   };
+
+  const getTypeLabel = (type: string) =>
+    n(`types.${type}`, type);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -335,11 +353,22 @@ export default function UserNotificationsPage() {
       (now.getTime() - date.getTime()) / (1000 * 60)
     );
 
-    if (diffInMinutes < 1) return "Just now";
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    if (diffInMinutes < 1) return n("justNow", "Just now");
+    if (diffInMinutes < 60)
+      return n("minutesAgo", "{count}m ago").replace(
+        "{count}",
+        String(diffInMinutes),
+      );
+    if (diffInMinutes < 1440)
+      return n("hoursAgo", "{count}h ago").replace(
+        "{count}",
+        String(Math.floor(diffInMinutes / 60)),
+      );
     if (diffInMinutes < 10080)
-      return `${Math.floor(diffInMinutes / 1440)}d ago`;
+      return n("daysAgo", "{count}d ago").replace(
+        "{count}",
+        String(Math.floor(diffInMinutes / 1440)),
+      );
 
     return date.toLocaleDateString();
   };
@@ -394,11 +423,18 @@ export default function UserNotificationsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {n("title", "Notifications")}
+            </h1>
             <div className="text-gray-600 flex items-center gap-2">
-              <span>Stay updated with your account activity</span>
+              <span>{n("subtitle", "Stay updated with your account activity")}</span>
               {unreadCount > 0 && (
-                <Badge variant="destructive">{unreadCount} unread</Badge>
+                <Badge variant="destructive">
+                  {n("unreadBadge", "{count} unread").replace(
+                    "{count}",
+                    String(unreadCount),
+                  )}
+                </Badge>
               )}
             </div>
           </div>
@@ -409,7 +445,7 @@ export default function UserNotificationsPage() {
             disabled={loading}
           >
             <Bell className="h-4 w-4 mr-2" />
-            Refresh
+            {n("refresh", "Refresh")}
           </Button>
         </div>
 
@@ -419,10 +455,13 @@ export default function UserNotificationsPage() {
               <div className="text-center py-12">
                 <Bell className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">
-                  No notifications
+                  {n("emptyTitle", "No notifications")}
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  You&apos;re all caught up! Check back later for updates.
+                  {n(
+                    "emptyDescription",
+                    "You're all caught up! Check back later for updates.",
+                  )}
                 </p>
               </div>
             </CardContent>
@@ -435,7 +474,10 @@ export default function UserNotificationsPage() {
                 <CardContent className="pt-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-gray-900">
-                      {selectedNotifications.length} notification(s) selected
+                      {n("selectedCount", "{count} notification(s) selected").replace(
+                        "{count}",
+                        String(selectedNotifications.length),
+                      )}
                     </p>
                     <div className="flex items-center gap-2">
                       <Button
@@ -443,7 +485,7 @@ export default function UserNotificationsPage() {
                         size="sm"
                         onClick={() => setSelectedNotifications([])}
                       >
-                        Clear Selection
+                        {n("clearSelection", "Clear Selection")}
                       </Button>
                       <Button
                         variant="destructive"
@@ -452,7 +494,9 @@ export default function UserNotificationsPage() {
                         disabled={isDeletingBulk}
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
-                        {isDeletingBulk ? "Deleting..." : "Delete Selected"}
+                        {isDeletingBulk
+                          ? n("deleting", "Deleting...")
+                          : n("deleteSelected", "Delete Selected")}
                       </Button>
                     </div>
                   </div>
@@ -474,7 +518,7 @@ export default function UserNotificationsPage() {
                 htmlFor="select-all"
                 className="text-sm font-medium text-gray-700 cursor-pointer"
               >
-                Select all on this page
+                {n("selectAllPage", "Select all on this page")}
               </label>
             </div>
 
@@ -522,7 +566,7 @@ export default function UserNotificationsPage() {
                                 notification.type
                               )}`}
                             >
-                              {notification.type}
+                              {getTypeLabel(notification.type)}
                             </Badge>
                             {getPriorityBadge(notification.priority)}
                             <span className="text-xs text-gray-500 flex items-center">
@@ -555,7 +599,7 @@ export default function UserNotificationsPage() {
                         onClick={() => openNotificationDetails(notification)}
                         className="w-full sm:w-auto"
                       >
-                        View Details
+                        {n("viewDetails", "View Details")}
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>
@@ -570,8 +614,10 @@ export default function UserNotificationsPage() {
                 <CardContent className="pt-4">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-600">
-                      Page {currentPage} of {totalPages} (
-                      {allNotifications.length} total notifications)
+                      {n("pageOf", "Page {current} of {total} ({count} total notifications)")
+                        .replace("{current}", String(currentPage))
+                        .replace("{total}", String(totalPages))
+                        .replace("{count}", String(allNotifications.length))}
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
@@ -583,7 +629,7 @@ export default function UserNotificationsPage() {
                         disabled={currentPage === 1}
                       >
                         <ChevronLeft className="h-4 w-4 mr-1" />
-                        Previous
+                        {n("previous", "Previous")}
                       </Button>
                       <Button
                         variant="outline"
@@ -595,7 +641,7 @@ export default function UserNotificationsPage() {
                         }
                         disabled={currentPage === totalPages}
                       >
-                        Next
+                        {n("next", "Next")}
                         <ChevronRight className="h-4 w-4 ml-1" />
                       </Button>
                     </div>
@@ -625,15 +671,17 @@ export default function UserNotificationsPage() {
                           selectedNotification.type
                         )}`}
                       >
-                        {selectedNotification.type}
+                        {getTypeLabel(selectedNotification.type)}
                       </Badge>
                       {getPriorityBadge(selectedNotification.priority)}
                       {selectedNotification.read ? (
                         <Badge variant="outline" className="text-xs">
-                          Read
+                          {n("readBadge", "Read")}
                         </Badge>
                       ) : (
-                        <Badge className="text-xs bg-blue-500">Unread</Badge>
+                        <Badge className="text-xs bg-blue-500">
+                          {n("unreadBadgeLabel", "Unread")}
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -645,20 +693,20 @@ export default function UserNotificationsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-gray-600">
                     <Clock className="h-4 w-4 mr-2" />
-                    <span className="font-medium mr-2">Sent:</span>
+                    <span className="font-medium mr-2">{n("sent", "Sent:")}</span>
                     <span>{formatDate(selectedNotification.sentAt)}</span>
                   </div>
                   {selectedNotification.sentBy && (
                     <div className="flex items-center text-sm text-gray-600">
                       <Info className="h-4 w-4 mr-2" />
-                      <span className="font-medium mr-2">Sent by:</span>
+                      <span className="font-medium mr-2">{n("sentBy", "Sent by:")}</span>
                       <span>{selectedNotification.sentBy}</span>
                     </div>
                   )}
                   {selectedNotification.read && selectedNotification.readAt && (
                     <div className="flex items-center text-sm text-gray-600">
                       <Eye className="h-4 w-4 mr-2" />
-                      <span className="font-medium mr-2">Read:</span>
+                      <span className="font-medium mr-2">{n("read", "Read:")}</span>
                       <span>{formatDate(selectedNotification.readAt)}</span>
                     </div>
                   )}
@@ -667,7 +715,7 @@ export default function UserNotificationsPage() {
                 {/* Message Content */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-2">
-                    Message
+                    {n("message", "Message")}
                   </h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <p className="text-sm text-gray-700 whitespace-pre-wrap">
@@ -680,7 +728,7 @@ export default function UserNotificationsPage() {
                 {selectedNotification.actionUrl && (
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 mb-2">
-                      Quick Action
+                      {n("quickAction", "Quick Action")}
                     </h3>
                     <Button
                       asChild
@@ -703,12 +751,12 @@ export default function UserNotificationsPage() {
                       >
                         {selectedNotification.actionUrl.startsWith("http") ? (
                           <>
-                            Open Link
+                            {n("openLink", "Open Link")}
                             <ExternalLink className="h-4 w-4 ml-2" />
                           </>
                         ) : (
                           <>
-                            Go to Page
+                            {n("goToPage", "Go to Page")}
                             <ChevronRight className="h-4 w-4 ml-2" />
                           </>
                         )}
@@ -725,11 +773,11 @@ export default function UserNotificationsPage() {
                       className="flex-1"
                       onClick={() => {
                         markAsRead(selectedNotification.id);
-                        toast.success("Marked as read");
+                        toast.success(n("toasts.markedRead", "Marked as read"));
                       }}
                     >
                       <Eye className="h-4 w-4 mr-2" />
-                      Mark as Read
+                      {n("markAsRead", "Mark as Read")}
                     </Button>
                   )}
                   <Button
@@ -740,7 +788,7 @@ export default function UserNotificationsPage() {
                     }}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
+                    {n("delete", "Delete")}
                   </Button>
                 </div>
               </div>

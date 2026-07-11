@@ -780,21 +780,50 @@
       "adminTools": "Herramientas de administración"
     },
     "nav": {
-      "dashboard": { "title": "Panel", "description": "Resumen y estadísticas" },
-      "orders": { "title": "Pedidos", "description": "Rastrea tus pedidos" },
-      "profile": { "title": "Perfil", "description": "Información personal" },
-      "notifications": { "title": "Notificaciones", "description": "Actualizaciones y alertas" },
-      "wishlist": { "title": "Lista de deseos", "description": "Artículos guardados" },
-      "settings": { "title": "Ajustes", "description": "Preferencias de cuenta" }
+      "dashboard": {
+        "title": "Panel",
+        "description": "Resumen y estadísticas"
+      },
+      "orders": {
+        "title": "Pedidos",
+        "description": "Rastrea tus pedidos"
+      },
+      "profile": {
+        "title": "Perfil",
+        "description": "Información personal"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "description": "Actualizaciones y alertas"
+      },
+      "wishlist": {
+        "title": "Lista de deseos",
+        "description": "Artículos guardados"
+      },
+      "settings": {
+        "title": "Ajustes",
+        "description": "Preferencias de cuenta"
+      }
     },
     "admin": {
-      "manageUsers": { "title": "Gestionar usuarios", "description": "Estado premium de usuarios" },
-      "premiumAccounts": { "title": "Cuentas premium", "description": "Aprobaciones premium" },
-      "businessAccounts": { "title": "Cuentas comerciales", "description": "Aprobaciones comerciales" }
+      "manageUsers": {
+        "title": "Gestionar usuarios",
+        "description": "Estado premium de usuarios"
+      },
+      "premiumAccounts": {
+        "title": "Cuentas premium",
+        "description": "Aprobaciones premium"
+      },
+      "businessAccounts": {
+        "title": "Cuentas comerciales",
+        "description": "Aprobaciones comerciales"
+      }
     },
     "orders": {
       "title": "Mis pedidos",
-      "showing": "Mostrando {count} de {total} pedidos"
+      "showing": "Mostrando {count} de {total} pedidos",
+      "emptyTitle": "No se encontraron pedidos.",
+      "emptyDescription": "Empieza a comprar para ver tus pedidos aquí."
     },
     "settings": {
       "title": "Ajustes",
@@ -851,7 +880,185 @@
       "quickActions": "Acciones rápidas",
       "quickActionsDescription": "Funciones usadas con frecuencia",
       "viewOrders": "Ver pedidos",
-      "profileSettings": "Ajustes de perfil"
+      "profileSettings": "Ajustes de perfil",
+      "timeAgo": {
+        "minutesAgo": "hace {count}m",
+        "hoursAgo": "hace {count}h",
+        "daysAgo": "hace {count}d"
+      },
+      "applications": {
+        "pendingReview": "PENDIENTE DE REVISIÓN",
+        "approved": "APROBADA",
+        "reason": "Motivo: {reason}",
+        "appliedOn": "Solicitado el: {date}",
+        "approvedByOn": "Aprobado por {name} el {date}",
+        "cancelReapply": "Cancelar y volver a solicitar",
+        "applying": "Solicitando...",
+        "premium": {
+          "pendingTitle": "¡Solicitud premium enviada!",
+          "pendingDescription": "¡Buenas noticias! Tu solicitud de cuenta premium se envió correctamente y está en revisión administrativa.",
+          "whatNext": "¿Qué sigue?",
+          "pendingSteps": [
+            "Nuestro equipo revisará tu solicitud en 24-48 horas",
+            "Recibirás un correo cuando cambie tu estado",
+            "Tras la aprobación, desbloquearás funciones premium al instante"
+          ],
+          "rejectedTitle": "Solicitud premium rechazada",
+          "rejectedDescription": "Tu solicitud de cuenta premium no fue aprobada. Puedes cancelar para volver a solicitar.",
+          "activeTitle": "¡Cuenta premium activa!",
+          "activeDescription": "¡Felicidades! Tu cuenta premium está activa y tienes acceso a todas las funciones premium.",
+          "benefitsTitle": "Beneficios premium:",
+          "activeBenefits": [
+            "Acceso exclusivo a funciones premium",
+            "Soporte prioritario",
+            "Recompensas y puntos de fidelidad mejorados",
+            "Elegible para actualización a cuenta comercial"
+          ]
+        },
+        "business": {
+          "upgradeTitle": "Actualizar a cuenta comercial",
+          "upgradeDescription": "Obtén un 2% de descuento adicional en todos los pedidos. Ideal para empresas y compras al por mayor.",
+          "upgradeBenefits": [
+            "2% de descuento adicional en todos los pedidos",
+            "Soporte prioritario",
+            "Gestión de pedidos al por mayor",
+            "Facturación comercial"
+          ],
+          "applyButton": "Solicitar cuenta comercial",
+          "pendingTitle": "¡Solicitud comercial enviada!",
+          "pendingDescription": "¡Excelente! Tu solicitud de cuenta comercial se envió correctamente y está en revisión administrativa.",
+          "pendingBenefitsTitle": "Beneficios comerciales (tras aprobación):",
+          "pendingBenefits": [
+            "2% de descuento adicional en todos los pedidos",
+            "Soporte prioritario",
+            "Gestión de pedidos al por mayor",
+            "Capacidades de facturación comercial"
+          ],
+          "rejectedTitle": "Solicitud comercial rechazada",
+          "rejectedDescription": "Tu solicitud de cuenta comercial no fue aprobada. Puedes cancelar para volver a solicitar.",
+          "activeTitle": "¡Cuenta comercial activa!",
+          "activeDescription": "¡Fantástico! Tu cuenta comercial está activa y disfrutas de beneficios exclusivos.",
+          "activeBenefitsTitle": "Beneficios comerciales activos:",
+          "activeBenefits": [
+            "2% de descuento adicional aplicado automáticamente al pagar",
+            "Soporte prioritario",
+            "Gestión avanzada de pedidos al por mayor",
+            "Facturación comercial profesional"
+          ]
+        },
+        "toasts": {
+          "noEmail": "No se pudo obtener el correo del usuario",
+          "businessApplyFailed": "Error al enviar la solicitud de cuenta comercial",
+          "applicationError": "Error al enviar la solicitud",
+          "cancelFailed": "Error al cancelar la solicitud",
+          "cancelError": "Error al cancelar la solicitud"
+        }
+      }
+    },
+    "notificationsPage": {
+      "title": "Notificaciones",
+      "subtitle": "Mantente al día con la actividad de tu cuenta",
+      "unreadBadge": "{count} sin leer",
+      "refresh": "Actualizar",
+      "emptyTitle": "Sin notificaciones",
+      "emptyDescription": "¡Estás al día! Vuelve más tarde para ver novedades.",
+      "selectedCount": "{count} notificación(es) seleccionada(s)",
+      "clearSelection": "Limpiar selección",
+      "deleting": "Eliminando...",
+      "deleteSelected": "Eliminar seleccionadas",
+      "selectAllPage": "Seleccionar todo en esta página",
+      "viewDetails": "Ver detalles",
+      "pageOf": "Página {current} de {total} ({count} notificaciones en total)",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "sent": "Enviado:",
+      "sentBy": "Enviado por:",
+      "read": "Leído:",
+      "message": "Mensaje",
+      "quickAction": "Acción rápida",
+      "openLink": "Abrir enlace",
+      "goToPage": "Ir a la página",
+      "markAsRead": "Marcar como leída",
+      "delete": "Eliminar",
+      "readBadge": "Leída",
+      "unreadBadgeLabel": "No leída",
+      "justNow": "Justo ahora",
+      "minutesAgo": "hace {count}m",
+      "hoursAgo": "hace {count}h",
+      "daysAgo": "hace {count}d",
+      "types": {
+        "order": "pedido",
+        "promo": "promo",
+        "marketing": "marketing",
+        "system": "sistema",
+        "general": "general"
+      },
+      "priority": {
+        "urgent": "Urgente",
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      },
+      "toasts": {
+        "fetchFailed": "Error al cargar las notificaciones",
+        "deleted": "Notificación eliminada",
+        "deleteFailed": "Error al eliminar la notificación",
+        "noneSelected": "No hay notificaciones seleccionadas",
+        "bulkDeleted": "{count} notificación(es) eliminada(s)",
+        "bulkDeletePartial": "Error al eliminar {count} notificación(es)",
+        "bulkDeleteFailed": "Error al eliminar las notificaciones",
+        "markedRead": "Marcada como leída"
+      }
+    },
+    "profile": {
+      "editProfile": "Editar perfil",
+      "memberSince": "Miembro desde",
+      "rewardPoints": "Puntos de recompensa",
+      "accountStatus": "Estado de la cuenta",
+      "active": "Activo",
+      "personalInformation": "Información personal",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "phoneNumber": "Número de teléfono",
+      "dateOfBirth": "Fecha de nacimiento",
+      "notProvided": "No proporcionado",
+      "fromClerkReadOnly": "De Clerk (solo lectura)",
+      "editableInProfile": "Editable en el perfil",
+      "accountOverview": "Resumen de la cuenta",
+      "totalSpent": "Total gastado",
+      "loyaltyPoints": "Puntos de fidelidad",
+      "lastLogin": "Último acceso",
+      "today": "Hoy",
+      "shippingAddresses": "Direcciones de envío",
+      "deleteCount": "Eliminar ({count})",
+      "addAddress": "Añadir dirección",
+      "selectAll": "Seleccionar todo",
+      "default": "Predeterminada",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "noAddresses": "No se encontraron direcciones de envío",
+      "addFirstAddress": "Añade tu primera dirección",
+      "deleteAddressTitle": "Eliminar dirección",
+      "deleteAddressConfirm": "¿Seguro que quieres eliminar {name}? Esta acción no se puede deshacer.",
+      "deleteMultipleTitle": "Eliminar varias direcciones",
+      "deleteMultipleConfirm": "Estás a punto de eliminar {count} {unit}. Esta acción no se puede deshacer.",
+      "address": "dirección",
+      "addresses": "direcciones",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando...",
+      "deleteAddress": "Eliminar dirección",
+      "deleteAddresses": "Eliminar direcciones",
+      "close": "Cerrar",
+      "toasts": {
+        "addressDeletedTitle": "Dirección eliminada",
+        "addressDeletedMessage": "Tu dirección se eliminó correctamente.",
+        "deleteErrorTitle": "Error",
+        "deleteErrorMessage": "Error al eliminar la dirección. Inténtalo de nuevo.",
+        "bulkDeletedTitle": "Direcciones eliminadas",
+        "bulkDeletedMessage": "Se eliminaron correctamente {count} {unit}.",
+        "bulkDeleteErrorMessage": "Error al eliminar algunas direcciones. Inténtalo de nuevo."
+      }
     }
   },
   "breadcrumb": {
@@ -1046,7 +1253,13 @@
         "La cantidad de mucílago retenida después del procesamiento crea diferentes variedades honey. Un mayor contenido de mucílago produce un café de cuerpo más completo con perfiles de sabor más ricos."
       ],
       "varietiesTitle": "Variedades honey:",
-      "varieties": ["White Honey", "Yellow Honey", "Gold Honey", "Red Honey", "Black Honey"],
+      "varieties": [
+        "White Honey",
+        "Yellow Honey",
+        "Gold Honey",
+        "Red Honey",
+        "Black Honey"
+      ],
       "learnMore": "Saber más",
       "imageAlts": {
         "workflow": "Flujo de procesamiento honey",

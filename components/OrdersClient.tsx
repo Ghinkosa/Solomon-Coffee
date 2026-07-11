@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface OrdersClientProps {
   initialOrders: MY_ORDERS_QUERY_RESULT;
@@ -36,6 +38,9 @@ export default function OrdersClient({
   const [isPending, startTransition] = useTransition();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const router = useRouter();
+  const dictionary = useDictionary();
+  const o = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.orders.${path}`, fallback);
 
   // Set initial load to false after first render
   useEffect(() => {
@@ -148,9 +153,11 @@ export default function OrdersClient({
           </Card>
         ) : (
           <div className="text-center py-10">
-            <p className="text-gray-500 text-lg">No orders found.</p>
+            <p className="text-gray-500 text-lg">
+              {o("emptyTitle", "No orders found.")}
+            </p>
             <p className="text-gray-400 text-sm mt-2">
-              Start shopping to see your orders here.
+              {o("emptyDescription", "Start shopping to see your orders here.")}
             </p>
           </div>
         )}

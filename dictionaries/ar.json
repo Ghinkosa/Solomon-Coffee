@@ -989,21 +989,50 @@
       "adminTools": "أدوات الإدارة"
     },
     "nav": {
-      "dashboard": { "title": "لوحة التحكم", "description": "نظرة عامة وإحصائيات" },
-      "orders": { "title": "الطلبات", "description": "تتبع طلباتك" },
-      "profile": { "title": "الملف الشخصي", "description": "المعلومات الشخصية" },
-      "notifications": { "title": "الإشعارات", "description": "التحديثات والتنبيهات" },
-      "wishlist": { "title": "قائمة الأمنيات", "description": "العناصر المحفوظة" },
-      "settings": { "title": "الإعدادات", "description": "تفضيلات الحساب" }
+      "dashboard": {
+        "title": "لوحة التحكم",
+        "description": "نظرة عامة وإحصائيات"
+      },
+      "orders": {
+        "title": "الطلبات",
+        "description": "تتبع طلباتك"
+      },
+      "profile": {
+        "title": "الملف الشخصي",
+        "description": "المعلومات الشخصية"
+      },
+      "notifications": {
+        "title": "الإشعارات",
+        "description": "التحديثات والتنبيهات"
+      },
+      "wishlist": {
+        "title": "قائمة الأمنيات",
+        "description": "العناصر المحفوظة"
+      },
+      "settings": {
+        "title": "الإعدادات",
+        "description": "تفضيلات الحساب"
+      }
     },
     "admin": {
-      "manageUsers": { "title": "إدارة المستخدمين", "description": "حالة العضوية المميزة" },
-      "premiumAccounts": { "title": "الحسابات المميزة", "description": "موافقات العضوية المميزة" },
-      "businessAccounts": { "title": "الحسابات التجارية", "description": "موافقات الحسابات التجارية" }
+      "manageUsers": {
+        "title": "إدارة المستخدمين",
+        "description": "حالة العضوية المميزة"
+      },
+      "premiumAccounts": {
+        "title": "الحسابات المميزة",
+        "description": "موافقات العضوية المميزة"
+      },
+      "businessAccounts": {
+        "title": "الحسابات التجارية",
+        "description": "موافقات الحسابات التجارية"
+      }
     },
     "orders": {
       "title": "طلباتي",
-      "showing": "عرض {count} من {total} طلبات"
+      "showing": "عرض {count} من {total} طلبات",
+      "emptyTitle": "لم يتم العثور على طلبات.",
+      "emptyDescription": "ابدأ التسوق لرؤية طلباتك هنا."
     },
     "settings": {
       "title": "الإعدادات",
@@ -1060,7 +1089,185 @@
       "quickActions": "إجراءات سريعة",
       "quickActionsDescription": "الميزات المستخدمة بكثرة",
       "viewOrders": "عرض الطلبات",
-      "profileSettings": "إعدادات الملف الشخصي"
+      "profileSettings": "إعدادات الملف الشخصي",
+      "timeAgo": {
+        "minutesAgo": "منذ {count} د",
+        "hoursAgo": "منذ {count} س",
+        "daysAgo": "منذ {count} ي"
+      },
+      "applications": {
+        "pendingReview": "قيد المراجعة",
+        "approved": "موافق عليه",
+        "reason": "السبب: {reason}",
+        "appliedOn": "تاريخ التقديم: {date}",
+        "approvedByOn": "وافق عليه {name} في {date}",
+        "cancelReapply": "إلغاء وإعادة التقديم",
+        "applying": "جاري التقديم...",
+        "premium": {
+          "pendingTitle": "تم تقديم طلب العضوية المميزة!",
+          "pendingDescription": "أخبار رائعة! تم تقديم طلب حسابك المميز بنجاح وهو قيد المراجعة الإدارية.",
+          "whatNext": "ماذا بعد؟",
+          "pendingSteps": [
+            "سيراجع فريق الإدارة طلبك خلال 24-48 ساعة",
+            "ستتلقى إشعاراً بالبريد عند تغيير حالتك",
+            "عند الموافقة، ستفتح الميزات المميزة فوراً"
+          ],
+          "rejectedTitle": "تم رفض طلب العضوية المميزة",
+          "rejectedDescription": "لم تُوافق على طلب حسابك المميز. يمكنك الإلغاء للتقديم مجدداً.",
+          "activeTitle": "الحساب المميز نشط!",
+          "activeDescription": "تهانينا! حسابك المميز نشط ولديك وصول لجميع الميزات المميزة.",
+          "benefitsTitle": "مزايا العضوية المميزة:",
+          "activeBenefits": [
+            "وصول حصري للميزات المميزة",
+            "دعم عملاء ذو أولوية",
+            "مكافآت ونقاط ولاء محسّنة",
+            "مؤهل للترقية إلى حساب تجاري"
+          ]
+        },
+        "business": {
+          "upgradeTitle": "الترقية إلى حساب تجاري",
+          "upgradeDescription": "احصل على خصم إضافي 2% على جميع الطلبات. مثالي للشركات والمشتريات بالجملة.",
+          "upgradeBenefits": [
+            "خصم إضافي 2% على جميع الطلبات",
+            "دعم عملاء ذو أولوية",
+            "إدارة طلبات بالجملة",
+            "فوترة تجارية"
+          ],
+          "applyButton": "التقديم للحساب التجاري",
+          "pendingTitle": "تم تقديم الطلب التجاري!",
+          "pendingDescription": "ممتاز! تم تقديم طلب حسابك التجاري بنجاح وهو قيد المراجعة الإدارية.",
+          "pendingBenefitsTitle": "مزايا الحساب التجاري (بعد الموافقة):",
+          "pendingBenefits": [
+            "خصم إضافي 2% على جميع الطلبات",
+            "دعم عملاء ذو أولوية",
+            "إدارة طلبات بالجملة",
+            "إمكانيات فوترة تجارية"
+          ],
+          "rejectedTitle": "تم رفض الطلب التجاري",
+          "rejectedDescription": "لم تُوافق على طلب حسابك التجاري. يمكنك الإلغاء للتقديم مجدداً.",
+          "activeTitle": "الحساب التجاري نشط!",
+          "activeDescription": "رائع! حسابك التجاري نشط وتستمتع بمزايا تجارية حصرية.",
+          "activeBenefitsTitle": "المزايا التجارية النشطة:",
+          "activeBenefits": [
+            "خصم إضافي 2% يُطبّق تلقائياً عند الدفع",
+            "دعم عملاء ذو أولوية",
+            "إدارة متقدمة للطلبات بالجملة",
+            "فوترة تجارية احترافية"
+          ]
+        },
+        "toasts": {
+          "noEmail": "تعذّر الحصول على بريد المستخدم",
+          "businessApplyFailed": "فشل تقديم طلب الحساب التجاري",
+          "applicationError": "خطأ في تقديم الطلب",
+          "cancelFailed": "فشل إلغاء الطلب",
+          "cancelError": "خطأ في إلغاء الطلب"
+        }
+      }
+    },
+    "notificationsPage": {
+      "title": "الإشعارات",
+      "subtitle": "ابق على اطلاع بنشاط حسابك",
+      "unreadBadge": "{count} غير مقروء",
+      "refresh": "تحديث",
+      "emptyTitle": "لا توجد إشعارات",
+      "emptyDescription": "أنت على اطلاع! عد لاحقاً للتحديثات.",
+      "selectedCount": "{count} إشعار(ات) محددة",
+      "clearSelection": "مسح التحديد",
+      "deleting": "جاري الحذف...",
+      "deleteSelected": "حذف المحدد",
+      "selectAllPage": "تحديد الكل في هذه الصفحة",
+      "viewDetails": "عرض التفاصيل",
+      "pageOf": "صفحة {current} من {total} ({count} إشعار إجمالاً)",
+      "previous": "السابق",
+      "next": "التالي",
+      "sent": "أُرسل:",
+      "sentBy": "أُرسل بواسطة:",
+      "read": "قُرئ:",
+      "message": "الرسالة",
+      "quickAction": "إجراء سريع",
+      "openLink": "فتح الرابط",
+      "goToPage": "الذهاب إلى الصفحة",
+      "markAsRead": "تحديد كمقروء",
+      "delete": "حذف",
+      "readBadge": "مقروء",
+      "unreadBadgeLabel": "غير مقروء",
+      "justNow": "الآن",
+      "minutesAgo": "منذ {count} د",
+      "hoursAgo": "منذ {count} س",
+      "daysAgo": "منذ {count} ي",
+      "types": {
+        "order": "طلب",
+        "promo": "عرض",
+        "marketing": "تسويق",
+        "system": "نظام",
+        "general": "عام"
+      },
+      "priority": {
+        "urgent": "عاجل",
+        "high": "مرتفع",
+        "medium": "متوسط",
+        "low": "منخفض"
+      },
+      "toasts": {
+        "fetchFailed": "فشل تحميل الإشعارات",
+        "deleted": "تم حذف الإشعار",
+        "deleteFailed": "فشل حذف الإشعار",
+        "noneSelected": "لم يتم تحديد إشعارات",
+        "bulkDeleted": "تم حذف {count} إشعار(ات)",
+        "bulkDeletePartial": "فشل حذف {count} إشعار(ات)",
+        "bulkDeleteFailed": "فشل حذف الإشعارات",
+        "markedRead": "تم التحديد كمقروء"
+      }
+    },
+    "profile": {
+      "editProfile": "تعديل الملف الشخصي",
+      "memberSince": "عضو منذ",
+      "rewardPoints": "نقاط المكافآت",
+      "accountStatus": "حالة الحساب",
+      "active": "نشط",
+      "personalInformation": "المعلومات الشخصية",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phoneNumber": "رقم الهاتف",
+      "dateOfBirth": "تاريخ الميلاد",
+      "notProvided": "غير متوفر",
+      "fromClerkReadOnly": "من Clerk (للقراءة فقط)",
+      "editableInProfile": "قابل للتعديل في الملف الشخصي",
+      "accountOverview": "نظرة عامة على الحساب",
+      "totalSpent": "إجمالي الإنفاق",
+      "loyaltyPoints": "نقاط الولاء",
+      "lastLogin": "آخر تسجيل دخول",
+      "today": "اليوم",
+      "shippingAddresses": "عناوين الشحن",
+      "deleteCount": "حذف ({count})",
+      "addAddress": "إضافة عنوان",
+      "selectAll": "تحديد الكل",
+      "default": "افتراضي",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "noAddresses": "لم يتم العثور على عناوين شحن",
+      "addFirstAddress": "أضف عنوانك الأول",
+      "deleteAddressTitle": "حذف العنوان",
+      "deleteAddressConfirm": "هل أنت متأكد أنك تريد حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteMultipleTitle": "حذف عناوين متعددة",
+      "deleteMultipleConfirm": "أنت على وشك حذف {count} {unit}. لا يمكن التراجع عن هذا الإجراء.",
+      "address": "عنوان",
+      "addresses": "عناوين",
+      "cancel": "إلغاء",
+      "deleting": "جاري الحذف...",
+      "deleteAddress": "حذف العنوان",
+      "deleteAddresses": "حذف العناوين",
+      "close": "إغلاق",
+      "toasts": {
+        "addressDeletedTitle": "تم حذف العنوان",
+        "addressDeletedMessage": "تم حذف عنوانك بنجاح.",
+        "deleteErrorTitle": "خطأ",
+        "deleteErrorMessage": "فشل حذف العنوان. يرجى المحاولة مرة أخرى.",
+        "bulkDeletedTitle": "تم حذف العناوين",
+        "bulkDeletedMessage": "تم حذف {count} {unit} بنجاح.",
+        "bulkDeleteErrorMessage": "فشل حذف بعض العناوين. يرجى المحاولة مرة أخرى."
+      }
     }
   },
   "breadcrumb": {

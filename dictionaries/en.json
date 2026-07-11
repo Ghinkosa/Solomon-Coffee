@@ -1012,7 +1012,9 @@
     },
     "orders": {
       "title": "My Orders",
-      "showing": "Showing {count} of {total} orders"
+      "showing": "Showing {count} of {total} orders",
+      "emptyTitle": "No orders found.",
+      "emptyDescription": "Start shopping to see your orders here."
     },
     "settings": {
       "title": "Settings",
@@ -1048,6 +1050,111 @@
       "deleteInitiated": "Account deletion initiated",
       "deleteFailed": "Failed to delete account"
     },
+    "notificationsPage": {
+      "title": "Notifications",
+      "subtitle": "Stay updated with your account activity",
+      "unreadBadge": "{count} unread",
+      "refresh": "Refresh",
+      "emptyTitle": "No notifications",
+      "emptyDescription": "You're all caught up! Check back later for updates.",
+      "selectedCount": "{count} notification(s) selected",
+      "clearSelection": "Clear Selection",
+      "deleting": "Deleting...",
+      "deleteSelected": "Delete Selected",
+      "selectAllPage": "Select all on this page",
+      "viewDetails": "View Details",
+      "pageOf": "Page {current} of {total} ({count} total notifications)",
+      "previous": "Previous",
+      "next": "Next",
+      "sent": "Sent:",
+      "sentBy": "Sent by:",
+      "read": "Read:",
+      "message": "Message",
+      "quickAction": "Quick Action",
+      "openLink": "Open Link",
+      "goToPage": "Go to Page",
+      "markAsRead": "Mark as Read",
+      "delete": "Delete",
+      "readBadge": "Read",
+      "unreadBadgeLabel": "Unread",
+      "justNow": "Just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago",
+      "types": {
+        "order": "order",
+        "promo": "promo",
+        "marketing": "marketing",
+        "system": "system",
+        "general": "general"
+      },
+      "priority": {
+        "urgent": "Urgent",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "toasts": {
+        "fetchFailed": "Failed to fetch notifications",
+        "deleted": "Notification deleted",
+        "deleteFailed": "Failed to delete notification",
+        "noneSelected": "No notifications selected",
+        "bulkDeleted": "{count} notification(s) deleted",
+        "bulkDeletePartial": "Failed to delete {count} notification(s)",
+        "bulkDeleteFailed": "Failed to delete notifications",
+        "markedRead": "Marked as read"
+      }
+    },
+    "profile": {
+      "editProfile": "Edit Profile",
+      "memberSince": "Member Since",
+      "rewardPoints": "Reward Points",
+      "accountStatus": "Account Status",
+      "active": "Active",
+      "personalInformation": "Personal Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "dateOfBirth": "Date of Birth",
+      "notProvided": "Not provided",
+      "fromClerkReadOnly": "From Clerk (Read-only)",
+      "editableInProfile": "Editable in profile",
+      "accountOverview": "Account Overview",
+      "totalSpent": "Total Spent",
+      "loyaltyPoints": "Loyalty Points",
+      "lastLogin": "Last Login",
+      "today": "Today",
+      "shippingAddresses": "Shipping Addresses",
+      "deleteCount": "Delete ({count})",
+      "addAddress": "Add Address",
+      "selectAll": "Select All",
+      "default": "Default",
+      "edit": "Edit",
+      "delete": "Delete",
+      "noAddresses": "No shipping addresses found",
+      "addFirstAddress": "Add Your First Address",
+      "deleteAddressTitle": "Delete Address",
+      "deleteAddressConfirm": "Are you sure you want to delete {name}? This action cannot be undone.",
+      "deleteMultipleTitle": "Delete Multiple Addresses",
+      "deleteMultipleConfirm": "You're about to delete {count} {unit}. This action cannot be undone.",
+      "address": "address",
+      "addresses": "addresses",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "deleteAddress": "Delete Address",
+      "deleteAddresses": "Delete Addresses",
+      "close": "Close",
+      "toasts": {
+        "addressDeletedTitle": "Address Deleted",
+        "addressDeletedMessage": "Your address has been successfully deleted.",
+        "deleteErrorTitle": "Error",
+        "deleteErrorMessage": "Failed to delete address. Please try again.",
+        "bulkDeletedTitle": "Addresses Deleted",
+        "bulkDeletedMessage": "Successfully deleted {count} {unit}.",
+        "bulkDeleteErrorMessage": "Failed to delete some addresses. Please try again."
+      }
+    },
     "dashboard": {
       "welcome": "Welcome back, {name}!",
       "subtitle": "Here's what's happening with your account today",
@@ -1069,7 +1176,80 @@
       "quickActions": "Quick Actions",
       "quickActionsDescription": "Frequently used features",
       "viewOrders": "View Orders",
-      "profileSettings": "Profile Settings"
+      "profileSettings": "Profile Settings",
+      "timeAgo": {
+        "minutesAgo": "{count}m ago",
+        "hoursAgo": "{count}h ago",
+        "daysAgo": "{count}d ago"
+      },
+      "applications": {
+        "pendingReview": "PENDING REVIEW",
+        "approved": "APPROVED",
+        "reason": "Reason: {reason}",
+        "appliedOn": "Applied on: {date}",
+        "approvedByOn": "Approved by {name} on {date}",
+        "cancelReapply": "Cancel & Reapply",
+        "applying": "Applying...",
+        "premium": {
+          "pendingTitle": "Premium Application Submitted!",
+          "pendingDescription": "Great news! Your premium account application has been successfully submitted and is currently under administrative review.",
+          "whatNext": "What happens next?",
+          "pendingSteps": [
+            "Our admin team will review your application within 24-48 hours",
+            "You'll receive an email notification once your status changes",
+            "Upon approval, you'll unlock premium features immediately"
+          ],
+          "rejectedTitle": "Premium Application Rejected",
+          "rejectedDescription": "Your premium account application was not approved. You can cancel to apply again.",
+          "activeTitle": "Premium Account Active!",
+          "activeDescription": "Congratulations! Your premium account is now active and you have access to all premium features.",
+          "benefitsTitle": "Premium Benefits:",
+          "activeBenefits": [
+            "Exclusive access to premium features",
+            "Priority customer support",
+            "Enhanced rewards and loyalty points",
+            "Eligible for Business Account upgrade"
+          ]
+        },
+        "business": {
+          "upgradeTitle": "Upgrade to Business Account",
+          "upgradeDescription": "Get 2% additional discount on all orders with our Business Account plan. Perfect for companies and bulk purchases.",
+          "upgradeBenefits": [
+            "2% additional discount on all orders",
+            "Priority customer support",
+            "Bulk order management",
+            "Business invoicing"
+          ],
+          "applyButton": "Apply for Business Account",
+          "pendingTitle": "Business Application Submitted!",
+          "pendingDescription": "Excellent! Your business account application has been submitted successfully and is currently under administrative review.",
+          "pendingBenefitsTitle": "Business Account Benefits (Upon Approval):",
+          "pendingBenefits": [
+            "2% additional discount on all orders",
+            "Priority customer support",
+            "Bulk order management",
+            "Business invoicing capabilities"
+          ],
+          "rejectedTitle": "Business Application Rejected",
+          "rejectedDescription": "Your business account application was not approved. You can cancel to apply again.",
+          "activeTitle": "Business Account Active!",
+          "activeDescription": "Fantastic! Your business account is now active and you're enjoying exclusive business benefits.",
+          "activeBenefitsTitle": "Active Business Benefits:",
+          "activeBenefits": [
+            "2% additional discount automatically applied at checkout",
+            "Priority customer support",
+            "Advanced bulk order management",
+            "Professional business invoicing"
+          ]
+        },
+        "toasts": {
+          "noEmail": "Unable to get user email",
+          "businessApplyFailed": "Failed to submit business account application",
+          "applicationError": "Error submitting application",
+          "cancelFailed": "Failed to cancel application",
+          "cancelError": "Error cancelling application"
+        }
+      }
     }
   },
   "breadcrumb": {

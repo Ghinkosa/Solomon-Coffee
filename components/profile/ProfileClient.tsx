@@ -34,6 +34,8 @@ import { cn } from "@/lib/utils";
 import { showToast } from "@/lib/toast";
 import ProfileEditSidebar from "./ProfileEditSidebar";
 import AddressEditSidebar from "./AddressEditSidebar";
+import { useDictionary } from "@/lib/dictionary-context";
+import { t } from "@/lib/dictionary-utils";
 
 interface EmailAddress {
   emailAddress: string;
@@ -99,6 +101,9 @@ interface ProfileClientProps {
 
 export default function ProfileClient({ userData }: ProfileClientProps) {
   const { clerk, sanity } = userData;
+  const dictionary = useDictionary();
+  const p = (path: string, fallback: string) =>
+    t(dictionary, `userDashboard.profile.${path}`, fallback);
   const [profileSidebarOpen, setProfileSidebarOpen] = useState(false);
   const [addressSidebarOpen, setAddressSidebarOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -178,8 +183,11 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
 
       if (response.ok) {
         showToast.success(
-          "Address Deleted",
-          "Your address has been successfully deleted."
+          p("toasts.addressDeletedTitle", "Address Deleted"),
+          p(
+            "toasts.addressDeletedMessage",
+            "Your address has been successfully deleted.",
+          ),
         );
         setShowDeleteModal(false);
         setAddressToDelete(null);
@@ -189,7 +197,13 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
       }
     } catch (error) {
       console.error("Error deleting address:", error);
-      showToast.error("Error", "Failed to delete address. Please try again.");
+      showToast.error(
+        p("toasts.deleteErrorTitle", "Error"),
+        p(
+          "toasts.deleteErrorMessage",
+          "Failed to delete address. Please try again.",
+        ),
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -235,10 +249,15 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
 
       if (allSuccessful) {
         showToast.success(
-          "Addresses Deleted",
-          `Successfully deleted ${selectedAddresses.length} ${
-            selectedAddresses.length === 1 ? "address" : "addresses"
-          }.`
+          p("toasts.bulkDeletedTitle", "Addresses Deleted"),
+          p("toasts.bulkDeletedMessage", "Successfully deleted {count} {unit}.")
+            .replace("{count}", String(selectedAddresses.length))
+            .replace(
+              "{unit}",
+              selectedAddresses.length === 1
+                ? p("address", "address")
+                : p("addresses", "addresses"),
+            ),
         );
         setShowBulkDeleteModal(false);
         setSelectedAddresses([]);
@@ -249,8 +268,11 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
     } catch (error) {
       console.error("Error deleting addresses:", error);
       showToast.error(
-        "Error",
-        "Failed to delete some addresses. Please try again."
+        p("toasts.deleteErrorTitle", "Error"),
+        p(
+          "toasts.bulkDeleteErrorMessage",
+          "Failed to delete some addresses. Please try again.",
+        ),
       );
     } finally {
       setIsDeleting(false);
@@ -295,7 +317,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 className="flex items-center space-x-2"
               >
                 <Edit className="h-4 w-4" />
-                <span>Edit Profile</span>
+                <span>{p("editProfile", "Edit Profile")}</span>
               </Button>
             </div>
           </CardHeader>
@@ -306,7 +328,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                   <Calendar className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Member Since</p>
+                  <p className="text-sm text-gray-500">{p("memberSince", "Member Since")}</p>
                   <p className="font-medium">
                     {new Date(clerk.createdAt).toLocaleDateString()}
                   </p>
@@ -319,7 +341,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                     <Shield className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Reward Points</p>
+                    <p className="text-sm text-gray-500">{p("rewardPoints", "Reward Points")}</p>
                     <p className="font-medium">{sanity.rewardPoints}</p>
                   </div>
                 </div>
@@ -330,12 +352,12 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                   <CheckCircle className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Account Status</p>
+                  <p className="text-sm text-gray-500">{p("accountStatus", "Account Status")}</p>
                   <Badge
                     variant="outline"
                     className="text-green-600 border-green-200"
                   >
-                    Active
+                    {p("active", "Active")}
                   </Badge>
                 </div>
               </div>
@@ -351,44 +373,44 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <User className="h-5 w-5" />
-              <span>Personal Information</span>
+              <span>{p("personalInformation", "Personal Information")}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium text-gray-500">
-                  First Name
+                  {p("firstName", "First Name")}
                 </label>
                 <p className="text-gray-900 bg-gray-50 p-2 rounded-md">
-                  {clerk.firstName || "Not provided"}
+                  {clerk.firstName || p("notProvided", "Not provided")}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  From Clerk (Read-only)
+                  {p("fromClerkReadOnly", "From Clerk (Read-only)")}
                 </p>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-gray-500">
-                  Last Name
+                  {p("lastName", "Last Name")}
                 </label>
                 <p className="text-gray-900 bg-gray-50 p-2 rounded-md">
-                  {clerk.lastName || "Not provided"}
+                  {clerk.lastName || p("notProvided", "Not provided")}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  From Clerk (Read-only)
+                  {p("fromClerkReadOnly", "From Clerk (Read-only)")}
                 </p>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-gray-500">
-                  Email
+                  {p("email", "Email")}
                 </label>
                 <p className="text-gray-900 bg-gray-50 p-2 rounded-md">
                   {displayEmail}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  From Clerk (Read-only)
+                  {p("fromClerkReadOnly", "From Clerk (Read-only)")}
                 </p>
               </div>
 
@@ -397,27 +419,27 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                   <Separator className="my-4" />
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      Phone Number
+                      {p("phoneNumber", "Phone Number")}
                     </label>
                     <p className="text-gray-900 bg-white border p-2 rounded-md">
-                      {sanity.phone || "Not provided"}
+                      {sanity.phone || p("notProvided", "Not provided")}
                     </p>
                     <p className="text-xs text-blue-500 mt-1">
-                      Editable in profile
+                      {p("editableInProfile", "Editable in profile")}
                     </p>
                   </div>
 
                   <div>
                     <label className="text-sm font-medium text-gray-500">
-                      Date of Birth
+                      {p("dateOfBirth", "Date of Birth")}
                     </label>
                     <p className="text-gray-900 bg-white border p-2 rounded-md">
                       {sanity.dateOfBirth
                         ? new Date(sanity.dateOfBirth).toLocaleDateString()
-                        : "Not provided"}
+                        : p("notProvided", "Not provided")}
                     </p>
                     <p className="text-xs text-blue-500 mt-1">
-                      Editable in profile
+                      {p("editableInProfile", "Editable in profile")}
                     </p>
                   </div>
                 </>
@@ -431,38 +453,38 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Shield className="h-5 w-5" />
-              <span>Account Overview</span>
+              <span>{p("accountOverview", "Account Overview")}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                <span className="text-gray-700">Reward Points</span>
+                <span className="text-gray-700">{p("rewardPoints", "Reward Points")}</span>
                 <span className="font-bold text-blue-600">
                   {sanity?.rewardPoints || 0}
                 </span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                <span className="text-gray-700">Total Spent</span>
+                <span className="text-gray-700">{p("totalSpent", "Total Spent")}</span>
                 <span className="font-bold text-green-600">
                   ${sanity?.totalSpent || 0}
                 </span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                <span className="text-gray-700">Loyalty Points</span>
+                <span className="text-gray-700">{p("loyaltyPoints", "Loyalty Points")}</span>
                 <span className="font-bold text-purple-600">
                   {sanity?.loyaltyPoints || 0}
                 </span>
               </div>
 
               <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-700">Last Login</span>
+                <span className="text-gray-700">{p("lastLogin", "Last Login")}</span>
                 <span className="font-medium text-gray-600">
                   {sanity?.lastLogin
                     ? new Date(sanity.lastLogin).toLocaleDateString()
-                    : "Today"}
+                    : p("today", "Today")}
                 </span>
               </div>
             </div>
@@ -476,7 +498,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
           <div className="flex items-center justify-between flex-wrap gap-3">
             <CardTitle className="flex items-center space-x-2">
               <MapPin className="h-5 w-5" />
-              <span>Shipping Addresses</span>
+              <span>{p("shippingAddresses", "Shipping Addresses")}</span>
             </CardTitle>
             <div className="flex items-center gap-2">
               {selectedAddresses.length > 0 && (
@@ -486,7 +508,12 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                   className="flex items-center space-x-2"
                 >
                   <Trash2 className="h-4 w-4" />
-                  <span>Delete ({selectedAddresses.length})</span>
+                  <span>
+                    {p("deleteCount", "Delete ({count})").replace(
+                      "{count}",
+                      String(selectedAddresses.length),
+                    )}
+                  </span>
                 </Button>
               )}
               <Button
@@ -494,7 +521,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 className="flex items-center space-x-2"
               >
                 <Plus className="h-4 w-4" />
-                <span>Add Address</span>
+                <span>{p("addAddress", "Add Address")}</span>
               </Button>
             </div>
           </div>
@@ -512,7 +539,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 htmlFor="select-all"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
               >
-                Select All
+                {p("selectAll", "Select All")}
               </label>
             </div>
           )}
@@ -554,7 +581,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                         variant="outline"
                         className="text-green-600 border-green-200"
                       >
-                        Default
+                        {p("default", "Default")}
                       </Badge>
                     )}
                   </div>
@@ -573,7 +600,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                       onClick={() => handleEditAddress(address)}
                     >
                       <Edit className="h-3 w-3 mr-1" />
-                      Edit
+                      {p("edit", "Edit")}
                     </Button>
                     <Button
                       variant="outline"
@@ -582,7 +609,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                       className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                     >
                       <Trash2 className="h-3 w-3 mr-1" />
-                      Delete
+                      {p("delete", "Delete")}
                     </Button>
                   </div>
                 </div>
@@ -591,10 +618,12 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
           ) : (
             <div className="text-center py-8">
               <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 mb-4">No shipping addresses found</p>
+              <p className="text-gray-500 mb-4">
+                {p("noAddresses", "No shipping addresses found")}
+              </p>
               <Button onClick={handleAddAddress} variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Your First Address
+                {p("addFirstAddress", "Add Your First Address")}
               </Button>
             </div>
           )}
@@ -639,14 +668,13 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-gray-900">
-                  Delete Address
+                  {p("deleteAddressTitle", "Delete Address")}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Are you sure you want to delete{" "}
-                  <span className="font-semibold text-red-600">
-                    {addressToDelete?.name}
-                  </span>
-                  ? This action cannot be undone.
+                  {p(
+                    "deleteAddressConfirm",
+                    "Are you sure you want to delete {name}? This action cannot be undone.",
+                  ).replace("{name}", addressToDelete?.name ?? "")}
                 </p>
               </div>
             </div>
@@ -657,7 +685,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
                 disabled={isDeleting}
               >
-                Cancel
+                {p("cancel", "Cancel")}
               </Button>
               <Button
                 variant="destructive"
@@ -668,19 +696,19 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 {isDeleting ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Deleting...</span>
+                    <span>{p("deleting", "Deleting...")}</span>
                   </div>
                 ) : (
                   <>
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete Address
+                    {p("deleteAddress", "Delete Address")}
                   </>
                 )}
               </Button>
             </div>
             <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
               <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{p("close", "Close")}</span>
             </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </DialogPortal>
@@ -704,15 +732,20 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-gray-900">
-                  Delete Multiple Addresses
+                  {p("deleteMultipleTitle", "Delete Multiple Addresses")}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  You&apos;re about to delete{" "}
-                  <span className="font-semibold text-red-600">
-                    {selectedAddresses.length}{" "}
-                    {selectedAddresses.length === 1 ? "address" : "addresses"}
-                  </span>
-                  . This action cannot be undone.
+                  {p(
+                    "deleteMultipleConfirm",
+                    "You're about to delete {count} {unit}. This action cannot be undone.",
+                  )
+                    .replace("{count}", String(selectedAddresses.length))
+                    .replace(
+                      "{unit}",
+                      selectedAddresses.length === 1
+                        ? p("address", "address")
+                        : p("addresses", "addresses"),
+                    )}
                 </p>
               </div>
             </div>
@@ -723,7 +756,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
                 disabled={isDeleting}
               >
-                Cancel
+                {p("cancel", "Cancel")}
               </Button>
               <Button
                 variant="destructive"
@@ -734,20 +767,20 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 {isDeleting ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Deleting...</span>
+                    <span>{p("deleting", "Deleting...")}</span>
                   </div>
                 ) : (
                   <>
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete {selectedAddresses.length}{" "}
-                    {selectedAddresses.length === 1 ? "Address" : "Addresses"}
+                    {p("deleteAddresses", "Delete Addresses")}{" "}
+                    {selectedAddresses.length}
                   </>
                 )}
               </Button>
             </div>
             <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
               <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{p("close", "Close")}</span>
             </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </DialogPortal>
