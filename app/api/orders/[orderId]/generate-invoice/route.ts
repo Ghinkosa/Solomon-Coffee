@@ -134,7 +134,9 @@ export async function POST(
       }
     }
 
-    // Create Stripe invoice
+    // Create the invoice as a RECEIPT for an order already paid via Checkout.
+    // Use send_invoice (not charge_automatically) so finalizing never attempts
+    // a second charge against the customer's payment method.
     const invoice = await stripe.invoices.create({
       customer: stripeCustomerId,
       description: `Invoice for Order ${order.orderNumber}`,
@@ -144,7 +146,8 @@ export async function POST(
         customerName: order.customerName || "",
       },
       auto_advance: false,
-      collection_method: "charge_automatically",
+      collection_method: "send_invoice",
+      days_until_due: 30,
     });
 
     // Add invoice items for products with weight, grind, packaging details
@@ -256,7 +259,22 @@ export async function POST(
       throw new Error("Failed to create invoice - no invoice ID");
     }
 
-    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+    let finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+
+    // The order was already paid through Checkout — mark the receipt invoice as
+    // paid out of band so it isn't left "open" and never triggers a charge.
+    if (finalizedInvoice.id) {
+      try {
+        finalizedInvoice = await stripe.invoices.pay(finalizedInvoice.id, {
+          paid_out_of_band: true,
+        });
+      } catch (payError) {
+        console.error(
+          `Failed to mark invoice ${finalizedInvoice.id} paid out of band:`,
+          payError,
+        );
+      }
+    }
 
     // Update the order in Sanity with the invoice information
     try {
