@@ -29,11 +29,9 @@ export function getEmailImageUrl(
   height: number = 300
 ): string {
   try {
-    // Handle undefined or null
+    // No placeholder asset — order emails omit the product image when missing.
     if (!imageData) {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-      return `${baseUrl}/images/products/product_1.png`;
+      return "";
     }
 
     // If imageData is already a string URL, return it
@@ -63,13 +61,10 @@ export function getEmailImageUrl(
       return getEmailImageUrl(imageData[0], width, height);
     }
 
-    // Fallback to placeholder image
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    return `${baseUrl}/images/products/product_1.png`;
+    return "";
   } catch (error) {
     console.error("Error generating email image URL:", error);
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    return `${baseUrl}/images/products/product_1.png`;
+    return "";
   }
 }
 
