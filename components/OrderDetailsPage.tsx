@@ -383,7 +383,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Download className="w-4 h-4 mr-2" />
+                <Download className="w-4 h-4 me-2" />
                 {d("downloadInvoice", "Download Invoice")}
               </Link>
             </Button>
@@ -396,12 +396,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             >
               {generatingInvoice ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 me-2"></div>
                   {d("generatingInvoice", "Generating...")}
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className="w-4 h-4 me-2" />
                   {d("generateInvoice", "Generate Invoice")}
                 </>
               )}
@@ -415,12 +415,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
           >
             {isReordering ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 me-2"></div>
                 {d("addingToCart", "Adding to Cart...")}
               </>
             ) : (
               <>
-                <ShoppingCart className="w-4 h-4 mr-2" />
+                <ShoppingCart className="w-4 h-4 me-2" />
                 {d("reorder", "Reorder")}
               </>
             )}
@@ -434,12 +434,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             >
               {isCancelling ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 me-2"></div>
                   {d("cancelling", "Cancelling...")}
                 </>
               ) : (
                 <>
-                  <XCircle className="w-4 h-4 mr-2" />
+                  <XCircle className="w-4 h-4 me-2" />
                   {d("cancelOrder", "Cancel Order")}
                 </>
               )}
@@ -901,12 +901,12 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               >
                 {isCancelling ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white me-2"></div>
                     {d("submitting", "Submitting...")}
                   </>
                 ) : (
                   <>
-                    <XCircle className="w-4 h-4 mr-2" />
+                    <XCircle className="w-4 h-4 me-2" />
                     {d("submitRequest", "Submit Request")}
                   </>
                 )}

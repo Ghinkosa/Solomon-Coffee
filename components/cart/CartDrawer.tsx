@@ -337,7 +337,7 @@ export default function CartDrawer() {
                     onClick={closeCartDrawer}
                   >
                     {drawerCopy.checkout ?? "Checkout"}
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ms-2 h-4 w-4" />
                   </Link>
                 </Button>
 

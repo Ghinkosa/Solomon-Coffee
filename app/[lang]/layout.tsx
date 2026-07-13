@@ -5,7 +5,12 @@ import localFont from "next/font/local";
 import { Toaster } from "sonner";
 import { UserDataProvider } from "@/contexts/UserDataContext";
 import "../globals.css";
-import { i18n } from "@/i18n-config";
+import { i18n, type Locale } from "@/i18n-config";
+import {
+  BASE_URL,
+  buildHreflangAlternates,
+  localizedUrl,
+} from "@/lib/seo";
 
 const poppins = localFont({
   src: "../fonts/Poppins.woff2",
@@ -25,79 +30,96 @@ const opensans = localFont({
   weight: "100 800",
 });
 
-import { BASE_URL } from "@/lib/seo";
+const OG_LOCALE: Record<Locale, string> = {
+  en: "en_US",
+  es: "es_ES",
+  ar: "ar_SA",
+};
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-  title: {
-    template: "%s | Sheba Cup Coffee",
-    default: "Sheba Cup Coffee - Premium Coffee & Essentials",
-  },
-  description:
-    "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee with exceptional quality and service.",
-  keywords: [
-    "specialty coffee",
-    "single-origin coffee",
-    "coffee beans",
-    "coffee brewing",
-    "espresso",
-    "coffee accessories",
-    "fresh roast",
-    "coffee shop",
-    "Sheba Cup Coffee",
-  ],
-  authors: [{ name: "Sheba Cup Coffee" }],
-  creator: "Sheba Cup Coffee",
-  publisher: "Sheba Cup Coffee",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: BASE_URL,
-    siteName: "Sheba Cup Coffee",
-    title: "Sheba Cup Coffee - Premium Coffee & Essentials",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const locale = (i18n.locales as readonly string[]).includes(lang)
+    ? (lang as Locale)
+    : i18n.defaultLocale;
+
+  const googleVerification = process.env.GOOGLE_SITE_VERIFICATION;
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title: {
+      template: "%s | Sheba Cup Coffee",
+      default: "Sheba Cup Coffee - Premium Coffee & Essentials",
+    },
     description:
-      "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Sheba Cup Coffee Online Store",
-      },
+      "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee with exceptional quality and service.",
+    keywords: [
+      "specialty coffee",
+      "single-origin coffee",
+      "coffee beans",
+      "coffee brewing",
+      "espresso",
+      "coffee accessories",
+      "fresh roast",
+      "coffee shop",
+      "Sheba Cup Coffee",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Sheba Cup Coffee - Premium Coffee & Essentials",
-    description:
-      "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
-    images: ["/og-image.jpg"],
-    creator: "@shebascoffee",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+    authors: [{ name: "Sheba Cup Coffee" }],
+    creator: "Sheba Cup Coffee",
+    publisher: "Sheba Cup Coffee",
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+    openGraph: {
+      type: "website",
+      locale: OG_LOCALE[locale],
+      url: localizedUrl("/", locale),
+      siteName: "Sheba Cup Coffee",
+      title: "Sheba Cup Coffee - Premium Coffee & Essentials",
+      description:
+        "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
+      images: [
+        {
+          url: "/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Sheba Cup Coffee Online Store",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Sheba Cup Coffee - Premium Coffee & Essentials",
+      description:
+        "Discover premium coffee, accessories, and curated essentials from Sheba Cup Coffee.",
+      images: ["/og-image.jpg"],
+      creator: "@shebascoffee",
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  verification: {
-    google: "your-google-verification-code",
-    // Add other verification codes as needed
-  },
-  alternates: {
-    canonical: BASE_URL,
-  },
-};
+    ...(googleVerification
+      ? { verification: { google: googleVerification } }
+      : {}),
+    alternates: {
+      canonical: localizedUrl("/", locale),
+      languages: buildHreflangAlternates(""),
+    },
+  };
+}
 
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));

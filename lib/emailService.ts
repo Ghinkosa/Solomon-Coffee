@@ -1,6 +1,11 @@
 import nodemailer, { Transporter, SentMessageInfo } from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { contactConfig } from "@/config/contact";
+import {
+  getEmailStrings,
+  normalizeEmailLocale,
+  type EmailLocale,
+} from "@/lib/email-translations";
 
 const transporter: Transporter<SMTPTransport.SentMessageInfo> =
   nodemailer.createTransport({
@@ -43,6 +48,7 @@ interface OrderConfirmationData {
   total: number;
   shippingAddress: ShippingAddress;
   estimatedDelivery?: string;
+  locale?: EmailLocale;
 }
 
 interface EmailResponse {
@@ -60,6 +66,9 @@ interface SendMailParams {
 
 const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
   const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
+  const locale = normalizeEmailLocale(data.locale);
+  const t = getEmailStrings(locale);
+  const textDir = locale === "ar" ? "rtl" : "ltr";
   const {
     company,
     emails,
@@ -77,7 +86,7 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}" dir="${textDir}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -483,32 +492,32 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Order Confirmed!</h1>
-            <p>Thank you for shopping with ${company.name}</p>
+            <h1>${t.headerTitle}</h1>
+            <p>${t.headerSubtitle} ${company.name}</p>
         </div>
         
         <!-- Main Content -->
         <div class="content">
             <!-- Greeting -->
             <div class="greeting">
-                <h2>Hi ${data.customerName}!</h2>
-                <p>We're excited to let you know that your order has been confirmed and is being prepared for shipment. You'll receive another email when your order is on its way.</p>
+                <h2>${t.greeting(data.customerName)}</h2>
+                <p>${t.intro}</p>
             </div>
             
             <!-- Order Summary -->
             <div class="order-summary">
                 <div class="order-header">
-                    <span class="order-id">Order #${data.orderId}</span>
-                    <span class="order-date">Placed on ${data.orderDate}</span>
+                    <span class="order-id">${t.orderId}${data.orderId}</span>
+                    <span class="order-date">${t.orderDate} ${data.orderDate}</span>
                 </div>
                 
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th style="width: 60px;">Item</th>
-                            <th>Product</th>
-                            <th style="width: 80px; text-align: center;">Qty</th>
-                            <th style="width: 100px; text-align: right;">Price</th>
+                            <th style="width: 60px;">${t.item}</th>
+                            <th>${t.product}</th>
+                            <th style="width: 80px; text-align: center;">${t.qty}</th>
+                            <th style="width: 100px; text-align: right;">${t.price}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -545,19 +554,19 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
                 
                 <div class="totals">
                     <div class="total-row">
-                        <span>Subtotal:</span>
+                        <span>${t.subtotal}</span>
                         <span>${formatCurrency(data.subtotal)}</span>
                     </div>
                     <div class="total-row">
-                        <span>Shipping:</span>
+                        <span>${t.shipping}</span>
                         <span>${formatCurrency(data.shipping)}</span>
                     </div>
                     <div class="total-row">
-                        <span>Tax:</span>
+                        <span>${t.tax}</span>
                         <span>${formatCurrency(data.tax)}</span>
                     </div>
                     <div class="total-row final">
-                        <span>Total:</span>
+                        <span>${t.total}</span>
                         <span>${formatCurrency(data.total)}</span>
                     </div>
                 </div>
@@ -565,7 +574,7 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
             
             <!-- Shipping Information -->
             <div class="shipping-info">
-                <h3>📦 Shipping Address</h3>
+                <h3>📦 ${t.shippingAddress}</h3>
                 <div class="address">
                     <strong>${data.shippingAddress.name}</strong><br>
                     ${data.shippingAddress.street}<br>
@@ -581,7 +590,7 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
                 ? `
             <!-- Delivery Information -->
             <div class="delivery-info">
-                <h3>🚚 Estimated Delivery</h3>
+                <h3>🚚 ${t.estimatedDelivery}</h3>
                 <p>${data.estimatedDelivery}</p>
             </div>
             `
@@ -590,31 +599,28 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
             
             <!-- Next Steps -->
             <div class="next-steps">
-                <h3>What happens next?</h3>
+                <h3>${t.nextStepsTitle}</h3>
                 <ul>
-                    <li>We'll prepare your order for shipment</li>
-                    <li>You'll receive a tracking number via email once shipped</li>
-                    <li>Track your package progress in real-time</li>
-                    <li>Your order will be delivered to the address provided</li>
+                    ${t.nextSteps.map((step) => `<li>${step}</li>`).join("")}
                 </ul>
             </div>
             
             <!-- Support Section -->
             <div class="support-section">
-                <h3>Need Help?</h3>
-                <p>Our customer service team is here to help with any questions about your order.</p>
+                <h3>${t.needHelp}</h3>
+                <p>${t.helpIntro}</p>
                 
                 <div class="contact-info">
                     <div class="contact-item">
-                        <strong>Email</strong>
+                        <strong>${t.emailLabel}</strong>
                         <span>${emails.support}</span>
                     </div>
                     <div class="contact-item">
-                        <strong>Phone</strong>
+                        <strong>${t.phoneLabel}</strong>
                         <span>${company.phone}</span>
                     </div>
                     <div class="contact-item">
-                        <strong>Hours</strong>
+                        <strong>${t.hoursLabel}</strong>
                         <span>${businessHours.weekday}</span>
                     </div>
                 </div>
@@ -626,7 +632,7 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
             <p><strong>${company.name}</strong></p>
             <p>${company.address}<br>
                ${company.city}</p>
-            <p>Thank you for choosing ${company.name}!</p>
+            <p>${t.thankYou(company.name)}</p>
             
             <div class="social-links">
                 <a href="${facebookUrl}">Facebook</a> |
@@ -644,6 +650,8 @@ const sendOrderConfirmationEmail = async (
   data: OrderConfirmationData,
 ): Promise<EmailResponse> => {
   try {
+    const locale = normalizeEmailLocale(data.locale);
+    const t = getEmailStrings(locale);
     const htmlContent = generateOrderConfirmationHTML(data);
 
     const mailOptions = {
@@ -651,29 +659,28 @@ const sendOrderConfirmationEmail = async (
         process.env.SENDER_EMAIL_ADDRESS || "your-email@gmail.com"
       }>`,
       to: data.customerEmail,
-      subject: `Order Confirmation - ${data.orderId} | Thank you for your purchase!`,
+      subject: `${t.subject} - ${data.orderId} | ${contactConfig.company.name}`,
       html: htmlContent,
-      // Fallback text version
       text: `
-Hi ${data.customerName}!
+${t.greeting(data.customerName)}
 
-Thank you for your order! Here are the details:
+${t.textIntro}
 
-Order ID: ${data.orderId}
-Order Date: ${data.orderDate}
-Total: $${data.total.toFixed(2)}
+${t.orderId}${data.orderId}
+${t.orderDate} ${data.orderDate}
+${t.total} $${data.total.toFixed(2)}
 
-Items Ordered:
+${t.textItemsOrdered}
 ${data.items
   .map(
     (item) =>
-      `- ${item.name} (Qty: ${item.quantity}) - $${(
+      `- ${item.name} (${t.qty}: ${item.quantity}) - $${(
         item.price * item.quantity
       ).toFixed(2)}`,
   )
   .join("\n")}
 
-Shipping Address:
+${t.textShippingAddress}
 ${data.shippingAddress.name}
 ${data.shippingAddress.street}
 ${data.shippingAddress.city}, ${data.shippingAddress.state} ${
@@ -681,13 +688,13 @@ ${data.shippingAddress.city}, ${data.shippingAddress.state} ${
       }
 ${data.shippingAddress.country}
 
-${data.estimatedDelivery ? `Estimated Delivery: ${data.estimatedDelivery}` : ""}
+${data.estimatedDelivery ? `${t.estimatedDelivery}: ${data.estimatedDelivery}` : ""}
 
-We'll send you another email with tracking information once your order ships.
+${t.textTrackingNote}
 
-If you have any questions, please contact us at ${contactConfig.emails.support} or ${contactConfig.company.phone}.
+${t.textQuestions(contactConfig.emails.support, contactConfig.company.phone)}
 
-Thank you for choosing ${contactConfig.company.name}!
+${t.thankYou(contactConfig.company.name)}
       `,
     };
 

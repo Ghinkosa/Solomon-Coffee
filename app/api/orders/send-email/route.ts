@@ -7,6 +7,7 @@ import {
 import { getEmailImageUrl } from "@/lib/emailImageUtils";
 import { readClient } from "@/sanity/lib/client";
 import { PAYMENT_METHODS } from "@/lib/orderStatus";
+import { normalizeEmailLocale } from "@/lib/email-translations";
 
 // Extended interface for email preparation that can handle Sanity images
 interface EmailOrderItem {
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
       status?: string;
       customerName?: string;
       orderDate?: string;
+      locale?: string;
       subtotal?: number;
       shipping?: number;
       tax?: number;
@@ -89,6 +91,7 @@ export async function POST(request: NextRequest) {
         status,
         customerName,
         orderDate,
+        locale,
         subtotal,
         shipping,
         tax,
@@ -153,6 +156,7 @@ export async function POST(request: NextRequest) {
       shipping: order.shipping ?? orderData.shipping,
       tax: order.tax ?? orderData.tax,
       total: order.totalPrice ?? orderData.total,
+      locale: normalizeEmailLocale(order.locale),
       shippingAddress: {
         name: order.address?.name || orderData.shippingAddress.name,
         street: order.address?.address || orderData.shippingAddress.street,

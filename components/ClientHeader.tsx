@@ -96,7 +96,7 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
                 <button
                   type="button"
                   onClick={() => openAuthSidebar("signIn")}
-                  className="ml-1 hidden whitespace-nowrap rounded-full border border-shop_dark_green bg-shop_dark_green px-5 py-2 text-sm font-medium text-white transition-colors hover:border-shop_light_green hover:bg-shop_light_green sm:inline-flex"
+                  className="ms-1 hidden whitespace-nowrap rounded-full border border-shop_dark_green bg-shop_dark_green px-5 py-2 text-sm font-medium text-white transition-colors hover:border-shop_light_green hover:bg-shop_light_green sm:inline-flex"
                 >
                   {dictionary?.header?.auth?.signIn || "Sign in"}
                 </button>

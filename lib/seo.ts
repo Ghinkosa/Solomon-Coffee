@@ -1,8 +1,32 @@
 import { Metadata } from "next";
 import { Product, Category } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
+import { i18n, type Locale } from "@/i18n-config";
 
-export const BASE_URL = "https://shebascoffee.com";
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
+  "https://shebascoffee.com";
+
+export function localizedUrl(path: string, locale: Locale): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  if (normalized === "/") {
+    return `${BASE_URL}/${locale}`;
+  }
+  return `${BASE_URL}/${locale}${normalized}`;
+}
+
+export function buildHreflangAlternates(path: string = ""): Record<string, string> {
+  const suffix =
+    path === "/" || path === ""
+      ? ""
+      : path.startsWith("/")
+        ? path
+        : `/${path}`;
+
+  return Object.fromEntries(
+    i18n.locales.map((locale) => [locale, `${BASE_URL}/${locale}${suffix}`]),
+  );
+}
 
 /**
  * Generate metadata for product pages

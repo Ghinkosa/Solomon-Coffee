@@ -8,6 +8,8 @@ import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { decrementOrderStock } from "@/lib/stock";
 import { sendOrderConfirmationEmail } from "@/lib/emailService";
 import { getEmailImageUrl } from "@/lib/emailImageUtils";
+import { buildStripeInvoiceLineItems } from "@/lib/invoice-lines";
+import { normalizeEmailLocale } from "@/lib/email-translations";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -220,46 +222,45 @@ export async function POST(req: NextRequest) {
 async function createAndFinalizeInvoice(
   orderId: string,
   stripeCustomerId: string,
-  products: {
-    product: { _id?: string; name: string; price?: number };
-    quantity: number;
-  }[],
-  orderData: {
-    totalAmount: number;
-    customerEmail: string;
+  order: {
     orderNumber?: string;
     currency?: string;
-    tax?: number;
+    totalPrice?: number;
+    amountDiscount?: number;
+    packagingFee?: number;
     shipping?: number;
-  }
+    tax?: number;
+    products?: Array<{
+      quantity: number;
+      weight?: { value?: string; price?: number };
+      grind?: { label?: string };
+      packaging?: { title?: string; price?: number };
+      product?: { _id?: string; name?: string; price?: number };
+    }>;
+  },
 ) {
   try {
-    // Validate required data
     if (!stripeCustomerId) {
       console.error(`Missing stripeCustomerId for order: ${orderId}`);
       return null;
     }
 
-    if (!products || products.length === 0) {
+    if (!order.products || order.products.length === 0) {
       console.error(`No products found for order: ${orderId}`);
       return null;
     }
 
-    // Validate currency
-    const currency = (orderData.currency || "USD").toLowerCase();
+    const currency = (order.currency || "USD").toLowerCase();
     if (!["usd", "eur", "gbp", "cad", "aud"].includes(currency)) {
       console.warn(`Unsupported currency: ${currency}, defaulting to USD`);
     }
 
-    // Create the invoice as a RECEIPT for an order already paid via Checkout.
-    // Use send_invoice (not charge_automatically) so finalizing never attempts
-    // a second charge against the customer's payment method.
     const invoice = await stripe.invoices.create({
       customer: stripeCustomerId,
-      description: `Invoice for Order ${orderData.orderNumber || orderId}`,
+      description: `Invoice for Order ${order.orderNumber || orderId}`,
       metadata: {
         orderId: orderId,
-        orderNumber: orderData.orderNumber || "",
+        orderNumber: order.orderNumber || "",
         source: "webhook",
       },
       auto_advance: false,
@@ -267,74 +268,25 @@ async function createAndFinalizeInvoice(
       days_until_due: 30,
     });
 
-    // Add invoice items for products
-    for (const item of products) {
-      if (!item.product || !item.product.name || !item.product.price) {
-        console.warn(`Skipping invalid product in order ${orderId}:`, item);
-        continue;
-      }
+    const lineItems = buildStripeInvoiceLineItems({
+      ...order,
+      totalPrice: order.totalPrice || 0,
+    });
 
-      try {
-        await stripe.invoiceItems.create({
-          customer: stripeCustomerId,
-          invoice: invoice.id,
-          amount: Math.round(item.product.price * item.quantity * 100),
-          currency: currency,
-          description: `${item.product.name} x ${item.quantity}`,
-          metadata: {
-            productId: item.product._id || "",
-            quantity: item.quantity.toString(),
-          },
-        });
-      } catch (error) {
-        console.error(`Failed to add invoice item:`, error);
-        throw error;
-      }
+    for (const item of lineItems) {
+      await stripe.invoiceItems.create({
+        customer: stripeCustomerId,
+        invoice: invoice.id,
+        ...item,
+      });
     }
 
-    // Add tax if any
-    if (orderData.tax && orderData.tax > 0) {
-      try {
-        await stripe.invoiceItems.create({
-          customer: stripeCustomerId,
-          invoice: invoice.id,
-          amount: Math.round(orderData.tax * 100),
-          currency: currency,
-          description: "Tax",
-          metadata: { type: "tax" },
-        });
-      } catch (error) {
-        console.error(`Failed to add tax:`, error);
-        throw error;
-      }
-    }
-
-    // Add shipping if any
-    if (orderData.shipping && orderData.shipping > 0) {
-      try {
-        await stripe.invoiceItems.create({
-          customer: stripeCustomerId,
-          invoice: invoice.id,
-          amount: Math.round(orderData.shipping * 100),
-          currency: currency,
-          description: "Shipping",
-          metadata: { type: "shipping" },
-        });
-      } catch (error) {
-        console.error(`Failed to add shipping:`, error);
-        throw error;
-      }
-    }
-
-    // Finalize the invoice
     if (!invoice.id) {
       throw new Error("Failed to create invoice - no invoice ID");
     }
 
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
 
-    // The order was already paid through Checkout — mark the receipt invoice as
-    // paid out of band so it isn't left "open" and never triggers a charge.
     if (finalizedInvoice.id) {
       try {
         return await stripe.invoices.pay(finalizedInvoice.id, {
@@ -387,12 +339,19 @@ async function generateAndAttachInvoice(
           _id,
           orderNumber,
           email,
-          products[]{ product->{_id, name, price, currency}, quantity },
+          amountDiscount,
+          packagingFee,
+          products[]{
+            quantity,
+            weight,
+            grind,
+            packaging,
+            product->{_id, name, price, currency}
+          },
           subtotal,
           tax,
           shipping,
           totalPrice,
-          totalAmount,
           currency
         }`,
         { orderId },
@@ -402,16 +361,7 @@ async function generateAndAttachInvoice(
         invoice = await createAndFinalizeInvoice(
           orderId,
           stripeCustomerId,
-          order.products || [],
-          {
-            totalAmount: order.totalAmount || order.totalPrice || 0,
-            customerEmail:
-              order.email || session.customer_details?.email || "",
-            orderNumber: order.orderNumber,
-            currency: order.currency,
-            tax: order.tax || 0,
-            shipping: order.shipping || 0,
-          },
+          order,
         );
       }
     }
@@ -469,6 +419,7 @@ async function sendConfirmationEmail(orderId: string) {
     email?: string;
     customerName?: string;
     orderDate?: string;
+    locale?: string;
     subtotal?: number;
     shipping?: number;
     tax?: number;
@@ -495,6 +446,7 @@ async function sendConfirmationEmail(orderId: string) {
       email,
       customerName,
       orderDate,
+      locale,
       subtotal,
       shipping,
       tax,
@@ -530,6 +482,7 @@ async function sendConfirmationEmail(orderId: string) {
     shipping: order.shipping || 0,
     tax: order.tax || 0,
     total: order.totalPrice || 0,
+    locale: normalizeEmailLocale(order.locale),
     shippingAddress: {
       name: order.address?.name || order.customerName || "",
       street: order.address?.address || "",

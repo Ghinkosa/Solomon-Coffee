@@ -131,6 +131,16 @@
     "loading": "Loading...",
     "free": "Free"
   },
+  "notFoundPage": {
+    "title": "Looking for something?",
+    "description": "We're sorry. The Web address you entered is not a functioning page on our site.",
+    "homeButton": "Go to Sheba Cup Coffee home page",
+    "helpButton": "Help",
+    "footerPrefix": "Need help? Visit the",
+    "helpLink": "Help section",
+    "footerMiddle": "or",
+    "contactLink": "contact us"
+  },
   "footer": {
     "tagline": "Your trusted online shopping destination.",
     "quickLinks": "Quick Links",

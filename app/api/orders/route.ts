@@ -11,6 +11,7 @@ import { validateOrderPricing } from "@/lib/validate-order";
 import { getAccountDiscount } from "@/lib/checkout-pricing";
 import { decrementOrderStock } from "@/lib/stock";
 import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
+import { i18n } from "@/i18n-config";
 import {
   isShippingAddressValid,
   normalizeShippingAddress,
@@ -78,7 +79,12 @@ export const POST = async (request: NextRequest) => {
       shipping,
       tax,
       packagingFee,
+      locale: requestedLocale,
     } = reqBody;
+
+    const locale = (i18n.locales as readonly string[]).includes(requestedLocale)
+      ? requestedLocale
+      : i18n.defaultLocale;
 
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -194,6 +200,7 @@ export const POST = async (request: NextRequest) => {
       _type: "order" as const,
       orderNumber,
       isGuest,
+      locale,
       customerName: userName,
       email: userEmail,
       phone: userPhone,
@@ -280,8 +287,11 @@ export const POST = async (request: NextRequest) => {
     // Create order in Sanity using writeClient
     const createdOrder = await writeClient.create(orderData);
 
-    // COD orders skip the Stripe webhook — decrement stock at placement time.
-    if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY && createdOrder.products) {
+    // Reserve stock at order creation for every payment method so concurrent
+    // checkouts cannot oversell. The webhook skips decrement when
+    // stockDecremented is already true; cancellations restore via
+    // restoreOrderStock().
+    if (createdOrder.products) {
       try {
         await decrementOrderStock(
           createdOrder.products as Array<{
@@ -290,13 +300,12 @@ export const POST = async (request: NextRequest) => {
             weight?: { value?: string; price?: number };
           }>,
         );
-        // Mark so a later cancellation can restore this inventory exactly once.
         await writeClient
           .patch(createdOrder._id)
           .set({ stockDecremented: true })
           .commit();
       } catch (stockError) {
-        console.error("Failed to decrement stock for COD order:", stockError);
+        console.error("Failed to reserve stock for order:", stockError);
       }
     }
 

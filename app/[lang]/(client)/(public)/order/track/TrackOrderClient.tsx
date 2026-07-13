@@ -175,7 +175,7 @@ export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-4 h-4 me-2 animate-spin" />
                     {t.lookingUp ?? "Looking up order..."}
                   </>
                 ) : (
@@ -254,7 +254,7 @@ export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
                   >
                     {isPaying ? (
                       <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        <Loader2 className="w-4 h-4 me-2 animate-spin" />
                         {t.redirectingToPayment ?? "Redirecting to payment..."}
                       </>
                     ) : (

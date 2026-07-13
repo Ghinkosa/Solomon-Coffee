@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { writeClient } from "@/sanity/lib/client";
 import stripe from "@/lib/stripe";
+import { buildStripeInvoiceLineItems } from "@/lib/invoice-lines";
 
 export async function POST(
   request: NextRequest,
@@ -46,6 +47,7 @@ export async function POST(
         shipping,
         totalPrice,
         packagingFee,
+        amountDiscount,
         currency,
         status,
         paymentStatus,
@@ -150,106 +152,17 @@ export async function POST(
       days_until_due: 30,
     });
 
-    // Add invoice items for products with weight, grind, packaging details
-    for (const item of order.products) {
-      if (!item.product || !item.product.name || !item.product.price) {
-        console.warn(`Skipping invalid product in order ${orderId}:`, item);
-        continue;
-      }
-
-      let description = `${item.product.name} x ${item.quantity}`;
-      if (item.weight && item.weight.value) {
-        description += `\nWeight: ${item.weight.value} ($${item.weight.price})`;
-      }
-      if (item.grind && item.grind.label) {
-        description += `\nGrind: ${item.grind.label}`;
-      }
-      if (item.packaging && item.packaging.title) {
-        description += `\nPackaging: ${item.packaging.title}`;
-        if (item.packaging.price > 0) {
-          description += ` (+$${item.packaging.price})`;
-        }
-      }
-
+    // Build invoice line items from the authoritative order totals.
+    const lineItems = buildStripeInvoiceLineItems(order);
+    for (const item of lineItems) {
       try {
         await stripe.invoiceItems.create({
           customer: stripeCustomerId,
           invoice: invoice.id,
-          amount: Math.round(item.product.price * item.quantity * 100),
-          currency: currency,
-          description: description,
-          metadata: {
-            productId: item.product._id,
-            quantity: item.quantity.toString(),
-            weight: item.weight?.value || "",
-            weightPrice: item.weight?.price?.toString() || "",
-            grind: item.grind?.label || "",
-            packaging: item.packaging?.title || "",
-            packagingPrice: item.packaging?.price?.toString() || "",
-          },
+          ...item,
         });
       } catch (error) {
-        console.error(
-          `Failed to add invoice item for product ${item.product._id}:`,
-          error
-        );
-        throw error;
-      }
-    }
-
-    // Add packaging fee as separate line item if present
-    if (order.packagingFee && order.packagingFee > 0) {
-      try {
-        await stripe.invoiceItems.create({
-          customer: stripeCustomerId,
-          invoice: invoice.id,
-          amount: Math.round(order.packagingFee * 100),
-          currency: currency,
-          description: "Packaging Fee",
-          metadata: {
-            type: "packaging_fee",
-          },
-        });
-      } catch (error) {
-        console.error(`Failed to add packaging fee:`, error);
-        throw error;
-      }
-    }
-
-    // Add tax if any
-    if (order.tax && order.tax > 0) {
-      try {
-        await stripe.invoiceItems.create({
-          customer: stripeCustomerId,
-          invoice: invoice.id,
-          amount: Math.round(order.tax * 100),
-          currency: currency,
-          description: "Tax",
-          metadata: {
-            type: "tax",
-          },
-        });
-      } catch (error) {
-        console.error(`Failed to add tax:`, error);
-        throw error;
-      }
-    }
-
-    // Add shipping if any
-    if (order.shipping && order.shipping > 0) {
-      try {
-        await stripe.invoiceItems.create({
-          customer: stripeCustomerId,
-          invoice: invoice.id,
-          amount: Math.round(order.shipping * 100),
-          currency: currency,
-          description: "Shipping",
-          metadata: {
-            type: "shipping",
-          },
-        });
-      } catch (error) {
-        console.error(`Failed to add shipping:`, error);
+        console.error("Failed to add invoice item:", error);
         throw error;
       }
     }

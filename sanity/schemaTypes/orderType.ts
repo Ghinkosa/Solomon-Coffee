@@ -62,6 +62,14 @@ export const orderType = defineType({
     }),
 
     defineField({
+      name: "locale",
+      title: "Customer Locale",
+      type: "string",
+      readOnly: true,
+      hidden: true,
+    }),
+
+    defineField({
       name: "clerkUserId",
       title: "Store User ID",
       type: "string",

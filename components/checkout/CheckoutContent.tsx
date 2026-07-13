@@ -961,7 +961,7 @@ export function CheckoutContent() {
                 className="w-full h-12 bg-shop_dark_green hover:bg-shop_light_green text-white font-semibold shadow-md hover:shadow-shop_orange/20 transition-colors"
                 disabled={isPlacingOrder}
               >
-                <CreditCard className="w-5 h-5 mr-2" />
+                <CreditCard className="w-5 h-5 me-2" />
                 {paymentModal?.payWithStripe ??
                   t(dictionary, "checkout.paymentModal.payWithStripe", "Pay with Stripe")}
               </Button>

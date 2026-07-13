@@ -197,6 +197,7 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         packagingFee,
         shipping,
         tax,
+        locale: lang,
       };
 
       const orderResponse = await fetch("/api/orders", {

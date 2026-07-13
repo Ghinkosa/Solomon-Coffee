@@ -101,6 +101,16 @@
     "loading": "Cargando...",
     "free": "Gratis"
   },
+  "notFoundPage": {
+    "title": "¿Buscas algo?",
+    "description": "Lo sentimos. La dirección web que ingresaste no es una página activa en nuestro sitio.",
+    "homeButton": "Ir a la página principal de Sheba Cup Coffee",
+    "helpButton": "Ayuda",
+    "footerPrefix": "¿Necesitas ayuda? Visita la",
+    "helpLink": "sección de ayuda",
+    "footerMiddle": "o",
+    "contactLink": "contáctanos"
+  },
   "footer": {
     "tagline": "Tu destino de confianza para compras en línea.",
     "quickLinks": "Enlaces rápidos",
