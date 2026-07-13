@@ -411,7 +411,6 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json(
       {
         error: sanityAuthError || errorMessage || "Failed to create order",
-        details: error instanceof Error ? error.stack : null,
       },
       { status: sanityAuthError ? 503 : 500 },
     );

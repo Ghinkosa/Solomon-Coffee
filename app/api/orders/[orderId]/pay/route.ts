@@ -124,7 +124,6 @@ export async function POST(
     return NextResponse.json(
       {
         error: errorMessage || "Failed to create payment session",
-        details: error instanceof Error ? error.stack : null,
       },
       { status: 500 }
     );

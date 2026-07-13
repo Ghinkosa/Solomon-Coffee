@@ -25,11 +25,16 @@ const localeNames: Record<Locale, string> = {
 
 const visibleLocales: Locale[] = ["en", "es", "ar"];
 
-const localeFlags: Record<Locale, string> = {
-  en: "https://flagcdn.com/us.svg",
-  es: "https://flagcdn.com/es.svg",
-  ar: "https://flagcdn.com/sa.svg",
+const localeCountryCodes: Record<Locale, string> = {
+  en: "us",
+  es: "es",
+  ar: "sa",
 };
+
+// Pre-rasterized PNGs render crisper than downscaled SVGs for detailed flags
+// (e.g. the US flag) at these small sizes. w40 is the 1x source, w80 the 2x.
+const flagPng = (code: string, width: 40 | 80) =>
+  `https://flagcdn.com/w${width}/${code}.png`;
 
 // Map locales to potential flag images or just initials?
 // User asked for "language initial".
@@ -69,9 +74,11 @@ const LanguageSwitcher = ({
         </span>
       );
     }
+    const code = localeCountryCodes[locale];
     return (
       <img
-        src={localeFlags[locale]}
+        src={flagPng(code, 40)}
+        srcSet={`${flagPng(code, 40)} 1x, ${flagPng(code, 80)} 2x`}
         alt=""
         aria-hidden
         className={className}
