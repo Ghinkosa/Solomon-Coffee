@@ -6,6 +6,8 @@ import { backendClient } from "@/sanity/lib/backendClient";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { decrementOrderStock } from "@/lib/stock";
+import { sendOrderConfirmationEmail } from "@/lib/emailService";
+import { getEmailImageUrl } from "@/lib/emailImageUtils";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -58,13 +60,16 @@ export async function POST(req: NextRequest) {
       }
 
       if (orderId) {
-        // Idempotency guard: if this order is already paid, skip re-processing
-        // (stock decrement, invoice, notifications) on webhook retries.
         const existing = await backendClient.fetch<{
           _rev?: string;
           paymentStatus?: string;
+          paymentMethod?: string;
+          fulfillmentProcessed?: boolean;
+          stockDecremented?: boolean;
         } | null>(
-          `*[_type == "order" && _id == $orderId][0]{ _rev, paymentStatus }`,
+          `*[_type == "order" && _id == $orderId][0]{
+            _rev, paymentStatus, paymentMethod, fulfillmentProcessed, stockDecremented
+          }`,
           { orderId },
         );
 
@@ -76,79 +81,118 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        if (existing.paymentStatus === PAYMENT_STATUSES.PAID) {
+        // Idempotency gate: only skip once fulfillment has FULLY completed.
+        // (Do not gate on paymentStatus — a mid-way failure must be resumable.)
+        if (existing.fulfillmentProcessed) {
           return NextResponse.json({ received: true, skipped: "duplicate" });
         }
 
-        // Atomically claim this order using optimistic locking. If a concurrent
-        // webhook delivery already flipped the revision, this commit throws and
-        // we skip — guaranteeing stock/invoice/notifications run exactly once.
+        // Persist ALL payment details together with the PAID flag in one atomic,
+        // revision-locked commit. This guarantees stripePaymentIntentId /
+        // amountPaid are stored whenever the order is marked paid (so it stays
+        // refundable), and prevents two concurrent deliveries from both
+        // proceeding. A sequential retry re-fetches the revision and resumes.
+        const amountPaid =
+          typeof session.amount_total === "number"
+            ? session.amount_total / 100
+            : undefined;
+
+        const paymentUpdate: Record<string, unknown> = {
+          paymentStatus: PAYMENT_STATUSES.PAID,
+          stripeCheckoutSessionId: session.id,
+          stripePaymentIntentId: session.payment_intent as string,
+          paymentCompletedAt: new Date().toISOString(),
+        };
+        if (session.customer) {
+          paymentUpdate.stripeCustomerId = session.customer as string;
+        }
+        if (amountPaid !== undefined) {
+          paymentUpdate.amountPaid = amountPaid;
+        }
+        // New checkout/card orders start the fulfillment workflow; a COD order
+        // paid online keeps its current delivery status.
+        if (existing.paymentMethod !== "cash_on_delivery") {
+          paymentUpdate.status = ORDER_STATUSES.PENDING;
+        }
+
         try {
           await backendClient
             .patch(orderId)
             .ifRevisionId(existing._rev)
-            .set({
-              paymentStatus: PAYMENT_STATUSES.PAID,
-              paymentCompletedAt: new Date().toISOString(),
-            })
+            .set(paymentUpdate)
             .commit();
         } catch {
+          // Another concurrent delivery claimed it; it will finish fulfillment.
           return NextResponse.json({ received: true, skipped: "duplicate" });
         }
 
-        // Generate invoice if not already exists
-        let invoice: Stripe.Invoice | null = null;
+        // Side effects below are each guarded/best-effort. fulfillmentProcessed
+        // is only set after they all complete, so a retry can safely resume.
 
-        if (session.invoice) {
-          invoice = await stripe.invoices.retrieve(session.invoice as string);
-        } else if (session.payment_intent) {
-          let stripeCustomerId = session.customer as string | null;
+        // 1. Stock decrement — exactly once, never for COD (done at creation).
+        if (
+          existing.paymentMethod !== "cash_on_delivery" &&
+          !existing.stockDecremented
+        ) {
+          const stockOrder = await backendClient.fetch<{
+            products?: Array<{
+              product: { _ref: string };
+              quantity: number;
+              weight?: { value?: string; price?: number };
+            }>;
+          } | null>(
+            `*[_type == "order" && _id == $orderId][0]{ products }`,
+            { orderId },
+          );
 
-          // Checkout may only have customer_details when no Stripe customer exists yet.
-          if (!stripeCustomerId && session.customer_details?.email) {
-            const customer = await stripe.customers.create({
-              email: session.customer_details.email,
-              name: session.customer_details.name || undefined,
-            });
-            stripeCustomerId = customer.id;
-          }
-
-          if (stripeCustomerId) {
-            const order = await backendClient.fetch(
-              `*[_type == "order" && _id == $orderId][0]{
-                _id,
-                orderNumber,
-                email,
-                products[]{ product->{_id, name, price, currency}, quantity },
-                subtotal,
-                tax,
-                shipping,
-                totalPrice,
-                totalAmount,
-                currency
-              }`,
-              { orderId },
-            );
-
-            if (order) {
-              invoice = await createAndFinalizeInvoice(
-                orderId,
-                stripeCustomerId,
-                order.products || [],
-                {
-                  totalAmount: order.totalAmount || order.totalPrice || 0,
-                  customerEmail: order.email || session.customer_details?.email || "",
-                  orderNumber: order.orderNumber,
-                  currency: order.currency,
-                  tax: order.tax || 0,
-                  shipping: order.shipping || 0,
-                },
-              );
-            }
+          if (stockOrder?.products) {
+            await decrementOrderStock(stockOrder.products);
+            await backendClient
+              .patch(orderId)
+              .set({ stockDecremented: true })
+              .commit();
           }
         }
 
-        await updateOrderWithPaymentCompletion(orderId, session, invoice);
+        // 2. Invoice — best-effort; must never abort fulfillment persistence.
+        try {
+          await generateAndAttachInvoice(orderId, session);
+        } catch (invoiceError) {
+          console.error(
+            `Invoice generation failed for order ${orderId}:`,
+            invoiceError,
+          );
+        }
+
+        // 3. Payment confirmation notification — best-effort.
+        try {
+          await sendPaymentNotification(orderId);
+        } catch (notificationError) {
+          console.error(
+            "Failed to send payment confirmation notification:",
+            notificationError,
+          );
+        }
+
+        // 4. Confirmation email — best-effort. Sent here (post-payment) for
+        // Stripe orders. COD orders already received their email at placement,
+        // so skip them to avoid duplicates when a COD order is paid online.
+        if (existing.paymentMethod !== "cash_on_delivery") {
+          try {
+            await sendConfirmationEmail(orderId);
+          } catch (emailError) {
+            console.error(
+              `Failed to send confirmation email for order ${orderId}:`,
+              emailError,
+            );
+          }
+        }
+
+        // 5. Mark fully processed — the real idempotency flag.
+        await backendClient
+          .patch(orderId)
+          .set({ fulfillmentProcessed: true })
+          .commit();
       } else {
         console.error("No orderId found in session metadata");
         return NextResponse.json(
@@ -312,112 +356,187 @@ async function createAndFinalizeInvoice(
   }
 }
 
-async function updateOrderWithPaymentCompletion(
+// Build (or retrieve) the Stripe invoice for a paid order and attach it to the
+// Sanity order. Best-effort: callers wrap this so a failure never blocks
+// fulfillment. Payment details are already persisted by the time this runs.
+async function generateAndAttachInvoice(
   orderId: string,
   session: Stripe.Checkout.Session,
-  invoice: Stripe.Invoice | null
 ) {
-  const { id, customer, payment_intent } = session;
+  let invoice: Stripe.Invoice | null = null;
+  let createdCustomerId: string | null = null;
 
-  // First, get the order to check its current status and payment method
-  const existingOrder = await backendClient.fetch(
-    `*[_type == "order" && _id == $orderId][0]{
-      status,
-      paymentMethod,
-      paymentStatus
-    }`,
-    { orderId }
-  );
+  if (session.invoice) {
+    invoice = await stripe.invoices.retrieve(session.invoice as string);
+  } else if (session.payment_intent) {
+    let stripeCustomerId = session.customer as string | null;
 
-  // Prepare update data
-  const amountPaid =
-    typeof session.amount_total === "number"
-      ? session.amount_total / 100
-      : undefined;
+    // Checkout may only have customer_details when no Stripe customer exists yet.
+    if (!stripeCustomerId && session.customer_details?.email) {
+      const customer = await stripe.customers.create({
+        email: session.customer_details.email,
+        name: session.customer_details.name || undefined,
+      });
+      stripeCustomerId = customer.id;
+      createdCustomerId = customer.id;
+    }
 
-  const updateData: Record<string, unknown> = {
-    paymentStatus: PAYMENT_STATUSES.PAID,
-    stripeCheckoutSessionId: id,
-    stripePaymentIntentId: payment_intent as string,
-    stripeCustomerId: customer as string, // Store the correct Stripe customer ID
-    paymentCompletedAt: new Date().toISOString(),
-  };
+    if (stripeCustomerId) {
+      const order = await backendClient.fetch(
+        `*[_type == "order" && _id == $orderId][0]{
+          _id,
+          orderNumber,
+          email,
+          products[]{ product->{_id, name, price, currency}, quantity },
+          subtotal,
+          tax,
+          shipping,
+          totalPrice,
+          totalAmount,
+          currency
+        }`,
+        { orderId },
+      );
 
-  if (amountPaid !== undefined) {
-    updateData.amountPaid = amountPaid;
+      if (order) {
+        invoice = await createAndFinalizeInvoice(
+          orderId,
+          stripeCustomerId,
+          order.products || [],
+          {
+            totalAmount: order.totalAmount || order.totalPrice || 0,
+            customerEmail:
+              order.email || session.customer_details?.email || "",
+            orderNumber: order.orderNumber,
+            currency: order.currency,
+            tax: order.tax || 0,
+            shipping: order.shipping || 0,
+          },
+        );
+      }
+    }
   }
 
-  // Order status logic:
-  // 1. For COD orders paid later: Keep current delivery status (packed, out_for_delivery, etc.)
-  // 2. For new checkout orders: Set status to "pending" to start the fulfillment workflow
-  // 3. For orders already in processing: Keep current status
-  if (existingOrder?.paymentMethod === "cash_on_delivery") {
-    // COD order paid online - keep current status
-    // Don't update status at all
-  } else {
-    // New checkout order or card payment - set to pending to start workflow
-    updateData.status = ORDER_STATUSES.PENDING;
+  const patchData: Record<string, unknown> = {};
+  if (createdCustomerId) {
+    patchData.stripeCustomerId = createdCustomerId;
   }
-
-  // Add invoice data if available
   if (invoice) {
-    updateData.invoice = {
+    patchData.invoice = {
       id: invoice.id,
       number: invoice.number,
       hosted_invoice_url: invoice.hosted_invoice_url,
     };
   }
 
-  try {
-    // Update the existing order in Sanity
-    await backendClient.patch(orderId).set(updateData).commit();
-
-    // Get the order to access products for stock updates and user info
-    const order = await backendClient.fetch(
-      `*[_type == "order" && _id == $orderId][0]{
-        _id,
-        orderNumber,
-        clerkUserId,
-        status,
-        paymentMethod,
-        products,
-        user -> {
-          clerkUserId
-        }
-      }`,
-      { orderId }
-    );
-
-    if (order) {
-      // Update stock levels for purchased products.
-      // COD orders already decremented stock at creation — skip to avoid
-      // double-decrement if a COD order is later paid online.
-      if (order.products && order.paymentMethod !== "cash_on_delivery") {
-        await decrementOrderStock(order.products);
-      }
-
-      // Send payment confirmation notification
-      try {
-        const userClerkId = order.clerkUserId || order.user?.clerkUserId;
-
-        if (userClerkId) {
-          await sendOrderStatusNotification({
-            clerkUserId: userClerkId,
-            orderNumber: order.orderNumber,
-            orderId: orderId,
-            status: order.status || ORDER_STATUSES.PENDING,
-          });
-        }
-      } catch (notificationError) {
-        console.error(
-          "Failed to send payment confirmation notification:",
-          notificationError
-        );
-        // Don't fail the webhook if notification fails
-      }
-    }
-  } catch (error) {
-    console.error(`Failed to update order ${orderId}:`, error);
-    throw error;
+  if (Object.keys(patchData).length > 0) {
+    await backendClient.patch(orderId).set(patchData).commit();
   }
+}
+
+// Send the payment-confirmation notification for a paid order. Best-effort.
+async function sendPaymentNotification(orderId: string) {
+  const order = await backendClient.fetch(
+    `*[_type == "order" && _id == $orderId][0]{
+      orderNumber,
+      clerkUserId,
+      user -> { clerkUserId }
+    }`,
+    { orderId },
+  );
+
+  if (!order) return;
+
+  const userClerkId = order.clerkUserId || order.user?.clerkUserId;
+  if (userClerkId) {
+    // Explicitly notify about the PAYMENT (not the pending order status) so the
+    // customer sees "Payment Confirmed" rather than a second "Order Received".
+    await sendOrderStatusNotification({
+      clerkUserId: userClerkId,
+      orderNumber: order.orderNumber,
+      orderId,
+      status: PAYMENT_STATUSES.PAID,
+    });
+  }
+}
+
+// Send the order-confirmation email for a paid Stripe order. Best-effort:
+// runs after payment details are persisted, so a failure never blocks
+// fulfillment. Works for both guest and signed-in orders (uses order.email).
+async function sendConfirmationEmail(orderId: string) {
+  const order = await backendClient.fetch<{
+    orderNumber?: string;
+    email?: string;
+    customerName?: string;
+    orderDate?: string;
+    subtotal?: number;
+    shipping?: number;
+    tax?: number;
+    totalPrice?: number;
+    address?: {
+      name?: string;
+      address?: string;
+      city?: string;
+      state?: string;
+      zip?: string;
+    };
+    products?: Array<{
+      quantity: number;
+      weight?: { price?: number };
+      product?: {
+        name?: string;
+        price?: number;
+        image?: unknown;
+      };
+    }>;
+  } | null>(
+    `*[_type == "order" && _id == $orderId][0]{
+      orderNumber,
+      email,
+      customerName,
+      orderDate,
+      subtotal,
+      shipping,
+      tax,
+      totalPrice,
+      address,
+      products[]{
+        quantity,
+        weight,
+        product->{ name, price, "image": images[0] }
+      }
+    }`,
+    { orderId },
+  );
+
+  if (!order?.email) return;
+
+  await sendOrderConfirmationEmail({
+    customerName: order.customerName || "Customer",
+    customerEmail: order.email,
+    orderId: order.orderNumber || orderId,
+    orderDate: order.orderDate
+      ? new Date(order.orderDate).toLocaleDateString()
+      : new Date().toLocaleDateString(),
+    items: (order.products || []).map((p) => ({
+      name: p.product?.name || "Product",
+      price: p.weight?.price || p.product?.price || 0,
+      quantity: p.quantity,
+      image: getEmailImageUrl(
+        p.product?.image as Parameters<typeof getEmailImageUrl>[0],
+      ),
+    })),
+    subtotal: order.subtotal || 0,
+    shipping: order.shipping || 0,
+    tax: order.tax || 0,
+    total: order.totalPrice || 0,
+    shippingAddress: {
+      name: order.address?.name || order.customerName || "",
+      street: order.address?.address || "",
+      city: order.address?.city || "",
+      state: order.address?.state || "",
+      zipCode: order.address?.zip || "",
+      country: "United States",
+    },
+  });
 }

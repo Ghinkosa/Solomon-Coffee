@@ -90,6 +90,60 @@ export const orderType = defineType({
         document?.paymentMethod !== "stripe",
     }),
 
+    // Internal webhook bookkeeping — ensures payment side effects run exactly
+    // once even across Stripe webhook retries. Not meant for manual editing.
+    defineField({
+      name: "stockDecremented",
+      title: "Stock Decremented",
+      type: "boolean",
+      readOnly: true,
+      initialValue: false,
+      hidden: true,
+    }),
+
+    defineField({
+      name: "fulfillmentProcessed",
+      title: "Fulfillment Processed",
+      type: "boolean",
+      readOnly: true,
+      initialValue: false,
+      hidden: true,
+    }),
+
+    defineField({
+      name: "stockRestored",
+      title: "Stock Restored",
+      type: "boolean",
+      readOnly: true,
+      initialValue: false,
+      hidden: true,
+    }),
+
+    defineField({
+      name: "pointsAwarded",
+      title: "Loyalty Points Awarded",
+      type: "boolean",
+      readOnly: true,
+      initialValue: false,
+      hidden: true,
+    }),
+
+    defineField({
+      name: "amountPaid",
+      title: "Amount Paid",
+      type: "number",
+      readOnly: true,
+      hidden: ({ document }) => document?.paymentMethod !== "stripe",
+    }),
+
+    defineField({
+      name: "paymentCompletedAt",
+      title: "Payment Completed At",
+      type: "datetime",
+      readOnly: true,
+      hidden: ({ document }) => document?.paymentMethod !== "stripe",
+    }),
+
     // PRODUCTS with Weight, Grind, and Packaging support
     defineField({
       name: "products",

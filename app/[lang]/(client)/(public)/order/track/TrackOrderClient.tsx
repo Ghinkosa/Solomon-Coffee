@@ -53,6 +53,49 @@ export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
   const [order, setOrder] = useState<GuestOrder | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const [payError, setPayError] = useState("");
+
+  // A guest can still owe money on a card order if their checkout failed or was
+  // abandoned. Offer a retry that re-opens Stripe for that specific order.
+  const canPayOnline =
+    !!order &&
+    order.paymentStatus !== "paid" &&
+    order.status !== "cancelled" &&
+    order.paymentMethod !== "cash_on_delivery";
+
+  const handlePayNow = async () => {
+    if (!order) return;
+    setPayError("");
+    setIsPaying(true);
+
+    try {
+      const response = await fetch("/api/checkout/stripe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order._id,
+          orderNumber: order.orderNumber,
+          email: order.email,
+          isGuest: true,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.url) {
+        setPayError(
+          data.error || t.paymentFailed || "Could not start payment. Please try again.",
+        );
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch {
+      setPayError(t.paymentFailed || "Could not start payment. Please try again.");
+    } finally {
+      setIsPaying(false);
+    }
+  };
 
   const handleLookup = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -194,6 +237,32 @@ export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
                   </div>
                 ))}
               </div>
+
+              {canPayOnline && (
+                <div className="space-y-2 border-t pt-4">
+                  <p className="text-sm text-muted-foreground">
+                    {t.paymentPending ??
+                      "This order hasn't been paid yet. You can complete your payment securely below."}
+                  </p>
+                  {payError && (
+                    <p className="text-sm text-red-600">{payError}</p>
+                  )}
+                  <Button
+                    onClick={handlePayNow}
+                    disabled={isPaying}
+                    className="w-full"
+                  >
+                    {isPaying ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        {t.redirectingToPayment ?? "Redirecting to payment..."}
+                      </>
+                    ) : (
+                      t.payNow ?? "Pay Now"
+                    )}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

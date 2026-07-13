@@ -214,6 +214,19 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Verify the address belongs to the current user before mutating it.
+    const ownedAddress = await backendClient.fetch(
+      `*[_type == "address" && _id == $id && email == $email][0]{ _id }`,
+      { id: _id, email: userEmail }
+    );
+
+    if (!ownedAddress) {
+      return NextResponse.json(
+        { error: "Address not found or access denied" },
+        { status: 404 }
+      );
+    }
+
     // If this is set as default, unset all other default addresses for this user
     if (isDefault) {
       const existingAddresses = await backendClient.fetch(
@@ -257,10 +270,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("Error updating address:", error);
     return NextResponse.json(
-      {
-        error: "Failed to update address",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Failed to update address" },
       { status: 500 }
     );
   }
@@ -269,11 +279,20 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!userId || !user) {
       return NextResponse.json(
         { error: "User not authenticated" },
         { status: 401 }
+      );
+    }
+
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+    if (!userEmail) {
+      return NextResponse.json(
+        { error: "User email not found" },
+        { status: 400 }
       );
     }
 
@@ -284,6 +303,19 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { error: "Address ID is required" },
         { status: 400 }
+      );
+    }
+
+    // Verify the address belongs to the current user before deleting it.
+    const ownedAddress = await backendClient.fetch(
+      `*[_type == "address" && _id == $id && email == $email][0]{ _id }`,
+      { id: addressId, email: userEmail }
+    );
+
+    if (!ownedAddress) {
+      return NextResponse.json(
+        { error: "Address not found or access denied" },
+        { status: 404 }
       );
     }
 

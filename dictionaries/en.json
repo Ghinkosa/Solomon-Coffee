@@ -2057,6 +2057,10 @@
     "breadcrumbTrack": "Track Order",
     "orderNotFound": "Order not found",
     "lookupFailed": "Failed to look up order. Please try again.",
+    "paymentPending": "This order hasn't been paid yet. You can complete your payment securely below.",
+    "payNow": "Pay Now",
+    "redirectingToPayment": "Redirecting to payment...",
+    "paymentFailed": "Could not start payment. Please try again.",
     "statusLabels": {
       "pending": "Pending",
       "processing": "Processing",
@@ -3233,6 +3237,7 @@
     "insufficientStock": "Insufficient Stock",
     "orderFailed": "Order Failed",
     "paymentSessionFailed": "We couldn't start the payment. Your order was saved — you can pay it from My Orders.",
+    "paymentSessionFailedGuest": "We couldn't start the payment. Your order was saved — you can pay it from the Track Order page using your order number and email.",
     "staleCartPrices": "Your cart prices are out of date. Please refresh the page or clear your cart and try again."
   },
   "shopMeta": {

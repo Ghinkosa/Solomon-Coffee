@@ -4,6 +4,7 @@ import { isUserAdmin } from "@/lib/adminUtils";
 import { writeClient } from "@/sanity/lib/client";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { refundOrderPayment, buildRefundMessage } from "@/lib/stripeRefund";
+import { restoreOrderStock } from "@/lib/stock";
 
 export async function PATCH(
   req: NextRequest,
@@ -148,6 +149,14 @@ export async function PATCH(
       .patch(id)
       .set(filteredUpdateData)
       .commit();
+
+    // Return the reserved inventory when an order is cancelled (idempotent).
+    if (
+      updateData.status === "cancelled" &&
+      currentOrder.status !== "cancelled"
+    ) {
+      await restoreOrderStock(id);
+    }
 
     // Track order status update and send notification if status was changed
     if (updateData.status && updateData.status !== currentOrder.status) {

@@ -12,14 +12,67 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { orderTotal, orderId } = body;
+    const { orderId } = body;
 
-    if (!orderTotal || !orderId) {
+    if (!orderId) {
       return NextResponse.json(
-        { error: "Order total and order ID are required" },
+        { error: "Order ID is required" },
         { status: 400 }
       );
     }
+
+    // Never trust a client-supplied order total. Load the order, confirm it
+    // belongs to the caller and is actually paid, and use its persisted amount.
+    const order = await backendClient.fetch<{
+      _id: string;
+      _rev: string;
+      clerkUserId?: string;
+      paymentStatus?: string;
+      pointsAwarded?: boolean;
+      amountPaid?: number;
+      totalPrice?: number;
+      user?: { clerkUserId?: string };
+    } | null>(
+      `*[_type == "order" && _id == $orderId][0]{
+        _id,
+        _rev,
+        clerkUserId,
+        paymentStatus,
+        pointsAwarded,
+        amountPaid,
+        totalPrice,
+        user->{ clerkUserId }
+      }`,
+      { orderId }
+    );
+
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    const orderOwner = order.clerkUserId || order.user?.clerkUserId;
+    if (orderOwner !== userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    if (order.paymentStatus !== "paid") {
+      return NextResponse.json(
+        { error: "Points are only awarded for paid orders" },
+        { status: 400 }
+      );
+    }
+
+    // Idempotency: award points for a given order at most once.
+    if (order.pointsAwarded) {
+      return NextResponse.json({
+        success: true,
+        alreadyAwarded: true,
+        pointsEarned: { rewardPoints: 0, loyaltyPoints: 0 },
+        messages: [],
+      });
+    }
+
+    const orderTotal = order.amountPaid ?? order.totalPrice ?? 0;
 
     // Get user from Sanity
     const sanityUser = await backendClient.fetch(
@@ -44,6 +97,23 @@ export async function POST(request: NextRequest) {
       sanityUser.rewardPoints || 0,
       sanityUser.loyaltyPoints || 0
     );
+
+    // Mark the order as awarded first (idempotency guard), revision-locked so two
+    // concurrent requests can't both credit points for the same order.
+    try {
+      await backendClient
+        .patch(order._id)
+        .ifRevisionId(order._rev)
+        .set({ pointsAwarded: true })
+        .commit();
+    } catch {
+      return NextResponse.json({
+        success: true,
+        alreadyAwarded: true,
+        pointsEarned: { rewardPoints: 0, loyaltyPoints: 0 },
+        messages: [],
+      });
+    }
 
     // Update user points and total spent
     const updatedUser = await backendClient

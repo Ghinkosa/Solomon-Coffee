@@ -22,8 +22,13 @@ function getRefundAmount(order: RefundOrderInput): number {
 
 function isStripePayment(order: RefundOrderInput): boolean {
   const intentId = order.stripePaymentIntentId?.trim();
+  // No intent, or a COD placeholder ("cod_..."), means there is no Stripe charge
+  // to reverse — those refunds are handled manually (cash).
   if (!intentId || intentId.startsWith("cod_")) return false;
-  return order.paymentMethod === "stripe" || order.paymentMethod === "card";
+  // Any real stored PaymentIntent is auto-refundable regardless of the order's
+  // original payment method. This also covers COD orders that were later paid
+  // online (the webhook overwrites the "cod_" placeholder with a real pi_ id).
+  return true;
 }
 
 export async function refundOrderPayment(

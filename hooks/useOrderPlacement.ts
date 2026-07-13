@@ -268,12 +268,18 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         },
       };
 
-      // Send email asynchronously
-      fetch("/api/orders/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderData: emailData }),
-      }).catch(err => console.error("Email failed:", err));
+      // Send the confirmation email now ONLY for COD orders (payment is settled
+      // on delivery, so the order is genuinely confirmed). For Stripe, the email
+      // is sent by the webhook after payment succeeds — otherwise customers who
+      // abandon checkout would get a "thank you for your purchase" email for an
+      // order they never paid for.
+      if (selectedPaymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
+        fetch("/api/orders/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderData: emailData }),
+        }).catch((err) => console.error("Email failed:", err));
+      }
 
       setOrderPlacementState(true, "redirecting");
 
@@ -313,17 +319,25 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
           const stripeResult = await stripeResponse.json();
 
           // Only clear the cart once Stripe returns a redirect URL. If the
-          // session failed, keep the cart so the customer can retry payment
-          // (the order exists as pending and can be paid from /user/orders).
+          // session failed, keep the cart so the customer can retry payment.
+          // Signed-in users can pay from "My Orders"; guests recover the
+          // pending order via the public order-tracking page.
           if (!stripeResult.url) {
+            const isGuest = !user;
             toast.error(
               t(dictionary, "checkoutPlacement.orderFailed", "Order Failed"),
               {
-                description: t(
-                  dictionary,
-                  "checkoutPlacement.paymentSessionFailed",
-                  "We couldn't start the payment. Your order was saved — you can pay it from My Orders.",
-                ),
+                description: isGuest
+                  ? t(
+                      dictionary,
+                      "checkoutPlacement.paymentSessionFailedGuest",
+                      "We couldn't start the payment. Your order was saved — you can pay it from the Track Order page using your order number and email.",
+                    )
+                  : t(
+                      dictionary,
+                      "checkoutPlacement.paymentSessionFailed",
+                      "We couldn't start the payment. Your order was saved — you can pay it from My Orders.",
+                    ),
               },
             );
             setOrderPlacementState(true, "redirecting");
@@ -331,7 +345,9 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
               success: true,
               orderId,
               orderNumber,
-              redirectTo: localizedPath("/user/orders", lang),
+              redirectTo: isGuest
+                ? localizedPath("/order/track", lang)
+                : localizedPath("/user/orders", lang),
               isStripeRedirect: false,
             };
           }

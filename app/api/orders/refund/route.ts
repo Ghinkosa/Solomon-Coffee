@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { writeClient, client } from "@/sanity/lib/client";
 import { refundOrderPayment } from "@/lib/stripeRefund";
+import { restoreOrderStock } from "@/lib/stock";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -100,6 +101,9 @@ export async function POST(req: NextRequest) {
         refundedToWallet: false,
       })
       .commit();
+
+    // Return the reserved inventory (idempotent; no-op if never decremented).
+    await restoreOrderStock(orderId);
 
     return NextResponse.json(
       {

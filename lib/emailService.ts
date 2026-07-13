@@ -1,5 +1,6 @@
 import nodemailer, { Transporter, SentMessageInfo } from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
+import { contactConfig } from "@/config/contact";
 
 const transporter: Transporter<SMTPTransport.SentMessageInfo> =
   nodemailer.createTransport({
@@ -59,6 +60,20 @@ interface SendMailParams {
 
 const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
   const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
+  const {
+    company,
+    emails,
+    businessHours,
+    socialMedia,
+  } = contactConfig;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const supportUrl = `${baseUrl.replace(/\/+$/, "")}/help`;
+  const facebookUrl =
+    socialMedia.facebook !== "#" ? socialMedia.facebook : supportUrl;
+  const twitterUrl =
+    socialMedia.twitter !== "#" ? socialMedia.twitter : supportUrl;
+  const instagramUrl =
+    socialMedia.instagram !== "#" ? socialMedia.instagram : supportUrl;
 
   return `
 <!DOCTYPE html>
@@ -469,7 +484,7 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
         <!-- Header -->
         <div class="header">
             <h1>Order Confirmed!</h1>
-            <p>Thank you for shopping with Sheba Cup Coffee</p>
+            <p>Thank you for shopping with ${company.name}</p>
         </div>
         
         <!-- Main Content -->
@@ -592,15 +607,15 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
                 <div class="contact-info">
                     <div class="contact-item">
                         <strong>Email</strong>
-                        <span>support@shebascoffee.com</span>
+                        <span>${emails.support}</span>
                     </div>
                     <div class="contact-item">
                         <strong>Phone</strong>
-                        <span>+1 (555) 123-4567</span>
+                        <span>${company.phone}</span>
                     </div>
                     <div class="contact-item">
                         <strong>Hours</strong>
-                        <span>Mon-Fri: 9AM-6PM</span>
+                        <span>${businessHours.weekday}</span>
                     </div>
                 </div>
             </div>
@@ -608,16 +623,16 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
         
         <!-- Footer -->
         <div class="footer">
-            <p><strong>Sheba Cup Coffee</strong></p>
-            <p>123 Shopping Street, Commerce District<br>
-               New York, NY 10001, USA</p>
-            <p>Thank you for choosing Sheba Cup Coffee!</p>
+            <p><strong>${company.name}</strong></p>
+            <p>${company.address}<br>
+               ${company.city}</p>
+            <p>Thank you for choosing ${company.name}!</p>
             
             <div class="social-links">
-                <a href="https://www.facebook.com/shebascoffee">Facebook</a> |
-                <a href="https://twitter.com/shebascoffee">Twitter</a> |
-                <a href="https://www.instagram.com/shebascoffee">Instagram</a> |
-                <a href="https://shebascoffee.com/contact">Support</a>
+                <a href="${facebookUrl}">Facebook</a> |
+                <a href="${twitterUrl}">Twitter</a> |
+                <a href="${instagramUrl}">Instagram</a> |
+                <a href="${supportUrl}">Support</a>
             </div>
         </div>
     </div>
@@ -632,7 +647,7 @@ const sendOrderConfirmationEmail = async (
     const htmlContent = generateOrderConfirmationHTML(data);
 
     const mailOptions = {
-      from: `"Sheba Cup Coffee" <${
+      from: `"${contactConfig.company.name}" <${
         process.env.SENDER_EMAIL_ADDRESS || "your-email@gmail.com"
       }>`,
       to: data.customerEmail,
@@ -670,9 +685,9 @@ ${data.estimatedDelivery ? `Estimated Delivery: ${data.estimatedDelivery}` : ""}
 
 We'll send you another email with tracking information once your order ships.
 
-If you have any questions, please contact us at support@shebascoffee.com or +1 (555) 123-4567.
+If you have any questions, please contact us at ${contactConfig.emails.support} or ${contactConfig.company.phone}.
 
-Thank you for choosing Sheba Cup Coffee!
+Thank you for choosing ${contactConfig.company.name}!
       `,
     };
 
@@ -697,7 +712,7 @@ const sendMail = async ({
 }: SendMailParams): Promise<EmailResponse> => {
   try {
     const mailOptions = {
-      from: `"Sheba Cup Coffee" <${
+      from: `"${contactConfig.company.name}" <${
         process.env.SENDER_EMAIL_ADDRESS || "your-email@gmail.com"
       }>`,
       to: email,

@@ -9,6 +9,7 @@ import {
   refundOrderPayment,
   buildRefundMessage,
 } from "@/lib/stripeRefund";
+import { restoreOrderStock } from "@/lib/stock";
 
 /**
  * Admin: Approve cancellation request and cancel order with refund
@@ -89,6 +90,9 @@ export async function approveCancellationRequest(
         cancellationRequested: false,
       })
       .commit();
+
+    // Return the reserved inventory (idempotent; no-op if never decremented).
+    await restoreOrderStock(orderId);
 
     try {
       await sendOrderStatusNotification({
@@ -288,6 +292,9 @@ export async function cancelOrder(
         refundedToWallet: false,
       })
       .commit();
+
+    // Return the reserved inventory (idempotent; no-op if never decremented).
+    await restoreOrderStock(orderId);
 
     try {
       await sendOrderStatusNotification({

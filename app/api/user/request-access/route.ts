@@ -1,22 +1,33 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { backendClient } from "@/sanity/lib/backendClient";
 
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!userId || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const { clerkUserId, email, firstName, lastName } = body;
+    const { firstName, lastName } = body;
+
+    const clerkUserId = userId;
+    const email = user?.emailAddresses[0]?.emailAddress;
+
+    if (!email) {
+      return NextResponse.json(
+        { error: "User email not found" },
+        { status: 400 },
+      );
+    }
 
     // Check if user request already exists
     const existingRequest = await backendClient.fetch(
       `*[_type == "userAccessRequest" && clerkUserId == $clerkUserId][0]`,
-      { clerkUserId }
+      { clerkUserId },
     );
 
     if (existingRequest) {
@@ -31,8 +42,8 @@ export async function POST(request: NextRequest) {
       _type: "userAccessRequest",
       clerkUserId,
       email,
-      firstName,
-      lastName,
+      firstName: firstName || user.firstName || "",
+      lastName: lastName || user.lastName || "",
       status: "pending",
       requestedAt: new Date().toISOString(),
       approvedAt: null,

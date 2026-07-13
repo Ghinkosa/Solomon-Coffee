@@ -441,7 +441,12 @@ export function CheckoutContent() {
 
     if (result?.success && result.redirectTo) {
       setIsRedirecting(true);
-      resetCart();
+      // Only clear the cart once payment is actually committed (COD) or we have
+      // a real Stripe redirect URL. Failed Stripe sessions keep the cart intact
+      // so the customer can retry — useOrderPlacement already resets on success.
+      if (result.isStripeRedirect || result.isCOD) {
+        resetCart();
+      }
       if (result.orderNumber) {
         sessionStorage.setItem(
           action === "pay" && result.isStripeRedirect

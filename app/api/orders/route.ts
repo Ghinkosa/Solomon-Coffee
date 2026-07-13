@@ -290,6 +290,11 @@ export const POST = async (request: NextRequest) => {
             weight?: { value?: string; price?: number };
           }>,
         );
+        // Mark so a later cancellation can restore this inventory exactly once.
+        await writeClient
+          .patch(createdOrder._id)
+          .set({ stockDecremented: true })
+          .commit();
       } catch (stockError) {
         console.error("Failed to decrement stock for COD order:", stockError);
       }
@@ -370,7 +375,14 @@ export const POST = async (request: NextRequest) => {
       console.error("Failed to initiate analytics tracking:", analyticsError);
     }
 
-    if (!isGuest && userId) {
+    // Only notify at creation for COD orders — a Stripe order isn't really
+    // "received" until payment succeeds, so its confirmation notification is
+    // sent from the webhook instead (avoids notifying on abandoned checkouts).
+    if (
+      !isGuest &&
+      userId &&
+      paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY
+    ) {
       try {
         await sendOrderStatusNotification({
           clerkUserId: userId,

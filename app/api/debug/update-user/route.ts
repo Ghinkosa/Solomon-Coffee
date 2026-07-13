@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { backendClient } from "@/sanity/lib/backendClient";
+import { blockDebugInProduction } from "@/lib/debug-route-guard";
 
 export async function POST(request: NextRequest) {
+  const blocked = blockDebugInProduction();
+  if (blocked) return blocked;
+
   try {
     const user = await currentUser();
 
