@@ -9,9 +9,8 @@ import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
 import Script from "next/script";
 import Link from "next/link";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import { ArrowRight, Heart, HandHelping, Coffee, GraduationCap } from "lucide-react";
-import productMockup from "@/images/product-mockup.png";
 import OurStorySection from "@/components/OurStorySection";
 import HomeBrewCta from "@/components/HomeBrewCta";
 import Container from "@/components/Container";
@@ -22,6 +21,11 @@ import {
   homeSubheadingClass,
 } from "@/components/HomeSectionHeader";
 import { localizedPath } from "@/lib/localized-path";
+
+const MissionVisual3D = dynamic(
+  () => import("@/components/home/MissionVisual3D"),
+  { ssr: true },
+);
 
 export default async function Home({
   params,
@@ -112,21 +116,10 @@ export default async function Home({
               <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-            <Image
-              src={productMockup}
-              alt={dictionary.home.mission.imageAlt}
-              className="w-full h-full object-cover"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority={false}
-            />
-            <div className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur p-6 rounded-xl shadow-lg">
-              <p className="font-serif italic text-xl text-amber-800 text-center">
-                &ldquo;{dictionary.home.mission.quote}&rdquo;
-              </p>
-            </div>
-          </div>
+          <MissionVisual3D
+            alt={dictionary.home.mission.imageAlt}
+            quote={dictionary.home.mission.quote}
+          />
           </div>
         </Container>
       </section>
