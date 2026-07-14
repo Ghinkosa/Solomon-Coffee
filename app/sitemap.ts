@@ -5,7 +5,7 @@ import { i18n } from "@/i18n-config";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const products = await client.fetch(`
-    *[_type == "product" && defined(slug.current)] {
+    *[_type == "product" && defined(slug.current) && (!defined(isArchived) || isArchived != true)] {
       "slug": slug.current,
       _updatedAt
     }
@@ -18,14 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   `);
 
-  const brands = await client.fetch(`
-    *[_type == "brand" && defined(slug.current)] {
-      "slug": slug.current,
-      _updatedAt
-    }
-  `);
-
-  const staticPaths = ["", "/shop", "/category", "/brands", "/blog"];
+  const staticPaths = ["", "/shop", "/category", "/blog"];
 
   const staticPages = i18n.locales.flatMap((locale) =>
     staticPaths.map((path) => {
@@ -62,14 +55,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  const brandPages = i18n.locales.flatMap((locale) =>
-    brands.map((brand: { slug: string; _updatedAt: string }) => ({
-      url: localizedUrl(`/brands/${brand.slug}`, locale),
-      lastModified: new Date(brand._updatedAt),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
-  );
-
-  return [...staticPages, ...productPages, ...categoryPages, ...brandPages];
+  return [...staticPages, ...productPages, ...categoryPages];
 }

@@ -58,12 +58,8 @@ const CategoryPageWrapper = ({ slug }: Props) => {
 
         // Fetch products for the current category
         const productsQuery = `
-          *[_type == "product" && references(*[_type == "category" && slug.current == $slug]._id)] {
-            ...,
-            brand->{
-              _id,
-              title
-            }
+          *[_type == "product" && (!defined(isArchived) || isArchived != true) && references(*[_type == "category" && slug.current == $slug]._id)] {
+            ...
           }
         `;
         const fetchedProducts: Product[] = await client.fetch(productsQuery, {

@@ -5,7 +5,6 @@ import { categoryType } from "./categoryType";
 import { productType } from "./productType";
 import { orderType } from "./orderType";
 import { bannerType } from "./bannerType";
-import { brandType } from "./brandTypes";
 import { blogType } from "./blogType";
 import { blogCategoryType } from "./blogCategoryType";
 import { authorType } from "./authType";
@@ -17,7 +16,7 @@ import { userType } from "./userType";
 import { userAccessRequestType } from "./userAccessRequestType";
 import { reviewType } from "./reviewType";
 import { subscriptionType } from "./subscriptionType";
-import { packagingType } from './packaging'
+import { packagingType } from "./packaging";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -26,7 +25,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     productType,
     orderType,
     bannerType,
-    brandType,
     blogType,
     blogCategoryType,
     authorType,

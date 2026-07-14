@@ -3163,6 +3163,33 @@
         }
       }
     },
+    "adminSignIn": {
+      "badge": "Admin Portal",
+      "title": "Staff sign in",
+      "description": "Sign in with your admin account to open the {company} operations console.",
+      "customerHint": "Shopping as a customer?",
+      "customerSignIn": "Use the customer sign-in",
+      "features": {
+        "analytics": {
+          "title": "Orders & analytics",
+          "description": "Track sales, fulfill orders, and monitor performance."
+        },
+        "catalog": {
+          "title": "Catalog operations",
+          "description": "Manage products, inventory signals, and account requests."
+        },
+        "secure": {
+          "title": "Staff-only access",
+          "description": "This portal is restricted to authorized admin accounts."
+        }
+      }
+    },
+    "adminAccessDenied": {
+      "title": "Access Denied",
+      "description": "You don't have permission to access the admin panel. Staff should sign in at the admin login URL with an authorized account.",
+      "adminLogin": "Go to admin login",
+      "backHome": "Back to Home"
+    },
     "signUp": {
       "title": "Join {company}",
       "description": "Create your account today and unlock exclusive benefits, personalized recommendations, and seamless shopping experiences.",

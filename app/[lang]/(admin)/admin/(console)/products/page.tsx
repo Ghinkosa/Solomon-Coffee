@@ -4,25 +4,26 @@ import { isUserAdmin } from "@/lib/adminUtils";
 import { getAdminCategories } from "@/sanity/queries";
 import AdminProducts from "@/components/admin/AdminProducts";
 
-const AdminProductsPage = async () => {
-  // Check authentication and admin access
+const AdminProductsPage = async ({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) => {
+  const { lang } = await params;
   const { userId } = await auth();
 
   if (!userId) {
-    redirect("/sign-in");
+    redirect(`/${lang}/admin/login?redirectTo=/${lang}/admin/products`);
   }
 
-  // Get current user details to check admin status
   const clerk = await clerkClient();
   const currentUser = await clerk.users.getUser(userId);
   const userEmail = currentUser.primaryEmailAddress?.emailAddress;
 
-  // Check if current user is admin
   if (!userEmail || !isUserAdmin(userEmail)) {
-    redirect("/");
+    redirect(`/${lang}/admin/access-denied`);
   }
 
-  // Fetch categories server-side using the query function
   const categories = await getAdminCategories();
 
   return <AdminProducts initialCategories={categories} />;

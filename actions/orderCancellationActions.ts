@@ -178,7 +178,7 @@ export async function rejectCancellationRequest(
         cancellationRequested: false,
         cancellationRequestedAt: null,
         cancellationRequestReason: null,
-        status: "confirmed",
+        status: "order_confirmed",
         orderConfirmedBy: adminUser.email,
         orderConfirmedAt: new Date().toISOString(),
       })
@@ -189,7 +189,7 @@ export async function rejectCancellationRequest(
         clerkUserId: order.clerkUserId,
         orderNumber: order.orderNumber,
         orderId: order._id,
-        status: "confirmed",
+        status: "order_confirmed",
         previousStatus: order.status,
       });
     } catch (notificationError) {

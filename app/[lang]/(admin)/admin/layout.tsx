@@ -1,41 +1,35 @@
-import React from "react";
-import AdminShell from "@/components/admin/AdminShell";
-import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
-import { currentUser } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { getDictionary } from "@/lib/dictionary";
+import { DictionaryProvider } from "@/lib/dictionary-context";
+import { Locale } from "@/i18n-config";
 
-interface AdminLayoutProps {
-  children: React.ReactNode;
-  params: Promise<{ lang: string }>;
-}
-
-const AdminLayout = async ({ children }: AdminLayoutProps) => {
-  const user = await currentUser();
-
-  const isAdmin = isUserAdmin(
-    user?.primaryEmailAddress?.emailAddress ??
-      user?.emailAddresses?.[0]?.emailAddress,
-  );
-
-  const serializedUser = user
-    ? {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        imageUrl: user.imageUrl,
-        emailAddresses: user.emailAddresses.map((email: { emailAddress: string }) => ({
-          emailAddress: email.emailAddress,
-        })),
-        primaryEmailAddress: user.primaryEmailAddress
-          ? { emailAddress: user.primaryEmailAddress.emailAddress }
-          : null,
-      }
-    : null;
-
-  return (
-    <AdminAuthGuard isAdmin={isAdmin}>
-      <AdminShell user={serializedUser}>{children}</AdminShell>
-    </AdminAuthGuard>
-  );
+export const metadata: Metadata = {
+  title: {
+    default: "Admin",
+    template: "%s | Admin",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
-export default AdminLayout;
+/**
+ * Public admin routes (login, access-denied) and the guarded console
+ * share this passthrough layout. Console chrome lives in (console)/layout.
+ */
+export default async function AdminRootLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang as Locale);
+
+  return (
+    <DictionaryProvider dictionary={dictionary}>{children}</DictionaryProvider>
+  );
+}

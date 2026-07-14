@@ -40,14 +40,49 @@ import {
   Package2,
   ChevronLeft,
   ChevronRight,
+  Save,
+  Loader2,
+  Plus,
+  Pencil,
+  Archive,
+  ArchiveRestore,
+  Scale,
 } from "lucide-react";
 import { ProductsSkeleton } from "./SkeletonLoaders";
 import { Product } from "./types";
 import { safeApiCall, handleApiError } from "./apiHelpers";
 import type { Category } from "@/sanity.types";
+import { toast } from "sonner";
+import ProductEditor, { type ProductEditorState } from "./ProductEditor";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface AdminProductsProps {
   initialCategories?: Category[];
+}
+
+type ProductEditForm = {
+  price: string;
+  stock: string;
+  discount: string;
+  status: "" | "new" | "hot" | "sale";
+  isFeatured: boolean;
+};
+
+function toEditForm(product: Product): ProductEditForm {
+  return {
+    price: String(product.price ?? 0),
+    stock: String(product.stock ?? 0),
+    discount: String(product.discount ?? 0),
+    status: (product.status as ProductEditForm["status"]) || "",
+    isFeatured: Boolean(product.featured || product.isFeatured),
+  };
 }
 
 const AdminProducts: React.FC<AdminProductsProps> = ({
@@ -65,6 +100,22 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
   const [imageLoading, setImageLoading] = useState(false);
   const [categories, setCategories] =
     useState<Category[]>(initialCategories);
+  const [editForm, setEditForm] = useState<ProductEditForm | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [savingFieldId, setSavingFieldId] = useState<string | null>(null);
+  const [editorState, setEditorState] = useState<ProductEditorState | null>(
+    null,
+  );
+  const [archiveFilter, setArchiveFilter] = useState<"active" | "archived" | "all">(
+    "active",
+  );
+  const [weightStockProduct, setWeightStockProduct] = useState<Product | null>(
+    null,
+  );
+  const [weightStocks, setWeightStocks] = useState<
+    Array<{ _key: string; weight: string; stock: string }>
+  >([]);
+  const [savingWeights, setSavingWeights] = useState(false);
 
   const limit = 10;
 
@@ -101,7 +152,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
         const data = await safeApiCall(
           `/api/admin/products?limit=${limit}&offset=${
             page * limit
-          }&category=${categoryParam}&search=${debouncedSearchTerm}`
+          }&category=${categoryParam}&search=${debouncedSearchTerm}&archived=${archiveFilter}`
         );
         setProducts(data.products);
       } catch (error) {
@@ -110,7 +161,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
         setLoading(false);
       }
     },
-    [productCategory, debouncedSearchTerm, limit]
+    [productCategory, debouncedSearchTerm, archiveFilter, limit]
   );
 
   // Effects
@@ -118,10 +169,98 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
     fetchProducts(currentPage);
   }, [fetchProducts, currentPage]);
 
-  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(0);
-  }, [productCategory, debouncedSearchTerm]);
+  }, [productCategory, debouncedSearchTerm, archiveFilter]);
+
+  const openWeightStock = async (product: Product) => {
+    try {
+      const response = await safeApiCall(
+        `/api/admin/products?id=${product._id}`,
+      );
+      const full = response.product as Product;
+      const weights = full.weightOptions || [];
+      if (weights.length === 0) {
+        toast.message("No weight options on this product — edit it fully first.");
+        return;
+      }
+      setWeightStockProduct(full);
+      setWeightStocks(
+        weights.map((w) => ({
+          _key: w._key || w.weight,
+          weight: w.weight,
+          stock: String(w.stock ?? 0),
+        })),
+      );
+    } catch (error) {
+      handleApiError(error, "Weight stock load");
+    }
+  };
+
+  const saveWeightStocks = async () => {
+    if (!weightStockProduct) return;
+    setSavingWeights(true);
+    try {
+      const existing = weightStockProduct.weightOptions || [];
+      const weightOptions = existing.map((w) => {
+        const draft = weightStocks.find(
+          (d) => d._key === w._key || d.weight === w.weight,
+        );
+        return {
+          _key: w._key,
+          weight: w.weight,
+          price: w.price,
+          isDefault: Boolean(w.isDefault),
+          stock: parseInt(draft?.stock ?? String(w.stock ?? 0), 10) || 0,
+        };
+      });
+      await safeApiCall("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: weightStockProduct._id,
+          weightOptions,
+        }),
+      });
+      toast.success("Weight stock updated");
+      setWeightStockProduct(null);
+      fetchProducts(currentPage);
+    } catch (error) {
+      handleApiError(error, "Weight stock save");
+      toast.error("Failed to update weight stock");
+    } finally {
+      setSavingWeights(false);
+    }
+  };
+
+  const toggleArchive = async (product: Product) => {
+    const next = !product.isArchived;
+    const label = next ? "Archive" : "Restore";
+    if (
+      !window.confirm(
+        next
+          ? `Archive "${product.name}"? It will be hidden from the storefront.`
+          : `Restore "${product.name}" to the catalog?`,
+      )
+    ) {
+      return;
+    }
+    try {
+      await safeApiCall("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product._id,
+          isArchived: next,
+        }),
+      });
+      toast.success(`${label}d`);
+      fetchProducts(currentPage);
+    } catch (error) {
+      handleApiError(error, label);
+      toast.error(`Failed to ${label.toLowerCase()} product`);
+    }
+  };
 
   // Keyboard navigation for image carousel
   useEffect(() => {
@@ -157,21 +296,125 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
   // Handle product view
   const handleViewProduct = async (product: Product) => {
     try {
-      // Reset image index when viewing a new product
       setCurrentImageIndex(0);
-      // Fetch complete product details
       const response = await safeApiCall(
-        `/api/admin/products?id=${product._id}`
+        `/api/admin/products?id=${product._id}`,
       );
       setSelectedProduct(response.product);
+      setEditForm(toEditForm(response.product));
       setIsProductDetailsOpen(true);
     } catch (error) {
       handleApiError(error, "Product details fetch");
-      // Fallback to existing product data
       setCurrentImageIndex(0);
       setSelectedProduct(product);
+      setEditForm(toEditForm(product));
       setIsProductDetailsOpen(true);
     }
+  };
+
+  const applyLocalProductUpdate = (
+    productId: string,
+    patch: Partial<Product>,
+  ) => {
+    setProducts((prev) =>
+      prev.map((p) => (p._id === productId ? { ...p, ...patch } : p)),
+    );
+    setSelectedProduct((prev) =>
+      prev && prev._id === productId ? { ...prev, ...patch } : prev,
+    );
+  };
+
+  const patchProduct = async (
+    productId: string,
+    body: Record<string, unknown>,
+    fieldKey?: string,
+  ) => {
+    if (fieldKey) setSavingFieldId(`${productId}:${fieldKey}`);
+    else setSaving(true);
+
+    try {
+      const data = await safeApiCall("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, ...body }),
+      });
+      const updated = data.product as Partial<Product>;
+      applyLocalProductUpdate(productId, {
+        price: updated.price,
+        stock: updated.stock,
+        discount: updated.discount,
+        status: updated.status as Product["status"],
+        featured: Boolean(updated.featured ?? updated.isFeatured),
+        isFeatured: Boolean(updated.isFeatured ?? updated.featured),
+      });
+      if (selectedProduct?._id === productId) {
+        setEditForm(
+          toEditForm({
+            ...selectedProduct,
+            ...updated,
+            featured: Boolean(updated.featured ?? updated.isFeatured),
+          } as Product),
+        );
+      }
+      toast.success("Product updated");
+      return true;
+    } catch (error) {
+      handleApiError(error, "Product update");
+      toast.error("Failed to update product");
+      return false;
+    } finally {
+      setSaving(false);
+      setSavingFieldId(null);
+    }
+  };
+
+  const handleSaveSheetEdits = async () => {
+    if (!selectedProduct || !editForm) return;
+
+    const price = Number(editForm.price);
+    const stock = Number(editForm.stock);
+    const discount = Number(editForm.discount);
+
+    if (Number.isNaN(price) || price < 0) {
+      toast.error("Enter a valid price");
+      return;
+    }
+    if (!Number.isInteger(stock) || stock < 0) {
+      toast.error("Stock must be a whole number >= 0");
+      return;
+    }
+    if (Number.isNaN(discount) || discount < 0) {
+      toast.error("Enter a valid discount");
+      return;
+    }
+
+    await patchProduct(selectedProduct._id, {
+      price,
+      stock,
+      discount,
+      status: editForm.status,
+      isFeatured: editForm.isFeatured,
+    });
+  };
+
+  const handleQuickNumberBlur = async (
+    product: Product,
+    field: "price" | "stock",
+    raw: string,
+  ) => {
+    const value = field === "stock" ? parseInt(raw, 10) : Number(raw);
+    if (Number.isNaN(value) || value < 0) {
+      toast.error(`Invalid ${field}`);
+      await fetchProducts(currentPage);
+      return;
+    }
+    if (field === "stock" && !Number.isInteger(value)) {
+      toast.error("Stock must be a whole number");
+      await fetchProducts(currentPage);
+      return;
+    }
+    if (product[field] === value) return;
+    await patchProduct(product._id, { [field]: value }, field);
   };
 
   // Carousel navigation functions
@@ -205,7 +448,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
   };
 
   // Get status color
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status) {
       case "hot":
         return "destructive";
@@ -223,18 +466,23 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
       {/* Header */}
       <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
         <div>
-          <h3 className="text-lg font-semibold">
-            Products Management (Read-Only)
-          </h3>
+          <h3 className="text-lg font-semibold">Products</h3>
           <p className="text-xs text-muted-foreground">
-            To add or edit products, use Sanity Studio at{" "}
+            Create and edit catalog products here. Use{" "}
             <a href="/studio" className="underline hover:text-shop_dark_green">
-              /studio
-            </a>
-            .
+              Content
+            </a>{" "}
+            only for advanced/rare schema work.
           </p>
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-2 sm:space-y-0">
+          <Button
+            onClick={() => setEditorState({ mode: "create" })}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="me-2 h-4 w-4" />
+            Add product
+          </Button>
           <Input
             placeholder="Search products..."
             value={searchTerm}
@@ -252,6 +500,21 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                   {category.title}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={archiveFilter}
+            onValueChange={(v) =>
+              setArchiveFilter(v as "active" | "archived" | "all")
+            }
+          >
+            <SelectTrigger className="w-full sm:w-32">
+              <SelectValue placeholder="Visibility" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+              <SelectItem value="all">All</SelectItem>
             </SelectContent>
           </Select>
           <Button
@@ -278,7 +541,6 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                     <TableRow>
                       <TableHead>Product</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Brand</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Stock</TableHead>
                       <TableHead>Status</TableHead>
@@ -289,7 +551,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                     {products.length === 0 ? (
                       <TableRow>
                         <TableCell
-                          colSpan={7}
+                          colSpan={6}
                           className="text-center py-8 text-muted-foreground"
                         >
                           No products found.
@@ -341,19 +603,38 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                               "N/A"}
                           </TableCell>
                           <TableCell>
-                            {product.brand?.name ||
-                              product.brand?.title ||
-                              "N/A"}
-                          </TableCell>
-                          <TableCell>{formatCurrency(product.price)}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                product.stock > 0 ? "default" : "destructive"
+                            <Input
+                              type="number"
+                              min={0}
+                              step="0.01"
+                              defaultValue={product.price}
+                              disabled={savingFieldId === `${product._id}:price`}
+                              className="h-8 w-24"
+                              onBlur={(e) =>
+                                handleQuickNumberBlur(
+                                  product,
+                                  "price",
+                                  e.target.value,
+                                )
                               }
-                            >
-                              {product.stock}
-                            </Badge>
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              min={0}
+                              step={1}
+                              defaultValue={product.stock}
+                              disabled={savingFieldId === `${product._id}:stock`}
+                              className="h-8 w-20"
+                              onBlur={(e) =>
+                                handleQuickNumberBlur(
+                                  product,
+                                  "stock",
+                                  e.target.value,
+                                )
+                              }
+                            />
                           </TableCell>
                           <TableCell className="capitalize">
                             {product.status}
@@ -364,8 +645,44 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleViewProduct(product)}
+                                title="View"
                               >
                                 <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() =>
+                                  setEditorState({
+                                    mode: "edit",
+                                    productId: product._id,
+                                  })
+                                }
+                                title="Edit"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openWeightStock(product)}
+                                title="Weight stock"
+                              >
+                                <Scale className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => toggleArchive(product)}
+                                title={
+                                  product.isArchived ? "Restore" : "Archive"
+                                }
+                              >
+                                {product.isArchived ? (
+                                  <ArchiveRestore className="h-4 w-4" />
+                                ) : (
+                                  <Archive className="h-4 w-4" />
+                                )}
                               </Button>
                             </div>
                           </TableCell>
@@ -425,13 +742,27 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                               )}
                             </div>
                           </div>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleViewProduct(product)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleViewProduct(product)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() =>
+                                setEditorState({
+                                  mode: "edit",
+                                  productId: product._id,
+                                })
+                              }
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -444,12 +775,6 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                           {product.category?.name ||
                             product.category?.title ||
                             "N/A"}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">Brand</div>
-                        <div className="font-medium">
-                          {product.brand?.name || product.brand?.title || "N/A"}
                         </div>
                       </div>
                       <div>
@@ -516,10 +841,30 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
       <Sheet open={isProductDetailsOpen} onOpenChange={setIsProductDetailsOpen}>
         <SheetContent className="w-full sm:w-[480px] md:w-[640px] overflow-y-auto">
           <SheetHeader className="pb-6">
-            <SheetTitle>Product Details</SheetTitle>
-            <SheetDescription>
-              Complete product information in read-only mode
-            </SheetDescription>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <SheetTitle>Product Details</SheetTitle>
+                <SheetDescription>
+                  Quick price/stock edits below, or open the full editor.
+                </SheetDescription>
+              </div>
+              {selectedProduct && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setIsProductDetailsOpen(false);
+                    setEditorState({
+                      mode: "edit",
+                      productId: selectedProduct._id,
+                    });
+                  }}
+                >
+                  <Pencil className="me-2 h-4 w-4" />
+                  Full editor
+                </Button>
+              )}
+            </div>
           </SheetHeader>
 
           {selectedProduct && (
@@ -678,36 +1023,128 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
 
               {/* Pricing & Stock */}
               <div className="space-y-4">
-                <h4 className="text-sm font-medium text-gray-900">
-                  Pricing & Inventory
-                </h4>
-                <div className="grid gap-4 bg-gray-50 p-4 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Price:</span>
-                    <span className="text-lg font-semibold text-green-600">
-                      {formatCurrency(selectedProduct.price)}
-                    </span>
-                  </div>
-                  {selectedProduct.discount && selectedProduct.discount > 0 && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Discount:</span>
-                      <Badge variant="secondary" className="text-sm px-3 py-1">
-                        {selectedProduct.discount}%
-                      </Badge>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Stock:</span>
-                    <Badge
-                      variant={
-                        selectedProduct.stock > 0 ? "default" : "destructive"
-                      }
-                      className="text-sm px-3 py-1"
-                    >
-                      {selectedProduct.stock} units
-                    </Badge>
-                  </div>
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="text-sm font-medium text-gray-900">
+                    Pricing & Inventory
+                  </h4>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveSheetEdits}
+                    disabled={saving || !editForm}
+                  >
+                    {saving ? (
+                      <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="me-2 h-4 w-4" />
+                    )}
+                    Save changes
+                  </Button>
                 </div>
+                {editForm && (
+                  <div className="grid gap-4 rounded-lg bg-gray-50 p-4">
+                    <label className="grid gap-1.5">
+                      <span className="text-sm text-gray-600">Price (USD)</span>
+                      <Input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={editForm.price}
+                        onChange={(e) =>
+                          setEditForm((prev) =>
+                            prev ? { ...prev, price: e.target.value } : prev,
+                          )
+                        }
+                      />
+                    </label>
+                    <label className="grid gap-1.5">
+                      <span className="text-sm text-gray-600">
+                        Discount (%)
+                      </span>
+                      <Input
+                        type="number"
+                        min={0}
+                        step="1"
+                        value={editForm.discount}
+                        onChange={(e) =>
+                          setEditForm((prev) =>
+                            prev
+                              ? { ...prev, discount: e.target.value }
+                              : prev,
+                          )
+                        }
+                      />
+                    </label>
+                    <label className="grid gap-1.5">
+                      <span className="text-sm text-gray-600">Stock</span>
+                      <Input
+                        type="number"
+                        min={0}
+                        step={1}
+                        value={editForm.stock}
+                        onChange={(e) =>
+                          setEditForm((prev) =>
+                            prev ? { ...prev, stock: e.target.value } : prev,
+                          )
+                        }
+                      />
+                    </label>
+                    <label className="grid gap-1.5">
+                      <span className="text-sm text-gray-600">
+                        Marketing status
+                      </span>
+                      <Select
+                        value={editForm.status || "none"}
+                        onValueChange={(value) =>
+                          setEditForm((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  status:
+                                    value === "none"
+                                      ? ""
+                                      : (value as ProductEditForm["status"]),
+                                }
+                              : prev,
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="None" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="hot">Hot</SelectItem>
+                          <SelectItem value="sale">Sale</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </label>
+                    <label className="flex items-center justify-between gap-3 rounded-md border bg-white px-3 py-2">
+                      <span className="text-sm text-gray-600">
+                        Featured product
+                      </span>
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4"
+                        checked={editForm.isFeatured}
+                        onChange={(e) =>
+                          setEditForm((prev) =>
+                            prev
+                              ? { ...prev, isFeatured: e.target.checked }
+                              : prev,
+                          )
+                        }
+                      />
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      Current listed price:{" "}
+                      {formatCurrency(Number(editForm.price) || 0)}
+                      {Number(editForm.discount) > 0
+                        ? ` · ${editForm.discount}% off`
+                        : ""}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <Separator className="my-6" />
@@ -727,18 +1164,6 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                       <Tag className="w-3 h-3" />
                       {selectedProduct.category?.name ||
                         selectedProduct.category?.title ||
-                        "N/A"}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Brand:</span>
-                    <Badge
-                      variant="outline"
-                      className="flex items-center gap-1 px-3 py-1"
-                    >
-                      <Package2 className="w-3 h-3" />
-                      {selectedProduct.brand?.name ||
-                        selectedProduct.brand?.title ||
                         "N/A"}
                     </Badge>
                   </div>
@@ -834,6 +1259,72 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
           )}
         </SheetContent>
       </Sheet>
+
+      <Dialog
+        open={Boolean(weightStockProduct)}
+        onOpenChange={(open) => {
+          if (!open) setWeightStockProduct(null);
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Weight-level stock</DialogTitle>
+            <DialogDescription>
+              {weightStockProduct
+                ? `Update bag sizes for ${weightStockProduct.name}`
+                : "Update stock per weight"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            {weightStocks.map((row) => (
+              <div
+                key={row._key}
+                className="flex items-center justify-between gap-3"
+              >
+                <Label className="w-16 font-medium">{row.weight}</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={row.stock}
+                  onChange={(e) =>
+                    setWeightStocks((prev) =>
+                      prev.map((item) =>
+                        item._key === row._key
+                          ? { ...item, stock: e.target.value }
+                          : item,
+                      ),
+                    )
+                  }
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setWeightStockProduct(null)}
+              disabled={savingWeights}
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveWeightStocks} disabled={savingWeights}>
+              {savingWeights ? (
+                <Loader2 className="me-2 h-4 w-4 animate-spin" />
+              ) : null}
+              Save stock
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <ProductEditor
+        open={Boolean(editorState)}
+        state={editorState}
+        categories={categories}
+        onClose={() => setEditorState(null)}
+        onSaved={() => fetchProducts(currentPage)}
+      />
     </div>
   );
 };

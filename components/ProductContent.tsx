@@ -46,19 +46,14 @@ import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import type { Dictionary } from "@/lib/dictionary-context";
 
-/** Rows from BRAND_QUERY (`"brandName": brand->title`) */
-type ProductBrandRows = Array<{ brandName?: string | null }> | null;
-
 interface ProductContentProps {
   product: Product;
   relatedProducts: Product[];
-  brand: ProductBrandRows;
 }
 
 const ProductContent = ({
   product,
   relatedProducts,
-  brand,
 }: ProductContentProps) => {
   const dictionary = useDictionary() as Dictionary;
   const productCopy = dictionary.product as Record<string, unknown>;
@@ -169,15 +164,6 @@ const ProductContent = ({
           <ProductDetailsWrapper>
             {/* Title and Category */}
             <div className="space-y-3">
-              {product?.brand && (
-                <Badge className="bg-shop_light_green/10 text-shop_dark_green hover:bg-shop_light_green/20 w-fit">
-                  {brand && brand.length > 0 && (
-                    <span className="font-semibold tracking-wide">
-                      {brand[0]?.brandName}
-                    </span>
-                  )}
-                </Badge>
-              )}
               <h1 className="text-3xl lg:text-4xl font-bold text-shop_dark_green leading-tight">
                 {product?.name}
               </h1>
@@ -427,7 +413,7 @@ const ProductContent = ({
 
             {/* Product Characteristics */}
             <ProductActionWrapper delay={0.4}>
-              <ProductCharacteristics product={product} brand={brand} />
+              <ProductCharacteristics product={product} />
             </ProductActionWrapper>
 
             {/* Action Links */}

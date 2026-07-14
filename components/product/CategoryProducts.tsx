@@ -74,12 +74,8 @@ const CategoryProducts = ({ categories, slug, initialProducts }: Props) => {
       setLoading(true);
       try {
         const query = `
-      *[_type == "product" && references(*[_type == "category" && slug.current == $slug]._id)] {
-        ...,
-        brand->{
-          _id,
-          title
-        }
+      *[_type == "product" && (!defined(isArchived) || isArchived != true) && references(*[_type == "category" && slug.current == $slug]._id)] {
+        ...
       }
     `;
         const fetchedProducts = await client.fetch(query, { slug: currentSlug });

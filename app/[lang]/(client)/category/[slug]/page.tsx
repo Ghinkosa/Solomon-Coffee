@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // Fetch products for the current category to get count
   const query = `
-    *[_type == "product" && references(*[_type == "category" && slug.current == $slug]._id)] {
+    *[_type == "product" && (!defined(isArchived) || isArchived != true) && references(*[_type == "category" && slug.current == $slug]._id)] {
       _id
     }
   `;
@@ -85,12 +85,8 @@ const CategoryPage = async ({
 
   // Fetch products for the current category
   const query = `
-    *[_type == "product" && references(*[_type == "category" && slug.current == $slug]._id)] {
-      ...,
-      brand->{
-        _id,
-        name
-      }
+    *[_type == "product" && (!defined(isArchived) || isArchived != true) && references(*[_type == "category" && slug.current == $slug]._id)] {
+      ...
     }
   `;
   const products: Product[] = await client.fetch(query, { slug });

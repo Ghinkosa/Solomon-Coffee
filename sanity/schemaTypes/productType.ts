@@ -104,12 +104,6 @@ export const productType = defineType({
       validation: (Rule) => Rule.min(0),
     }),
     defineField({
-      name: "brand",
-      title: "Brand",
-      type: "reference",
-      to: { type: "brand" },
-    }),
-    defineField({
       name: "status",
       title: "Product Status",
       type: "string",
@@ -456,6 +450,14 @@ export const productType = defineType({
       name: "isFeatured",
       title: "Featured Product",
       type: "boolean",
+      initialValue: false,
+    }),
+    defineField({
+      name: "isArchived",
+      title: "Archived",
+      type: "boolean",
+      description:
+        "Soft-delete: hidden from the storefront but kept for order history",
       initialValue: false,
     }),
     defineField({

@@ -213,13 +213,6 @@ const CategoryPage = async ({
                   <Package className="w-4 h-4" />
                   {t.allProducts ?? "All Products"}
                 </Link>
-                <Link
-                  href={localizedPath("/brands", lang)}
-                  className="inline-flex items-center justify-center gap-2 border-2 border-shop_light_green text-shop_light_green hover:bg-shop_light_green hover:text-white px-6 py-2.5 rounded-full font-medium text-sm transition-colors duration-300"
-                >
-                  <Tag className="w-4 h-4" />
-                  {t.shopByRoasters ?? "Shop by Roasters"}
-                </Link>
               </div>
             </div>
           </div>

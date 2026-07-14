@@ -10,12 +10,8 @@ import {
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 
-/** Rows from BRAND_QUERY (`"brandName": brand->title`) */
-type ProductBrandRows = Array<{ brandName?: string | null }> | null;
-
 interface ProductCharacteristicsProps {
   product: Product;
-  brand: ProductBrandRows;
 }
 
 interface CoffeeDetails {
@@ -50,7 +46,6 @@ function toTitleCase(value?: string) {
 
 const ProductCharacteristics = ({
   product,
-  brand,
 }: ProductCharacteristicsProps) => {
   const dictionary = useDictionary();
   const c = (path: string, fallback: string) =>
@@ -72,14 +67,6 @@ const ProductCharacteristics = ({
           )}
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-1">
-          <p className="flex items-center justify-between">
-            {c("brand", "Brand:")}{" "}
-            {brand && brand.length > 0 && (
-              <span className="font-semibold tracking-wide">
-                {brand[0]?.brandName}
-              </span>
-            )}
-          </p>
           <p className="flex items-center justify-between">
             {c("collection", "Collection:")}{" "}
             <span className="font-semibold tracking-wide">

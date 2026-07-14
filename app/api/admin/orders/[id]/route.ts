@@ -286,11 +286,14 @@ export async function GET(
         products[] {
           _key,
           quantity,
+          weight,
+          grind,
+          packaging,
           product-> {
             _id,
             name,
             price,
-            image
+            "image": images[0].asset->url
           }
         },
         subtotal,

@@ -145,6 +145,15 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
   const handleUpdateOrder = async () => {
     if (!order) return;
 
+    const cancelling =
+      formData.status === "cancelled" && order.status !== "cancelled";
+    if (cancelling) {
+      const confirmed = window.confirm(
+        "Cancel this order? If paid via Stripe, a refund will be attempted automatically.",
+      );
+      if (!confirmed) return;
+    }
+
     setIsUpdating(true);
     try {
       const response = await fetch(`/api/admin/orders/${order._id}`, {
@@ -277,6 +286,10 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                   <div className="flex gap-3">
                     <Button
                       onClick={async () => {
+                        const confirmed = window.confirm(
+                          "Reject cancellation and keep this order confirmed?",
+                        );
+                        if (!confirmed) return;
                         setIsUpdating(true);
                         try {
                           const { rejectCancellationRequest } = await import(
@@ -288,9 +301,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
 
                           if (result.success) {
                             showToast.success(result.message);
-                            // Wait for order update to complete before closing
                             await onOrderUpdate(order._id);
-                            // Small delay to ensure the UI has updated
                             await new Promise((resolve) =>
                               setTimeout(resolve, 300)
                             );
@@ -310,10 +321,14 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                       disabled={isUpdating}
                       className="bg-green-600 hover:bg-green-700"
                     >
-                      {isUpdating ? "Processing..." : "✓ Confirm Order"}
+                      {isUpdating ? "Processing..." : "✓ Keep order"}
                     </Button>
                     <Button
                       onClick={async () => {
+                        const confirmed = window.confirm(
+                          "Approve cancellation? If paid via Stripe, a refund will be attempted.",
+                        );
+                        if (!confirmed) return;
                         setIsUpdating(true);
                         try {
                           const { approveCancellationRequest } = await import(
@@ -325,9 +340,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
 
                           if (result.success) {
                             showToast.success(result.message);
-                            // Wait for order update to complete before closing
                             await onOrderUpdate(order._id);
-                            // Small delay to ensure the UI has updated
                             await new Promise((resolve) =>
                               setTimeout(resolve, 300)
                             );
@@ -347,40 +360,9 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                       disabled={isUpdating}
                       variant="destructive"
                     >
-                      {isUpdating ? "Processing..." : "✗ Approve Cancellation"}
+                      {isUpdating ? "Processing..." : "✗ Cancel & refund"}
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Debug Information - Remove this after testing */}
-            {process.env.NODE_ENV === "development" && (
-              <Card className="border-yellow-200 bg-yellow-50">
-                <CardHeader>
-                  <CardTitle className="text-sm text-yellow-800">
-                    Debug Info (Dev Only)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <details className="text-xs">
-                    <summary className="cursor-pointer text-yellow-700 font-medium mb-2">
-                      Raw Order Data (Click to expand)
-                    </summary>
-                    <pre className="bg-white p-2 rounded border overflow-auto max-h-40 text-xs">
-                      {JSON.stringify(
-                        {
-                          totalPrice: order.totalPrice,
-                          products: order.products?.map((p) => ({
-                            quantity: p.quantity,
-                            product: p.product,
-                          })),
-                        },
-                        null,
-                        2
-                      )}
-                    </pre>
-                  </details>
                 </CardContent>
               </Card>
             )}
@@ -451,9 +433,8 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                         <SelectItem value="paid">Paid</SelectItem>
                         <SelectItem value="failed">Failed</SelectItem>
                         <SelectItem value="refunded">Refunded</SelectItem>
-                        <SelectItem value="stripe">Stripe</SelectItem>
-                        <SelectItem value="cash_on_delivery">
-                          Cash on Delivery
+                        <SelectItem value="partially_refunded">
+                          Partially refunded
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -519,6 +500,15 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                     <p className="text-sm capitalize">
                       {order.paymentMethod || "Not specified"}
                     </p>
+                    {typeof order.refundAmount === "number" &&
+                      order.refundAmount > 0 && (
+                        <p className="text-xs text-amber-700 mt-1">
+                          Refund recorded: {formatCurrency(order.refundAmount)}
+                          {order.paymentStatus === "refunded"
+                            ? " · payment marked refunded"
+                            : ""}
+                        </p>
+                      )}
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -867,58 +857,47 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
               <CardContent>
                 <div className="space-y-3">
                   {order.products?.map((item, index) => {
-                    // Extract product data from the nested structure
                     const product = item.product;
                     const quantity = item.quantity || 1;
-                    const price = product?.price || 0;
-                    const lineTotal = price * quantity;
-
-                    // Debug logging to help identify the issue
-                    console.log("Product debug info:", {
-                      name: product?.name,
-                      price: price,
-                      quantity: quantity,
-                      lineTotal,
-                      rawItem: item,
-                    });
+                    const unitPrice =
+                      (item.weight?.price ?? product?.price ?? 0) +
+                      (item.packaging?.price ?? 0);
+                    const lineTotal = unitPrice * quantity;
+                    const meta = [
+                      item.weight?.value,
+                      item.grind?.label || item.grind?.type,
+                      item.packaging?.title,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ");
 
                     return (
                       <div
                         key={item._key || index}
                         className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
                       >
-                        {product?.image && (
+                        {product?.image ? (
                           <img
                             src={product.image}
                             alt={product.name}
                             className="w-16 h-16 object-cover rounded-md border shadow-sm"
                           />
+                        ) : (
+                          <div className="w-16 h-16 rounded-md border bg-white flex items-center justify-center text-gray-400">
+                            <Package className="w-6 h-6" />
+                          </div>
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-900 truncate mb-1">
                             {product?.name || "Unknown Product"}
                           </p>
+                          {meta ? (
+                            <p className="text-xs text-gray-500 mb-1">{meta}</p>
+                          ) : null}
                           <div className="text-sm text-gray-600">
                             <p>
-                              Qty: {quantity} × {formatCurrency(price)}
+                              Qty: {quantity} × {formatCurrency(unitPrice)}
                             </p>
-                            {price === 0 && (
-                              <p className="text-xs text-red-500 mt-1 flex items-center">
-                                <span className="mr-1">⚠️</span>
-                                No price data found - check order source data
-                              </p>
-                            )}
-                            {process.env.NODE_ENV === "development" &&
-                              price === 0 && (
-                                <p className="text-xs text-orange-600 mt-1">
-                                  Available fields:{" "}
-                                  {Object.keys(item).join(", ")} | Product
-                                  fields:{" "}
-                                  {product
-                                    ? Object.keys(product).join(", ")
-                                    : "No product data"}
-                                </p>
-                              )}
                           </div>
                         </div>
                         <div className="text-right">
@@ -941,11 +920,13 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                       </p>
                     </div>
                     <div className="text-xs text-gray-500 mt-2">
-                      Items calculated total:{" "}
+                      Line items total:{" "}
                       {formatCurrency(
                         order.products?.reduce((sum, item) => {
-                          const price = item.product?.price || 0;
-                          return sum + price * (item.quantity || 1);
+                          const unit =
+                            (item.weight?.price ?? item.product?.price ?? 0) +
+                            (item.packaging?.price ?? 0);
+                          return sum + unit * (item.quantity || 1);
                         }, 0) || 0
                       )}
                     </div>

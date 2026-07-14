@@ -33,10 +33,6 @@ interface DynamicBreadcrumbProps {
     name: string;
     slug: string;
   };
-  brandData?: {
-    name: string;
-    slug: string;
-  };
   // For nested routes - specify parent context
   parentPath?: string; // e.g., "/dashboard" for dashboard/cart
 }
@@ -46,7 +42,6 @@ const DynamicBreadcrumb = ({
   className = "",
   productData,
   categoryData,
-  brandData,
   parentPath,
 }: DynamicBreadcrumbProps) => {
   const pathname = usePathname();
@@ -123,7 +118,6 @@ const DynamicBreadcrumb = ({
       wholesalers: t(dictionary, "breadcrumb.wholesalers", "Wholesale"),
       mission: t(dictionary, "breadcrumb.mission", "Mission"),
       education: t(dictionary, "breadcrumb.education", "Education"),
-      brands: t(dictionary, "breadcrumb.brands", "Brands"),
     };
 
     if (specialCases[segment]) {
@@ -210,15 +204,6 @@ const DynamicBreadcrumb = ({
       if (parentSegment === "category" && categoryData && isLast) {
         breadcrumbs.push({
           label: categoryData.name,
-          href: undefined,
-          isLast: true,
-        });
-        return;
-      }
-
-      if (parentSegment === "brands" && brandData && isLast) {
-        breadcrumbs.push({
-          label: brandData.name,
           href: undefined,
           isLast: true,
         });

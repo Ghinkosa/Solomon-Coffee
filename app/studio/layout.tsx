@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Sheba Cup Coffee — Admin",
-  description: "Content and commerce admin for Sheba Cup Coffee.",
+  title: "Sheba Content",
+  description: "Catalog and content tools for Sheba Cup Coffee.",
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {

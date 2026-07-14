@@ -7,8 +7,6 @@ import {
   ADMIN_CATEGORIES_QUERY,
   BANNER_QUERY,
   BLOG_CATEGORIES,
-  BRAND_QUERY,
-  BRANDS_QUERY,
   DEAL_PRODUCTS,
   FEATURE_PRODUCTS,
   FEATURED_CATEGORY_QUERY,
@@ -121,24 +119,6 @@ const getFeaturedProducts = unstable_cache(
   },
   ["featured-products"],
   { revalidate: 600, tags: ["products", "featured", "homepage"] }
-);
-
-/**
- * Get all brands - cached for 1 hour
- * Brand list rarely changes
- */
-const getAllBrands = unstable_cache(
-  async () => {
-    try {
-      const { data } = await sanityFetch({ query: BRANDS_QUERY });
-      return data ?? [];
-    } catch (error) {
-      console.log("Error fetching all brands:", error);
-      return [];
-    }
-  },
-  ["all-brands"],
-  { revalidate: 3600, tags: ["brands"] }
 );
 
 /**
@@ -324,29 +304,6 @@ const getProductBySlug = unstable_cache(
 );
 
 /**
- * Get brand by slug - cached for 30 minutes
- * Brand info rarely changes
- */
-const getBrand = unstable_cache(
-  async (slug: string) => {
-    try {
-      const product = await sanityFetch({
-        query: BRAND_QUERY,
-        params: {
-          slug,
-        },
-      });
-      return product?.data || null;
-    } catch (error) {
-      console.error("Error fetching brand by slug:", error);
-      return null;
-    }
-  },
-  ["brand-by-slug"],
-  { revalidate: 1800, tags: ["brands"] }
-);
-
-/**
  * Get related products - cached for 15 minutes
  * Related products are dynamic but can be cached briefly
  */
@@ -377,7 +334,6 @@ export {
   getAllProducts,
   getDealProducts,
   getFeaturedProducts,
-  getAllBrands,
   getLatestBlogs,
   getSingleBlog,
   getAllBlogs,
@@ -387,7 +343,6 @@ export {
   getCategories,
   getAdminCategories,
   getProductBySlug,
-  getBrand,
   getRelatedProducts,
   getOrderById,
 };

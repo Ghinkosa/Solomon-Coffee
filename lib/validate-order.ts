@@ -55,7 +55,7 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
   const productIds = [...new Set(input.items.map((item) => item.product._id))];
 
   const products = await readClient.fetch<SanityProduct[]>(
-    `*[_type == "product" && _id in $ids]{
+    `*[_type == "product" && _id in $ids && (!defined(isArchived) || isArchived != true)]{
       _id,
       price,
       discount,

@@ -167,23 +167,4 @@ export const BlogPostsSkeleton = () => (
   </div>
 );
 
-// Brands Grid Skeleton
-export const BrandsGridSkeleton = () => (
-  <div className="p-6 space-y-6">
-    <div className="text-center space-y-3">
-      <Skeleton className="h-8 w-64 mx-auto" />
-      <Skeleton className="h-5 w-96 mx-auto" />
-    </div>
-
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-      {[...Array(16)].map((_, i) => (
-        <Card
-          key={i}
-          className="aspect-square p-4 flex items-center justify-center"
-        >
-          <Skeleton className="h-16 w-16 rounded-lg" />
-        </Card>
-      ))}
-    </div>
-  </div>
-);
+// END OF SKELETONS

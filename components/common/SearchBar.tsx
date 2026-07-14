@@ -41,7 +41,7 @@ const SearchBar = ({
 
   const fetchFeaturedProducts = useCallback(async () => {
     try {
-      const query = `*[_type == "product" && isFeatured == true] | order(name asc)`;
+      const query = `*[_type == "product" && isFeatured == true && (!defined(isArchived) || isArchived != true)] | order(name asc)`;
       const response = await client.fetch(query);
       setFeaturedProduct(response);
     } catch (error) {
@@ -102,7 +102,7 @@ const SearchBar = ({
 
     setLoading(true);
     try {
-      const query = `*[_type == "product" && name match $search] | order(name asc)`;
+      const query = `*[_type == "product" && (!defined(isArchived) || isArchived != true) && name match $search] | order(name asc)`;
       const params = { search: `${search}*` };
       const response = await client.fetch(query, params);
       setProducts(response);

@@ -447,8 +447,15 @@ const AdminOrders: React.FC = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="capitalize">
-                          {order.paymentMethod}
+                        <TableCell>
+                          <div>
+                            <div className="capitalize">
+                              {order.paymentStatus || "—"}
+                            </div>
+                            <div className="text-xs text-muted-foreground capitalize">
+                              {order.paymentMethod || ""}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell>{formatDate(order.orderDate)}</TableCell>
                         <TableCell>

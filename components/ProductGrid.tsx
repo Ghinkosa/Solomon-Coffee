@@ -74,7 +74,7 @@ const ProductGrid = ({
     const fetchData = async () => {
       setLoading(true);
       try {
-        const baseQuery = `*[_type == "product"] | order(${getSortQuery(sortBy)}) {
+        const baseQuery = `*[_type == "product" && (!defined(isArchived) || isArchived != true)] | order(${getSortQuery(sortBy)}) {
           ...,
           "categories": categories[]->title,
           weightOptions[],
@@ -94,7 +94,7 @@ const ProductGrid = ({
         }`;
 
         const filteredQuery = selectedTab
-          ? `*[_type == "product" && variant == $variant] | order(${getSortQuery(sortBy)}) {
+          ? `*[_type == "product" && (!defined(isArchived) || isArchived != true) && variant == $variant] | order(${getSortQuery(sortBy)}) {
               ...,
               "categories": categories[]->title,
               weightOptions[],

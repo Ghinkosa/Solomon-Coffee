@@ -1,10 +1,6 @@
 import { Suspense } from "react";
 import ProductPageSkeleton from "@/components/ProductPageSkeleton";
-import {
-  getProductBySlug,
-  getRelatedProducts,
-  getBrand,
-} from "@/sanity/queries";
+import { getProductBySlug, getRelatedProducts } from "@/sanity/queries";
 import { notFound } from "next/navigation";
 import ProductContent from "@/components/ProductContent";
 import { Product } from "@/sanity.types";
@@ -37,11 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  // Fetch brand data if needed
-  const brand = await getBrand(slug);
-  const productWithBrand = { ...product, brand };
-
-  return generateProductMetadata(productWithBrand);
+  return generateProductMetadata(product);
 }
 
 const ProductPage = async ({
@@ -76,29 +68,23 @@ const ProductPageContent = async ({
     return notFound();
   }
 
-  // Fetch related data on the server side
   const categoryIds =
     product?.categories?.map(
-      (cat: { _ref: string; _type: string; _key: string }) => cat._ref
+      (cat: { _ref: string; _type: string; _key: string }) => cat._ref,
     ) || [];
-  const [relatedProducts, brand] = await Promise.all([
-    getRelatedProducts(categoryIds, product?.slug?.current || "", 4),
-    getBrand(product?.slug?.current as string),
-  ]);
+  const relatedProducts = await getRelatedProducts(
+    categoryIds,
+    product?.slug?.current || "",
+    4,
+  );
 
-  const brandRows = brand as Array<{ brandName?: string | null }> | null;
-
-  // Convert null values to undefined for TypeScript compatibility
   const productWithReviews = {
     ...product,
     averageRating: product.averageRating ?? undefined,
     totalReviews: product.totalReviews ?? undefined,
   };
 
-  const productWithBrand = { ...productWithReviews, brand };
-
-  // Generate structured data
-  const productSchema = generateProductSchema(productWithBrand);
+  const productSchema = generateProductSchema(productWithReviews);
   const bc = dictionary?.breadcrumb ?? {};
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: bc.home ?? "Home", url: "/" },
@@ -111,7 +97,6 @@ const ProductPageContent = async ({
 
   return (
     <>
-      {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -128,7 +113,6 @@ const ProductPageContent = async ({
       <ProductContent
         product={productWithReviews}
         relatedProducts={(relatedProducts || []) as unknown as Product[]}
-        brand={brandRows}
       />
     </>
   );

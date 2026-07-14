@@ -8,7 +8,6 @@ interface OrderProduct {
   quantity?: number;
   price?: number;
   category?: string;
-  brand?: string;
 }
 
 interface AnalyticsOrder {

@@ -43,16 +43,12 @@ export function generateProductMetadata(product: any): Metadata {
     : "/og-image.jpg";
   const url = `${BASE_URL}/product/${product.slug?.current}`;
 
-  // Extract brand name if it's populated
-  const brandName =
-    typeof product.brand === "object" ? product.brand?.name : "";
-
   return {
     title,
     description,
     keywords: [
       product.name || "",
-      brandName || "",
+      "Sheba Cup Coffee",
       "buy online",
       "shop",
       "e-commerce",
@@ -192,10 +188,6 @@ export function generateBlogMetadata(blog: any): Metadata {
 export function generateProductSchema(product: any) {
   const imageUrl = product.images?.[0] ? urlFor(product.images[0]).url() : "";
 
-  // Extract brand name if it's populated
-  const brandName =
-    typeof product.brand === "object" ? product.brand?.name : "Sheba Cup Coffee";
-
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -205,7 +197,7 @@ export function generateProductSchema(product: any) {
     sku: product._id,
     brand: {
       "@type": "Brand",
-      name: brandName,
+      name: "Sheba Cup Coffee",
     },
     offers: {
       "@type": "Offer",

@@ -32,6 +32,7 @@ const Shop = ({ categories, dictionary }: Props) => {
     try {
       const query = `
         *[_type == 'product' 
+          && (!defined(isArchived) || isArchived != true)
           && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
         ] 
         | order(name asc) {

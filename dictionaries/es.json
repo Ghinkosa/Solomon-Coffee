@@ -2802,6 +2802,33 @@
         }
       }
     },
+    "adminSignIn": {
+      "badge": "Portal de administración",
+      "title": "Acceso del personal",
+      "description": "Inicia sesión con tu cuenta de administrador para abrir la consola de operaciones de {company}.",
+      "customerHint": "¿Compras como cliente?",
+      "customerSignIn": "Usa el inicio de sesión de cliente",
+      "features": {
+        "analytics": {
+          "title": "Pedidos y analítica",
+          "description": "Sigue ventas, cumple pedidos y monitorea el rendimiento."
+        },
+        "catalog": {
+          "title": "Operaciones del catálogo",
+          "description": "Gestiona productos, señales de inventario y solicitudes de cuenta."
+        },
+        "secure": {
+          "title": "Solo personal autorizado",
+          "description": "Este portal está restringido a cuentas de administrador autorizadas."
+        }
+      }
+    },
+    "adminAccessDenied": {
+      "title": "Acceso denegado",
+      "description": "No tienes permiso para acceder al panel de administración. El personal debe iniciar sesión en la URL de administración con una cuenta autorizada.",
+      "adminLogin": "Ir al inicio de sesión de administración",
+      "backHome": "Volver al inicio"
+    },
     "signUp": {
       "title": "Únete a {company}",
       "description": "Crea tu cuenta hoy y desbloquea beneficios exclusivos, recomendaciones personalizadas y compras sin fricciones.",

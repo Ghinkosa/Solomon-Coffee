@@ -32,11 +32,6 @@ export const CACHE_TAGS = {
   CATEGORY: (slug: string) => `category-${slug}`,
   CATEGORY_PRODUCTS: (slug: string) => `category-products-${slug}`,
 
-  // Brand-related tags
-  BRANDS: "brands",
-  BRAND: (slug: string) => `brand-${slug}`,
-  BRAND_PRODUCTS: (slug: string) => `brand-products-${slug}`,
-
   // User-related tags
   USER: (userId: string) => `user-${userId}`,
   USER_ORDERS: (userId: string) => `user-orders-${userId}`,
@@ -125,16 +120,6 @@ export async function invalidateCategory(categorySlug: string) {
  */
 export async function invalidateAllCategories() {
   revalidatePath("/category/[slug]", "page");
-  revalidatePath("/shop", "page");
-  revalidatePath("/", "layout");
-}
-
-/**
- * Invalidate brand-related caches
- * Use when brands are updated
- */
-export async function invalidateBrand(brandSlug: string) {
-  revalidatePath(`/brand/${brandSlug}`, "page");
   revalidatePath("/shop", "page");
   revalidatePath("/", "layout");
 }

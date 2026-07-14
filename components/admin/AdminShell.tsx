@@ -22,6 +22,9 @@ import {
   Star,
   Mail,
   ExternalLink,
+  FilePenLine,
+  Package2,
+  Tags,
 } from "lucide-react";
 
 interface AdminShellProps {
@@ -35,16 +38,29 @@ interface AdminShellProps {
   } | null;
 }
 
-const adminRoutes = [
+const adminRoutes: {
+  label: string;
+  icon: typeof LayoutDashboard;
+  href: string;
+  external?: boolean;
+}[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
   { label: "Analytics", icon: BarChart3, href: "/admin/analytics" },
   { label: "Users", icon: Users, href: "/admin/users" },
   { label: "Account Requests", icon: UserCheck, href: "/admin/account-requests" },
   { label: "Products", icon: Package, href: "/admin/products" },
+  { label: "Categories", icon: Tags, href: "/admin/categories" },
+  { label: "Packaging", icon: Package2, href: "/admin/packaging" },
   { label: "Orders", icon: ShoppingCart, href: "/admin/orders" },
   { label: "Reviews", icon: Star, href: "/admin/reviews" },
   { label: "Subscriptions", icon: Mail, href: "/admin/subscriptions" },
   { label: "Notifications", icon: Bell, href: "/admin/notifications" },
+  {
+    label: "Content",
+    icon: FilePenLine,
+    href: "/studio",
+    external: true,
+  },
 ];
 
 function getNormalizedPathname(path: string) {
@@ -52,8 +68,13 @@ function getNormalizedPathname(path: string) {
 }
 
 function getPageTitle(path: string) {
-  const route = adminRoutes.find((r) => r.href === path);
-  return route?.label ?? "Admin";
+  if (path.startsWith("/studio")) return "Content";
+  const exact = adminRoutes.find((r) => r.href === path);
+  if (exact) return exact.label;
+  const nested = adminRoutes.find(
+    (r) => r.href !== "/admin" && path.startsWith(r.href),
+  );
+  return nested?.label ?? "Admin";
 }
 
 export default function AdminShell({ children, user }: AdminShellProps) {
@@ -74,13 +95,16 @@ export default function AdminShell({ children, user }: AdminShellProps) {
   const storeHref = lang && lang !== "en" ? `/${lang}` : "/";
 
   function renderNavLink(route: (typeof adminRoutes)[0], onNavigate?: () => void) {
-    const isActive = normalizedPathname === route.href;
+    const isActive = route.external
+      ? normalizedPathname.startsWith("/studio")
+      : normalizedPathname === route.href;
     const Icon = route.icon;
+    const href = route.external ? route.href : getLocalizedHref(route.href);
 
     return (
       <Link
         key={route.href}
-        href={getLocalizedHref(route.href)}
+        href={href}
         onClick={onNavigate}
         className={cn(
           "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",

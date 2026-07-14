@@ -5,7 +5,7 @@ import type { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 
 export const getProductsByCategory = async (categorySlug: string) => {
   const PRODUCT_BY_CATEGORY_QUERY = defineQuery(
-    `*[_type == 'product' && references(*[_type == "category" && slug.current == $categorySlug]._id)] {
+    `*[_type == 'product' && (!defined(isArchived) || isArchived != true) && references(*[_type == "category" && slug.current == $categorySlug]._id)] {
       ...,
       weightOptions[],
       grindOptions[],
@@ -32,7 +32,7 @@ export const getProductsByCategory = async (categorySlug: string) => {
 // Get all products
 export const getAllProducts = async () => {
   const ALL_PRODUCTS_QUERY = defineQuery(
-    `*[_type == 'product'] {
+    `*[_type == 'product' && (!defined(isArchived) || isArchived != true)] {
       ...,
       weightOptions[],
       grindOptions[],
@@ -56,7 +56,7 @@ export const getAllProducts = async () => {
 // Get a single product by slug
 export const getProductBySlug = async (slug: string) => {
   const PRODUCT_BY_SLUG_QUERY = defineQuery(
-    `*[_type == 'product' && slug.current == $slug][0] {
+    `*[_type == 'product' && slug.current == $slug && (!defined(isArchived) || isArchived != true)][0] {
       ...,
       weightOptions[],
       grindOptions[],

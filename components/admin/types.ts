@@ -35,6 +35,9 @@ export interface Order {
   products: Array<{
     _key?: string;
     quantity: number;
+    weight?: { value?: string; price?: number };
+    grind?: { type?: string; label?: string };
+    packaging?: { id?: string; title?: string; price?: number };
     product: {
       _id: string;
       name: string;
@@ -112,18 +115,18 @@ export interface Product {
       current: string;
     };
   };
-  brand?: {
-    _id: string;
-    name: string;
-    title: string;
-    slug?: {
-      current: string;
-    };
-  };
-  status: "new" | "hot" | "sale";
+  status?: "new" | "hot" | "sale" | "";
   variant?: "Light Roast" | "Medium Roast" | "Dark Roast" | "Dark Roast";
   featured: boolean;
   isFeatured?: boolean;
+  isArchived?: boolean;
+  weightOptions?: Array<{
+    _key?: string;
+    weight: string;
+    price: number;
+    isDefault?: boolean;
+    stock?: number;
+  }>;
   images?: Array<{
     asset?: {
       _ref: string;
