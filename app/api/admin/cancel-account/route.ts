@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { backendClient } from "@/sanity/lib/backendClient";
+import { requireAdminApi, isAdminApiError } from "@/lib/requireAdminApi";
+import { writeClient } from "@/sanity/lib/client";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const admin = await requireAdminApi();
+    if (isAdminApiError(admin)) {
+      return admin;
     }
 
     const { accountId, type, reason } = await req.json();
@@ -15,21 +14,20 @@ export async function POST(req: NextRequest) {
     if (!accountId || !type || !reason) {
       return NextResponse.json(
         { error: "Account ID, type, and reason are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["premium", "business"].includes(type)) {
       return NextResponse.json(
         { error: "Invalid account type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // First, verify the user document exists and has active status
-    const existingUser = await backendClient.fetch(
+    const existingUser = await writeClient.fetch(
       `*[_type in ["user", "userType"] && _id == $accountId][0]`,
-      { accountId }
+      { accountId },
     );
 
     if (!existingUser) {
@@ -44,67 +42,42 @@ export async function POST(req: NextRequest) {
     if (currentStatus !== "active") {
       return NextResponse.json(
         { error: `${type} account is not active` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Prepare the update data to cancel the account. Also clear the activation
-    // flag (isActive for premium, isBusiness for business) and downgrade
-    // membership so the checkout discount / benefits stop applying immediately.
+    const trimmedReason = String(reason).trim();
     const updateData =
       type === "premium"
         ? {
             premiumStatus: "cancelled",
             isActive: false,
             membershipType: existingUser.isBusiness ? "business" : "standard",
-            premiumCancelledAt: new Date().toISOString(),
-            premiumCancellationReason: reason,
+            rejectionReason: trimmedReason,
+            premiumApprovedBy: admin.email,
           }
         : {
             businessStatus: "cancelled",
             isBusiness: false,
             membershipType: existingUser.isActive ? "premium" : "standard",
-            businessCancelledAt: new Date().toISOString(),
-            businessCancellationReason: reason,
+            rejectionReason: trimmedReason,
+            businessApprovedBy: admin.email,
           };
 
-    // Use a transaction to update the user document
-    const result = await backendClient
-      .transaction()
-      .patch(accountId, { set: updateData })
-      .commit();
+    await writeClient.patch(accountId).set(updateData).commit();
 
     return NextResponse.json({
       success: true,
       message: `${type} account cancelled successfully`,
-      result,
     });
   } catch (error) {
     console.error("Error cancelling account:", error);
-
-    // Detailed error logging
-    if (error && typeof error === "object") {
-      const err = error as {
-        message?: string;
-        statusCode?: number;
-        responseBody?: unknown;
-        details?: unknown;
-      };
-      console.error("Error details:", {
-        message: err.message,
-        statusCode: err.statusCode,
-        responseBody: err.responseBody,
-        details: err.details,
-      });
-    }
-
     return NextResponse.json(
       {
         error: "Failed to cancel account",
-        details: error instanceof Error ? error.message : "Unknown error",
-        type: "server_error",
+        message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

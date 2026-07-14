@@ -8,12 +8,24 @@ import {
   EmployeeStatus,
   ROLE_PERMISSIONS,
 } from "@/types/employee";
+import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
+
+const EMPLOYEE_OPS_DISABLED_MESSAGE =
+  "Employee management is currently turned off. Contact Sheba Cup Coffee to enable this add-on.";
+
+function ensureEmployeeOpsEnabled(): { success: false; message: string } | null {
+  if (isEmployeeOpsEnabled()) return null;
+  return { success: false, message: EMPLOYEE_OPS_DISABLED_MESSAGE };
+}
 
 // Assign employee role to a user
 export async function assignEmployeeRole(
   userId: string,
   role: EmployeeRole
 ): Promise<{ success: boolean; message: string; employee?: Employee }> {
+  const disabled = ensureEmployeeOpsEnabled();
+  if (disabled) return disabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -89,6 +101,9 @@ export async function assignEmployeeRole(
 export async function removeEmployeeRole(
   userId: string
 ): Promise<{ success: boolean; message: string }> {
+  const disabled = ensureEmployeeOpsEnabled();
+  if (disabled) return disabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -125,6 +140,9 @@ export async function updateEmployeeStatus(
   status: EmployeeStatus,
   reason?: string
 ): Promise<{ success: boolean; message: string }> {
+  const disabled = ensureEmployeeOpsEnabled();
+  if (disabled) return disabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -171,6 +189,8 @@ export async function updateEmployeeStatus(
 
 // Get all employees
 export async function getAllEmployees(): Promise<Employee[]> {
+  if (!isEmployeeOpsEnabled()) return [];
+
   try {
     const employees = await backendClient.fetch(
       `*[_type == "user" && isEmployee == true] | order(employeeAssignedAt desc) {
@@ -215,6 +235,8 @@ export async function getAllEmployees(): Promise<Employee[]> {
 export async function getEmployeesByRole(
   role: EmployeeRole
 ): Promise<Employee[]> {
+  if (!isEmployeeOpsEnabled()) return [];
+
   try {
     const employees = await backendClient.fetch(
       `*[_type == "user" && isEmployee == true && employeeRole == $role && employeeStatus == "active"] | order(firstName asc) {
@@ -252,6 +274,8 @@ export async function getEmployeesByRole(
 
 // Get current employee info
 export async function getCurrentEmployee(): Promise<Employee | null> {
+  if (!isEmployeeOpsEnabled()) return null;
+
   try {
     const { userId: clerkUserId } = await auth();
 

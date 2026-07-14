@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
 import { getCurrentEmployee } from "@/actions/employeeActions";
 import EmployeeNav from "@/components/employee/EmployeeNav";
+import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
 
 // Force dynamic rendering for all employee routes (authentication required)
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function EmployeeLayout({
@@ -12,6 +13,10 @@ export default async function EmployeeLayout({
 }: {
   children: React.ReactNode;
 }) {
+  if (!isEmployeeOpsEnabled()) {
+    redirect("/");
+  }
+
   const user = await currentUser();
 
   if (!user) {

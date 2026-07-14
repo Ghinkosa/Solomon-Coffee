@@ -253,7 +253,7 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
                 <div
                   className="absolute inset-0 z-[1]"
                   style={{
-                    background: "rgba(9,51,44,0.48)",
+                    background: "rgba(9,51,44,0.32)",
                   }}
                 />
 

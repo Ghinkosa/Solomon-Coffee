@@ -15,7 +15,6 @@ import {
   RotateCcw,
   Shield,
   BookOpen,
-  Video,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
@@ -328,7 +327,7 @@ const HelpClient = ({ dictionary }: HelpClientProps) => {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center pb-8">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+              <div className="mx-auto mt-6 grid max-w-xl grid-cols-1 gap-4 sm:grid-cols-2">
                 <Link href={toLocalizedPath("/faq")}>
                   <Button
                     variant="secondary"
@@ -341,19 +340,12 @@ const HelpClient = ({ dictionary }: HelpClientProps) => {
                 <Link href={toLocalizedPath("/contact")}>
                   <Button
                     variant="outline"
-                    className="w-full border-white text-white hover:bg-white/10"
+                    className="w-full border-white bg-transparent text-white hover:bg-white hover:text-shop_dark_green"
                   >
                     <Mail className="w-4 h-4 mr-2" />
                     {resources.contactUs ?? "Contact Us"}
                   </Button>
                 </Link>
-                <Button
-                  variant="outline"
-                  className="w-full border-white text-white hover:bg-white/10"
-                >
-                  <Video className="w-4 h-4 mr-2" />
-                  {resources.videoGuides ?? "Video Guides"}
-                </Button>
               </div>
             </CardContent>
           </Card>

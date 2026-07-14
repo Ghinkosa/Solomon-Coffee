@@ -1,34 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { requireAdminApi, isAdminApiError } from "@/lib/requireAdminApi";
 import { writeClient } from "@/sanity/lib/client";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const adminUser = await writeClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkId && isAdmin == true][0]`,
-      { clerkId: userId }
-    );
-
-    if (!adminUser) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const admin = await requireAdminApi();
+    if (isAdminApiError(admin)) {
+      return admin;
     }
 
     const { userIds, type, accountType } = await req.json();
-
-    // Accept both 'type' and 'accountType' for backwards compatibility
     const finalAccountType = accountType || type;
 
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
       return NextResponse.json(
         { error: "User IDs array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,7 +25,7 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Valid account type is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,13 +34,13 @@ export async function POST(req: NextRequest) {
       failed: [] as { userId: string; error: string }[],
     };
 
-    // Process each user
+    const now = new Date().toISOString();
+
     for (const userIdToApprove of userIds) {
       try {
-        // Fetch the user
         const user = await writeClient.fetch(
           `*[_type in ["user", "userType"] && _id == $userId][0]`,
-          { userId: userIdToApprove }
+          { userId: userIdToApprove },
         );
 
         if (!user) {
@@ -64,7 +51,6 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Check if there's a pending request
         const currentStatus =
           finalAccountType === "premium"
             ? user.premiumStatus
@@ -78,27 +64,31 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Update user status to active
         const patchData: Record<string, string | boolean> = {
-            [finalAccountType === "premium"
-              ? "premiumStatus"
-              : "businessStatus"]: "active",
-            [finalAccountType === "premium"
-              ? "premiumApprovedAt"
-              : "businessApprovedAt"]: new Date().toISOString(),
-          };
+          [finalAccountType === "premium"
+            ? "premiumStatus"
+            : "businessStatus"]: "active",
+          [finalAccountType === "premium"
+            ? "premiumApprovedAt"
+            : "businessApprovedAt"]: now,
+          [finalAccountType === "premium"
+            ? "premiumApprovedBy"
+            : "businessApprovedBy"]: admin.email,
+        };
 
         if (finalAccountType === "premium") {
           patchData.isActive = true;
+          patchData.membershipType = user.isBusiness ? "business" : "premium";
         } else {
           patchData.isBusiness = true;
           patchData.membershipType = "business";
         }
 
-        await writeClient
-          .patch(userIdToApprove)
-          .set(patchData)
-          .commit();
+        let patch = writeClient.patch(userIdToApprove).set(patchData);
+        if (user.rejectionReason) {
+          patch = patch.unset(["rejectionReason"]);
+        }
+        await patch.commit();
 
         results.successful.push(userIdToApprove);
       } catch (error) {
@@ -118,7 +108,7 @@ export async function POST(req: NextRequest) {
     console.error("Bulk approve error:", error);
     return NextResponse.json(
       { error: "Failed to approve applications" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

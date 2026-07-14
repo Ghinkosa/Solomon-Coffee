@@ -11,7 +11,6 @@ import {
   Users,
   Package,
   ShoppingCart,
-  BarChart3,
   Shield,
   Bell,
   UserCheck,
@@ -25,6 +24,7 @@ import {
   FilePenLine,
   Package2,
   Tags,
+  FileText,
 } from "lucide-react";
 
 interface AdminShellProps {
@@ -45,12 +45,12 @@ const adminRoutes: {
   external?: boolean;
 }[] = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  { label: "Analytics", icon: BarChart3, href: "/admin/analytics" },
   { label: "Users", icon: Users, href: "/admin/users" },
   { label: "Account Requests", icon: UserCheck, href: "/admin/account-requests" },
   { label: "Products", icon: Package, href: "/admin/products" },
   { label: "Categories", icon: Tags, href: "/admin/categories" },
   { label: "Packaging", icon: Package2, href: "/admin/packaging" },
+  { label: "Blog", icon: FileText, href: "/admin/blog" },
   { label: "Orders", icon: ShoppingCart, href: "/admin/orders" },
   { label: "Reviews", icon: Star, href: "/admin/reviews" },
   { label: "Subscriptions", icon: Mail, href: "/admin/subscriptions" },
@@ -180,7 +180,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
   );
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-shop_light_bg">
       <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col bg-shop_dark_green">
         {sidebarContent}
       </aside>
@@ -212,8 +212,8 @@ export default function AdminShell({ children, user }: AdminShellProps) {
         <div className="flex flex-1 flex-col overflow-hidden">{sidebarContent}</div>
       </aside>
 
-      <div className="flex flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-4 shadow-sm sm:px-6">
+      <div className="flex min-h-screen flex-1 flex-col lg:pl-64">
+        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b border-slate-200/80 bg-white/90 px-4 shadow-sm backdrop-blur-sm sm:px-6">
           <Button
             variant="ghost"
             size="icon"
@@ -229,11 +229,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
           </div>
         </header>
 
-        <main className="flex-1 p-4 sm:p-6">
-          <div className="mx-auto max-w-7xl rounded-xl border border-slate-200 bg-white shadow-sm">
-            {children}
-          </div>
-        </main>
+        <main className="relative flex min-h-0 flex-1 flex-col">{children}</main>
       </div>
     </div>
   );

@@ -1,12 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Crown,
   Building2,
-  Users,
   Clock,
   CheckCircle,
   XCircle,
+  Ban,
 } from "lucide-react";
 
 interface AccountRequestsOverviewProps {
@@ -19,141 +21,158 @@ interface AccountRequestsOverviewProps {
     approvedBusinessRequests: number;
     rejectedPremiumRequests: number;
     rejectedBusinessRequests: number;
+    cancelledPremiumRequests: number;
+    cancelledBusinessRequests: number;
   };
+}
+
+function StatPill({
+  label,
+  value,
+  tone,
+  icon: Icon,
+}: {
+  label: string;
+  value: number;
+  tone: "pending" | "approved" | "rejected" | "cancelled";
+  icon: typeof Clock;
+}) {
+  const tones = {
+    pending: "bg-amber-50 text-amber-800 border-amber-200/80",
+    approved: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
+    rejected: "bg-red-50 text-red-800 border-red-200/80",
+    cancelled: "bg-slate-100 text-slate-700 border-slate-200/80",
+  };
+
+  return (
+    <div className="flex items-center justify-between text-xs">
+      <span className="text-shop_dark_green/65">{label}</span>
+      <Badge
+        variant="outline"
+        className={`gap-1 border font-medium shadow-none ${tones[tone]}`}
+      >
+        <Icon className="h-3 w-3" />
+        {value}
+      </Badge>
+    </div>
+  );
 }
 
 export default function AccountRequestsOverview({
   stats,
 }: AccountRequestsOverviewProps) {
   return (
-    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-      {/* Premium Requests Overview */}
-      <Card className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-          <CardTitle className="text-sm font-medium text-amber-800">
-            Premium Requests
-          </CardTitle>
-          <Crown className="h-4 w-4 text-amber-600" />
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="text-2xl font-bold text-amber-900">
-            {stats.totalPremiumRequests}
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <Card className="border-shop_dark_green/10 bg-white/75 shadow-none backdrop-blur-sm">
+        <CardContent className="space-y-4 p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium tracking-wide text-light-color uppercase">
+              Premium
+            </span>
+            <span className="rounded-md bg-shop_light_bg p-2 text-shop_dark_green">
+              <Crown className="h-4 w-4" />
+            </span>
+          </div>
+          <div>
+            <div className="font-serif text-2xl font-semibold text-shop_dark_green md:text-3xl">
+              {stats.totalPremiumRequests}
+            </div>
+            <p className="mt-0.5 text-xs text-shop_dark_green/50">
+              All premium statuses
+            </p>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-amber-700">Pending:</span>
-              <Badge
-                variant="secondary"
-                className="bg-amber-200 text-amber-800 text-xs"
-              >
-                <Clock className="w-3 h-3 mr-1" />
-                {stats.pendingPremiumRequests}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-amber-700">Approved:</span>
-              <Badge className="bg-green-100 text-green-800 text-xs">
-                <CheckCircle className="w-3 h-3 mr-1" />
-                {stats.approvedPremiumRequests}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-amber-700">Rejected:</span>
-              <Badge
-                variant="destructive"
-                className="bg-red-100 text-red-800 text-xs"
-              >
-                <XCircle className="w-3 h-3 mr-1" />
-                {stats.rejectedPremiumRequests}
-              </Badge>
-            </div>
+            <StatPill
+              label="Pending"
+              value={stats.pendingPremiumRequests}
+              tone="pending"
+              icon={Clock}
+            />
+            <StatPill
+              label="Approved"
+              value={stats.approvedPremiumRequests}
+              tone="approved"
+              icon={CheckCircle}
+            />
+            <StatPill
+              label="Rejected"
+              value={stats.rejectedPremiumRequests}
+              tone="rejected"
+              icon={XCircle}
+            />
+            <StatPill
+              label="Cancelled"
+              value={stats.cancelledPremiumRequests}
+              tone="cancelled"
+              icon={Ban}
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* Business Requests Overview */}
-      <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-          <CardTitle className="text-sm font-medium text-blue-800">
-            Business Requests
-          </CardTitle>
-          <Building2 className="h-4 w-4 text-blue-600" />
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="text-2xl font-bold text-blue-900">
-            {stats.totalBusinessRequests}
+      <Card className="border-shop_dark_green/10 bg-white/75 shadow-none backdrop-blur-sm">
+        <CardContent className="space-y-4 p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium tracking-wide text-light-color uppercase">
+              Business
+            </span>
+            <span className="rounded-md bg-shop_light_bg p-2 text-shop_dark_green">
+              <Building2 className="h-4 w-4" />
+            </span>
+          </div>
+          <div>
+            <div className="font-serif text-2xl font-semibold text-shop_dark_green md:text-3xl">
+              {stats.totalBusinessRequests}
+            </div>
+            <p className="mt-0.5 text-xs text-shop_dark_green/50">
+              All business statuses
+            </p>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-blue-700">Pending:</span>
-              <Badge
-                variant="secondary"
-                className="bg-blue-200 text-blue-800 text-xs"
-              >
-                <Clock className="w-3 h-3 mr-1" />
-                {stats.pendingBusinessRequests}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-blue-700">Approved:</span>
-              <Badge className="bg-green-100 text-green-800 text-xs">
-                <CheckCircle className="w-3 h-3 mr-1" />
-                {stats.approvedBusinessRequests}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-blue-700">Rejected:</span>
-              <Badge
-                variant="destructive"
-                className="bg-red-100 text-red-800 text-xs"
-              >
-                <XCircle className="w-3 h-3 mr-1" />
-                {stats.rejectedBusinessRequests}
-              </Badge>
-            </div>
+            <StatPill
+              label="Pending"
+              value={stats.pendingBusinessRequests}
+              tone="pending"
+              icon={Clock}
+            />
+            <StatPill
+              label="Approved"
+              value={stats.approvedBusinessRequests}
+              tone="approved"
+              icon={CheckCircle}
+            />
+            <StatPill
+              label="Rejected"
+              value={stats.rejectedBusinessRequests}
+              tone="rejected"
+              icon={XCircle}
+            />
+            <StatPill
+              label="Cancelled"
+              value={stats.cancelledBusinessRequests}
+              tone="cancelled"
+              icon={Ban}
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* Account Benefits Info */}
-      <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 sm:col-span-2">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium text-purple-800 flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Account Types & Benefits
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4 text-amber-600" />
-                <span className="font-medium text-purple-900 text-sm">
-                  Premium Account
-                </span>
-              </div>
-              <ul className="text-xs text-purple-700 space-y-1 pl-1">
-                <li>• Exclusive product access</li>
-                <li>• Priority customer support</li>
-                <li>• Early sale notifications</li>
-                <li>• Enhanced reward points</li>
-              </ul>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-blue-600" />
-                <span className="font-medium text-purple-900 text-sm">
-                  Business Account
-                </span>
-              </div>
-              <ul className="text-xs text-purple-700 space-y-1 pl-1">
-                <li>• All Premium benefits</li>
-                <li>• 2% discount</li>
-                <li>• Bulk order capabilities</li>
-                <li>• Dedicated account manager</li>
-              </ul>
-            </div>
+      <Card className="border-shop_dark_green/10 bg-white/75 shadow-none backdrop-blur-sm sm:col-span-2 xl:col-span-1">
+        <CardContent className="space-y-4 p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium tracking-wide text-light-color uppercase">
+              Awaiting review
+            </span>
+            <span className="rounded-md bg-brand-gold-light/40 p-2 text-shop_dark_green">
+              <Clock className="h-4 w-4" />
+            </span>
           </div>
+          <div className="font-serif text-2xl font-semibold text-shop_dark_green md:text-3xl">
+            {stats.pendingPremiumRequests + stats.pendingBusinessRequests}
+          </div>
+          <p className="text-sm text-shop_dark_green/65">
+            Premium and business applications waiting for a decision.
+          </p>
         </CardContent>
       </Card>
     </div>

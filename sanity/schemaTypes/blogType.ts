@@ -19,11 +19,6 @@ export const blogType = defineType({
       },
     }),
     defineField({
-      name: "author",
-      type: "reference",
-      to: { type: "author" },
-    }),
-    defineField({
       name: "mainImage",
       type: "image",
       options: {
@@ -56,15 +51,21 @@ export const blogType = defineType({
   preview: {
     select: {
       title: "title",
-      author: "author.name",
       media: "mainImage",
       isLatest: "isLatest",
+      publishedAt: "publishedAt",
     },
     prepare(selection) {
-      const { author, isLatest } = selection;
+      const { isLatest, publishedAt } = selection;
+      const bits = [
+        isLatest ? "Latest" : null,
+        publishedAt
+          ? new Date(publishedAt).toLocaleDateString()
+          : null,
+      ].filter(Boolean);
       return {
         ...selection,
-        subtitle: author && `${isLatest ? "Latest | " : ""} By ${author}`,
+        subtitle: bits.length > 0 ? bits.join(" · ") : "Sheba Cup Coffee",
       };
     },
   },

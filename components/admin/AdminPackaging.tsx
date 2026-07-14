@@ -305,11 +305,11 @@ export default function AdminPackaging() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Packaging</TableHead>
+                    <TableHead className="w-[240px]">Packaging</TableHead>
                     <TableHead>Slug</TableHead>
-                    <TableHead>Products</TableHead>
-                    <TableHead>Additional cost</TableHead>
-                    <TableHead>Default</TableHead>
+                    <TableHead className="w-24">Products</TableHead>
+                    <TableHead className="w-36">Additional cost</TableHead>
+                    <TableHead className="w-28">Default</TableHead>
                     <TableHead className="w-28">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -326,15 +326,18 @@ export default function AdminPackaging() {
                   ) : (
                     packaging.map((item) => (
                       <TableRow key={item._id}>
-                        <TableCell>
+                        <TableCell className="max-w-[240px]">
                           <div className="flex items-center gap-3">
                             {imageOrIcon(item, "sm")}
-                            <div>
-                              <div className="font-medium">
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate font-medium">
                                 {item.title || "Untitled"}
                               </div>
                               {item.description ? (
-                                <div className="line-clamp-1 text-xs text-muted-foreground">
+                                <div
+                                  className="truncate text-xs text-muted-foreground"
+                                  title={item.description}
+                                >
                                   {item.description}
                                 </div>
                               ) : null}

@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { client } from "@/sanity/lib/client";
-import { backendClient } from "@/sanity/lib/backendClient";
+import { requireAdminApi, isAdminApiError } from "@/lib/requireAdminApi";
+import { writeClient } from "@/sanity/lib/client";
 
 export async function POST(request: NextRequest) {
   try {
-    // Add admin authentication check
-    const { userId: adminUserId } = await auth();
-    if (!adminUserId) {
-      return NextResponse.json(
-        { success: false, message: "Admin authentication required" },
-        { status: 401 }
-      );
+    const admin = await requireAdminApi();
+    if (isAdminApiError(admin)) {
+      return admin;
     }
 
     const body = await request.json();
@@ -20,37 +15,36 @@ export async function POST(request: NextRequest) {
     if (!userId || !type) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["premium", "business"].includes(type)) {
       return NextResponse.json(
         { success: false, message: "Invalid account type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Verify user exists and has pending status
-    const user = await client.fetch(
-      `
-      *[_type in ["user", "userType"] && _id == $userId][0] {
+    const user = await writeClient.fetch(
+      `*[_type in ["user", "userType"] && _id == $userId][0] {
         _id,
         firstName,
         lastName,
         email,
         premiumStatus,
         businessStatus,
+        isBusiness,
+        isActive,
         rejectionReason
-      }
-    `,
-      { userId }
+      }`,
+      { userId },
     );
 
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -59,64 +53,44 @@ export async function POST(request: NextRequest) {
 
     if (currentStatus !== "pending") {
       return NextResponse.json(
-        { success: false, message: `${type} account is not in pending status` },
-        { status: 400 }
+        {
+          success: false,
+          message: `${type} account is not in pending status`,
+        },
+        { status: 400 },
       );
     }
 
-    // Update the user status. Also flip the activation flag the rest of the
-    // app relies on (isActive for premium, isBusiness for business) so the
-    // account discount actually applies at checkout.
-    const updateData: Record<string, string | boolean | null> = {
+    const now = new Date().toISOString();
+    const updateData: Record<string, string | boolean> = {
       [`${type}Status`]: "active",
-      [`${type}ApprovedAt`]: new Date().toISOString(),
+      [`${type}ApprovedAt`]: now,
+      [`${type}ApprovedBy`]: admin.email,
     };
 
     if (type === "premium") {
       updateData.isActive = true;
+      updateData.membershipType = user.isBusiness ? "business" : "premium";
     } else {
       updateData.isBusiness = true;
       updateData.membershipType = "business";
     }
 
-    // Clear rejection reason if it exists
+    let patch = writeClient.patch(userId).set(updateData);
     if (user.rejectionReason) {
-      updateData.rejectionReason = null;
+      patch = patch.unset(["rejectionReason"]);
     }
+    await patch.commit();
 
-    // Try with both methods to see which one works
-    try {
-      const result = await backendClient.patch(userId).set(updateData).commit();
-      console.log(
-        "Successfully updated user with backendClient:",
-        userId,
-        result
-      );
-    } catch (backendError) {
-      console.log(
-        "backendClient failed, trying with writeClient...",
-        backendError
-      );
-      // Import writeClient locally to avoid import issues
-      const { writeClient } = await import("@/sanity/lib/client");
-      const result = await writeClient.patch(userId).set(updateData).commit();
-      console.log(
-        "Successfully updated user with writeClient:",
-        userId,
-        result
-      );
-    }
     return NextResponse.json({
       success: true,
-      message: `🎉 ${
-        type === "premium" ? "Premium" : "Business"
-      } account approved successfully for ${user.firstName} ${user.lastName}!`,
+      message: `${type === "premium" ? "Premium" : "Business"} account approved for ${user.firstName || ""} ${user.lastName || ""}`.trim(),
     });
   } catch (error) {
     console.error("Error approving account:", error);
     return NextResponse.json(
       { success: false, message: "Failed to approve account" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

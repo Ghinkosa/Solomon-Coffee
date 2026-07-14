@@ -1,7 +1,10 @@
-import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
+import { redirect } from "next/navigation";
 
-const AdminAnalyticsPage = () => {
-  return <AnalyticsDashboard />;
-};
-
-export default AdminAnalyticsPage;
+export default async function AdminAnalyticsRedirect({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  redirect(`/${lang}/admin`);
+}

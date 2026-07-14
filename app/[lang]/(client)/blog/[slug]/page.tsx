@@ -27,11 +27,8 @@ import {
   ChevronLeft,
   Clock,
   Eye,
-  Share2,
   BookOpen,
   ArrowRight,
-  Heart,
-  MessageCircle,
 } from "lucide-react";
 import { PortableText } from "next-sanity";
 import Image from "next/image";
@@ -41,6 +38,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { generateBlogMetadata, generateBlogSchema } from "@/lib/seo";
 import { localizedPath } from "@/lib/localized-path";
+import { localizedUrl } from "@/lib/seo";
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
 
@@ -184,34 +182,6 @@ const SingleBlogPage = async ({
                     <span>2.5K views</span>
                   </div>
                 </div>
-
-                {/* Social Actions */}
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
-                  >
-                    <Heart size={16} className="mr-2" />
-                    {bs.actions?.like ?? "Like"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
-                  >
-                    <MessageCircle size={16} className="mr-2" />
-                    {bs.actions?.comment ?? "Comment"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-shop_dark_green text-shop_dark_green hover:bg-shop_dark_green hover:text-white"
-                  >
-                    <Share2 size={16} className="mr-2" />
-                    {bs.actions?.share ?? "Share"}
-                  </Button>
-                </div>
               </div>
 
               {/* Featured Image */}
@@ -241,6 +211,11 @@ const SingleBlogPage = async ({
                               <p className="my-6 text-base leading-relaxed text-gray-700 first:mt-0 last:mb-0">
                                 {children}
                               </p>
+                            ),
+                            h1: ({ children }) => (
+                              <h1 className="my-8 text-3xl sm:text-4xl font-bold text-shop_dark_green first:mt-0 last:mb-0">
+                                {children}
+                              </h1>
                             ),
                             h2: ({ children }) => (
                               <h2 className="my-8 text-2xl sm:text-3xl font-bold text-shop_dark_green first:mt-0 last:mb-0">
@@ -354,7 +329,10 @@ const SingleBlogPage = async ({
                   </Link>
                 </Button>
 
-                <SocialShare title={blog?.title || ""} />
+                <SocialShare
+                  title={blog?.title || ""}
+                  url={localizedUrl(`/blog/${slug}`, lang as Locale)}
+                />
               </div>
             </article>
           </div>

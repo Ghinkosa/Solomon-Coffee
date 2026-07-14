@@ -37,6 +37,7 @@ import { Order } from "./types";
 import { showToast } from "@/lib/toast";
 import { trackOrderFullfillment, trackOrderDetails } from "@/lib/analytics";
 import { OrderDetailsSkeleton } from "./SkeletonLoaders";
+import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
 
 interface OrderDetailsSidebarProps {
   isOpen: boolean;
@@ -608,7 +609,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
               </CardContent>
             </Card>
 
-            {/* Employee Tracking */}
+            {isEmployeeOpsEnabled() && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -708,6 +709,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                 </div>
               </CardContent>
             </Card>
+            )}
 
             {/* Packing & Delivery Notes */}
             <Card>

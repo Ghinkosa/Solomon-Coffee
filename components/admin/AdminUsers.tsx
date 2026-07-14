@@ -44,6 +44,7 @@ import {
   getRoleDisplayName,
   getRoleBadgeColor,
 } from "@/types/employee";
+import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +115,8 @@ const AdminUsers: React.FC = () => {
     isOpen: false,
     user: null,
   });
+
+  const employeeOpsEnabled = isEmployeeOpsEnabled();
 
   // Employee assignment sidebar state
   const [employeeSidebarState, setEmployeeSidebarState] = useState<{
@@ -411,20 +414,22 @@ const AdminUsers: React.FC = () => {
     <>
       <div className="space-y-4 p-4">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <h3 className="text-lg font-semibold">Users Management</h3>
-            <div className="flex flex-wrap gap-2">
-              <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
-                Total: {totalUsersCount}
-              </div>
-              <div className="px-2 py-1 bg-green-100 text-green-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
-                <Database className="h-3 w-3 inline mr-1" />
-                Sanity: {sanityUsersCount}
-              </div>
-              <div className="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
-                <UserCheck className="h-3 w-3 inline mr-1" />
-                Active: {activeUsersCount}
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div className="space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <h3 className="text-lg font-semibold">Users Management</h3>
+              <div className="flex flex-wrap gap-2">
+                <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
+                  Total: {totalUsersCount}
+                </div>
+                <div className="px-2 py-1 bg-green-100 text-green-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
+                  <Database className="h-3 w-3 inline mr-1" />
+                  Sanity: {sanityUsersCount}
+                </div>
+                <div className="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
+                  <UserCheck className="h-3 w-3 inline mr-1" />
+                  Active: {activeUsersCount}
+                </div>
               </div>
             </div>
           </div>
@@ -669,13 +674,15 @@ const AdminUsers: React.FC = () => {
                                   Not in Sanity
                                 </Badge>
                               )}
-                              {user.isEmployee && user.employeeRole && (
+                              {employeeOpsEnabled &&
+                                user.isEmployee &&
+                                user.employeeRole && (
                                 <Badge variant="secondary" className="text-xs">
                                   <Briefcase className="h-3 w-3 mr-1" />
                                   {user.employeeRole}
                                 </Badge>
                               )}
-                              {!user.isEmployee &&
+                              {(!employeeOpsEnabled || !user.isEmployee) &&
                                 user.notificationCount > 0 && (
                                   <Badge
                                     variant="outline"
@@ -704,21 +711,23 @@ const AdminUsers: React.FC = () => {
                                 </Button>
                               ) : (
                                 <>
-                                  <Button
-                                    variant={
-                                      user.isEmployee ? "outline" : "secondary"
-                                    }
-                                    size="sm"
-                                    onClick={() => openEmployeeDialog(user)}
-                                    className="h-8 px-3"
-                                    title={
-                                      user.isEmployee
-                                        ? "Manage Employee Role"
-                                        : "Assign Employee Role"
-                                    }
-                                  >
-                                    <Briefcase className="h-3 w-3" />
-                                  </Button>
+                                  {employeeOpsEnabled && (
+                                    <Button
+                                      variant={
+                                        user.isEmployee ? "outline" : "secondary"
+                                      }
+                                      size="sm"
+                                      onClick={() => openEmployeeDialog(user)}
+                                      className="h-8 px-3"
+                                      title={
+                                        user.isEmployee
+                                          ? "Manage Employee Role"
+                                          : "Assign Employee Role"
+                                      }
+                                    >
+                                      <Briefcase className="h-3 w-3" />
+                                    </Button>
+                                  )}
                                   <Button
                                     variant={
                                       user.isActive ? "destructive" : "default"
@@ -846,7 +855,9 @@ const AdminUsers: React.FC = () => {
                               Not in Sanity
                             </Badge>
                           )}
-                          {user.isEmployee && user.employeeRole && (
+                          {employeeOpsEnabled &&
+                            user.isEmployee &&
+                            user.employeeRole && (
                             <Badge variant="secondary" className="text-xs">
                               <Briefcase className="h-3 w-3 mr-1" />
                               {user.employeeRole}
@@ -887,17 +898,19 @@ const AdminUsers: React.FC = () => {
                               </Button>
                             ) : (
                               <>
-                                <Button
-                                  variant={
-                                    user.isEmployee ? "outline" : "secondary"
-                                  }
-                                  size="sm"
-                                  onClick={() => openEmployeeDialog(user)}
-                                  className="h-7 px-2 text-xs"
-                                >
-                                  <Briefcase className="h-3 w-3 mr-1" />
-                                  {user.isEmployee ? "Manage" : "Assign"}
-                                </Button>
+                                {employeeOpsEnabled && (
+                                  <Button
+                                    variant={
+                                      user.isEmployee ? "outline" : "secondary"
+                                    }
+                                    size="sm"
+                                    onClick={() => openEmployeeDialog(user)}
+                                    className="h-7 px-2 text-xs"
+                                  >
+                                    <Briefcase className="h-3 w-3 mr-1" />
+                                    {user.isEmployee ? "Manage" : "Assign"}
+                                  </Button>
+                                )}
                                 <Button
                                   variant={
                                     user.isActive ? "destructive" : "default"
@@ -1032,15 +1045,17 @@ const AdminUsers: React.FC = () => {
         isLoading={activatingUsers.has(sidebarState.user?.id || "")}
       />
 
-      {/* Employee Assignment Sidebar */}
-      <EmployeeAssignmentSidebar
-        isOpen={employeeSidebarState.isOpen}
-        onClose={closeEmployeeDialog}
-        user={employeeSidebarState.user}
-        onAssignRole={handleAssignEmployee}
-        onRemoveRole={handleRemoveEmployee}
-        isLoading={activatingUsers.has(employeeSidebarState.user?.id || "")}
-      />
+      {/* Employee Assignment Sidebar (gated — add-on) */}
+      {employeeOpsEnabled && (
+        <EmployeeAssignmentSidebar
+          isOpen={employeeSidebarState.isOpen}
+          onClose={closeEmployeeDialog}
+          user={employeeSidebarState.user}
+          onAssignRole={handleAssignEmployee}
+          onRemoveRole={handleRemoveEmployee}
+          isLoading={activatingUsers.has(employeeSidebarState.user?.id || "")}
+        />
+      )}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi, isAdminApiError } from "@/lib/requireAdminApi";
-import { client } from "@/sanity/lib/client";
+import { writeClient } from "@/sanity/lib/client";
 
 export async function GET() {
   try {
@@ -9,26 +9,26 @@ export async function GET() {
       return admin;
     }
 
-    // Get count of pending premium requests
-    const pendingPremiumCount = await client.fetch(`
-      count(*[_type in ["user", "userType"] && premiumStatus == "pending"])
-    `);
-
-    // Get count of pending business requests
-    const pendingBusinessCount = await client.fetch(`
-      count(*[_type in ["user", "userType"] && businessStatus == "pending"])
-    `);
-
-    // Get recent requests (last 7 days)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const since = sevenDaysAgo.toISOString();
 
-    const recentRequests = await client.fetch(`
-      count(*[_type in ["user", "userType"] && (
-        (premiumStatus == "pending" && premiumAppliedAt > "${sevenDaysAgo.toISOString()}") ||
-        (businessStatus == "pending" && businessAppliedAt > "${sevenDaysAgo.toISOString()}")
-      )])
-    `);
+    const [pendingPremiumCount, pendingBusinessCount, recentRequests] =
+      await Promise.all([
+        writeClient.fetch(
+          `count(*[_type in ["user", "userType"] && premiumStatus == "pending"])`,
+        ),
+        writeClient.fetch(
+          `count(*[_type in ["user", "userType"] && businessStatus == "pending"])`,
+        ),
+        writeClient.fetch(
+          `count(*[_type in ["user", "userType"] && (
+            (premiumStatus == "pending" && premiumAppliedAt > $since) ||
+            (businessStatus == "pending" && businessAppliedAt > $since)
+          )])`,
+          { since },
+        ),
+      ]);
 
     return NextResponse.json({
       success: true,
@@ -41,7 +41,7 @@ export async function GET() {
     console.error("Error fetching account requests summary:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch account requests summary" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

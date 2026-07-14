@@ -25,7 +25,7 @@ function AdminLoginForm({ lang, redirectTo }: AdminLoginClientProps) {
       title: t(
         dictionary,
         "authPages.adminSignIn.features.analytics.title",
-        "Orders & analytics",
+        "Orders & revenue",
       ),
       description: t(
         dictionary,

@@ -12,39 +12,36 @@ export const safeApiCall = async (url: string, options?: RequestInit) => {
       },
     });
 
-    // Check if response is ok
-    if (!response.ok) {
-      // Try to get error details from response body
-      let errorDetails = "";
+    const raw = await response.text();
+    let data: unknown = null;
+    if (raw) {
       try {
-        const errorBody = await response.text();
-        errorDetails = errorBody ? ` - ${errorBody}` : "";
-      } catch (e) {
-        // If we can't read the body, continue without it
+        data = JSON.parse(raw);
+      } catch {
+        throw new Error(
+          response.ok
+            ? `Server returned a non-JSON response (${response.status}). Check that the API route exists and the app was restarted.`
+            : `Request failed (${response.status}). ${raw.slice(0, 160).replace(/\s+/g, " ")}`,
+        );
       }
-
-      throw new Error(
-        `API call failed: ${response.status} ${response.statusText}${errorDetails}`
-      );
     }
 
-    // Check content type before parsing JSON
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      const text = await response.text();
-      throw new Error(
-        `Expected JSON response but got: ${contentType}. Response: ${text.substring(
-          0,
-          100
-        )}...`
-      );
+    if (!response.ok) {
+      const message =
+        data &&
+        typeof data === "object" &&
+        "error" in data &&
+        typeof (data as { error: unknown }).error === "string"
+          ? (data as { error: string }).error
+          : `API call failed: ${response.status} ${response.statusText}`;
+      throw new Error(message);
     }
 
-    return await response.json();
+    return data as Record<string, any>;
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new Error(
-        `JSON parse error: ${error.message}. This usually means the server returned HTML instead of JSON.`
+        `JSON parse error: ${error.message}. This usually means the server returned HTML instead of JSON.`,
       );
     }
     throw error;

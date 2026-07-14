@@ -189,7 +189,7 @@ export const UserActionModal: FC<UserActionModalProps> = ({
                   ? "bg-green-50 border-green-200"
                   : action === "deactivate"
                   ? "bg-orange-50 border-orange-200"
-                  : "bg-blue-50 border-blue-200"
+                  : "bg-red-50 border-red-200"
               )}
             >
               <h4
@@ -199,7 +199,7 @@ export const UserActionModal: FC<UserActionModalProps> = ({
                     ? "text-green-900"
                     : action === "deactivate"
                     ? "text-orange-900"
-                    : "text-blue-900"
+                    : "text-red-900"
                 )}
               >
                 What will happen:
@@ -211,7 +211,7 @@ export const UserActionModal: FC<UserActionModalProps> = ({
                     ? "text-green-800"
                     : action === "deactivate"
                     ? "text-orange-800"
-                    : "text-blue-800"
+                    : "text-red-800"
                 )}
               >
                 {config.consequences.map((consequence, index) => (
@@ -223,7 +223,7 @@ export const UserActionModal: FC<UserActionModalProps> = ({
                           ? "text-green-400"
                           : action === "deactivate"
                           ? "text-orange-400"
-                          : "text-blue-400"
+                          : "text-red-400"
                       )}
                     >
                       •

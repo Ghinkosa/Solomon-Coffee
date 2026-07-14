@@ -26,6 +26,7 @@ import { useUserData } from "@/contexts/UserDataContext";
 import { usePathname, useRouter } from "next/navigation";
 import { i18n, Locale } from "@/i18n-config";
 import { localizedPath } from "@/lib/localized-path";
+import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
 
 interface UserDropdownProps {
   dictionary: any;
@@ -264,7 +265,7 @@ const UserDropdown = ({
 
               <div className="my-1 border-t border-gray-100"></div>
 
-              {isEmployee && !isAdmin && (
+              {isEmployeeOpsEnabled() && isEmployee && !isAdmin && (
                 <Link
                   href={localizedPath("/employee", lang)}
                   onClick={handleLinkClick}

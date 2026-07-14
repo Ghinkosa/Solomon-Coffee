@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminApi, isAdminApiError } from "@/lib/requireAdminApi";
-import { client } from "@/sanity/lib/client";
-import { backendClient } from "@/sanity/lib/backendClient";
+import { writeClient } from "@/sanity/lib/client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,36 +15,33 @@ export async function POST(request: NextRequest) {
     if (!userId || !type) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["premium", "business"].includes(type)) {
       return NextResponse.json(
         { success: false, message: "Invalid account type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Verify user exists and has pending status
-    const user = await client.fetch(
-      `
-      *[_type in ["user", "userType"] && _id == $userId][0] {
+    const user = await writeClient.fetch(
+      `*[_type in ["user", "userType"] && _id == $userId][0] {
         _id,
         firstName,
         lastName,
         email,
         premiumStatus,
         businessStatus
-      }
-    `,
-      { userId }
+      }`,
+      { userId },
     );
 
     if (!user) {
       return NextResponse.json(
         { success: false, message: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -54,34 +50,35 @@ export async function POST(request: NextRequest) {
 
     if (currentStatus !== "pending") {
       return NextResponse.json(
-        { success: false, message: `${type} account is not in pending status` },
-        { status: 400 }
+        {
+          success: false,
+          message: `${type} account is not in pending status`,
+        },
+        { status: 400 },
       );
     }
 
-    // Update the user status to rejected with reason
     const updateData: Record<string, string> = {
       [`${type}Status`]: "rejected",
       [`${type}RejectedAt`]: new Date().toISOString(),
+      [`${type}ApprovedBy`]: admin.email,
     };
 
-    if (reason && reason.trim()) {
-      updateData.rejectionReason = reason.trim();
+    if (reason && String(reason).trim()) {
+      updateData.rejectionReason = String(reason).trim();
     }
 
-    await backendClient.patch(userId).set(updateData).commit();
+    await writeClient.patch(userId).set(updateData).commit();
 
     return NextResponse.json({
       success: true,
-      message: `❌ ${
-        type === "premium" ? "Premium" : "Business"
-      } account rejected for ${user.firstName} ${user.lastName}`,
+      message: `${type === "premium" ? "Premium" : "Business"} account rejected for ${user.firstName || ""} ${user.lastName || ""}`.trim(),
     });
   } catch (error) {
     console.error("Error rejecting account:", error);
     return NextResponse.json(
       { success: false, message: "Failed to reject account" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

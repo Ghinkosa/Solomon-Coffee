@@ -2172,10 +2172,6 @@
     },
     "hero": {
       "badge": "De la finca a la taza",
-      "title": "Nuestro café",
-      "description": "Descubre el arte y la ciencia detrás de cada taza — de la cereza al tueste."
-    },
-    "intro": {
       "title": "Nuestros métodos de procesamiento",
       "description": "Cada café que obtenemos pasa por un procesamiento meticuloso para revelar su carácter único. Desde las camas de secado al sol hasta los tanques de fermentación controlada, cada paso está diseñado para sacar lo mejor del grano."
     },
