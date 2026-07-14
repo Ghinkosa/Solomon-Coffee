@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { writeClient, client } from "@/sanity/lib/client";
+import { writeClient, readClient } from "@/sanity/lib/client";
 import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
+import { requireAdminUser } from "@/lib/adminAuth";
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const { email, setPremium } = await request.json();
 
@@ -21,7 +18,7 @@ export async function POST(request: NextRequest) {
     const premium = Boolean(setPremium);
 
     // Check if user exists
-    const existingUser = await client.fetch(
+    const existingUser = await readClient.fetch(
       `*[${USER_BY_EMAIL_FILTER}][0]`,
       { email }
     );
@@ -61,7 +58,7 @@ export async function POST(request: NextRequest) {
         isBusiness: false,
         membershipType: premium ? "premium" : "standard",
         activatedAt: new Date().toISOString(),
-        activatedBy: "admin-creation",
+        activatedBy: admin.userEmail || "admin-creation",
         rewardPoints: 0,
         loyaltyPoints: premium ? 100 : 0,
         createdAt: new Date().toISOString(),

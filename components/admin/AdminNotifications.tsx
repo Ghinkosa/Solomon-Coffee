@@ -383,7 +383,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
         sentBy: adminEmail,
       };
 
-      await safeApiCall("/api/admin/notifications/send", {
+      const sendResult = await safeApiCall("/api/admin/notifications/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -410,10 +410,27 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
       setSentNotificationsPage(1);
       fetchSentNotifications(1, true);
 
-      showToast.success(
-        "Notification sent successfully!",
-        `Sent to ${selectedUsers.length} recipient(s)`
-      );
+      const successful = sendResult?.stats?.successful ?? 0;
+      const failed = sendResult?.stats?.failed ?? 0;
+
+      if (failed > 0) {
+        showToast.warning(
+          "Partially delivered",
+          `Sent to ${successful} recipient(s); ${failed} failed`,
+        );
+      } else {
+        showToast.success(
+          "Notification sent successfully!",
+          `Sent to ${successful} recipient(s)`,
+        );
+      }
+
+      if (sendResult?.historyCreated === false) {
+        showToast.info(
+          "History not saved",
+          "User inboxes were updated, but send history could not be saved to Sanity.",
+        );
+      }
     } catch (error) {
       handleApiError(error, "Send notification");
     } finally {
@@ -433,10 +450,10 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
         // Resend to same recipients
         const recipientEmails = notification.recipients.map((r) => r.email);
 
-        // Find user IDs for these emails
+        // Find Clerk user IDs for these emails (send API expects clerkUserId)
         const selectedUserIds = users
           .filter((user) => recipientEmails.includes(user.email))
-          .map((user) => user._id);
+          .map((user) => user.clerkUserId);
 
         if (selectedUserIds.length === 0) {
           showToast.error(
@@ -459,7 +476,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
           sentBy: adminEmail,
         };
 
-        await safeApiCall("/api/admin/notifications/send", {
+        const sendResult = await safeApiCall("/api/admin/notifications/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -468,10 +485,20 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
         // Refresh sent notifications
         fetchSentNotifications(sentNotificationsPage, true);
 
-        showToast.success(
-          "Notification resent successfully!",
-          `Resent to ${selectedUserIds.length} recipient(s)`
-        );
+        const successful = sendResult?.stats?.successful ?? 0;
+        const failed = sendResult?.stats?.failed ?? 0;
+
+        if (failed > 0) {
+          showToast.warning(
+            "Partially resent",
+            `Delivered to ${successful} recipient(s); ${failed} failed`,
+          );
+        } else {
+          showToast.success(
+            "Notification resent successfully!",
+            `Resent to ${successful} recipient(s)`,
+          );
+        }
       } else {
         // Type === 'new' - Open sidebar with pre-filled form for new recipients
         setNotificationForm({

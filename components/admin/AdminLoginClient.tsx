@@ -13,9 +13,14 @@ import { t } from "@/lib/dictionary-utils";
 interface AdminLoginClientProps {
   lang: string;
   redirectTo: string;
+  authUnavailable?: boolean;
 }
 
-function AdminLoginForm({ lang, redirectTo }: AdminLoginClientProps) {
+function AdminLoginForm({
+  lang,
+  redirectTo,
+  authUnavailable,
+}: AdminLoginClientProps) {
   const dictionary = useDictionary();
   const company = contactConfig.company.name;
 
@@ -134,6 +139,12 @@ function AdminLoginForm({ lang, redirectTo }: AdminLoginClientProps) {
 
           <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
             <div className="w-full max-w-md rounded-2xl border border-stone-800 bg-stone-900/90 p-6 shadow-2xl sm:p-8">
+              {authUnavailable ? (
+                <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+                  Auth service was temporarily unreachable. Stay signed in and
+                  refresh, or sign in again to continue.
+                </div>
+              ) : null}
               <div className="clerk-sign-in admin-clerk-sign-in">
                 <SignIn
                   routing="hash"

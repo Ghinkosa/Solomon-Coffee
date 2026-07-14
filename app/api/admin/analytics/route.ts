@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
-import { client } from "@/sanity/lib/client";
+import { clerkClient } from "@clerk/nextjs/server";
+import { requireAdminUser } from "@/lib/adminAuth";
+import { readClient } from "@/sanity/lib/client";
 
 interface OrderProduct {
   name: string;
@@ -50,28 +50,8 @@ interface PaymentMethodOrder {
 
 export async function GET(req: NextRequest) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const { searchParams } = new URL(req.url);
     const period = searchParams.get("period") || "30d"; // days
@@ -110,7 +90,7 @@ export async function GET(req: NextRequest) {
         topProducts,
       ] = await Promise.all([
         // Current period orders
-        client.fetch(
+        readClient.fetch(
           `*[_type == "order" && dateTime(orderDate) >= dateTime($startDate) && dateTime(orderDate) <= dateTime($currentDate)] {
           _id,
           totalPrice,
@@ -131,7 +111,7 @@ export async function GET(req: NextRequest) {
         ),
 
         // Previous period orders for comparison
-        client.fetch(
+        readClient.fetch(
           `*[_type == "order" && dateTime(orderDate) >= dateTime($prevStartDate) && dateTime(orderDate) < dateTime($startDate)] {
           _id,
           totalPrice,
@@ -144,11 +124,12 @@ export async function GET(req: NextRequest) {
         ),
 
         // Total products
-        client.fetch(`count(*[_type == "product"])`),
+        readClient.fetch(`count(*[_type == "product"])`),
 
         // Get users count from Clerk
         (async () => {
           try {
+            const clerk = await clerkClient();
             return await clerk.users.getCount();
           } catch (error) {
             console.error("Error fetching users count:", error);
@@ -157,7 +138,7 @@ export async function GET(req: NextRequest) {
         })(),
 
         // Recent orders
-        client.fetch(
+        readClient.fetch(
           `*[_type == "order" && dateTime(orderDate) >= dateTime($startDate)] | order(orderDate desc) [0...10] {
           _id,
           orderNumber,
@@ -170,7 +151,7 @@ export async function GET(req: NextRequest) {
         ),
 
         // Orders by status
-        client.fetch(
+        readClient.fetch(
           `*[_type == "order" && dateTime(orderDate) >= dateTime($startDate)] {
           status
         }`,
@@ -178,7 +159,7 @@ export async function GET(req: NextRequest) {
         ),
 
         // Top products analysis
-        client.fetch(
+        readClient.fetch(
           `*[_type == "order" && dateTime(orderDate) >= dateTime($startDate)] {
           products[] {
             name,

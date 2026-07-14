@@ -25,6 +25,8 @@ import {
   Package2,
   Tags,
   FileText,
+  Store,
+  MessageSquare,
 } from "lucide-react";
 
 interface AdminShellProps {
@@ -38,30 +40,65 @@ interface AdminShellProps {
   } | null;
 }
 
-const adminRoutes: {
+type AdminRoute = {
   label: string;
   icon: typeof LayoutDashboard;
   href: string;
   external?: boolean;
-}[] = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  { label: "Users", icon: Users, href: "/admin/users" },
-  { label: "Account Requests", icon: UserCheck, href: "/admin/account-requests" },
-  { label: "Products", icon: Package, href: "/admin/products" },
-  { label: "Categories", icon: Tags, href: "/admin/categories" },
-  { label: "Packaging", icon: Package2, href: "/admin/packaging" },
-  { label: "Blog", icon: FileText, href: "/admin/blog" },
-  { label: "Orders", icon: ShoppingCart, href: "/admin/orders" },
-  { label: "Reviews", icon: Star, href: "/admin/reviews" },
-  { label: "Subscriptions", icon: Mail, href: "/admin/subscriptions" },
-  { label: "Notifications", icon: Bell, href: "/admin/notifications" },
+};
+
+const adminNavGroups: { label: string; routes: AdminRoute[] }[] = [
   {
-    label: "Content",
-    icon: FilePenLine,
-    href: "/studio",
-    external: true,
+    label: "Ops",
+    routes: [
+      { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
+      { label: "Orders", icon: ShoppingCart, href: "/admin/orders" },
+      { label: "Users", icon: Users, href: "/admin/users" },
+      {
+        label: "Account Requests",
+        icon: UserCheck,
+        href: "/admin/account-requests",
+      },
+    ],
+  },
+  {
+    label: "Inbox",
+    routes: [
+      { label: "Wholesale", icon: Store, href: "/admin/wholesale" },
+      { label: "Messages", icon: MessageSquare, href: "/admin/contact" },
+      { label: "Notifications", icon: Bell, href: "/admin/notifications" },
+    ],
+  },
+  {
+    label: "Catalog",
+    routes: [
+      { label: "Products", icon: Package, href: "/admin/products" },
+      { label: "Categories", icon: Tags, href: "/admin/categories" },
+      { label: "Packaging", icon: Package2, href: "/admin/packaging" },
+      { label: "Blog", icon: FileText, href: "/admin/blog" },
+    ],
+  },
+  {
+    label: "Marketing",
+    routes: [
+      { label: "Reviews", icon: Star, href: "/admin/reviews" },
+      { label: "Subscriptions", icon: Mail, href: "/admin/subscriptions" },
+    ],
+  },
+  {
+    label: "Advanced",
+    routes: [
+      {
+        label: "Content",
+        icon: FilePenLine,
+        href: "/studio",
+        external: true,
+      },
+    ],
   },
 ];
+
+const adminRoutes = adminNavGroups.flatMap((group) => group.routes);
 
 function getNormalizedPathname(path: string) {
   return path.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
@@ -94,10 +131,11 @@ export default function AdminShell({ children, user }: AdminShellProps) {
 
   const storeHref = lang && lang !== "en" ? `/${lang}` : "/";
 
-  function renderNavLink(route: (typeof adminRoutes)[0], onNavigate?: () => void) {
+  function renderNavLink(route: AdminRoute, onNavigate?: () => void) {
     const isActive = route.external
       ? normalizedPathname.startsWith("/studio")
-      : normalizedPathname === route.href;
+      : normalizedPathname === route.href ||
+        (route.href !== "/admin" && normalizedPathname.startsWith(route.href));
     const Icon = route.icon;
     const href = route.external ? route.href : getLocalizedHref(route.href);
 
@@ -131,8 +169,17 @@ export default function AdminShell({ children, user }: AdminShellProps) {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {adminRoutes.map((route) => renderNavLink(route, () => setMobileOpen(false)))}
+      <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+        {adminNavGroups.map((group) => (
+          <div key={group.label} className="space-y-1">
+            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              {group.label}
+            </p>
+            {group.routes.map((route) =>
+              renderNavLink(route, () => setMobileOpen(false)),
+            )}
+          </div>
+        ))}
       </nav>
 
       <div className="border-t border-white/10 p-4 space-y-3">

@@ -1,29 +1,15 @@
 import { NextResponse } from "next/server";
-import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
-import { client } from "@/sanity/lib/client";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { clerkClient } from "@clerk/nextjs/server";
+import { readClient } from "@/sanity/lib/client";
+import { requireAdminUser } from "@/lib/adminAuth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60; // Cache for 60 seconds
 
 export async function GET() {
   try {
-    // Check authentication
-    const { userId } = await auth();
-    const user = await currentUser();
-
-    if (!userId || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check if user is admin
-    const userEmail = user.emailAddresses[0]?.emailAddress;
-    if (!isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden: Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     // Calculate date ranges for comparison
     const now = new Date();
@@ -33,7 +19,7 @@ export async function GET() {
 
     // Optimized: Fetch all data in a single GROQ query
     const [allStats, totalUsers] = await Promise.all([
-      client.fetch(
+      readClient.fetch(
         `{
           "totalOrders": count(*[_type == "order"]),
           "totalRevenue": *[_type == "order" && defined(totalPrice)].totalPrice,

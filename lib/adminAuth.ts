@@ -1,10 +1,12 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { resolveAdminAccess } from "@/lib/adminGate";
 
 export async function requireAdminUser() {
   const { userId } = await auth();
-  if (!userId) {
+  const gate = await resolveAdminAccess(userId);
+
+  if (gate.status === "unauthenticated") {
     return {
       error: NextResponse.json(
         { error: "Unauthorized - Not logged in" },
@@ -13,11 +15,7 @@ export async function requireAdminUser() {
     };
   }
 
-  const clerk = await clerkClient();
-  const currentUser = await clerk.users.getUser(userId);
-  const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-  if (!userEmail || !isUserAdmin(userEmail)) {
+  if (gate.status === "denied") {
     return {
       error: NextResponse.json(
         { error: "Forbidden - Admin access required" },
@@ -26,7 +24,19 @@ export async function requireAdminUser() {
     };
   }
 
-  return { userId, userEmail };
+  if (gate.status === "unavailable") {
+    return {
+      error: NextResponse.json(
+        {
+          error: "Auth service temporarily unavailable",
+          message: "Could not verify admin access. Please retry.",
+        },
+        { status: 503 },
+      ),
+    };
+  }
+
+  return { userId: gate.userId, userEmail: gate.email };
 }
 
 export function makeKey(prefix = "k") {

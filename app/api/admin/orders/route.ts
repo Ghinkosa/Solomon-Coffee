@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
-import { client } from "@/sanity/lib/client";
-import { writeClient } from "@/sanity/lib/client";
+import { requireAdminUser } from "@/lib/adminAuth";
+import { readClient, writeClient } from "@/sanity/lib/client";
 import { revalidatePath } from "next/cache";
 
 // Disable Next.js caching for this route
@@ -11,28 +9,8 @@ export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     // Get query parameters
     const { searchParams } = new URL(req.url);
@@ -108,8 +86,8 @@ export async function GET(req: NextRequest) {
     const countQuery = `count(*[${filterClause}])`;
 
     const [orders, totalCount] = await Promise.all([
-      client.fetch(query, params, { cache: "no-store", next: { revalidate: 0 } }),
-      client.fetch(countQuery, params, {
+      readClient.fetch(query, params, { cache: "no-store", next: { revalidate: 0 } }),
+      readClient.fetch(countQuery, params, {
         cache: "no-store",
         next: { revalidate: 0 },
       }),
@@ -148,28 +126,8 @@ export async function GET(req: NextRequest) {
 // Delete orders (single or bulk)
 export async function DELETE(req: NextRequest) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const body = await req.json();
     const { orderIds } = body; // Array of order IDs to delete

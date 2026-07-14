@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { requireAdminUser } from "@/lib/adminAuth";
 import { writeClient } from "@/sanity/lib/client";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { refundOrderPayment, buildRefundMessage } from "@/lib/stripeRefund";
@@ -11,28 +10,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const { id } = await params;
     const updateData = await req.json();
@@ -141,7 +120,7 @@ export async function PATCH(
 
       filteredUpdateData.refundedToWallet = false;
       filteredUpdateData.cancelledAt = new Date().toISOString();
-      filteredUpdateData.cancelledBy = userEmail || "admin";
+      filteredUpdateData.cancelledBy = admin.userEmail || "admin";
     }
 
     // Update the order in Sanity
@@ -175,7 +154,7 @@ export async function PATCH(
                 orderId: id,
                 status: updateData.status,
                 previousStatus: currentOrder.status,
-                adminUserId: userId,
+                adminUserId: admin.userId,
               },
             }),
           }
@@ -242,28 +221,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const { id } = await params;
 

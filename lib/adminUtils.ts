@@ -7,10 +7,11 @@ export const getAdminEmails = (): string[] => {
 
   try {
     // Handle array format: [email1,email2] or just comma-separated: email1,email2
+    // Also strip wrapping quotes that often sneak into .env values.
     const cleanEmails = adminEmailsEnv
-      .replace(/[\[\]]/g, "") // Remove brackets if present
+      .replace(/[\[\]]/g, "")
       .split(",")
-      .map((email) => email.trim())
+      .map((email) => email.trim().replace(/^['"]+|['"]+$/g, "").trim())
       .filter((email) => email.length > 0);
 
     return cleanEmails;
@@ -23,8 +24,11 @@ export const getAdminEmails = (): string[] => {
 export const isUserAdmin = (userEmail: string | null | undefined): boolean => {
   if (!userEmail) return false;
 
+  const normalized = userEmail.trim().replace(/^['"]+|['"]+$/g, "").toLowerCase();
+  if (!normalized) return false;
+
   const adminEmails = getAdminEmails().map((email) => email.toLowerCase());
-  return adminEmails.includes(userEmail.toLowerCase());
+  return adminEmails.includes(normalized);
 };
 
 /**

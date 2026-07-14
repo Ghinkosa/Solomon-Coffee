@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { client } from "@/sanity/lib/client";
+import { readClient } from "@/sanity/lib/client";
 import { requireAdminUser } from "@/lib/adminAuth";
 
 /** Packaging catalog for the product editor. */
@@ -8,7 +8,7 @@ export async function GET() {
     const admin = await requireAdminUser();
     if (admin.error) return admin.error;
 
-    const packaging = await client.fetch(
+    const packaging = await readClient.fetch(
       `*[_type == "packaging"] | order(title asc) {
         _id,
         title,

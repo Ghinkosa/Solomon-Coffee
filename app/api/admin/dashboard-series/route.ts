@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client } from "@/sanity/lib/client";
+import { readClient } from "@/sanity/lib/client";
 import { requireAdminUser } from "@/lib/adminAuth";
 
 export const dynamic = "force-dynamic";
@@ -133,7 +133,7 @@ export async function GET(req: NextRequest) {
       from.setHours(0, 0, 0, 0);
     }
 
-    const orders = (await client.fetch(
+    const orders = (await readClient.fetch(
       `*[_type == "order" && dateTime(coalesce(orderDate, _createdAt)) >= dateTime($from)]{
         orderDate,
         _createdAt,

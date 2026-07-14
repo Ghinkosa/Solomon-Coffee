@@ -1,36 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveContactMessage } from "@/sanity/helpers";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+
+const LIMIT = 5;
+const WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { name, email, subject, message } = body;
-
-    // Basic validation
-    if (!name || !email || !subject || !message) {
+    const ipAddress = getClientIp(request);
+    const rate = checkRateLimit(`contact:${ipAddress}`, LIMIT, WINDOW_MS);
+    if (!rate.allowed) {
       return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
+        {
+          error: "Too many messages. Please try again later.",
+          retryAfterSeconds: rate.retryAfterSeconds,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rate.retryAfterSeconds),
+          },
+        },
       );
     }
 
-    // Email validation
+    const body = await request.json();
+    const { name, email, subject, message } = body;
+
+    if (!name || !email || !subject || !message) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 },
+      );
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: "Please provide a valid email address" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Get client info
-    const ipAddress =
-      request.headers.get("x-forwarded-for") ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
     const userAgent = request.headers.get("user-agent") || "unknown";
 
-    // Save to Sanity
     const result = await saveContactMessage({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -46,20 +59,20 @@ export async function POST(request: NextRequest) {
           message: "Message sent successfully! We'll get back to you soon.",
           id: result.data?._id,
         },
-        { status: 200 }
-      );
-    } else {
-      console.error("Sanity save failed:", result.error);
-      return NextResponse.json(
-        { error: result.error || "Failed to send message. Please try again." },
-        { status: 500 }
+        { status: 200 },
       );
     }
+
+    console.error("Sanity save failed:", result.error);
+    return NextResponse.json(
+      { error: result.error || "Failed to send message. Please try again." },
+      { status: 500 },
+    );
   } catch (error) {
     console.error("Contact API Error:", error);
     return NextResponse.json(
       { error: "Something went wrong. Please try again later." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

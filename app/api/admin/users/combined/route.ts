@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { clerkClient } from "@clerk/nextjs/server";
+import { requireAdminUser } from "@/lib/adminAuth";
 import { writeClient } from "@/sanity/lib/client";
 
 // Disable caching for this route to ensure fresh data
@@ -29,28 +29,10 @@ interface SanityUser {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
     const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
 
     // Get pagination params
     const { searchParams } = new URL(request.url);

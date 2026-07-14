@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
 import { writeClient } from "@/sanity/lib/client";
+import { requireAdminUser } from "@/lib/adminAuth";
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Derive the acting admin's email from the authenticated session — never
-    // trust a client-supplied adminEmail. (Admin identity is enforced upstream
-    // by the proxy for /api/admin/*.)
-    const clerk = await clerkClient();
-    const clerkUser = await clerk.users.getUser(userId);
-    const adminEmail = clerkUser.primaryEmailAddress?.emailAddress;
+    const adminEmail = admin.userEmail;
 
     const { accountId, approve, reason } = await request.json();
 

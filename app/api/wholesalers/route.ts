@@ -1,8 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveWholesaleInquiry } from "@/sanity/helpers";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+
+const LIMIT = 5;
+const WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(request: NextRequest) {
   try {
+    const ipAddress = getClientIp(request);
+    const rate = checkRateLimit(`wholesale:${ipAddress}`, LIMIT, WINDOW_MS);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many inquiries. Please try again later.",
+          retryAfterSeconds: rate.retryAfterSeconds,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rate.retryAfterSeconds),
+          },
+        },
+      );
+    }
+
     const body = await request.json();
     const {
       name,
@@ -29,10 +50,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ipAddress =
-      request.headers.get("x-forwarded-for") ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
     const userAgent = request.headers.get("user-agent") || "unknown";
 
     const result = await saveWholesaleInquiry({

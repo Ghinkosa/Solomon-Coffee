@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { requireAdminUser } from "@/lib/adminAuth";
 import {
-  createNotification,
   sendBulkNotifications,
   NotificationType,
   NotificationPriority,
@@ -10,29 +8,8 @@ import {
 
 export async function POST(req: NextRequest) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-    const userName = `${currentUser.firstName || ""} ${currentUser.lastName || ""}`.trim();
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const body = await req.json();
 
@@ -75,23 +52,39 @@ export async function POST(req: NextRequest) {
       type: type as NotificationType,
       priority: priority as NotificationPriority,
       actionUrl,
-      sentBy: sentBy || userName || userEmail,
+      sentBy: sentBy || admin.userEmail,
     });
 
     if (!result.success) {
       return NextResponse.json(
-        { error: result.error || "Failed to send notifications" },
-        { status: 500 }
+        {
+          error: result.error || "Failed to send notifications",
+          historyCreated: result.historyCreated ?? false,
+          stats: {
+            total: result.total ?? recipients.length,
+            successful: result.successful ?? 0,
+            failed: result.failed ?? recipients.length,
+          },
+        },
+        { status: 500 },
       );
     }
 
+    const failed = result.failed ?? 0;
+    const successful = result.successful ?? 0;
+    const responseMessage =
+      failed > 0
+        ? `Delivered to ${successful} of ${result.total} recipients (${failed} failed)`
+        : "Notifications sent successfully";
+
     return NextResponse.json({
       success: true,
-      message: "Notifications sent successfully",
+      message: responseMessage,
+      historyCreated: result.historyCreated ?? false,
       stats: {
         total: result.total,
-        successful: result.successful,
-        failed: result.failed,
+        successful,
+        failed,
       },
     });
   } catch (error) {

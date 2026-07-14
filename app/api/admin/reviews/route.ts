@@ -1,29 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
 import { writeClient } from "@/sanity/lib/client";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { requireAdminUser } from "@/lib/adminAuth";
 
 // PATCH - Approve or reject a review
 export async function PATCH(request: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const body = await request.json();
     const { reviewId, action, adminNotes } = body;
@@ -73,7 +56,7 @@ export async function PATCH(request: NextRequest) {
         ...(action === "approve"
           ? {
               approvedAt: now,
-              approvedBy: userEmail,
+              approvedBy: admin.userEmail,
             }
           : {}),
         ...(adminNotes ? { adminNotes } : {}),
@@ -158,24 +141,8 @@ export async function PATCH(request: NextRequest) {
 // GET - Get reviews by status
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get("status") || "pending";

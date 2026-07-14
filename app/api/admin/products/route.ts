@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client, writeClient } from "@/sanity/lib/client";
+import { readClient, writeClient } from "@/sanity/lib/client";
 import { makeKey, requireAdminUser, slugify } from "@/lib/adminAuth";
 
 const WEIGHTS = new Set(["125G", "250G", "500G", "1KG"]);
@@ -609,8 +609,8 @@ export async function GET(req: NextRequest) {
     const countQuery = `count(*[${filterClause}])`;
 
     const [products, totalCount] = await Promise.all([
-      client.fetch(query, params),
-      client.fetch(countQuery, params),
+      readClient.fetch(query, params),
+      readClient.fetch(countQuery, params),
     ]);
 
     return NextResponse.json({

@@ -53,6 +53,11 @@ export const createNotification = async (params: CreateNotificationParams) => {
       return { success: false, error: "User not found" };
     }
 
+    const recipientName =
+      [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
+      user.email ||
+      "User";
+
     // Create the notification object
     const notification = {
       id: uuidv4(),
@@ -78,7 +83,14 @@ export const createNotification = async (params: CreateNotificationParams) => {
       .set({ notifications: updatedNotifications })
       .commit();
 
-    return { success: true, notification };
+    return {
+      success: true,
+      notification,
+      recipient: {
+        email: user.email || "unknown@example.com",
+        name: recipientName,
+      },
+    };
   } catch (error) {
     console.error("Error creating notification:", error);
     return { success: false, error: "Failed to create notification" };
@@ -225,30 +237,116 @@ export const sendOrderStatusNotification = async (
 };
 
 /**
- * Send bulk notifications to multiple users
+ * Send bulk notifications to multiple users and persist send history.
  */
 export const sendBulkNotifications = async (
   userIds: string[],
   notificationData: Omit<CreateNotificationParams, "clerkUserId">
 ) => {
   try {
-    const results = await Promise.allSettled(
-      userIds.map((userId) =>
-        createNotification({
-          clerkUserId: userId,
-          ...notificationData,
-        })
-      )
+    const sanityUsers: Array<{
+      clerkUserId?: string;
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+    }> = await writeClient.fetch(
+      `*[_type == "user" && clerkUserId in $ids]{
+        clerkUserId,
+        email,
+        firstName,
+        lastName
+      }`,
+      { ids: userIds },
+    );
+    const userByClerkId = new Map(
+      sanityUsers
+        .filter((u) => u.clerkUserId)
+        .map((u) => [u.clerkUserId as string, u]),
     );
 
-    const successful = results.filter((r) => r.status === "fulfilled").length;
-    const failed = results.filter((r) => r.status === "rejected").length;
+    const results = await Promise.all(
+      userIds.map(async (userId) => {
+        const result = await createNotification({
+          clerkUserId: userId,
+          ...notificationData,
+        });
+        const fallback = userByClerkId.get(userId);
+        const name =
+          result.recipient?.name ||
+          [fallback?.firstName, fallback?.lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim() ||
+          fallback?.email ||
+          userId;
+        const email =
+          result.recipient?.email || fallback?.email || "unknown@example.com";
+
+        return {
+          userId,
+          success: Boolean(result.success),
+          email,
+          name,
+        };
+      }),
+    );
+
+    const successful = results.filter((r) => r.success).length;
+    const failed = results.filter((r) => !r.success).length;
+
+    const notificationId = uuidv4();
+    const sentAt = new Date().toISOString();
+    let historyCreated = false;
+
+    try {
+      await writeClient.create({
+        _type: "sentNotification",
+        notificationId,
+        title: notificationData.title,
+        message: notificationData.message,
+        type: notificationData.type,
+        priority: notificationData.priority || "medium",
+        sentAt,
+        sentBy: notificationData.sentBy || "System",
+        ...(notificationData.actionUrl
+          ? { actionUrl: notificationData.actionUrl }
+          : {}),
+        recipientCount: userIds.length,
+        recipients: results.map((r) => ({
+          _key: uuidv4(),
+          email: r.email,
+          name: r.name,
+          delivered: r.success,
+          read: false,
+        })),
+      });
+      historyCreated = true;
+    } catch (historyError) {
+      console.error(
+        "Failed to create sentNotification history document:",
+        historyError,
+      );
+    }
+
+    if (successful === 0) {
+      return {
+        success: false,
+        error: "Failed to deliver notification to any recipient",
+        total: userIds.length,
+        successful,
+        failed,
+        historyCreated,
+        notificationId,
+      };
+    }
 
     return {
       success: true,
       total: userIds.length,
       successful,
       failed,
+      historyCreated,
+      notificationId,
     };
   } catch (error) {
     console.error("Error sending bulk notifications:", error);

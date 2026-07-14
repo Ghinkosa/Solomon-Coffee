@@ -1,139 +1,114 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
-import { client } from "@/sanity/lib/client";
+import { requireAdminUser } from "@/lib/adminAuth";
+import { readClient } from "@/sanity/lib/client";
 
-interface SentNotification {
-  _id?: string;
-  notificationId: string;
-  title: string;
-  message: string;
-  type: string;
-  priority: string;
-  sentAt: string;
-  sentBy: string;
-  actionUrl?: string;
-  recipientCount: number;
-  recipients?: string[];
-}
+const ALLOWED_TYPES = new Set([
+  "promo",
+  "order",
+  "system",
+  "marketing",
+  "general",
+]);
+const ALLOWED_PRIORITIES = new Set(["low", "medium", "high", "urgent"]);
+const ALLOWED_DATE_FILTERS = new Set(["today", "week", "month"]);
 
 export async function GET(req: NextRequest) {
   try {
-    // Get authenticated user
-    const { userId } = await auth();
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
-    const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(userId);
-    const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!userEmail || !isUserAdmin(userEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    // Get query parameters
     const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get("limit") || "20");
-    const offset = parseInt(searchParams.get("offset") || "0");
+    const limit = Math.min(
+      Math.max(parseInt(searchParams.get("limit") || "20", 10) || 20, 1),
+      100,
+    );
+    const offset = Math.max(
+      parseInt(searchParams.get("offset") || "0", 10) || 0,
+      0,
+    );
     const type = searchParams.get("type") || "";
     const priority = searchParams.get("priority") || "";
     const dateFilter = searchParams.get("dateFilter") || "";
 
-    // Build filter conditions
-    const filterConditions = [];
-    if (type && type !== "all") {
-      filterConditions.push(`type == "${type}"`);
+    const params: Record<string, unknown> = {
+      start: offset,
+      end: offset + limit,
+    };
+    const conditions = [`_type == "sentNotification"`];
+
+    if (type && type !== "all" && ALLOWED_TYPES.has(type)) {
+      conditions.push(`type == $type`);
+      params.type = type;
     }
-    if (priority && priority !== "all") {
-      filterConditions.push(`priority == "${priority}"`);
+    if (priority && priority !== "all" && ALLOWED_PRIORITIES.has(priority)) {
+      conditions.push(`priority == $priority`);
+      params.priority = priority;
     }
 
-    // Add date filter conditions
-    if (dateFilter && dateFilter !== "all") {
+    if (dateFilter && dateFilter !== "all" && ALLOWED_DATE_FILTERS.has(dateFilter)) {
       const now = new Date();
-      let dateCondition = "";
+      let sentAtFrom = "";
 
-      switch (dateFilter) {
-        case "today":
-          const todayStart = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate()
-          ).toISOString();
-          dateCondition = `sentAt >= "${todayStart}"`;
-          break;
-        case "week":
-          const weekStart = new Date(
-            now.getTime() - 7 * 24 * 60 * 60 * 1000
-          ).toISOString();
-          dateCondition = `sentAt >= "${weekStart}"`;
-          break;
-        case "month":
-          const monthStart = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            1
-          ).toISOString();
-          dateCondition = `sentAt >= "${monthStart}"`;
-          break;
+      if (dateFilter === "today") {
+        sentAtFrom = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        ).toISOString();
+      } else if (dateFilter === "week") {
+        sentAtFrom = new Date(
+          now.getTime() - 7 * 24 * 60 * 60 * 1000,
+        ).toISOString();
+      } else if (dateFilter === "month") {
+        sentAtFrom = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          1,
+        ).toISOString();
       }
 
-      if (dateCondition) {
-        filterConditions.push(dateCondition);
+      if (sentAtFrom) {
+        conditions.push(`sentAt >= $sentAtFrom`);
+        params.sentAtFrom = sentAtFrom;
       }
     }
 
-    // Build GROQ query
-    const query = `
-      *[_type == "sentNotification"${
-        filterConditions.length > 0
-          ? ` && (${filterConditions.join(" && ")})`
-          : ""
-      }] | order(sentAt desc) [${offset}...${offset + limit}] {
-        _id,
-        notificationId,
-        title,
-        message,
-        type,
-        priority,
-        sentAt,
-        sentBy,
-        actionUrl,
-        recipientCount,
-        recipients
-      }
-    `;
+    const filter = conditions.join(" && ");
+    const query = `*[${filter}] | order(sentAt desc) [$start...$end] {
+      _id,
+      notificationId,
+      title,
+      message,
+      type,
+      priority,
+      sentAt,
+      sentBy,
+      actionUrl,
+      recipientCount,
+      recipients
+    }`;
+    const countQuery = `count(*[${filter}])`;
 
-    // Get count query
-    const countQuery = `
-      count(*[_type == "sentNotification"${
-        filterConditions.length > 0
-          ? ` && (${filterConditions.join(" && ")})`
-          : ""
-      }])
-    `;
-
-    // Execute queries
     const [notifications, totalCount] = await Promise.all([
-      client.fetch(query),
-      client.fetch(countQuery),
+      readClient.fetch(query, params),
+      readClient.fetch(countQuery, params),
     ]);
 
-    // Transform the data to match the interface
-    const transformedNotifications = notifications.map((notification: any) => ({
-      id: notification._id, // Use Sanity _id for deletion
-      notificationId: notification.notificationId, // Keep original notificationId
+    const transformedNotifications = notifications.map((notification: {
+      _id: string;
+      notificationId?: string;
+      title?: string;
+      message?: string;
+      type?: string;
+      priority?: string;
+      sentAt?: string;
+      sentBy?: string;
+      actionUrl?: string;
+      recipientCount?: number;
+      recipients?: unknown[];
+    }) => ({
+      id: notification._id,
+      notificationId: notification.notificationId,
       title: notification.title,
       message: notification.message,
       type: notification.type,
@@ -154,14 +129,14 @@ export async function GET(req: NextRequest) {
         offset,
         total: totalCount,
         currentPage: Math.floor(offset / limit) + 1,
-        totalPages: Math.ceil(totalCount / limit),
+        totalPages: Math.ceil(totalCount / limit) || 1,
       },
     });
   } catch (error) {
     console.error("Error fetching sent notifications:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

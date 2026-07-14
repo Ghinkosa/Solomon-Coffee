@@ -1,10 +1,10 @@
-import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { i18n } from "./i18n-config";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { resolveAdminAccess } from "@/lib/adminGate";
 
 const isProtectedRoute = createRouteMatcher([
   "/user(.*)",
@@ -39,9 +39,8 @@ function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
 
-  // Fix: Use as string[] to avoid readonly issue
   const locales = i18n.locales as unknown as string[];
-  let languages = new Negotiator({ headers: negotiatorHeaders }).languages(
+  const languages = new Negotiator({ headers: negotiatorHeaders }).languages(
     locales,
   );
 
@@ -52,7 +51,7 @@ export default clerkMiddleware(async (auth, req) => {
   const pathname = req.nextUrl.pathname;
   const searchParams = req.nextUrl.searchParams;
 
-  // 1. Check if locale is missing (I18n Middleware Logic)
+  // 1. Locale prefix
   if (
     !pathname.startsWith("/_next") &&
     !pathname.includes("/api/") &&
@@ -66,20 +65,11 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (pathnameIsMissingLocale) {
       const locale = getLocale(req);
-
-      // Build new URL with locale
-      let newPathname = pathname;
-      if (!newPathname.startsWith("/")) {
-        newPathname = "/" + newPathname;
-      }
-
+      let newPathname = pathname.startsWith("/") ? pathname : `/${pathname}`;
       const newUrl = new URL(`/${locale}${newPathname}`, req.url);
-
-      // CRITICAL: Copy ALL search params to the new URL
       searchParams.forEach((value, key) => {
         newUrl.searchParams.set(key, value);
       });
-
       return NextResponse.redirect(newUrl);
     }
   }
@@ -91,51 +81,54 @@ export default clerkMiddleware(async (auth, req) => {
 
   if (isAdminApiRoute(req) || isDebugApiRoute(req)) {
     const authResult = await auth();
+    const gate = await resolveAdminAccess(authResult.userId);
 
-    if (!authResult.userId) {
+    if (gate.status === "unauthenticated") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    try {
-      const clerk = await clerkClient();
-      const user = await clerk.users.getUser(authResult.userId);
-      const email = user.primaryEmailAddress?.emailAddress;
-
-      if (!email || !isUserAdmin(email)) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-    } catch {
+    if (gate.status === "denied") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (gate.status === "unavailable") {
+      // Clerk outage — do not pretend the user is forbidden.
+      return NextResponse.json(
+        {
+          error: "Auth service temporarily unavailable",
+          message: "Could not verify admin access. Please retry.",
+        },
+        { status: 503 },
+      );
     }
 
     return NextResponse.next();
   }
 
-  // 3. Admin console: dedicated login (not customer /sign-in) + admin identity
+  // 3. Admin console pages
   if (isAdminRoute(req) && !isPublicAdminPath(pathname)) {
     const authResult = await auth();
     const locale = getLocaleFromPath(pathname);
+    const gate = await resolveAdminAccess(authResult.userId);
 
-    if (!authResult.userId) {
+    if (gate.status === "unauthenticated") {
       const loginUrl = new URL(`/${locale}/admin/login`, req.url);
       loginUrl.searchParams.set("redirectTo", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    try {
-      const clerk = await clerkClient();
-      const user = await clerk.users.getUser(authResult.userId);
-      const email = user.primaryEmailAddress?.emailAddress;
-
-      if (!email || !isUserAdmin(email)) {
-        return NextResponse.redirect(
-          new URL(`/${locale}/admin/access-denied`, req.url),
-        );
-      }
-    } catch {
+    if (gate.status === "denied") {
       return NextResponse.redirect(
         new URL(`/${locale}/admin/access-denied`, req.url),
       );
+    }
+
+    if (gate.status === "unavailable") {
+      // Signed in, but Clerk Backend API is flaky. Let the page layout retry —
+      // never bounce admins to access-denied for a network blip.
+      console.warn(
+        "[proxy] Admin route Clerk lookup unavailable; continuing to page",
+        gate.reason,
+      );
+      return NextResponse.next();
     }
 
     return NextResponse.next();
@@ -145,33 +138,32 @@ export default clerkMiddleware(async (auth, req) => {
   if (pathname === "/studio" || pathname.startsWith("/studio/")) {
     const authResult = await auth();
     const locale = getLocaleFromPath(pathname) || i18n.defaultLocale;
+    const gate = await resolveAdminAccess(authResult.userId);
 
-    if (!authResult.userId) {
+    if (gate.status === "unauthenticated") {
       const loginUrl = new URL(`/${locale}/admin/login`, req.url);
       loginUrl.searchParams.set("redirectTo", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    try {
-      const clerk = await clerkClient();
-      const user = await clerk.users.getUser(authResult.userId);
-      const email = user.primaryEmailAddress?.emailAddress;
-
-      if (!email || !isUserAdmin(email)) {
-        return NextResponse.redirect(
-          new URL(`/${locale}/admin/access-denied`, req.url),
-        );
-      }
-    } catch {
+    if (gate.status === "denied") {
       return NextResponse.redirect(
         new URL(`/${locale}/admin/access-denied`, req.url),
       );
     }
 
+    if (gate.status === "unavailable") {
+      console.warn(
+        "[proxy] Studio Clerk lookup unavailable; continuing",
+        gate.reason,
+      );
+      return NextResponse.next();
+    }
+
     return NextResponse.next();
   }
 
-  // 4. Clerk Auth Protection for customer account pages
+  // 4. Customer account pages
   if (isProtectedRoute(req)) {
     await auth.protect();
   }
@@ -181,9 +173,7 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };

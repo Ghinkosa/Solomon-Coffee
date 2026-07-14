@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { clerkClient } from "@clerk/nextjs/server";
+import { requireAdminUser } from "@/lib/adminAuth";
 import { writeClient } from "@/sanity/lib/client";
 
 export async function DELETE(
@@ -8,28 +8,10 @@ export async function DELETE(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    // Get authenticated user
-    const { userId: currentUserId } = await auth();
+    const admin = await requireAdminUser();
+    if (admin.error) return admin.error;
 
-    if (!currentUserId) {
-      return NextResponse.json(
-        { error: "Unauthorized - Not logged in" },
-        { status: 401 }
-      );
-    }
-
-    // Get current user details to check admin status
     const clerk = await clerkClient();
-    const currentUser = await clerk.users.getUser(currentUserId);
-    const adminEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-    // Check if current user is admin
-    if (!adminEmail || !isUserAdmin(adminEmail)) {
-      return NextResponse.json(
-        { error: "Forbidden - Admin access required" },
-        { status: 403 }
-      );
-    }
 
     const { userId: targetUserId } = await params;
 
