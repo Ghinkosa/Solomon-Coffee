@@ -22,7 +22,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useIsAdmin } from "@/lib/adminUtils";
 import { useUserData } from "@/contexts/UserDataContext";
 import { usePathname, useRouter } from "next/navigation";
 import { i18n, Locale } from "@/i18n-config";
@@ -55,11 +54,9 @@ const UserDropdown = ({
   const {
     ordersCount,
     isEmployee,
+    isAdmin,
     isLoading: isLoadingOrders,
   } = useUserData();
-
-  // Check if user is admin
-  const isAdmin = useIsAdmin(user?.primaryEmailAddress?.emailAddress);
 
   if (!user) return null;
 
@@ -113,6 +110,7 @@ const UserDropdown = ({
               <img
                 src={user.imageUrl}
                 alt={user.fullName || "User"}
+                referrerPolicy="no-referrer"
                 className={`h-7 w-7 rounded-full object-cover transition-colors sm:h-8 sm:w-8 ${
                   isDark
                     ? "border-2 border-shop_orange/40 group-hover:border-shop_orange"
@@ -149,6 +147,7 @@ const UserDropdown = ({
                   <img
                     src={user.imageUrl}
                     alt={user.fullName || "User"}
+                    referrerPolicy="no-referrer"
                     className="w-12 h-12 rounded-full object-cover"
                   />
                 ) : (

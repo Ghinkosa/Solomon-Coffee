@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useUserData } from "@/contexts/UserDataContext";
 import type { LucideIcon } from "lucide-react";
 
 const sidebarItems: {
@@ -57,6 +58,7 @@ export default function UserLayout({
 }) {
   const { user } = useUser();
   const { signOut } = useClerk();
+  const { isAdmin } = useUserData();
   const dictionary = useDictionary();
   const pathname = usePathname();
   const params = useParams();
@@ -93,6 +95,7 @@ export default function UserLayout({
                   <img
                     src={user.imageUrl}
                     alt={t(dictionary, "userDashboard.layout.userAvatarAlt", "User avatar")}
+                    referrerPolicy="no-referrer"
                     className="w-10 h-10 rounded-full object-cover border-2 border-shop_light_green/30"
                   />
                 ) : (
@@ -135,6 +138,7 @@ export default function UserLayout({
                       <img
                         src={user.imageUrl}
                         alt={t(dictionary, "userDashboard.layout.userAvatarAlt", "User avatar")}
+                        referrerPolicy="no-referrer"
                         className="w-12 h-12 rounded-full object-cover border-2 border-white/30"
                       />
                     ) : (
@@ -153,7 +157,7 @@ export default function UserLayout({
                   </div>
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                      <div className="w-2 h-2 bg-green-400 rounded-full me-2"></div>
                       <span className="text-white/90 text-sm">
                         {t(dictionary, "userDashboard.layout.active", "Active")}
                       </span>
@@ -164,7 +168,7 @@ export default function UserLayout({
                       size="sm"
                       className="text-white hover:bg-white/20 border border-white/30"
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
+                      <LogOut className="h-4 w-4 me-2" />
                       {t(dictionary, "userDashboard.layout.signOut", "Sign Out")}
                     </Button>
                   </div>
@@ -217,9 +221,8 @@ export default function UserLayout({
                     );
                   })}
 
-                  {/* Admin Section - Show for admin@shebascoffee.com */}
-                  {user?.emailAddresses?.[0]?.emailAddress ===
-                    "admin@shebascoffee.com" && (
+                  {/* Admin Section - shown to admins (resolved server-side) */}
+                  {isAdmin && (
                     <>
                       <div className="w-full border-t border-gray-200 my-3"></div>
                       <div className="w-full text-xs text-gray-500 mb-2 px-2">
@@ -282,6 +285,7 @@ export default function UserLayout({
                     <img
                       src={user.imageUrl}
                       alt={t(dictionary, "userDashboard.layout.userAvatarAlt", "User avatar")}
+                      referrerPolicy="no-referrer"
                       className="w-16 h-16 rounded-full object-cover border-3 border-white/30"
                     />
                   ) : (
@@ -297,7 +301,7 @@ export default function UserLayout({
                       {user?.primaryEmailAddress?.emailAddress}
                     </p>
                     <div className="flex items-center mt-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                      <div className="w-2 h-2 bg-green-400 rounded-full me-2"></div>
                       <span className="text-white/90 text-xs">
                         {t(dictionary, "userDashboard.layout.active", "Active")}
                       </span>
@@ -360,9 +364,8 @@ export default function UserLayout({
                   );
                 })}
 
-                {/* Admin Section - Mobile */}
-                {user?.emailAddresses?.[0]?.emailAddress ===
-                  "admin@shebascoffee.com" && (
+                {/* Admin Section - Mobile (admins only, resolved server-side) */}
+                {isAdmin && (
                   <>
                     <div className="border-t border-gray-200 pt-4 mt-4">
                       <div className="text-xs text-gray-500 mb-3 px-4">
@@ -429,7 +432,7 @@ export default function UserLayout({
                   variant="ghost"
                   className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  <LogOut className="h-5 w-5 mr-3" />
+                  <LogOut className="h-5 w-5 me-3" />
                   {t(dictionary, "userDashboard.layout.signOut", "Sign Out")}
                 </Button>
               </div>

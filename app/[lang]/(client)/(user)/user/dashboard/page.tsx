@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import {
@@ -114,15 +114,15 @@ export default function UserDashboardPage() {
   const [userExists, setUserExists] = useState<boolean>(false);
   const [isApplyingBusiness, setIsApplyingBusiness] = useState<boolean>(false);
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
   const [notificationType, setNotificationType] = useState<
     "premium" | "business"
   >("premium");
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(
+    async (withSpinner = true) => {
+      if (!user) return;
       try {
-        setLoading(true);
+        if (withSpinner) setLoading(true);
 
         // Fetch user status first
         const statusResponse = await fetch("/api/user/status");
@@ -144,20 +144,22 @@ export default function UserDashboardPage() {
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
-        setLoading(false);
+        if (withSpinner) setLoading(false);
       }
-    };
+    },
+    [user],
+  );
 
-    if (user) {
-      fetchDashboardData();
-    }
-  }, [user]);
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const handlePremiumRegister = () => {
-    // Show success notification instead of immediate reload
+    // Show success notification and refresh status without a full reload.
     setNotificationType("premium");
     setShowSuccessNotification(true);
     setUserExists(true);
+    fetchDashboardData(false);
   };
 
   const handleBusinessAccountApply = async () => {
@@ -178,13 +180,10 @@ export default function UserDashboardPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Show success notification instead of toast and reload
+        // Show success notification and refresh status without a full reload.
         setNotificationType("business");
         setShowSuccessNotification(true);
-        // Also update the user profile to reflect pending status
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        await fetchDashboardData(false);
       } else {
         toast.error(
           data.error ||
@@ -224,8 +223,8 @@ export default function UserDashboardPage() {
 
       if (response.ok) {
         toast.success(data.message);
-        // Refresh user profile
-        window.location.reload();
+        // Refresh user profile without a full reload.
+        await fetchDashboardData(false);
       } else {
         toast.error(data.error || a("toasts.cancelFailed", "Failed to cancel application"));
       }
@@ -446,7 +445,7 @@ export default function UserDashboardPage() {
           !userProfile.isBusiness && (
             <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-400 rounded-lg shadow-sm">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                   </div>
@@ -531,7 +530,7 @@ export default function UserDashboardPage() {
                 >
                   {isApplyingBusiness ? (
                     <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white me-2"></div>
                       {a("applying", "Applying...")}
                     </div>
                   ) : (
@@ -546,9 +545,9 @@ export default function UserDashboardPage() {
         {userProfile && userProfile.businessStatus === "pending" && (
           <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 rounded-lg shadow-sm">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-blue-600 animate-pulse" />
+                <div className="shrink-0">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-blue-600 animate-pulse" />
                 </div>
               </div>
               <div className="flex-1">
@@ -602,7 +601,7 @@ export default function UserDashboardPage() {
           userProfile.businessStatus === "active" && (
             <div className="mb-6 p-6 bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-emerald-400 rounded-lg shadow-sm">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
                     <CheckCircle className="h-5 w-5 text-emerald-600" />
                   </div>
@@ -691,55 +690,70 @@ export default function UserDashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">
-              {d("totalOrders", "Total Orders")}
-            </CardTitle>
-            <Package className="h-5 w-5" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">{stats.ordersCount}</div>
-            <p className="text-xs text-blue-100">
-              {d("ordersPlaced", "Orders placed")}
-            </p>
-          </CardContent>
-        </Card>
+        <Link
+          href={toLocalizedPath("/user/orders")}
+          className="rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
+        >
+          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium">
+                {d("totalOrders", "Total Orders")}
+              </CardTitle>
+              <Package className="h-5 w-5" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold mb-1">{stats.ordersCount}</div>
+              <p className="text-xs text-blue-100">
+                {d("ordersPlaced", "Orders placed")}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">
-              {d("notifications", "Notifications")}
-            </CardTitle>
-            <Bell className="h-5 w-5" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">
-              {stats.notificationsCount}
-            </div>
-            <p className="text-xs text-purple-100">
-              {d("unread", "{count} unread").replace(
-                "{count}",
-                String(stats.unreadNotifications),
-              )}
-            </p>
-          </CardContent>
-        </Card>
+        <Link
+          href={toLocalizedPath("/user/notifications")}
+          className="rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2"
+        >
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium">
+                {d("notifications", "Notifications")}
+              </CardTitle>
+              <Bell className="h-5 w-5" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold mb-1">
+                {stats.notificationsCount}
+              </div>
+              <p className="text-xs text-purple-100">
+                {d("unread", "{count} unread").replace(
+                  "{count}",
+                  String(stats.unreadNotifications),
+                )}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">
-              {d("wishlist", "Wishlist")}
-            </CardTitle>
-            <Heart className="h-5 w-5" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">{stats.wishlistCount}</div>
-            <p className="text-xs text-red-100">
-              {d("itemsSaved", "Items saved")}
-            </p>
-          </CardContent>
-        </Card>
+        <Link
+          href={toLocalizedPath("/wishlist")}
+          className="rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2"
+        >
+          <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white border-0 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium">
+                {d("wishlist", "Wishlist")}
+              </CardTitle>
+              <Heart className="h-5 w-5" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold mb-1">{stats.wishlistCount}</div>
+              <p className="text-xs text-red-100">
+                {d("itemsSaved", "Items saved")}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
         <Card className="bg-linear-to-br from-green-500 to-green-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -772,7 +786,7 @@ export default function UserDashboardPage() {
               <Button variant="ghost" size="sm" asChild>
                 <Link href={toLocalizedPath("/user/notifications")}>
                   {d("viewAll", "View All")}
-                  <ArrowRight className="ml-1 h-4 w-4" />
+                  <ArrowRight className="ms-1 h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -793,7 +807,7 @@ export default function UserDashboardPage() {
                 {recentActivity.slice(0, 5).map((activity, index) => (
                   <div key={activity.id}>
                     <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-0.5">
+                      <div className="shrink-0 mt-0.5">
                         {getActivityIcon(activity.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -833,25 +847,28 @@ export default function UserDashboardPage() {
           </CardHeader>
           <CardContent className="pt-0">
             <div className="grid grid-cols-1 gap-3">
-              <Link href={toLocalizedPath("/user/orders")}>
+              <Link href={toLocalizedPath("/user/orders")} className="group">
                 <Button
                   variant="outline"
-                  className="w-full justify-start h-12 hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                  className="w-full justify-start h-12 border-gray-200 text-gray-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                 >
-                  <Package className="mr-3 h-4 w-4 text-blue-500" />
+                  <Package className="me-3 h-4 w-4 text-blue-500 transition-colors group-hover:text-blue-600" />
                   <span className="font-medium">
                     {d("viewOrders", "View Orders")}
                   </span>
-                  <ArrowRight className="ml-auto h-4 w-4" />
+                  <ArrowRight className="ms-auto h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-blue-600 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
                 </Button>
               </Link>
 
-              <Link href={toLocalizedPath("/user/notifications")}>
+              <Link
+                href={toLocalizedPath("/user/notifications")}
+                className="group"
+              >
                 <Button
                   variant="outline"
-                  className="w-full justify-start h-12 hover:bg-purple-50 hover:border-purple-200 transition-colors"
+                  className="w-full justify-start h-12 border-gray-200 text-gray-700 transition-all duration-200 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-700"
                 >
-                  <Bell className="mr-3 h-4 w-4 text-purple-500" />
+                  <Bell className="me-3 h-4 w-4 text-purple-500 transition-colors group-hover:text-purple-600" />
                   <span className="font-medium">
                     {t(
                       dictionary,
@@ -860,22 +877,22 @@ export default function UserDashboardPage() {
                     )}
                   </span>
                   {stats.unreadNotifications > 0 && (
-                    <Badge variant="destructive" className="ml-auto">
+                    <Badge variant="destructive" className="ms-auto">
                       {stats.unreadNotifications}
                     </Badge>
                   )}
                   {stats.unreadNotifications === 0 && (
-                    <ArrowRight className="ml-auto h-4 w-4" />
+                    <ArrowRight className="ms-auto h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-purple-600 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
                   )}
                 </Button>
               </Link>
 
-              <Link href={toLocalizedPath("/wishlist")}>
+              <Link href={toLocalizedPath("/wishlist")} className="group">
                 <Button
                   variant="outline"
-                  className="w-full justify-start h-12 hover:bg-red-50 hover:border-red-200 transition-colors"
+                  className="w-full justify-start h-12 border-gray-200 text-gray-700 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:text-red-700"
                 >
-                  <Heart className="mr-3 h-4 w-4 text-red-500" />
+                  <Heart className="me-3 h-4 w-4 text-red-500 transition-colors group-hover:text-red-600" />
                   <span className="font-medium">
                     {t(
                       dictionary,
@@ -883,20 +900,20 @@ export default function UserDashboardPage() {
                       "Wishlist",
                     )}
                   </span>
-                  <ArrowRight className="ml-auto h-4 w-4" />
+                  <ArrowRight className="ms-auto h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-red-600 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
                 </Button>
               </Link>
 
-              <Link href={toLocalizedPath("/user/profile")}>
+              <Link href={toLocalizedPath("/user/profile")} className="group">
                 <Button
                   variant="outline"
-                  className="w-full justify-start h-12 hover:bg-green-50 hover:border-green-200 transition-colors"
+                  className="w-full justify-start h-12 border-gray-200 text-gray-700 transition-all duration-200 hover:border-green-300 hover:bg-green-50 hover:text-green-700"
                 >
-                  <User className="mr-3 h-4 w-4 text-green-500" />
+                  <User className="me-3 h-4 w-4 text-green-500 transition-colors group-hover:text-green-600" />
                   <span className="font-medium">
                     {d("profileSettings", "Profile Settings")}
                   </span>
-                  <ArrowRight className="ml-auto h-4 w-4" />
+                  <ArrowRight className="ms-auto h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:text-green-600 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
                 </Button>
               </Link>
             </div>
@@ -906,9 +923,10 @@ export default function UserDashboardPage() {
 
       {/* Application Success Notification */}
       <ApplicationSuccessNotification
-        isVisible={showNotification}
-        onClose={() => setShowNotification(false)}
+        isVisible={showSuccessNotification}
+        onClose={() => setShowSuccessNotification(false)}
         type={notificationType}
+        userName={displayName}
       />
     </div>
   );

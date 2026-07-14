@@ -1,37 +1,25 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useParams, useRouter } from "next/navigation";
-import { useIsAdmin } from "@/lib/adminUtils";
-import Container from "@/components/Container";
 
 interface AdminAuthGuardProps {
   children: React.ReactNode;
+  // Admin status is resolved on the server (where ADMIN_EMAIL is readable) and
+  // passed in, so this guard never depends on client-only env vars.
+  isAdmin: boolean;
 }
 
-const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
-  const { user, isLoaded } = useUser();
+const AdminAuthGuard = ({ children, isAdmin }: AdminAuthGuardProps) => {
   const router = useRouter();
   const params = useParams();
   const lang = typeof params?.lang === "string" ? params.lang : "en";
-  const isAdmin = useIsAdmin(user?.primaryEmailAddress?.emailAddress);
 
   useEffect(() => {
-    if (isLoaded && !isAdmin) {
+    if (!isAdmin) {
       router.push(`/${lang}/admin/access-denied`);
     }
-  }, [isLoaded, isAdmin, router, lang]);
-
-  if (!isLoaded) {
-    return (
-      <Container className="py-10">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-shop_dark_green"></div>
-        </div>
-      </Container>
-    );
-  }
+  }, [isAdmin, router, lang]);
 
   if (!isAdmin) {
     return null;

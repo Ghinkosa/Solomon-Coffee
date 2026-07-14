@@ -2,6 +2,7 @@ import React from "react";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
 import { currentUser } from "@clerk/nextjs/server";
+import { isUserAdmin } from "@/lib/adminUtils";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -10,6 +11,11 @@ interface AdminLayoutProps {
 
 const AdminLayout = async ({ children }: AdminLayoutProps) => {
   const user = await currentUser();
+
+  const isAdmin = isUserAdmin(
+    user?.primaryEmailAddress?.emailAddress ??
+      user?.emailAddresses?.[0]?.emailAddress,
+  );
 
   const serializedUser = user
     ? {
@@ -26,7 +32,7 @@ const AdminLayout = async ({ children }: AdminLayoutProps) => {
     : null;
 
   return (
-    <AdminAuthGuard>
+    <AdminAuthGuard isAdmin={isAdmin}>
       <AdminShell user={serializedUser}>{children}</AdminShell>
     </AdminAuthGuard>
   );

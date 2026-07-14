@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import { getAccountDiscount } from "@/lib/checkout-pricing";
 import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
+import { isUserAdmin } from "@/lib/adminUtils";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -20,7 +21,9 @@ export async function GET() {
     }
 
     const userId = clerkUser.id;
-    const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+    const email =
+      clerkUser.primaryEmailAddress?.emailAddress ??
+      clerkUser.emailAddresses?.[0]?.emailAddress;
 
     // Fetch all data in parallel
     const [user, orders, notifications, accountProfile] = await Promise.all([
@@ -62,6 +65,7 @@ export async function GET() {
         user: user || null,
         ordersCount: orders || 0,
         isEmployee: user?.isEmployee || false,
+        isAdmin: isUserAdmin(email),
         unreadNotifications: notifications?.length || 0,
         accountDiscountRate: accountDiscount.rate,
         accountDiscountType: accountDiscount.type,
@@ -82,6 +86,7 @@ export async function GET() {
         user: null,
         ordersCount: 0,
         isEmployee: false,
+        isAdmin: false,
         unreadNotifications: 0,
         accountDiscountRate: 0,
         accountDiscountType: null,

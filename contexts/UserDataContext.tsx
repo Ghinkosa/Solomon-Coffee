@@ -14,6 +14,7 @@ type AccountDiscountType = "business" | "premium" | null;
 interface UserData {
   ordersCount: number;
   isEmployee: boolean;
+  isAdmin: boolean;
   unreadNotifications: number;
   accountDiscountRate: number;
   accountDiscountType: AccountDiscountType;
@@ -37,6 +38,7 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
   const [userData, setUserData] = useState<UserData>({
     ordersCount: 0,
     isEmployee: false,
+    isAdmin: false,
     unreadNotifications: 0,
     accountDiscountRate: 0,
     accountDiscountType: null,
@@ -71,6 +73,7 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
           const newUserData = {
             ordersCount: data.ordersCount || 0,
             isEmployee: data.isEmployee || false,
+            isAdmin: data.isAdmin || false,
             unreadNotifications: data.unreadNotifications || 0,
             accountDiscountRate: data.accountDiscountRate || 0,
             accountDiscountType: data.accountDiscountType || null,

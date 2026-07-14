@@ -117,7 +117,7 @@ export default function UserSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Bell className="mr-2 h-5 w-5" />
+            <Bell className="me-2 h-5 w-5" />
             {s("notificationsTitle", "Notification Preferences")}
           </CardTitle>
           <CardDescription>
@@ -199,7 +199,7 @@ export default function UserSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Shield className="mr-2 h-5 w-5" />
+            <Shield className="me-2 h-5 w-5" />
             {s("securityTitle", "Security & Privacy")}
           </CardTitle>
           <CardDescription>
@@ -253,7 +253,7 @@ export default function UserSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Download className="mr-2 h-5 w-5" />
+            <Download className="me-2 h-5 w-5" />
             {s("dataTitle", "Data Management")}
           </CardTitle>
           <CardDescription>
@@ -269,7 +269,7 @@ export default function UserSettingsPage() {
               </p>
             </div>
             <Button variant="outline" onClick={handleExportData}>
-              <Download className="mr-2 h-4 w-4" />
+              <Download className="me-2 h-4 w-4" />
               {s("export", "Export")}
             </Button>
           </div>
@@ -279,7 +279,7 @@ export default function UserSettingsPage() {
           <div className="space-y-4">
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
               <div className="flex items-start space-x-3">
-                <Trash2 className="h-5 w-5 text-red-500 mt-0.5" />
+                <Trash2 className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
                 <div className="flex-1">
                   <h3 className="text-sm font-medium text-red-800">
                     {s("deleteAccount", "Delete Account")}
@@ -296,7 +296,7 @@ export default function UserSettingsPage() {
                     className="mt-3"
                     onClick={handleDeleteAccount}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
+                    <Trash2 className="me-2 h-4 w-4" />
                     {s("deleteAccount", "Delete Account")}
                   </Button>
                 </div>
