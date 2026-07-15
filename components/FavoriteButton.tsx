@@ -3,7 +3,6 @@ import { Product } from "@/sanity.types";
 import useCartStore from "@/store";
 import { Heart } from "lucide-react";
 import BreadcrumbLink from "@/components/BreadcrumbLink";
-import { useUser } from "@clerk/nextjs";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import isArray from "js-isarray";
@@ -22,8 +21,7 @@ const FavoriteButton = ({
   product?: Product;
   variant?: "light" | "dark";
 }) => {
-  const { favoriteProduct, addToFavorite, openAuthSidebar } = useCartStore();
-  const { isSignedIn } = useUser();
+  const { favoriteProduct, addToFavorite } = useCartStore();
   const dictionary = useDictionary();
   const [existingProduct, setExistingProduct] = useState<Product | null>(null);
   const toLocalizedPath = useLocalizedPath();
@@ -40,10 +38,6 @@ const FavoriteButton = ({
     e: React.MouseEvent<HTMLSpanElement | HTMLButtonElement>,
   ) => {
     e.preventDefault();
-    if (!isSignedIn) {
-      openAuthSidebar("signIn");
-      return;
-    }
 
     if (product?._id) {
       const isRemoving = !!existingProduct;
@@ -69,7 +63,6 @@ const FavoriteButton = ({
           },
         );
 
-        // Track wishlist analytics
         if (isRemoving) {
           trackWishlistRemove({
             productId: product._id,
@@ -85,18 +78,7 @@ const FavoriteButton = ({
     }
   };
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
-    if (!isSignedIn) {
-      e.preventDefault();
-      openAuthSidebar("signIn");
-    }
-  };
-
   const isProductMode = showProduct || !!product;
-
-  if (!isProductMode && !isSignedIn) {
-    return null;
-  }
 
   const isDark = variant === "dark";
   const navIconClass = isDark
@@ -111,25 +93,31 @@ const FavoriteButton = ({
       {!isProductMode ? (
         <BreadcrumbLink
           href={toLocalizedPath("/wishlist")}
-          onClick={handleWishlistClick}
           className={navLinkClass}
+          aria-label={t(dictionary, "wishlist.title", "Wishlist")}
         >
           <Heart className={`hoverEffect ${navIconClass}`} />
           {isArray(favoriteProduct) && favoriteProduct.length > 0 && (
-          <span
-            className={`absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-0.5 text-[10px] font-bold ${
-              isDark
-                ? "bg-shop_orange text-shop_dark_green"
-                : "bg-shop_dark_green text-white"
-            } ${favoriteProduct.length > 9 ? "px-1" : ""}`}
-          >
-            {favoriteProduct.length > 9 ? "9+" : favoriteProduct.length}
-          </span>
+            <span
+              className={`absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-0.5 text-[10px] font-bold ${
+                isDark
+                  ? "bg-shop_orange text-shop_dark_green"
+                  : "bg-shop_dark_green text-white"
+              } ${favoriteProduct.length > 9 ? "px-1" : ""}`}
+            >
+              {favoriteProduct.length > 9 ? "9+" : favoriteProduct.length}
+            </span>
           )}
         </BreadcrumbLink>
       ) : (
         <button
+          type="button"
           onClick={handleFavorite}
+          aria-label={
+            existingProduct
+              ? t(dictionary, "wishlist.toasts.removed", "Remove from wishlist")
+              : t(dictionary, "wishlist.toasts.added", "Add to wishlist")
+          }
           className="group relative hover:text-shop_light_green hoverEffect border border-shop_light_green/80 p-1.5 rounded-sm "
         >
           <Heart

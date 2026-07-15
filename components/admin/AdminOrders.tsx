@@ -20,7 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RefreshCw, Trash2, Eye, Package } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { RefreshCw, Trash2, Eye, Package, Search } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { OrdersSkeleton } from "./SkeletonLoaders";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
@@ -33,6 +34,8 @@ const AdminOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [orderStatus, setOrderStatus] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -48,6 +51,11 @@ const AdminOrders: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const limit = perPage;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Utility functions
   const formatCurrency = (amount: number): string => {
@@ -100,10 +108,13 @@ const AdminOrders: React.FC = () => {
       setLoading(true);
       try {
         const statusParam = orderStatus === "all" ? "" : orderStatus;
-        const timestamp = Date.now(); // Add timestamp to bust cache
+        const timestamp = Date.now();
+        const searchParam = debouncedSearch
+          ? `&search=${encodeURIComponent(debouncedSearch)}`
+          : "";
         const url = `/api/admin/orders?limit=${limit}&offset=${
           page * limit
-        }&status=${statusParam}&_t=${timestamp}`;
+        }&status=${statusParam}${searchParam}&_t=${timestamp}`;
 
         const data = await safeApiCall(url);
 
@@ -120,7 +131,7 @@ const AdminOrders: React.FC = () => {
         setLoading(false);
       }
     },
-    [orderStatus, limit]
+    [orderStatus, limit, debouncedSearch],
   );
 
   // Selection functions
@@ -280,11 +291,11 @@ const AdminOrders: React.FC = () => {
     fetchOrders(currentPage);
   }, [fetchOrders, currentPage]);
 
-  // Reset page when filters change - Combined effect
+  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(0);
     setSelectedOrders([]);
-  }, [orderStatus, perPage]);
+  }, [orderStatus, perPage, debouncedSearch]);
 
   return (
     <>
@@ -309,6 +320,16 @@ const AdminOrders: React.FC = () => {
         />
 
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="relative w-full max-w-md sm:w-72">
+            <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search order #, name, or email…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="ps-9"
+              aria-label="Search orders"
+            />
+          </div>
           <Select
             value={perPage.toString()}
             onValueChange={handlePerPageChange}
@@ -405,9 +426,11 @@ const AdminOrders: React.FC = () => {
                             No orders found
                           </p>
                           <p className="text-sm text-gray-500">
-                            {orderStatus !== "all"
-                              ? `No orders with status "${orderStatus}". Try selecting "All Status".`
-                              : "There are no orders in the system yet."}
+                            {debouncedSearch
+                              ? `No orders match “${debouncedSearch}”. Try another order number, name, or email.`
+                              : orderStatus !== "all"
+                                ? `No orders with status "${orderStatus}". Try selecting "All Status".`
+                                : "There are no orders in the system yet."}
                           </p>
                           <p className="text-xs text-gray-400 mt-2">
                             Total orders in database: {pagination.totalCount}

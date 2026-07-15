@@ -4,10 +4,12 @@ import { writeClient } from "@/sanity/lib/client";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { refundOrderPayment, buildRefundMessage } from "@/lib/stripeRefund";
 import { restoreOrderStock } from "@/lib/stock";
+import { buildTimelineFieldsForStatus } from "@/lib/orderTimelineSync";
+import { invalidateOrder } from "@/lib/cache";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const admin = await requireAdminUser();
@@ -16,7 +18,6 @@ export async function PATCH(
     const { id } = await params;
     const updateData = await req.json();
 
-    // Fetch the current order to get previous status and user info
     const currentOrder = await writeClient.fetch(
       `*[_type == "order" && _id == $id][0] {
         _id,
@@ -28,6 +29,17 @@ export async function PATCH(
         totalPrice,
         amountPaid,
         clerkUserId,
+        addressConfirmedAt,
+        addressConfirmedBy,
+        orderConfirmedAt,
+        orderConfirmedBy,
+        packedAt,
+        packedBy,
+        dispatchedAt,
+        dispatchedBy,
+        deliveredAt,
+        deliveredBy,
+        statusHistory,
         user -> {
           clerkUserId,
           email,
@@ -35,14 +47,13 @@ export async function PATCH(
           lastName
         }
       }`,
-      { id }
+      { id },
     );
 
     if (!currentOrder) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    // Validate update data
     const allowedFields = [
       "status",
       "totalPrice",
@@ -51,7 +62,6 @@ export async function PATCH(
       "notes",
       "estimatedDelivery",
       "actualDelivery",
-      // Employee tracking fields
       "addressConfirmedBy",
       "addressConfirmedAt",
       "orderConfirmedBy",
@@ -71,31 +81,27 @@ export async function PATCH(
       "deliveryAttempts",
       "rescheduledDate",
       "rescheduledReason",
-      // Cash collection
       "cashCollected",
       "cashCollectedAmount",
       "cashCollectedAt",
       "paymentReceivedBy",
       "paymentReceivedAt",
-      // Cancellation fields
       "cancelledAt",
       "cancelledBy",
       "refundedToWallet",
       "refundAmount",
+      "statusHistory",
     ];
 
-    const filteredUpdateData: Record<string, string | number | boolean | Date> =
-      {};
+    const filteredUpdateData: Record<string, unknown> = {};
     Object.keys(updateData).forEach((key) => {
       if (allowedFields.includes(key) && updateData[key] !== undefined) {
         filteredUpdateData[key] = updateData[key];
       }
     });
 
-    // Add update timestamp
     filteredUpdateData._updatedAt = new Date().toISOString();
 
-    // Handle order cancellation and Stripe refund
     let stripeRefunded = false;
     let refundAmount = 0;
     let manualRefundRequired = false;
@@ -123,13 +129,30 @@ export async function PATCH(
       filteredUpdateData.cancelledBy = admin.userEmail || "admin";
     }
 
-    // Update the order in Sanity
+    // Sync customer OrderTimeline timestamps when admin changes status
+    if (
+      typeof updateData.status === "string" &&
+      updateData.status !== currentOrder.status
+    ) {
+      const timelinePatch = buildTimelineFieldsForStatus(
+        updateData.status,
+        currentOrder,
+        admin.userEmail || "admin",
+        {
+          notes:
+            typeof updateData.notes === "string" && updateData.notes.trim()
+              ? updateData.notes.trim()
+              : undefined,
+        },
+      );
+      Object.assign(filteredUpdateData, timelinePatch);
+    }
+
     const updatedOrder = await writeClient
       .patch(id)
       .set(filteredUpdateData)
       .commit();
 
-    // Return the reserved inventory when an order is cancelled (idempotent).
     if (
       updateData.status === "cancelled" &&
       currentOrder.status !== "cancelled"
@@ -137,9 +160,7 @@ export async function PATCH(
       await restoreOrderStock(id);
     }
 
-    // Track order status update and send notification if status was changed
     if (updateData.status && updateData.status !== currentOrder.status) {
-      // Track analytics
       try {
         await fetch(
           `${
@@ -157,16 +178,15 @@ export async function PATCH(
                 adminUserId: admin.userId,
               },
             }),
-          }
+          },
         );
       } catch (analyticsError) {
         console.error(
           "Failed to track order status update event:",
-          analyticsError
+          analyticsError,
         );
       }
 
-      // Send notification to user
       try {
         const userClerkId =
           currentOrder.clerkUserId || currentOrder.user?.clerkUserId;
@@ -181,16 +201,20 @@ export async function PATCH(
           });
         } else {
           console.warn(
-            `⚠️ Cannot send notification: No clerkUserId found for order ${id}`
+            `Cannot send notification: No clerkUserId found for order ${id}`,
           );
         }
       } catch (notificationError) {
         console.error(
           "Failed to send order status notification:",
-          notificationError
+          notificationError,
         );
-        // Don't fail the request if notification fails
       }
+
+      await invalidateOrder(
+        id,
+        currentOrder.clerkUserId || currentOrder.user?.clerkUserId,
+      );
     }
 
     const refundResult = {
@@ -199,26 +223,37 @@ export async function PATCH(
       refundAmount,
     };
 
+    const wasCancelled =
+      updateData.status === "cancelled" && currentOrder.status !== "cancelled";
+    const statusChanged =
+      typeof updateData.status === "string" &&
+      updateData.status !== currentOrder.status;
+
+    const message = wasCancelled
+      ? buildRefundMessage(refundResult, { adminContext: true })
+      : statusChanged
+        ? `Order status updated to ${String(updateData.status).replace(/_/g, " ")}.`
+        : "Order updated successfully.";
+
     return NextResponse.json({
-      message: buildRefundMessage(refundResult, { adminContext: true }),
+      message,
       order: updatedOrder,
       stripeRefunded,
       manualRefundRequired,
-      refundAmount:
-        stripeRefunded || manualRefundRequired ? refundAmount : 0,
+      refundAmount: stripeRefunded || manualRefundRequired ? refundAmount : 0,
     });
   } catch (error) {
     console.error("Error updating order:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const admin = await requireAdminUser();
@@ -226,7 +261,6 @@ export async function GET(
 
     const { id } = await params;
 
-    // Fetch the specific order from Sanity
     const query = `
       *[_type == "order" && _id == $id][0] {
         _id,
@@ -263,7 +297,6 @@ export async function GET(
         notes,
         estimatedDelivery,
         actualDelivery,
-        // Employee tracking fields
         addressConfirmedBy,
         addressConfirmedAt,
         orderConfirmedBy,
@@ -283,17 +316,14 @@ export async function GET(
         deliveryAttempts,
         rescheduledDate,
         rescheduledReason,
-        // Cash collection
         cashCollected,
         cashCollectedAmount,
         cashCollectedAt,
         paymentReceivedBy,
         paymentReceivedAt,
-        // Cancellation request fields
         cancellationRequested,
         cancellationRequestedAt,
         cancellationRequestReason,
-        // Cancellation fields
         cancelledAt,
         cancelledBy,
         cancellationReason,
@@ -314,7 +344,7 @@ export async function GET(
     console.error("Error fetching order:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,11 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server";
 import Container from "@/components/Container";
-import NoAccessToCart from "@/components/NoAccessToCart";
 import WishlistProducts from "@/components/WishlistProducts";
 import { Heart } from "lucide-react";
 import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
+import WishlistSignInHint from "@/components/WishlistSignInHint";
 
 const WishListPage = async ({
   params,
@@ -15,40 +14,30 @@ const WishListPage = async ({
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
   const bc = (dictionary?.breadcrumb ?? {}) as Record<string, string>;
-  const user = await currentUser();
 
   return (
     <Container className="py-6">
-      {/* Breadcrumb */}
       <DynamicBreadcrumb
         customItems={[
           { label: bc.home ?? dictionary.common.home, href: "/" },
-          { label: bc.dashboard ?? "Dashboard", href: "/user" },
           { label: dictionary.wishlist.title },
         ]}
       />
 
-      {/* Page Header */}
-      <div className="flex items-center gap-2 mb-8">
-        <Heart className="w-6 h-6 text-red-500" />
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {dictionary.wishlist.title}
-          </h1>
-          <p className="text-gray-600 mt-1">{dictionary.wishlist.subtitle}</p>
+      <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex items-center gap-2">
+          <Heart className="h-6 w-6 text-red-500" />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {dictionary.wishlist.title}
+            </h1>
+            <p className="mt-1 text-gray-600">{dictionary.wishlist.subtitle}</p>
+          </div>
         </div>
+        <WishlistSignInHint />
       </div>
 
-      {/* Content */}
-      {user ? (
-        <WishlistProducts />
-      ) : (
-        <NoAccessToCart
-          details={dictionary.wishlist.loginDetails}
-          lang={lang}
-          logoText={dictionary.logo}
-        />
-      )}
+      <WishlistProducts />
     </Container>
   );
 };

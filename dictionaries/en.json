@@ -2,6 +2,9 @@
   "wishlist": {
     "title": "My Wishlist",
     "subtitle": "Save your favorite coffees and brew gear for later",
+    "guestHint": "Saved on this device only.",
+    "guestSignIn": "Sign in",
+    "guestHintSuffix": "to keep favorites across devices.",
     "loginDetails": "Log in to save and view your favorite coffees. Don’t miss out on the lots you love.",
     "removed": "Product removed from wishlist",
     "cleared": "All products removed from wishlist",

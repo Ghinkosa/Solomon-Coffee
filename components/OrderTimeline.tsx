@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { isTimelineStepComplete } from "@/lib/orderTimelineSync";
 
 type TimelineEventKey =
   | "order_placed"
@@ -92,14 +93,33 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ order }) => {
   const getTimelineEvents = useCallback((): TimelineEvent[] => {
     const events: TimelineEvent[] = [];
     const isCancelled = order.status === "cancelled";
-    const isAddressConfirmed = !!order.addressConfirmedAt;
-    const isOrderConfirmed = !!order.orderConfirmedAt;
-    const isPacked = !!order.packedAt;
-    const isDispatched = !!(
-      order.dispatchedAt || order.assignedDeliverymanName
+    const isAddressConfirmed = isTimelineStepComplete(
+      order.status,
+      "address_confirmed",
+      order.addressConfirmedAt,
+    );
+    const isOrderConfirmed = isTimelineStepComplete(
+      order.status,
+      "order_confirmed",
+      order.orderConfirmedAt,
+    );
+    const isPacked = isTimelineStepComplete(
+      order.status,
+      "packed",
+      order.packedAt,
+    );
+    const isDispatched = isTimelineStepComplete(
+      order.status,
+      "ready_for_delivery",
+      order.dispatchedAt,
+      !!order.assignedDeliverymanName,
     );
     const isCashCollected = !!order.cashCollectedAt;
-    const isDelivered = !!order.deliveredAt;
+    const isDelivered = isTimelineStepComplete(
+      order.status,
+      "delivered",
+      order.deliveredAt,
+    );
     const isCOD = order.paymentStatus === "pending";
 
     events.push({

@@ -228,7 +228,8 @@ const Sidebar: FC<SidebarProps> = ({
                       </button>
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
-                      {dictionary?.sidebar?.auth?.signInPrompt ?? "Sign in to access your orders and wishlist"}
+                      {dictionary?.sidebar?.auth?.signInPrompt ??
+                        "Sign in to track orders and keep favorites across devices"}
                     </p>
                   </div>
                 </SignedOut>
@@ -237,65 +238,42 @@ const Sidebar: FC<SidebarProps> = ({
 
             {/* Quick Stats Grid */}
             <div className="grid gap-3">
-              <ClerkLoaded>
-                <SignedIn>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Link
-                      onClick={onClose}
-                      href={localizedHref("/cart")}
-                      className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
-                    >
-                      <div className="relative mb-1">
-                        <ShoppingBag className="h-6 w-6 text-gray-600 transition-colors group-hover:text-shop_dark_green" />
-                        {items?.length > 0 && (
-                          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-shop_orange text-[10px] font-bold text-white">
-                            {items.length}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs font-medium text-gray-700">
-                        {dictionary?.sidebar?.stats?.cart ?? "Cart"}
+              <div className="grid grid-cols-2 gap-3">
+                <Link
+                  onClick={onClose}
+                  href={localizedHref("/cart")}
+                  className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
+                >
+                  <div className="relative mb-1">
+                    <ShoppingBag className="h-6 w-6 text-gray-600 transition-colors group-hover:text-shop_dark_green" />
+                    {items?.length > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-shop_orange text-[10px] font-bold text-white">
+                        {items.length}
                       </span>
-                    </Link>
-                    <Link
-                      onClick={onClose}
-                      href={localizedHref("/wishlist")}
-                      className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
-                    >
-                      <div className="relative mb-1">
-                        <Heart className="h-6 w-6 text-gray-600 transition-colors group-hover:text-pink-500" />
-                        {favoriteProduct?.length > 0 && (
-                          <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-pink-500 text-[10px] font-bold text-white">
-                            {favoriteProduct.length}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs font-medium text-gray-700">
-                        {dictionary?.sidebar?.stats?.wishlist ?? "Wishlist"}
-                      </span>
-                    </Link>
+                    )}
                   </div>
-                </SignedIn>
-                <SignedOut>
-                  <Link
-                    onClick={onClose}
-                    href={localizedHref("/cart")}
-                    className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
-                  >
-                    <div className="relative mb-1">
-                      <ShoppingBag className="h-6 w-6 text-gray-600 transition-colors group-hover:text-shop_dark_green" />
-                      {items?.length > 0 && (
-                        <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-shop_orange text-[10px] font-bold text-white">
-                          {items.length}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs font-medium text-gray-700">
-                      {dictionary?.sidebar?.stats?.cart ?? "Cart"}
-                    </span>
-                  </Link>
-                </SignedOut>
-              </ClerkLoaded>
+                  <span className="text-xs font-medium text-gray-700">
+                    {dictionary?.sidebar?.stats?.cart ?? "Cart"}
+                  </span>
+                </Link>
+                <Link
+                  onClick={onClose}
+                  href={localizedHref("/wishlist")}
+                  className="group flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:border-shop_light_green hover:shadow-md"
+                >
+                  <div className="relative mb-1">
+                    <Heart className="h-6 w-6 text-gray-600 transition-colors group-hover:text-pink-500" />
+                    {favoriteProduct?.length > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-pink-500 text-[10px] font-bold text-white">
+                        {favoriteProduct.length}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs font-medium text-gray-700">
+                    {dictionary?.sidebar?.stats?.wishlist ?? "Wishlist"}
+                  </span>
+                </Link>
+              </div>
             </div>
 
             {/* Menu Sections */}

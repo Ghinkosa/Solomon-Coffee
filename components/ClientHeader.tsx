@@ -73,11 +73,7 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
 
             <div className="flex items-center">
               <CartIcon compact />
-              <SignedIn>
-                <div className="hidden sm:contents">
-                  <FavoriteButton />
-                </div>
-              </SignedIn>
+              <FavoriteButton />
               <div className="hidden md:block">
                 <LanguageSwitcher lang={lang} />
               </div>

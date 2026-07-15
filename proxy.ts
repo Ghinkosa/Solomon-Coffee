@@ -8,10 +8,8 @@ import { resolveAdminAccess } from "@/lib/adminGate";
 
 const isProtectedRoute = createRouteMatcher([
   "/user(.*)",
-  "/wishlist(.*)",
   "/settings(.*)",
   "/:locale/user(.*)",
-  "/:locale/wishlist(.*)",
   "/:locale/settings(.*)",
 ]);
 

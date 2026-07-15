@@ -75,6 +75,8 @@ interface OrderByIdResult {
   paymentReceivedAt?: string;
   deliveredBy?: string;
   deliveredAt?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
 }
 
 // User Queries
@@ -310,7 +312,9 @@ export const ORDER_BY_ID_QUERY = `
     cashCollectedAt,
     paymentReceivedAt,
     deliveredBy,
-    deliveredAt
+    deliveredAt,
+    cancelledAt,
+    cancelledBy
   }
 `;
 

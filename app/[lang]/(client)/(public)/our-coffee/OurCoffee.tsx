@@ -261,7 +261,7 @@ function ProcessGallery({
       </div>
 
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="max-h-[95vh] w-[min(1100px,96vw)] max-w-5xl border-0 bg-transparent p-0 shadow-none sm:rounded-none [&>button]:right-2 [&>button]:top-2 [&>button]:z-20 [&>button]:h-10 [&>button]:w-10 [&>button]:rounded-full [&>button]:border [&>button]:border-white/25 [&>button]:bg-black/50 [&>button]:text-white [&>button]:opacity-100 [&>button]:hover:bg-black/70 [&>button]:hover:text-white">
+        <DialogContent className="max-h-[95vh] w-[min(1100px,96vw)] max-w-5xl border-0 bg-transparent p-0 shadow-none sm:rounded-none [&>button]:right-2 [&>button]:top-2 [&>button]:z-20 [&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-full [&>button]:border [&>button]:border-white/25 [&>button]:bg-black/50 [&>button]:p-0 [&>button]:text-white [&>button]:opacity-100 [&>button]:hover:bg-black/70 [&>button]:hover:text-white [&>button>svg]:m-0 [&>button>svg]:shrink-0">
           <DialogTitle className="sr-only">
             {images[lightboxIndex]?.alt ?? active?.alt ?? title}
           </DialogTitle>

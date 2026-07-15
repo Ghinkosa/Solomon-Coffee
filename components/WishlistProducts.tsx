@@ -14,15 +14,12 @@ import { Heart, X, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
+  DialogContent,
   DialogDescription,
-  DialogTitle,
-  DialogPortal,
-  DialogOverlay,
-  DialogHeader,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "./ui/dialog";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { cn } from "@/lib/utils";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
@@ -267,53 +264,41 @@ const WishlistProducts = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogPortal>
-          <DialogOverlay />
-          <DialogPrimitive.Content
-            className={cn(
-              "fixed left-[50%] top-[50%] z-50 grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg"
-            )}
-          >
-            <DialogHeader className="text-center space-y-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-50 border-4 border-red-100">
-                <AlertTriangle className="h-8 w-8 text-red-600 animate-pulse" />
-              </div>
-              <div className="space-y-2">
-                <DialogTitle className="text-xl font-bold text-gray-900">
-                  {clearModal?.title ?? "Clear Wishlist"}
-                </DialogTitle>
-                <DialogDescription className="text-gray-600 leading-relaxed">
-                  {(clearModal?.description ??
-                    "You're about to remove {count} products from your wishlist. This action cannot be undone.")
-                    .replace("{count}", String(favoriteProduct.length))}
-                </DialogDescription>
-              </div>
-            </DialogHeader>
-            <DialogFooter className="gap-3 sm:gap-2 pt-6">
-              <Button
-                variant="outline"
-                onClick={() => setShowDeleteModal(false)}
-                className="w-full sm:w-auto border-gray-300 hover:bg-gray-50 font-medium"
-              >
-                {clearModal?.keepProducts ?? "Keep Products"}
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={confirmResetFavorite}
-                className="w-full sm:w-auto bg-red-600 hover:bg-red-700 focus:ring-red-500 font-semibold shadow-lg hover:shadow-red-200"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                {clearModal?.confirm ?? "Clear All Products"}
-              </Button>
-            </DialogFooter>
-            <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-              <X className="h-4 w-4" />
-              <span className="sr-only">{t(dictionary, "common.close", "Close")}</span>
-            </DialogPrimitive.Close>
-          </DialogPrimitive.Content>
-        </DialogPortal>
+        <DialogContent className="max-w-md gap-0 p-6 text-center sm:text-center">
+          <DialogHeader className="items-center space-y-4 text-center sm:text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-red-100 bg-red-50">
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
+            <div className="space-y-2">
+              <DialogTitle className="text-xl font-bold text-gray-900">
+                {clearModal?.title ?? "Clear Wishlist"}
+              </DialogTitle>
+              <DialogDescription className="text-center text-gray-600 leading-relaxed">
+                {(clearModal?.description ??
+                  "You're about to remove {count} products from your wishlist. This action cannot be undone.")
+                  .replace("{count}", String(favoriteProduct.length))}
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex-col gap-2 sm:flex-col sm:justify-center sm:space-x-0">
+            <Button
+              variant="destructive"
+              onClick={confirmResetFavorite}
+              className="w-full bg-red-600 font-semibold hover:bg-red-700"
+            >
+              <Trash2 className="me-2 h-4 w-4" />
+              {clearModal?.confirm ?? "Clear All Products"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteModal(false)}
+              className="w-full border-gray-300 font-medium hover:bg-gray-50"
+            >
+              {clearModal?.keepProducts ?? "Keep Products"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </Container>
   );

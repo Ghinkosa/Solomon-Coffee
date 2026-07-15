@@ -2,6 +2,9 @@
   "wishlist": {
     "title": "Mi lista de deseos",
     "subtitle": "Guarda tus cafés y accesorios favoritos para más tarde",
+    "guestHint": "Guardado solo en este dispositivo.",
+    "guestSignIn": "Inicia sesión",
+    "guestHintSuffix": "para conservar favoritos en todos tus dispositivos.",
     "loginDetails": "Inicia sesión para guardar y ver tus cafés favoritos. No te pierdas los lotes que más te gustan.",
     "removed": "Producto eliminado de la lista de deseos",
     "cleared": "Todos los productos eliminados de la lista de deseos",

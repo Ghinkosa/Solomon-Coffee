@@ -18,6 +18,8 @@ export async function GET(req: NextRequest) {
     const offset = parseInt(searchParams.get("offset") || "0");
     const status = searchParams.get("status") || "";
     const paymentMethod = searchParams.get("paymentMethod") || "";
+    const search = (searchParams.get("search") || searchParams.get("query") || "")
+      .trim();
     const sortBy = searchParams.get("sortBy") || "orderDate";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
@@ -43,6 +45,13 @@ export async function GET(req: NextRequest) {
     if (paymentMethod) {
       filters.push(`paymentMethod == $paymentMethod`);
       params.paymentMethod = paymentMethod;
+    }
+    if (search) {
+      // Match order number, customer name, or email (case-insensitive token match)
+      filters.push(
+        `(orderNumber match $searchWild || customerName match $searchWild || email match $searchWild)`,
+      );
+      params.searchWild = `*${search}*`;
     }
 
     const filterClause = filters.join(" && ");
