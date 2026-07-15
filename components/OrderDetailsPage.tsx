@@ -411,7 +411,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             onClick={handleReorder}
             disabled={isReordering}
             variant="outline"
-            className="bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200"
+            className="bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 border-blue-200"
           >
             {isReordering ? (
               <>
@@ -430,7 +430,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
               onClick={() => setShowCancelDialog(true)}
               disabled={isCancelling}
               variant="outline"
-              className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
+              className="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200"
             >
               {isCancelling ? (
                 <>
@@ -890,7 +890,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                   setCancellationReason("");
                 }}
                 disabled={isCancelling}
-                className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
+                className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-foreground font-medium"
               >
                 {d("keepOrder", "Keep Order")}
               </Button>

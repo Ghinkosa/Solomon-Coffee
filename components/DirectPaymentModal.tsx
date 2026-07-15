@@ -191,7 +191,7 @@ const DirectPaymentModal: React.FC<Props> = ({
               variant="outline"
               onClick={handleClose}
               disabled={isProcessing}
-              className="flex-1 h-12 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold"
+              className="flex-1 h-12 border-2 border-gray-300 hover:bg-gray-50 hover:text-foreground hover:border-gray-400 transition-all duration-200 font-semibold"
             >
               {p("cancel", "Cancel")}
             </Button>

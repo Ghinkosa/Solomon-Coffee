@@ -355,7 +355,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                   <p className="text-sm text-gray-500">{p("accountStatus", "Account Status")}</p>
                   <Badge
                     variant="outline"
-                    className="text-green-600 border-green-200"
+                    className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
                   >
                     {p("active", "Active")}
                   </Badge>
@@ -579,7 +579,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                     {address.default && (
                       <Badge
                         variant="outline"
-                        className="text-green-600 border-green-200"
+                        className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
                       >
                         {p("default", "Default")}
                       </Badge>
@@ -682,7 +682,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
               <Button
                 variant="outline"
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
+                className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-foreground font-medium"
                 disabled={isDeleting}
               >
                 {p("cancel", "Cancel")}
@@ -753,7 +753,7 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
               <Button
                 variant="outline"
                 onClick={() => setShowBulkDeleteModal(false)}
-                className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
+                className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-foreground font-medium"
                 disabled={isDeleting}
               >
                 {p("cancel", "Cancel")}

@@ -293,7 +293,7 @@ const WishlistProducts = () => {
             <Button
               variant="outline"
               onClick={() => setShowDeleteModal(false)}
-              className="w-full border-gray-300 font-medium hover:bg-gray-50"
+              className="w-full border-gray-300 font-medium hover:bg-gray-50 hover:text-foreground"
             >
               {clearModal?.keepProducts ?? "Keep Products"}
             </Button>

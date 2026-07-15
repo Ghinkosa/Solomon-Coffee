@@ -452,7 +452,7 @@ export default function AddressEditSidebar({
               <Button
                 variant="outline"
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
+                className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-foreground font-medium"
                 disabled={deleteLoading}
               >
                 {p("cancel", "Cancel")}

@@ -627,7 +627,7 @@ export default function OurCoffee({ dictionary }: { dictionary: any }) {
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-12 rounded-full border-shop_dark_green/25 bg-transparent px-8 text-shop_dark_green hover:bg-shop_dark_green/5"
+                className="h-12 rounded-full border-shop_dark_green/25 bg-transparent px-8 text-shop_dark_green hover:bg-shop_dark_green/5 hover:text-shop_dark_green"
               >
                 <Link href={toLocalizedPath("/contact")}>
                   {cta.learnMore ?? "Learn More"}

@@ -312,7 +312,7 @@ const PrivacyClient = ({ dictionary }: PrivacyClientProps) => {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5"
+                          className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5 hover:text-shop_light_green"
                         >
                           {right.action}
                         </Button>
@@ -356,7 +356,7 @@ const PrivacyClient = ({ dictionary }: PrivacyClientProps) => {
                   <Button
                     asChild
                     variant="outline"
-                    className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5"
+                    className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5 hover:text-shop_light_green"
                   >
                     <Link href={toLocalizedPath("/faq")}>
                       {contact.privacyFaq ?? "Privacy FAQ"}

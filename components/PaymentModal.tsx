@@ -133,7 +133,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               variant="outline"
               onClick={handleClose}
               disabled={isProcessing}
-              className="flex-1 transition-all duration-200 hover:bg-gray-50"
+              className="flex-1 transition-all duration-200 hover:bg-gray-50 hover:text-foreground"
             >
               {p("cancel", "Cancel")}
             </Button>

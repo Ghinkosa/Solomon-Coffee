@@ -572,7 +572,7 @@ export default function AdminSubscriptions() {
                 variant="outline"
                 onClick={() => setDeleteDialogOpen(false)}
                 disabled={isDeleting}
-                className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
+                className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-foreground font-medium"
               >
                 Cancel
               </Button>

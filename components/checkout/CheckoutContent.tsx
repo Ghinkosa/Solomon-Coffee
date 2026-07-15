@@ -853,7 +853,7 @@ export function CheckoutContent() {
             onClick={() => handlePlaceOrder("order")}
             disabled={isPlacingOrder || !checkoutAddressReady || cart.length === 0}
             variant="outline"
-            className="w-full h-12 text-lg font-semibold border-shop_dark_green text-shop_dark_green hover:bg-shop_light_bg"
+            className="w-full h-12 text-lg font-semibold border-shop_dark_green text-shop_dark_green hover:bg-shop_light_bg hover:text-shop_dark_green"
             size="lg"
           >
             {isPlacingOrder && actionType === "order" ? (

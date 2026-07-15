@@ -261,7 +261,7 @@ function RequestTable({
                           variant="outline"
                           disabled={busy || status !== "pending"}
                           onClick={() => openReject(user, type)}
-                          className="border-red-200 text-red-700 hover:bg-red-50"
+                          className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
                         >
                           <XCircle className="mr-1 h-3.5 w-3.5" />
                           Reject
@@ -324,7 +324,7 @@ function RequestTable({
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 border-red-200 text-red-700"
+                    className="flex-1 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
                     disabled={busy || status !== "pending"}
                     onClick={() => openReject(user, type)}
                   >
@@ -451,7 +451,7 @@ function ApprovedAccountsTable({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-red-200 text-red-700 hover:bg-red-50"
+                        className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
                         onClick={() =>
                           openCancel(account, account.accountType)
                         }
@@ -495,7 +495,7 @@ function ApprovedAccountsTable({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-full border-red-200 text-red-700"
+                  className="w-full border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
                   onClick={() => openCancel(account, account.accountType)}
                 >
                   Cancel access

@@ -211,7 +211,7 @@ const TermsClient = ({ dictionary }: TermsClientProps) => {
                   <Button
                     asChild
                     variant="outline"
-                    className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5"
+                    className="border-shop_light_green text-shop_light_green hover:bg-shop_light_green/5 hover:text-shop_light_green"
                   >
                     <Link href={toLocalizedPath("/faq")}>
                       {contact.viewFaq ?? "View FAQ"}

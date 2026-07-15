@@ -67,7 +67,7 @@ export const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
               variant="outline"
               onClick={onClose}
               disabled={isLoading}
-              className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
+              className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-foreground font-medium"
             >
               Cancel
             </Button>

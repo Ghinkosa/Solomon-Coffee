@@ -60,7 +60,7 @@ export default function ClientError({
         </button>
         <a
           href={`/${locale}`}
-          className="rounded-lg border border-shop_dark_green/20 px-5 py-2.5 text-sm font-semibold text-shop_dark_green transition-colors hover:bg-shop_light_bg"
+          className="rounded-lg border border-shop_dark_green/20 px-5 py-2.5 text-sm font-semibold text-shop_dark_green transition-colors hover:bg-shop_light_bg hover:text-shop_dark_green"
         >
           {copy.home}
         </a>

@@ -949,7 +949,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                           <Button
                             variant="outline"
                             size="icon"
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 text-foreground hover:bg-white hover:text-foreground shadow-lg"
                             onClick={goToPrevImage}
                           >
                             <ChevronLeft className="w-4 h-4" />
@@ -957,7 +957,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                           <Button
                             variant="outline"
                             size="icon"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 text-foreground hover:bg-white hover:text-foreground shadow-lg"
                             onClick={goToNextImage}
                           >
                             <ChevronRight className="w-4 h-4" />

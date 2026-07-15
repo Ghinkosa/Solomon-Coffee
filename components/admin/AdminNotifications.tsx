@@ -1478,7 +1478,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
                 variant="outline"
                 onClick={cancelDeleteNotification}
                 disabled={deletingNotificationId === notificationToDelete}
-                className="flex-1 border-gray-300 hover:bg-gray-50 font-medium"
+                className="flex-1 border-gray-300 hover:bg-gray-50 hover:text-foreground font-medium"
               >
                 Cancel
               </Button>
