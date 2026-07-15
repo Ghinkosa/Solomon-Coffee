@@ -1,8 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readClient } from "@/sanity/lib/client";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+
+const LIMIT = 15;
+const WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(`order-lookup:${ip}`, LIMIT, WINDOW_MS);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many lookup attempts. Please try again later.",
+          retryAfterSeconds: rate.retryAfterSeconds,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const { orderNumber, email } = await request.json();
 
     if (!orderNumber || !email) {

@@ -37,6 +37,7 @@ import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import AccountRequestsOverview from "@/components/admin/AccountRequestsOverview";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 interface UserRequest {
   _id: string;
@@ -921,31 +922,22 @@ export default function AccountRequestsClient() {
       />
 
       <div className="relative mx-auto w-full max-w-[1600px] flex-1 space-y-8 p-4 md:p-6 lg:p-8 xl:p-10">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold tracking-[0.2em] text-brand-gold uppercase">
-              Sheba Cup Coffee
-            </p>
-            <h1 className="font-serif text-3xl font-semibold tracking-tight text-shop_dark_green md:text-4xl">
-              Account requests
-            </h1>
-            <p className="max-w-xl text-sm text-light-color md:text-base">
-              Review premium and business applications, then approve, reject, or
-              cancel access.
-            </p>
-          </div>
-          <Button
-            onClick={() => void fetchRequests(true)}
-            variant="outline"
-            disabled={refreshing}
-            className="border-shop_dark_green/20 bg-white/70 text-shop_dark_green hover:bg-white hover:text-shop_dark_green"
-          >
-            <RefreshCw
-              className={cn("mr-2 h-4 w-4", refreshing && "animate-spin")}
-            />
-            {refreshing ? "Updating…" : "Refresh"}
-          </Button>
-        </div>
+        <AdminPageHeader
+          title="Account requests"
+          description="Review premium and business applications, then approve, reject, or cancel access."
+          actions={
+            <Button
+              onClick={() => void fetchRequests(true)}
+              variant="outline"
+              disabled={refreshing}
+            >
+              <RefreshCw
+                className={cn("me-2 h-4 w-4", refreshing && "animate-spin")}
+              />
+              {refreshing ? "Updating…" : "Refresh"}
+            </Button>
+          }
+        />
 
         {fetchError && (
           <Card className="border-red-200 bg-red-50/50 shadow-none">

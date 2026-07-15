@@ -1,31 +1,12 @@
 import { redirect } from "next/navigation";
 import AdminLoginClient from "@/components/admin/AdminLoginClient";
 import { resolveAdminAccess } from "@/lib/adminGate";
+import { safeAdminRedirect } from "@/lib/safeRedirect";
 import { auth } from "@clerk/nextjs/server";
 
 interface AdminLoginPageProps {
   params: Promise<{ lang: string }>;
   searchParams: Promise<{ redirectTo?: string; error?: string }>;
-}
-
-function safeAdminRedirect(redirectTo: string | undefined, lang: string) {
-  const fallback = `/${lang}/admin`;
-  if (!redirectTo) return fallback;
-
-  if (!redirectTo.startsWith("/") || redirectTo.startsWith("//")) {
-    return fallback;
-  }
-
-  const normalized = redirectTo.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
-  if (!normalized.startsWith("/admin")) return fallback;
-  if (
-    normalized.startsWith("/admin/login") ||
-    normalized.startsWith("/admin/access-denied")
-  ) {
-    return fallback;
-  }
-
-  return normalized === redirectTo ? `/${lang}${normalized}` : redirectTo;
 }
 
 export default async function AdminLoginPage({

@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { safeApiCall, handleApiError } from "./apiHelpers";
 import { slugify } from "./productEditorUtils";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 type AdminCategory = {
   _id: string;
@@ -248,35 +249,30 @@ export default function AdminCategories() {
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">Categories</h3>
-          <p className="text-xs text-muted-foreground">
-            Create and manage storefront categories without Content.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Button onClick={openCreate}>
-            <Plus className="me-2 h-4 w-4" />
-            Add category
-          </Button>
-          <Input
-            placeholder="Search categories..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full sm:w-52"
-          />
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => fetchCategories()}
-            aria-label="Refresh"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-6 p-4 md:p-6">
+      <AdminPageHeader
+        title="Categories"
+        description="Organize the storefront catalog into browsable groups."
+        actions={
+          <>
+            <Button onClick={openCreate}>
+              <Plus className="me-2 h-4 w-4" />
+              Add category
+            </Button>
+            <Button variant="outline" onClick={() => fetchCategories()}>
+              <RefreshCw className="me-2 h-4 w-4" />
+              Refresh
+            </Button>
+          </>
+        }
+      />
+
+      <Input
+        placeholder="Search categories..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="max-w-md"
+      />
 
       {loading ? (
         <div className="flex min-h-[240px] items-center justify-center">

@@ -1,14 +1,13 @@
 // Contact configuration using environment variables
+// Set NEXT_PUBLIC_COMPANY_* in production — empty defaults avoid shipping fake place data.
 
 export const contactConfig = {
   company: {
     name: process.env.NEXT_PUBLIC_COMPANY_NAME || "Sheba Cup Coffee",
     email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || "support@shebascoffee.com",
-    phone: process.env.NEXT_PUBLIC_COMPANY_PHONE || "+1 (555) 123-4567",
-    address:
-      process.env.NEXT_PUBLIC_COMPANY_ADDRESS ||
-      "123 Roastery Lane, Coffee District",
-    city: process.env.NEXT_PUBLIC_COMPANY_CITY || "New York, NY 10001, USA",
+    phone: process.env.NEXT_PUBLIC_COMPANY_PHONE || "",
+    address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || "",
+    city: process.env.NEXT_PUBLIC_COMPANY_CITY || "",
     description:
       process.env.NEXT_PUBLIC_COMPANY_DESCRIPTION ||
       "Discover premium coffee at Sheba Cup Coffee, your trusted destination for quality beans, brews, and exceptional customer service.",
@@ -16,10 +15,10 @@ export const contactConfig = {
   businessHours: {
     weekday:
       process.env.NEXT_PUBLIC_COMPANY_BUSINESS_HOURS_WEEKDAY ||
-      "Monday - Friday: 9AM - 6PM EST",
+      "Monday - Friday: 9AM - 6PM",
     weekend:
       process.env.NEXT_PUBLIC_COMPANY_BUSINESS_HOURS_WEEKEND ||
-      "Saturday - Sunday: 10AM - 4PM EST",
+      "Saturday - Sunday: 10AM - 4PM",
   },
   emails: {
     support: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@shebascoffee.com",
@@ -34,15 +33,15 @@ export const contactConfig = {
       "2-4 hours during business hours",
   },
   socialMedia: {
-    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "#",
-    twitter: process.env.NEXT_PUBLIC_TWITTER_URL || "#",
-    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "#",
-    linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || "#",
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "",
+    twitter: process.env.NEXT_PUBLIC_TWITTER_URL || "",
+    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "",
+    linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || "",
   },
   legal: {
     copyright:
       process.env.NEXT_PUBLIC_COPYRIGHT_TEXT ||
-      "© 2024 Sheba Cup Coffee. All rights reserved.",
+      `© ${new Date().getFullYear()} Sheba Cup Coffee. All rights reserved.`,
     privacyPolicy: process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL || "/privacy",
     terms: process.env.NEXT_PUBLIC_TERMS_URL || "/terms",
   },
@@ -61,20 +60,24 @@ export const contactInfo = [
   {
     icon: "MapPin",
     title: "Visit Our Store",
-    details: contactConfig.company.address,
+    details: contactConfig.company.address || "Address coming soon",
     subDetails: contactConfig.company.city,
     color: "text-shop_dark_green",
     bgColor: "bg-shop_dark_green/10",
-    href: `https://maps.google.com/?q=${encodeURIComponent(`${contactConfig.company.address}, ${contactConfig.company.city}`)}`,
+    href: contactConfig.company.address
+      ? `https://maps.google.com/?q=${encodeURIComponent(`${contactConfig.company.address}, ${contactConfig.company.city}`)}`
+      : "#",
   },
   {
     icon: "Phone",
     title: "Call Us",
-    details: contactConfig.company.phone,
+    details: contactConfig.company.phone || "Phone coming soon",
     subDetails: contactConfig.businessHours.weekday,
     color: "text-shop_light_green",
     bgColor: "bg-shop_light_green/10",
-    href: `tel:${contactConfig.company.phone.replace(/\D/g, "")}`,
+    href: contactConfig.company.phone
+      ? `tel:${contactConfig.company.phone.replace(/\D/g, "")}`
+      : "#",
   },
   {
     icon: "Mail",
@@ -84,14 +87,5 @@ export const contactInfo = [
     color: "text-shop_orange",
     bgColor: "bg-shop_orange/10",
     href: `mailto:${contactConfig.emails.support}`,
-  },
-  {
-    icon: "Clock",
-    title: "Business Hours",
-    details: contactConfig.businessHours.weekday,
-    subDetails: contactConfig.businessHours.weekend,
-    color: "text-purple-600",
-    bgColor: "bg-purple-600/10",
-    href: null,
   },
 ];

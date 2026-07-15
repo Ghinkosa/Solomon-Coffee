@@ -18,7 +18,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import {
   Dialog,
@@ -56,6 +55,7 @@ import {
 } from "lucide-react";
 import { safeApiCall, handleApiError } from "./apiHelpers";
 import { showToast } from "@/lib/toast";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 interface User {
   _id: string;
@@ -614,22 +614,19 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
   };
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Notification Management</h1>
-          <p className="text-muted-foreground">
-            Send and manage notifications to users
-          </p>
-        </div>
-        <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-          <SheetTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Send Notification
-            </Button>
-          </SheetTrigger>
+    <div className="space-y-6 p-4 md:p-6">
+      <AdminPageHeader
+        title="Notifications"
+        description="Send messages to customers and review delivery history."
+        actions={
+          <Button onClick={() => setIsSidebarOpen(true)}>
+            <Plus className="me-2 h-4 w-4" />
+            Send notification
+          </Button>
+        }
+      />
+
+      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
           <SheetContent className="w-[600px] sm:w-[600px] p-6" side="right">
             <SheetHeader className="px-0">
               <SheetTitle>Send New Notification</SheetTitle>
@@ -925,7 +922,6 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
             </div>
           </SheetContent>
         </Sheet>
-      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

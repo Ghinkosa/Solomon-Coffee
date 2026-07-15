@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Product, Category } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import { i18n, type Locale } from "@/i18n-config";
+import { contactConfig } from "@/config/contact";
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
@@ -282,27 +283,29 @@ export function generateBreadcrumbSchema(
  * Generate Organization Schema (JSON-LD)
  */
 export function generateOrganizationSchema() {
+  const phone = contactConfig.company.phone || undefined;
+  const sameAs = Object.values(contactConfig.socialMedia).filter(Boolean);
+
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Sheba Cup Coffee",
+    name: contactConfig.company.name,
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
     description:
+      contactConfig.company.description ||
       "Your trusted destination for premium coffee, brewing essentials, and exceptional customer service.",
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: "+1-555-123-4567",
-      contactType: "customer service",
-      areaServed: "US",
-      availableLanguage: "en",
-    },
-    sameAs: [
-      "https://facebook.com/shebascoffee",
-      "https://twitter.com/shebascoffee",
-      "https://instagram.com/shebascoffee",
-      "https://linkedin.com/company/shebas-coffee",
-    ],
+    ...(phone
+      ? {
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: phone,
+            contactType: "customer service",
+            availableLanguage: ["en", "es", "ar"],
+          },
+        }
+      : {}),
+    ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
 

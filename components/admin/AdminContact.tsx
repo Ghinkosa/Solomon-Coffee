@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import {
   Table,
   TableBody,
@@ -217,24 +218,22 @@ export default function AdminContact() {
 
   return (
     <div className="space-y-6 p-4 md:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-serif text-2xl font-semibold text-shop_dark_green md:text-3xl">
-            Messages
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Contact form submissions from the website.
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => void fetchMessages()}
-          disabled={loading}
-        >
-          <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
-          Refresh
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Messages"
+        description="Contact form submissions from the website."
+        actions={
+          <Button
+            variant="outline"
+            onClick={() => void fetchMessages()}
+            disabled={loading}
+          >
+            <RefreshCw
+              className={cn("me-2 h-4 w-4", loading && "animate-spin")}
+            />
+            Refresh
+          </Button>
+        }
+      />
 
       <div className="flex flex-wrap gap-2">
         {STATUS_OPTIONS.map((opt) => {

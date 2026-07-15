@@ -100,52 +100,45 @@ Stripe handles all payment processing securely.
 3.  **Setup Webhook** (for order confirmation):
     - **Local Development**:
       - Follow Stripe's guide to install CLI and listen locally.
-      - Command: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+      - Command: `stripe listen --forward-to localhost:3000/api/webhook`
       - Copy the webhook signing secret (starts with `whsec_`) -> paste to `STRIPE_WEBHOOK_SECRET`.
     - **Production**:
       - Go to **Developers** > **Webhooks** > **Add Endpoint**.
-      - URL: `https://your-domain.com/api/webhooks/stripe`
+      - URL: `https://your-domain.com/api/webhook`
       - Events to select: `checkout.session.completed`, `payment_intent.succeeded`.
       - Copy the Signing Secret -> paste to `STRIPE_WEBHOOK_SECRET`.
 
 ---
 
-## Step 5: Firebase (Database)
+## Step 5: Firebase Analytics (optional)
 
-Firebase is used for storing user profiles, order history, and reviews.
+Firebase is **optional analytics only**. Orders, profiles, and reviews live in **Sanity + Clerk**.
 
-1.  **Create Project**:
-    - Go to [https://console.firebase.google.com/](https://console.firebase.google.com/).
-    - Add a new project.
-
-2.  **Enable Firestore**:
-    - Go to **Build** > **Firestore Database** > **Create Database**.
-    - Start in **Production mode**.
-
-3.  **Get Config**:
-    - Go to **Project Settings** (gear icon).
-    - Scroll down to **Your apps** > select **Web** (`</>`).
-    - Register app (no need for hosting setup yet).
-    - Copy the `firebaseConfig` object values (apiKey, authDomain, etc.) and paste them into the corresponding fields in your `.env` file.
+1.  Create a Firebase web app if you want client analytics.
+2.  Copy the public Firebase config keys into `.env` (`NEXT_PUBLIC_FIREBASE_*`).
+3.  If unset, analytics helpers no-op safely.
 
 ---
 
 ## Step 6: Email Service
 
-To send order confirmations, you need to set up Gmail using OAuth2 (more secure than just a password).
+To send order confirmations, set up Gmail OAuth2 (or later migrate to Resend / branded SMTP).
 
 1.  **Google Cloud Console**:
     - Go to [https://console.cloud.google.com/](https://console.cloud.google.com/).
     - Create a project > Enable **Gmail API**.
     - **Credentials** > **Create Credentials** > **OAuth Client ID** (Web Application).
     - Authorized Redirect URI: `https://developers.google.com/oauthplayground`
-    - Copy **Client ID** and **Client Secret** to `.env`.
+    - Copy **Client ID** and **Client Secret** to `.env` as `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
 
 2.  **Get Refresh Token**:
     - Go to [https://developers.google.com/oauthplayground](https://developers.google.com/oauthplayground).
     - Settings (gear icon) > Check "Use your own OAuth credentials" > Paste Client ID/Secret.
     - Select API: `https://mail.google.com/`.
-    - Authorize > Exchange authorization code for tokens > Copy **Refresh Token** to `.env`.
+    - Authorize > Exchange authorization code for tokens > Copy **Refresh Token** to `.env` as `GOOGLE_REFRESH_TOKEN`.
+    - Set `SENDER_EMAIL_ADDRESS` to the sending mailbox.
+
+3.  **Production tip**: Prefer a domain mailbox with SPF/DKIM so order emails land in inboxes.
 
 ---
 
@@ -160,7 +153,13 @@ You are ready!
 2.  **Open Browser**:
     Visit [http://localhost:3000](http://localhost:3000).
 
+### Production checklist
+
+- `ADMIN_EMAIL` set (server-only; never `NEXT_PUBLIC_ADMIN_EMAIL`)
+- Stripe webhook points at `/api/webhook` with live secret
+- `NEXT_PUBLIC_BASE_URL` is your real HTTPS domain
+- `SANITY_API_READ_TOKEN` is a Viewer token (not the write token)
+
 ### Need Help?
 
 If you have any questions, please verify that all keys in your `.env` file are correct and have no extra spaces.
-For support, contact us at: **reactjsbd@gmail.com**

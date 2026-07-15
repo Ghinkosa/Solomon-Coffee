@@ -22,6 +22,7 @@ import {
   Database,
   Briefcase,
 } from "lucide-react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import {
   Select,
   SelectContent,
@@ -412,66 +413,59 @@ const AdminUsers: React.FC = () => {
 
   return (
     <>
-      <div className="space-y-4 p-4">
-        {/* Header */}
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-          <div className="space-y-2">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <h3 className="text-lg font-semibold">Users Management</h3>
-              <div className="flex flex-wrap gap-2">
-                <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
-                  Total: {totalUsersCount}
-                </div>
-                <div className="px-2 py-1 bg-green-100 text-green-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
-                  <Database className="h-3 w-3 inline mr-1" />
-                  Sanity: {sanityUsersCount}
-                </div>
-                <div className="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs sm:text-sm rounded-full font-medium whitespace-nowrap">
-                  <UserCheck className="h-3 w-3 inline mr-1" />
-                  Active: {activeUsersCount}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground whitespace-nowrap">
-                Show:
-              </span>
-              <Select
-                value={perPage.toString()}
-                onValueChange={(value) => setPerPage(Number(value))}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {perPageOptions.map((option) => (
-                    <SelectItem key={option} value={option.toString()}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:w-64"
+      <div className="space-y-6 p-4 md:p-6">
+        <AdminPageHeader
+          title="Users"
+          description="Manage customer accounts across Clerk and Sanity."
+          actions={
+            <Button
+              onClick={() => fetchUsers(currentPage)}
+              variant="outline"
+              disabled={tableLoading}
+            >
+              <RefreshCw
+                className={cn("me-2 h-4 w-4", tableLoading && "animate-spin")}
               />
-              <Button
-                onClick={() => fetchUsers(currentPage)}
-                size="sm"
-                className="shrink-0"
-                disabled={tableLoading}
-              >
-                <RefreshCw
-                  className={cn("h-4 w-4", tableLoading && "animate-spin")}
-                />
-              </Button>
-            </div>
+              Refresh
+            </Button>
+          }
+        />
+
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <Input
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-md sm:w-64"
+          />
+          <Select
+            value={perPage.toString()}
+            onValueChange={(value) => setPerPage(Number(value))}
+          >
+            <SelectTrigger className="w-full sm:w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {perPageOptions.map((option) => (
+                <SelectItem key={option} value={option.toString()}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <div className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800">
+            Total: {totalUsersCount}
+          </div>
+          <div className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
+            <Database className="mr-1 inline h-3 w-3" />
+            Sanity: {sanityUsersCount}
+          </div>
+          <div className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800">
+            <UserCheck className="mr-1 inline h-3 w-3" />
+            Active: {activeUsersCount}
           </div>
         </div>
 

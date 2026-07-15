@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import {
   Table,
   TableBody,
@@ -401,16 +402,10 @@ export default function AdminBlog() {
 
   return (
     <div className="space-y-6 p-4 md:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-serif text-2xl font-semibold text-shop_dark_green md:text-3xl">
-            Blog
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Write posts and manage blog categories without opening Studio.
-          </p>
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Blog"
+        description="Write posts and manage blog categories without opening Studio."
+      />
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="bg-white/80">

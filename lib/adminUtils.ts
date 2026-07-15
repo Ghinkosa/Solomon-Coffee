@@ -1,8 +1,7 @@
 // Admin utility functions
 export const getAdminEmails = (): string[] => {
-  // Prefer server-only ADMIN_EMAIL; fall back during migration from NEXT_PUBLIC_ADMIN_EMAIL.
-  const adminEmailsEnv =
-    process.env.ADMIN_EMAIL ?? process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  // Server-only — never use NEXT_PUBLIC_ADMIN_EMAIL (leaks in the client bundle).
+  const adminEmailsEnv = process.env.ADMIN_EMAIL;
   if (!adminEmailsEnv) return [];
 
   try {
@@ -32,22 +31,14 @@ export const isUserAdmin = (userEmail: string | null | undefined): boolean => {
 };
 
 /**
- * Comprehensive admin check that considers both database isAdmin field and environment variable
- * @param user - User object with email and isAdmin fields
- * @returns true if user is admin based on either database flag or environment variable
+ * Admin check via ADMIN_EMAIL allowlist only (matches proxy / requireAdminUser).
+ * Sanity `isAdmin` is ignored — set ADMIN_EMAIL for all staff who need ops access.
  */
 export const isAdmin = (
   user: { email?: string | null; isAdmin?: boolean } | null | undefined
 ): boolean => {
-  if (!user) return false;
-
-  // Check if user has isAdmin flag set in database
-  if (user.isAdmin === true) return true;
-
-  // Fallback to environment variable check
-  if (user.email) {
-    return isUserAdmin(user.email);
-  }
+  if (!user?.email) return false;
+  return isUserAdmin(user.email);
 
   return false;
 };

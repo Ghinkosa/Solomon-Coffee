@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readClient, writeClient } from "@/sanity/lib/client";
 import { makeKey, requireAdminUser, slugify } from "@/lib/adminAuth";
+import { invalidateProducts } from "@/lib/cache";
 
 const WEIGHTS = new Set(["125G", "250G", "500G", "1KG"]);
 const GRINDS = new Set(["whole-bean", "cafetiere", "filter", "espresso"]);
@@ -656,6 +657,8 @@ export async function POST(req: NextRequest) {
       { productId: created._id },
     );
 
+    await invalidateProducts();
+
     return NextResponse.json(
       { product: transformProduct(product) },
       { status: 201 },
@@ -756,6 +759,8 @@ export async function PATCH(req: NextRequest) {
       `*[_type == "product" && _id == $productId][0] ${PRODUCT_DETAIL_PROJECTION}`,
       { productId },
     );
+
+    await invalidateProducts();
 
     return NextResponse.json({ product: transformProduct(updated) });
   } catch (error) {

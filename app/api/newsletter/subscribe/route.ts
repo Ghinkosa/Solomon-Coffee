@@ -1,9 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { subscribeToNewsletter } from "@/actions/subscriptionActions";
 import { sendMail } from "@/lib/emailService";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+
+const LIMIT = 8;
+const WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(request: NextRequest) {
   try {
+    const ipAddress = getClientIp(request);
+    const rate = checkRateLimit(`newsletter-sub:${ipAddress}`, LIMIT, WINDOW_MS);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many subscription attempts. Please try again later.",
+          retryAfterSeconds: rate.retryAfterSeconds,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await request.json();
     const { email } = body;
 
@@ -12,11 +31,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Get client info
-    const ipAddress =
-      request.headers.get("x-forwarded-for") ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
     const userAgent = request.headers.get("user-agent") || "unknown";
 
     // Subscribe to newsletter

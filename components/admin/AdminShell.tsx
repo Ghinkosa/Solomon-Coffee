@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoImage from "@/images/logo.png";
 import {
   LayoutDashboard,
   Users,
   Package,
   ShoppingCart,
-  Shield,
   Bell,
   UserCheck,
   LogOut,
@@ -21,12 +22,12 @@ import {
   Star,
   Mail,
   ExternalLink,
-  FilePenLine,
   Package2,
   Tags,
   FileText,
   Store,
   MessageSquare,
+  PanelsTopLeft,
 } from "lucide-react";
 
 interface AdminShellProps {
@@ -81,31 +82,23 @@ const adminNavGroups: { label: string; routes: AdminRoute[] }[] = [
   {
     label: "Marketing",
     routes: [
+      { label: "Banners", icon: PanelsTopLeft, href: "/admin/banners" },
       { label: "Reviews", icon: Star, href: "/admin/reviews" },
       { label: "Subscriptions", icon: Mail, href: "/admin/subscriptions" },
-    ],
-  },
-  {
-    label: "Advanced",
-    routes: [
-      {
-        label: "Content",
-        icon: FilePenLine,
-        href: "/studio",
-        external: true,
-      },
     ],
   },
 ];
 
 const adminRoutes = adminNavGroups.flatMap((group) => group.routes);
 
+const sidebarNavScrollClass =
+  "flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-3 py-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.2)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20 hover:[&::-webkit-scrollbar-thumb]:bg-white/35";
+
 function getNormalizedPathname(path: string) {
   return path.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
 }
 
 function getPageTitle(path: string) {
-  if (path.startsWith("/studio")) return "Content";
   const exact = adminRoutes.find((r) => r.href === path);
   if (exact) return exact.label;
   const nested = adminRoutes.find(
@@ -132,12 +125,11 @@ export default function AdminShell({ children, user }: AdminShellProps) {
   const storeHref = lang && lang !== "en" ? `/${lang}` : "/";
 
   function renderNavLink(route: AdminRoute, onNavigate?: () => void) {
-    const isActive = route.external
-      ? normalizedPathname.startsWith("/studio")
-      : normalizedPathname === route.href ||
-        (route.href !== "/admin" && normalizedPathname.startsWith(route.href));
+    const isActive =
+      normalizedPathname === route.href ||
+      (route.href !== "/admin" && normalizedPathname.startsWith(route.href));
     const Icon = route.icon;
-    const href = route.external ? route.href : getLocalizedHref(route.href);
+    const href = getLocalizedHref(route.href);
 
     return (
       <Link
@@ -159,17 +151,28 @@ export default function AdminShell({ children, user }: AdminShellProps) {
 
   const sidebarContent = (
     <>
-      <div className="flex h-16 items-center gap-3 border-b border-white/10 px-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-shop_light_green">
-          <Shield className="h-5 w-5 text-white" />
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-white">Sheba Admin</p>
-          <p className="truncate text-xs text-slate-400">Management</p>
-        </div>
+      <div className="flex h-16 shrink-0 items-center border-b border-white/10 px-5">
+        <Link
+          href={getLocalizedHref("/admin")}
+          className="flex min-w-0 items-center gap-2.5"
+          onClick={() => setMobileOpen(false)}
+        >
+          <Image
+            src={logoImage}
+            alt="Sheba Cup Coffee"
+            className="h-9 w-auto object-contain"
+            priority
+          />
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-sm font-semibold tracking-wide text-white">
+              Sheba Admin
+            </p>
+            <p className="truncate text-[11px] text-slate-400">Management</p>
+          </div>
+        </Link>
       </div>
 
-      <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+      <nav className={sidebarNavScrollClass}>
         {adminNavGroups.map((group) => (
           <div key={group.label} className="space-y-1">
             <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
@@ -182,7 +185,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
         ))}
       </nav>
 
-      <div className="border-t border-white/10 p-4 space-y-3">
+      <div className="shrink-0 border-t border-white/10 space-y-3 p-4">
         <div className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-2.5">
           {user?.imageUrl ? (
             <img
@@ -228,7 +231,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
 
   return (
     <div className="flex min-h-screen bg-shop_light_bg">
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col bg-shop_dark_green">
+      <aside className="hidden overflow-hidden bg-shop_dark_green lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
         {sidebarContent}
       </aside>
 
@@ -242,11 +245,11 @@ export default function AdminShell({ children, user }: AdminShellProps) {
       )}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-shop_dark_green transition-transform duration-200 lg:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-hidden bg-shop_dark_green transition-transform duration-200 lg:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-16 items-center justify-end border-b border-white/10 px-3">
+        <div className="flex h-16 shrink-0 items-center justify-end border-b border-white/10 px-3">
           <Button
             variant="ghost"
             size="icon"
@@ -256,27 +259,31 @@ export default function AdminShell({ children, user }: AdminShellProps) {
             <X className="h-5 w-5" />
           </Button>
         </div>
-        <div className="flex flex-1 flex-col overflow-hidden">{sidebarContent}</div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {sidebarContent}
+        </div>
       </aside>
 
       <div className="flex min-h-screen flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b border-slate-200/80 bg-white/90 px-4 shadow-sm backdrop-blur-sm sm:px-6">
+        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b border-slate-200/80 bg-white/90 px-4 shadow-sm backdrop-blur-sm sm:px-6 lg:hidden">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
           </Button>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-lg font-semibold text-slate-900">{pageTitle}</h1>
-            <p className="hidden text-xs text-slate-500 sm:block">Sheba Cup Coffee admin</p>
+            <h1 className="truncate text-lg font-semibold text-slate-900">
+              {pageTitle}
+            </h1>
           </div>
         </header>
 
-        <main className="relative flex min-h-0 flex-1 flex-col">{children}</main>
+        <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden">
+          {children}
+        </main>
       </div>
     </div>
   );

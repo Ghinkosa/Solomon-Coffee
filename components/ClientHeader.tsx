@@ -14,6 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { User } from "lucide-react";
 import useCartStore from "@/store";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { safeRelativeRedirect } from "@/lib/safeRedirect";
 
 interface ClientHeaderProps {
   dictionary: any;
@@ -35,13 +36,16 @@ const ClientHeader = ({ dictionary, lang }: ClientHeaderProps) => {
     if (isSignedIn && user && isMounted && typeof window !== "undefined") {
       const redirectTo = searchParams.get("redirectTo");
       if (redirectTo) {
-        const cleanUrl = decodeURIComponent(redirectTo);
+        const cleanUrl = safeRelativeRedirect(
+          redirectTo,
+          `/${lang}/user/dashboard`,
+        );
         router.push(cleanUrl);
         const currentPath = window.location.pathname;
         router.replace(currentPath);
       }
     }
-  }, [isSignedIn, user, searchParams, router, isMounted]);
+  }, [isSignedIn, user, searchParams, router, isMounted, lang]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-stone-200 bg-white">

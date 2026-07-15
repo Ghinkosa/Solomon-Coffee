@@ -4,28 +4,32 @@
 import { defineLive } from "next-sanity/live";
 import { client } from "./client";
 
-const token = process.env.SANITY_API_READ_TOKEN || process.env.SANITY_API_TOKEN;
+/** Server can fall back to write token for SSR fetches if needed. */
+const serverToken =
+  process.env.SANITY_API_READ_TOKEN || process.env.SANITY_API_TOKEN;
 
-if (!token) {
+/**
+ * Browser token must be Viewer/read-only. Never fall back to SANITY_API_TOKEN
+ * (write) — that would ship editor credentials to the client.
+ */
+const browserToken = process.env.SANITY_API_READ_TOKEN;
+
+if (!serverToken) {
   console.error(
     "Available env vars:",
-    Object.keys(process.env).filter((key) => key.includes("SANITY"))
+    Object.keys(process.env).filter((key) => key.includes("SANITY")),
   );
   throw new Error(
-    "Missing SANITY_API_READ_TOKEN. Please check your .env file."
+    "Missing SANITY_API_READ_TOKEN (or SANITY_API_TOKEN). Please check your .env file.",
   );
 }
 
 export const { sanityFetch, SanityLive } = defineLive({
   client,
-  serverToken: token,
-  browserToken: token,
+  serverToken,
+  // Omit browser live token unless a dedicated read token exists
+  ...(browserToken ? { browserToken } : {}),
   fetchOptions: {
     revalidate: 0,
   },
-  // client: client.withConfig({
-  //   // Live content is currently only available on the experimental API
-  //   // https://www.sanity.io/docs/api-versioning
-  //   apiVersion: "vX",
-  // }),
 });

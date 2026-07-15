@@ -38,6 +38,7 @@ import {
 } from "@/lib/adminReviewAPI";
 import { toast } from "sonner";
 import Link from "next/link";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 const AdminReviews: React.FC = React.memo(() => {
   const [pendingReviews, setPendingReviews] = useState<AdminReview[]>([]);
@@ -408,97 +409,78 @@ const AdminReviews: React.FC = React.memo(() => {
   );
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-bold text-shop_dark_green">
-                Review Management
-              </CardTitle>
-              <CardDescription>
-                Manage customer reviews - approve pending reviews and view
-                approved ones
-              </CardDescription>
-            </div>
-            <Button
-              onClick={handleRefresh}
-              disabled={isRefreshing || isLoading}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <RefreshCw
-                size={16}
-                className={isRefreshing ? "animate-spin" : ""}
-              />
-              {isRefreshing ? "Refreshing..." : "Refresh"}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
+    <div className="space-y-6 p-4 md:p-6">
+      <AdminPageHeader
+        title="Reviews"
+        description="Approve pending customer reviews and browse published feedback."
+        actions={
+          <Button
+            onClick={handleRefresh}
+            disabled={isRefreshing || isLoading}
+            variant="outline"
           >
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="pending" className="flex items-center gap-2">
-                <Clock size={16} />
-                Pending ({pendingReviews.length})
-              </TabsTrigger>
-              <TabsTrigger value="approved" className="flex items-center gap-2">
-                <Check size={16} />
-                Approved ({approvedReviews.length})
-              </TabsTrigger>
-            </TabsList>
+            <RefreshCw
+              className={`me-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </Button>
+        }
+      />
 
-            <TabsContent value="pending" className="space-y-4">
-              {isLoading ? (
-                <div className="space-y-4">
-                  <ReviewSkeleton />
-                  <ReviewSkeleton />
-                  <ReviewSkeleton />
-                </div>
-              ) : pendingReviews.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <Clock size={48} className="mx-auto mb-4 opacity-20" />
-                  <p className="text-lg font-medium">No pending reviews</p>
-                  <p className="text-sm">All reviews have been processed</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {pendingReviews.map((review) =>
-                    renderReviewCard(review, true)
-                  )}
-                </div>
-              )}
-            </TabsContent>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="mb-2 grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="pending" className="flex items-center gap-2">
+            <Clock size={16} />
+            Pending ({pendingReviews.length})
+          </TabsTrigger>
+          <TabsTrigger value="approved" className="flex items-center gap-2">
+            <Check size={16} />
+            Approved ({approvedReviews.length})
+          </TabsTrigger>
+        </TabsList>
 
-            <TabsContent value="approved" className="space-y-4">
-              {isLoading ? (
-                <div className="space-y-4">
-                  <ReviewSkeleton />
-                  <ReviewSkeleton />
-                  <ReviewSkeleton />
-                </div>
-              ) : approvedReviews.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <Check size={48} className="mx-auto mb-4 opacity-20" />
-                  <p className="text-lg font-medium">No approved reviews</p>
-                  <p className="text-sm">No reviews have been approved yet.</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {approvedReviews.map((review) =>
-                    renderReviewCard(review, false)
-                  )}
-                </div>
+        <TabsContent value="pending" className="space-y-4">
+          {isLoading ? (
+            <div className="space-y-4">
+              <ReviewSkeleton />
+              <ReviewSkeleton />
+              <ReviewSkeleton />
+            </div>
+          ) : pendingReviews.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground">
+              <Clock size={48} className="mx-auto mb-4 opacity-20" />
+              <p className="text-lg font-medium">No pending reviews</p>
+              <p className="text-sm">All reviews have been processed</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {pendingReviews.map((review) => renderReviewCard(review, true))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="approved" className="space-y-4">
+          {isLoading ? (
+            <div className="space-y-4">
+              <ReviewSkeleton />
+              <ReviewSkeleton />
+              <ReviewSkeleton />
+            </div>
+          ) : approvedReviews.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground">
+              <Check size={48} className="mx-auto mb-4 opacity-20" />
+              <p className="text-lg font-medium">No approved reviews</p>
+              <p className="text-sm">No reviews have been approved yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {approvedReviews.map((review) =>
+                renderReviewCard(review, false),
               )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 });

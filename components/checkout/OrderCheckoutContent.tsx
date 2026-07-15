@@ -283,7 +283,7 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
                     src={
                       item.product.images?.[0]
                         ? urlFor(item.product.images[0]).url()
-                        : "/placeholder.jpg"
+                        : "/placeholder.png"
                     }
                     alt={item.product.name || t(dictionary, "ordersTrack.product", "Product")}
                     width={64}

@@ -182,6 +182,14 @@ export async function invalidateHomepage() {
 }
 
 /**
+ * Invalidate homepage banners after admin banner CRUD
+ */
+export async function invalidateBanners() {
+  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
+}
+
+/**
  * Invalidate blog-related caches
  * Use when blog posts are added or updated
  */

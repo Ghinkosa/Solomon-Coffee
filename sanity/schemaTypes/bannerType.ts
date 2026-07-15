@@ -4,6 +4,18 @@ import { defineField, defineType } from "sanity";
 const MAX_VIDEO_BYTES = 8 * 1024 * 1024; // 8MB
 const MAX_VIDEO_DURATION_SECONDS = 15;
 
+const localeStringFields = [
+  { name: "en", title: "English", type: "string" as const },
+  { name: "es", title: "Spanish", type: "string" as const },
+  { name: "ar", title: "Arabic", type: "string" as const },
+];
+
+const localeTextFields = [
+  { name: "en", title: "English", type: "text" as const },
+  { name: "es", title: "Spanish", type: "text" as const },
+  { name: "ar", title: "Arabic", type: "text" as const },
+];
+
 export const bannerType = defineType({
   name: "banner",
   title: "Banner",
@@ -14,42 +26,20 @@ export const bannerType = defineType({
       name: "title",
       title: "Sale Title",
       type: "object",
-      fields: [
-        { name: "en", title: "English", type: "string" },
-        { name: "it", title: "Italian", type: "string" },
-        { name: "fr", title: "French", type: "string" },
-        { name: "hi", title: "Hindi", type: "string" },
-        { name: "ar", title: "Arabic", type: "string" },
-        { name: "am", title: "Amharic", type: "string" },
-      ],
+      fields: localeStringFields,
     }),
     defineField({
       name: "description",
       title: "Sale Description",
       type: "object",
-      fields: [
-        { name: "en", title: "English", type: "text" },
-        { name: "it", title: "Italian", type: "text" },
-        { name: "fr", title: "French", type: "text" },
-        { name: "hi", title: "Hindi", type: "text" },
-        { name: "ar", title: "Arabic", type: "text" },
-        { name: "am", title: "Amharic", type: "string" },
-      ],
+      fields: localeTextFields,
     }),
     defineField({
       name: "badge",
       title: "Discount Badge",
       type: "object",
       description: "Discount Badge Ratio",
-      fields: [
-        { name: "en", title: "English", type: "string" },
-        { name: "it", title: "Italian", type: "string" },
-        { name: "fr", title: "French", type: "string" },
-        { name: "hi", title: "Hindi", type: "string" },
-        { name: "ar", title: "Arabic", type: "string" },
-        { name: "am", title: "Amharic", type: "string" },
-
-      ],
+      fields: localeStringFields,
     }),
     defineField({
       name: "discountAmount",
@@ -61,37 +51,20 @@ export const bannerType = defineType({
       name: "subtitle",
       title: "Sub Title",
       type: "object",
-      fields: [
-        { name: "en", title: "English", type: "string" },
-        { name: "it", title: "Italian", type: "string" },
-        { name: "fr", title: "French", type: "string" },
-        { name: "hi", title: "Hindi", type: "string" },
-        { name: "ar", title: "Arabic", type: "string" },
-        { name: "am", title: "Amharic", type: "string" },
-
-      ],
+      fields: localeStringFields,
     }),
     defineField({
       name: "priceTitle",
       title: "Price Title",
       type: "object",
       description: "Text before price (e.g., Starting at)",
-      fields: [
-        { name: "en", title: "English", type: "string" },
-        { name: "it", title: "Italian", type: "string" },
-        { name: "fr", title: "French", type: "string" },
-        { name: "hi", title: "Hindi", type: "string" },
-        { name: "ar", title: "Arabic", type: "string" },
-        { name: "am", title: "Amharic", type: "string" },
-
-      ],
+      fields: localeStringFields,
     }),
     defineField({
       name: "price",
       title: "Starting Price",
       type: "number",
     }),
-
     defineField({
       name: "image",
       title: "Banner Image",
@@ -169,12 +142,8 @@ export const bannerType = defineType({
           type: "string",
           initialValue: "Shop Now",
         },
-        { name: "it", title: "Italian", type: "string" },
-        { name: "fr", title: "French", type: "string" },
-        { name: "hi", title: "Hindi", type: "string" },
+        { name: "es", title: "Spanish", type: "string" },
         { name: "ar", title: "Arabic", type: "string" },
-        { name: "am", title: "Amharic", type: "string" },
-
       ],
     }),
     defineField({

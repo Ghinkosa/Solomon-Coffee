@@ -19,12 +19,16 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { safeRelativeRedirect } from "@/lib/safeRedirect";
 
 const SignUpContent = () => {
   const searchParams = useSearchParams();
   const toLocalizedPath = useLocalizedPath();
   const dictionary = useDictionary();
-  const redirectTo = searchParams.get("redirectTo");
+  const redirectTo = safeRelativeRedirect(
+    searchParams.get("redirectTo"),
+    "/user/dashboard",
+  );
   const company = contactConfig.company.name;
 
   const benefits = [

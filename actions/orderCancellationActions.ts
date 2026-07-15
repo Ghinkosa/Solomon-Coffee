@@ -4,12 +4,36 @@ import { auth } from "@clerk/nextjs/server";
 import { backendClient } from "@/sanity/lib/backendClient";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { revalidatePath } from "next/cache";
-import { isAdmin } from "@/lib/adminUtils";
+import { resolveAdminAccess } from "@/lib/adminGate";
 import {
   refundOrderPayment,
   buildRefundMessage,
 } from "@/lib/stripeRefund";
 import { restoreOrderStock } from "@/lib/stock";
+
+async function requireAdminForCancellation(): Promise<
+  { ok: true; email: string } | { ok: false; message: string }
+> {
+  const { userId } = await auth();
+  if (!userId) {
+    return { ok: false, message: "Unauthorized" };
+  }
+
+  const gate = await resolveAdminAccess(userId);
+  if (gate.status === "admin") {
+    return { ok: true, email: gate.email };
+  }
+  if (gate.status === "unavailable") {
+    return {
+      ok: false,
+      message: "Admin verification unavailable. Try again shortly.",
+    };
+  }
+  return {
+    ok: false,
+    message: "Admin access required to manage cancellation requests",
+  };
+}
 
 /**
  * Admin: Approve cancellation request and cancel order with refund
@@ -18,22 +42,9 @@ export async function approveCancellationRequest(
   orderId: string,
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
-    }
-
-    const adminUser = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId][0]{ email, isAdmin }`,
-      { clerkUserId },
-    );
-
-    if (!isAdmin(adminUser)) {
-      return {
-        success: false,
-        message: "Admin access required to approve cancellation requests",
-      };
+    const gate = await requireAdminForCancellation();
+    if (!gate.ok) {
+      return { success: false, message: gate.message };
     }
 
     const order = await backendClient.fetch(
@@ -80,7 +91,7 @@ export async function approveCancellationRequest(
             ? "paid"
             : "cancelled",
         cancelledAt: new Date().toISOString(),
-        cancelledBy: adminUser.email,
+        cancelledBy: gate.email,
         cancellationReason: order.cancellationRequestReason,
         stripeRefundId: refundResult.stripeRefundId || undefined,
         refundAmount: refundResult.stripeRefunded
@@ -132,22 +143,9 @@ export async function rejectCancellationRequest(
   rejectionReason?: string,
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
-    }
-
-    const adminUser = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId][0]{ email, isAdmin }`,
-      { clerkUserId },
-    );
-
-    if (!isAdmin(adminUser)) {
-      return {
-        success: false,
-        message: "Admin access required to reject cancellation requests",
-      };
+    const gate = await requireAdminForCancellation();
+    if (!gate.ok) {
+      return { success: false, message: gate.message };
     }
 
     const order = await backendClient.fetch(
@@ -179,7 +177,7 @@ export async function rejectCancellationRequest(
         cancellationRequestedAt: null,
         cancellationRequestReason: null,
         status: "order_confirmed",
-        orderConfirmedBy: adminUser.email,
+        orderConfirmedBy: gate.email,
         orderConfirmedAt: new Date().toISOString(),
       })
       .commit();
@@ -222,22 +220,9 @@ export async function cancelOrder(
   reason: string,
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
-    }
-
-    const adminUser = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId][0]{ email, isAdmin }`,
-      { clerkUserId },
-    );
-
-    if (!isAdmin(adminUser)) {
-      return {
-        success: false,
-        message: "Admin access required to cancel orders",
-      };
+    const gate = await requireAdminForCancellation();
+    if (!gate.ok) {
+      return { success: false, message: gate.message };
     }
 
     const order = await backendClient.fetch(
@@ -283,7 +268,7 @@ export async function cancelOrder(
             ? "paid"
             : "cancelled",
         cancelledAt: new Date().toISOString(),
-        cancelledBy: adminUser.email,
+        cancelledBy: gate.email,
         cancellationReason: reason,
         stripeRefundId: refundResult.stripeRefundId || undefined,
         refundAmount: refundResult.stripeRefunded

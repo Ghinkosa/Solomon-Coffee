@@ -40,6 +40,7 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 interface Subscription {
   _id: string;
@@ -261,46 +262,43 @@ export default function AdminSubscriptions() {
   );
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Mail className="h-8 w-8 text-shop_dark_green" />
-            Newsletter Subscriptions
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Manage and monitor all newsletter subscriptions
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={handleCleanupDuplicates}
-            variant="outline"
-            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-          >
-            <Copy className="h-4 w-4 mr-2" />
-            Remove Duplicates
-          </Button>
-          <Button
-            onClick={handleRefresh}
-            variant="outline"
-            disabled={isRefreshing}
-          >
-            <RefreshCw
-              className={cn("h-4 w-4 mr-2", isRefreshing && "animate-spin")}
-            />
-            Refresh
-          </Button>
-          <Button onClick={handleExportCSV} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-6 p-4 md:p-6">
+      <AdminPageHeader
+        title="Subscriptions"
+        description="Monitor newsletter signups and clean up duplicates."
+        actions={
+          <>
+            <Button
+              onClick={handleCleanupDuplicates}
+              variant="outline"
+              className="text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+            >
+              <Copy className="me-2 h-4 w-4" />
+              Remove duplicates
+            </Button>
+            <Button
+              onClick={handleExportCSV}
+              variant="outline"
+            >
+              <Download className="me-2 h-4 w-4" />
+              Export CSV
+            </Button>
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              disabled={isRefreshing}
+            >
+              <RefreshCw
+                className={cn("me-2 h-4 w-4", isRefreshing && "animate-spin")}
+              />
+              Refresh
+            </Button>
+          </>
+        }
+      />
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Total Subscriptions</CardDescription>

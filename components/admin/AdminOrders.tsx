@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RefreshCw, Trash2, Eye, Package } from "lucide-react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { OrdersSkeleton } from "./SkeletonLoaders";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import OrderDetailsSidebar from "./OrderDetailsSidebar";
@@ -287,63 +288,67 @@ const AdminOrders: React.FC = () => {
 
   return (
     <>
-      <div className="space-y-4 p-4">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Orders Management</h3>
-          <div className="flex items-center gap-2">
-            <Select
-              value={perPage.toString()}
-              onValueChange={handlePerPageChange}
-            >
-              <SelectTrigger className="w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={orderStatus} onValueChange={setOrderStatus}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="address_confirmed">
-                  Address Confirmed
-                </SelectItem>
-                <SelectItem value="order_confirmed">Order Confirmed</SelectItem>
-                <SelectItem value="packed">Packed</SelectItem>
-                <SelectItem value="ready_for_delivery">
-                  Ready for Delivery
-                </SelectItem>
-                <SelectItem value="out_for_delivery">
-                  Out for Delivery
-                </SelectItem>
-                <SelectItem value="delivered">Delivered</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-                <SelectItem value="rescheduled">Rescheduled</SelectItem>
-                <SelectItem value="failed_delivery">Failed Delivery</SelectItem>
-              </SelectContent>
-            </Select>
+      <div className="space-y-6 p-4 md:p-6">
+        <AdminPageHeader
+          title="Orders"
+          description="Confirm, pack, deliver, and manage customer orders."
+          actions={
             <Button
               onClick={handleRefresh}
-              size="sm"
+              variant="outline"
               disabled={loading || isRefreshing}
             >
               <RefreshCw
-                className={`h-4 w-4 ${
+                className={`me-2 h-4 w-4 ${
                   loading || isRefreshing ? "animate-spin" : ""
                 }`}
               />
+              Refresh
             </Button>
-          </div>
+          }
+        />
+
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <Select
+            value={perPage.toString()}
+            onValueChange={handlePerPageChange}
+          >
+            <SelectTrigger className="w-full sm:w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="30">30</SelectItem>
+              <SelectItem value="40">40</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={orderStatus} onValueChange={setOrderStatus}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="address_confirmed">
+                Address Confirmed
+              </SelectItem>
+              <SelectItem value="order_confirmed">Order Confirmed</SelectItem>
+              <SelectItem value="packed">Packed</SelectItem>
+              <SelectItem value="ready_for_delivery">
+                Ready for Delivery
+              </SelectItem>
+              <SelectItem value="out_for_delivery">
+                Out for Delivery
+              </SelectItem>
+              <SelectItem value="delivered">Delivered</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="rescheduled">Rescheduled</SelectItem>
+              <SelectItem value="failed_delivery">Failed Delivery</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {loading ? (

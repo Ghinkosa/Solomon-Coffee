@@ -30,6 +30,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import {
   RefreshCw,
   Eye,
@@ -462,70 +463,62 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
   };
 
   return (
-    <div className="space-y-4 p-4">
-      {/* Header */}
-      <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-        <div>
-          <h3 className="text-lg font-semibold">Products</h3>
-          <p className="text-xs text-muted-foreground">
-            Create and edit catalog products here. Use{" "}
-            <a href="/studio" className="underline hover:text-shop_dark_green">
-              Content
-            </a>{" "}
-            only for advanced/rare schema work.
-          </p>
-        </div>
-        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-2 sm:space-y-0">
-          <Button
-            onClick={() => setEditorState({ mode: "create" })}
-            className="w-full sm:w-auto"
-          >
-            <Plus className="me-2 h-4 w-4" />
-            Add product
-          </Button>
-          <Input
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-48"
-          />
-          <Select value={productCategory} onValueChange={setProductCategory}>
-            <SelectTrigger className="w-full sm:w-32">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category._id} value={category.title || ""}>
-                  {category.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={archiveFilter}
-            onValueChange={(v) =>
-              setArchiveFilter(v as "active" | "archived" | "all")
-            }
-          >
-            <SelectTrigger className="w-full sm:w-32">
-              <SelectValue placeholder="Visibility" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="archived">Archived</SelectItem>
-              <SelectItem value="all">All</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            onClick={() => fetchProducts(currentPage)}
-            size="sm"
-            className="w-full sm:w-auto"
-          >
-            <RefreshCw className="h-4 w-4" />
-            <span className="ml-2 sm:hidden">Refresh</span>
-          </Button>
-        </div>
+    <div className="space-y-6 p-4 md:p-6">
+      <AdminPageHeader
+        title="Products"
+        description="Create and edit catalog products, stock, and variants."
+        actions={
+          <>
+            <Button onClick={() => setEditorState({ mode: "create" })}>
+              <Plus className="me-2 h-4 w-4" />
+              Add product
+            </Button>
+            <Button
+              onClick={() => fetchProducts(currentPage)}
+              variant="outline"
+            >
+              <RefreshCw className="me-2 h-4 w-4" />
+              Refresh
+            </Button>
+          </>
+        }
+      />
+
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <Input
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full max-w-md sm:w-48"
+        />
+        <Select value={productCategory} onValueChange={setProductCategory}>
+          <SelectTrigger className="w-full sm:w-40">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category._id} value={category.title || ""}>
+                {category.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={archiveFilter}
+          onValueChange={(v) =>
+            setArchiveFilter(v as "active" | "archived" | "all")
+          }
+        >
+          <SelectTrigger className="w-full sm:w-36">
+            <SelectValue placeholder="Visibility" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="archived">Archived</SelectItem>
+            <SelectItem value="all">All</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {loading ? (

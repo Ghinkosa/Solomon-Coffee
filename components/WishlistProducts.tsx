@@ -90,7 +90,7 @@ const WishlistProducts = () => {
                       src={
                         product?.images && product.images[0]
                           ? urlFor(product.images[0]).url()
-                          : "/placeholder.jpg"
+                          : "/placeholder.png"
                       }
                       alt={product?.name ?? "Product"}
                       width={200}

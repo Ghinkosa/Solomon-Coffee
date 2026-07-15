@@ -228,7 +228,7 @@ export function ServerCartContent({
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="relative w-24 h-24 flex-shrink-0">
                     <Image
-                      src={item.product.images?.[0] ? urlFor(item.product.images[0]).url() : "/placeholder.jpg"}
+                      src={item.product.images?.[0] ? urlFor(item.product.images[0]).url() : "/placeholder.png"}
                       alt={t(dictionary, "cart.productImageAlt", "Product image")}
                       fill
                       className="object-cover rounded-md"
