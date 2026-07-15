@@ -1,55 +1,24 @@
 import type Stripe from "stripe";
+import {
+  buildLineDescription,
+  getExtraPackagingFee,
+  getLinePackagingPrice,
+  getLineUnitPrice,
+  type OrderDocumentLine,
+  type OrderDocumentTotals,
+} from "@/lib/orderDocument";
 
-export interface InvoiceOrderLine {
-  quantity: number;
-  weight?: { value?: string; price?: number };
-  grind?: { label?: string };
-  packaging?: { title?: string; price?: number };
-  product?: { _id?: string; name?: string; price?: number };
-}
-
-export interface InvoiceOrderTotals {
-  subtotal?: number;
-  packagingFee?: number;
-  shipping?: number;
-  tax?: number;
-  amountDiscount?: number;
-  totalPrice?: number;
-  orderNumber?: string;
-}
-
-function getLineUnitPrice(line: InvoiceOrderLine): number {
-  return line.weight?.price ?? line.product?.price ?? 0;
-}
-
-function getLinePackagingPrice(line: InvoiceOrderLine): number {
-  return line.packaging?.price ?? 0;
-}
-
-function buildLineDescription(line: InvoiceOrderLine): string {
-  const name = line.product?.name || "Product";
-  let description = `${name} x ${line.quantity}`;
-
-  if (line.weight?.value) {
-    description += `\nWeight: ${line.weight.value}`;
-  }
-  if (line.grind?.label) {
-    description += `\nGrind: ${line.grind.label}`;
-  }
-  if (line.packaging?.title) {
-    description += `\nPackaging: ${line.packaging.title}`;
-  }
-
-  return description;
-}
+/** @deprecated Prefer OrderDocumentLine — kept for existing imports. */
+export type InvoiceOrderLine = OrderDocumentLine;
+/** @deprecated Prefer OrderDocumentTotals — kept for existing imports. */
+export type InvoiceOrderTotals = OrderDocumentTotals;
 
 /**
  * Build Stripe invoice line items that mirror what the customer was charged.
- * Uses weight/packaging prices from the order line, then order-level fees and
- * discounts so the invoice total aligns with `order.totalPrice`.
+ * Uses shared order document helpers so PDF and Stripe stay aligned.
  */
 export function buildStripeInvoiceLineItems(
-  order: InvoiceOrderTotals & { products?: InvoiceOrderLine[] },
+  order: OrderDocumentTotals & { products?: OrderDocumentLine[] },
 ): Stripe.InvoiceItemCreateParams[] {
   const currency = "usd";
   const items: Stripe.InvoiceItemCreateParams[] = [];
@@ -58,7 +27,9 @@ export function buildStripeInvoiceLineItems(
     if (!line.product?.name) continue;
 
     const unitAmount = Math.round(
-      (getLineUnitPrice(line) + getLinePackagingPrice(line)) * line.quantity * 100,
+      (getLineUnitPrice(line) + getLinePackagingPrice(line)) *
+        line.quantity *
+        100,
     );
 
     if (unitAmount <= 0) continue;
@@ -76,13 +47,8 @@ export function buildStripeInvoiceLineItems(
     });
   }
 
-  // Order-level packaging not already captured on individual lines.
-  const linePackagingTotal = (order.products || []).reduce(
-    (sum, line) => sum + getLinePackagingPrice(line) * line.quantity,
-    0,
-  );
-  const extraPackaging = (order.packagingFee || 0) - linePackagingTotal;
-  if (extraPackaging > 0.01) {
+  const extraPackaging = getExtraPackagingFee(order);
+  if (extraPackaging > 0) {
     items.push({
       amount: Math.round(extraPackaging * 100),
       currency,
@@ -118,9 +84,11 @@ export function buildStripeInvoiceLineItems(
     });
   }
 
-  // Reconcile rounding drift so the invoice matches the charged total exactly.
   const targetTotalCents = Math.round((order.totalPrice || 0) * 100);
-  const builtTotalCents = items.reduce((sum, item) => sum + (item.amount || 0), 0);
+  const builtTotalCents = items.reduce(
+    (sum, item) => sum + (item.amount || 0),
+    0,
+  );
   const drift = targetTotalCents - builtTotalCents;
 
   if (drift !== 0 && targetTotalCents > 0) {

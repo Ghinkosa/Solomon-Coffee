@@ -32,12 +32,116 @@ import {
   Truck,
   Save,
   X,
+  Download,
+  Loader2,
+  Clock,
+  MapPinned,
+  CircleCheck,
+  Box,
+  BadgeCheck,
+  CheckCircle2,
+  XCircle,
+  CalendarClock,
+  TriangleAlert,
+  type LucideIcon,
 } from "lucide-react";
 import { Order } from "./types";
 import { showToast } from "@/lib/toast";
 import { trackOrderFullfillment, trackOrderDetails } from "@/lib/analytics";
 import { OrderDetailsSkeleton } from "./SkeletonLoaders";
 import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
+
+const ORDER_STATUS_OPTIONS: Array<{
+  value: string;
+  label: string;
+  icon: LucideIcon;
+  iconClass: string;
+}> = [
+  {
+    value: "pending",
+    label: "Pending",
+    icon: Clock,
+    iconClass: "text-orange-500",
+  },
+  {
+    value: "address_confirmed",
+    label: "Address Confirmed",
+    icon: MapPinned,
+    iconClass: "text-yellow-500",
+  },
+  {
+    value: "order_confirmed",
+    label: "Order Confirmed",
+    icon: CircleCheck,
+    iconClass: "text-emerald-500",
+  },
+  {
+    value: "packed",
+    label: "Packed",
+    icon: Box,
+    iconClass: "text-purple-500",
+  },
+  {
+    value: "ready_for_delivery",
+    label: "Ready for Delivery",
+    icon: BadgeCheck,
+    iconClass: "text-cyan-500",
+  },
+  {
+    value: "out_for_delivery",
+    label: "Out for Delivery",
+    icon: Truck,
+    iconClass: "text-blue-500",
+  },
+  {
+    value: "delivered",
+    label: "Delivered",
+    icon: Package,
+    iconClass: "text-green-600",
+  },
+  {
+    value: "completed",
+    label: "Completed",
+    icon: CheckCircle2,
+    iconClass: "text-green-700",
+  },
+  {
+    value: "cancelled",
+    label: "Cancelled",
+    icon: XCircle,
+    iconClass: "text-red-500",
+  },
+  {
+    value: "rescheduled",
+    label: "Rescheduled",
+    icon: CalendarClock,
+    iconClass: "text-amber-500",
+  },
+  {
+    value: "failed_delivery",
+    label: "Failed Delivery",
+    icon: TriangleAlert,
+    iconClass: "text-red-600",
+  },
+];
+
+function StatusOptionLabel({
+  value,
+  labelFallback,
+}: {
+  value: string;
+  labelFallback?: string;
+}) {
+  const option = ORDER_STATUS_OPTIONS.find((item) => item.value === value);
+  const Icon = option?.icon || Package;
+  const label = option?.label || labelFallback || value;
+  return (
+    <span className="flex items-center gap-2">
+      <Icon className={`h-4 w-4 shrink-0 ${option?.iconClass || "text-gray-500"}`} />
+      <span>{label}</span>
+    </span>
+  );
+}
 
 interface OrderDetailsSidebarProps {
   isOpen: boolean;
@@ -55,6 +159,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
   isLoading = false,
 }) => {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [formData, setFormData] = useState({
     status: order?.status || "",
     totalPrice: order?.totalPrice || 0,
@@ -240,6 +345,46 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
     }
   };
 
+  const handleDownloadPdf = async () => {
+    if (!order?._id || isDownloadingPdf) return;
+
+    setIsDownloadingPdf(true);
+    try {
+      const response = await fetch(`/api/admin/orders/${order._id}/pdf`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(
+          data?.details || data?.error || "Failed to download PDF",
+        );
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      const safeName = (order.orderNumber || order._id).replace(
+        /[^a-zA-Z0-9._-]+/g,
+        "-",
+      );
+      anchor.href = url;
+      anchor.download = `order-${safeName}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Order PDF download failed:", error);
+      showToast.error(
+        error instanceof Error ? error.message : "Failed to download PDF",
+      );
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent
@@ -247,17 +392,36 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
         onInteractOutside={handleInteractOutside}
       >
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <Package className="w-5 h-5" />
-            {order
-              ? `Order Details - #${order.orderNumber}`
-              : "Loading Order Details..."}
-          </SheetTitle>
-          <SheetDescription>
-            {order
-              ? "View and manage order information, status, and tracking details."
-              : "Loading order information..."}
-          </SheetDescription>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0 space-y-1">
+              <SheetTitle className="flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                {order
+                  ? `Order Details - #${order.orderNumber}`
+                  : "Loading Order Details..."}
+              </SheetTitle>
+              <SheetDescription>
+                {order
+                  ? "View and manage order information, status, and tracking details."
+                  : "Loading order information..."}
+              </SheetDescription>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={handleDownloadPdf}
+              disabled={!order || isLoading || isDownloadingPdf}
+            >
+              {isDownloadingPdf ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4 mr-2" />
+              )}
+              {isDownloadingPdf ? "Downloading..." : "Download PDF"}
+            </Button>
+          </div>
         </SheetHeader>
 
         {isLoading || !order ? (
@@ -373,8 +537,8 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center justify-between">
                   <span>Order Status</span>
-                  <Badge className={getStatusColor(order.status)}>
-                    {order.status}
+                  <Badge className={`${getStatusColor(order.status)} gap-1.5`}>
+                    <StatusOptionLabel value={order.status} />
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -389,32 +553,21 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder="Select status">
+                          {formData.status ? (
+                            <StatusOptionLabel value={formData.status} />
+                          ) : null}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pending">🔴 Pending</SelectItem>
-                        <SelectItem value="address_confirmed">
-                          🟡 Address Confirmed
-                        </SelectItem>
-                        <SelectItem value="order_confirmed">
-                          🟢 Order Confirmed
-                        </SelectItem>
-                        <SelectItem value="packed">📦 Packed</SelectItem>
-                        <SelectItem value="ready_for_delivery">
-                          ✅ Ready for Delivery
-                        </SelectItem>
-                        <SelectItem value="out_for_delivery">
-                          🚚 Out for Delivery
-                        </SelectItem>
-                        <SelectItem value="delivered">📬 Delivered</SelectItem>
-                        <SelectItem value="completed">✔️ Completed</SelectItem>
-                        <SelectItem value="cancelled">❌ Cancelled</SelectItem>
-                        <SelectItem value="rescheduled">
-                          📅 Rescheduled
-                        </SelectItem>
-                        <SelectItem value="failed_delivery">
-                          ⚠️ Failed Delivery
-                        </SelectItem>
+                        {ORDER_STATUS_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            <StatusOptionLabel
+                              value={option.value}
+                              labelFallback={option.label}
+                            />
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

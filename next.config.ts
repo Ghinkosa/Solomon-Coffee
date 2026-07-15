@@ -15,6 +15,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Keep pdfkit outside the Next bundle so AFM standard fonts resolve on disk.
+  serverExternalPackages: ["pdfkit"],
   images: {
     remotePatterns: [
       {

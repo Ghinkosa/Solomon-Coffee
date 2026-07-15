@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, Trash2, Eye, Package, Search } from "lucide-react";
+import { RefreshCw, Trash2, Package, Search } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { OrdersSkeleton } from "./SkeletonLoaders";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import OrderDetailsSidebar from "./OrderDetailsSidebar";
 import { Order } from "./types";
 import { safeApiCall, handleApiError } from "./apiHelpers";
+import { cn } from "@/lib/utils";
 
 const AdminOrders: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -73,6 +74,9 @@ const AdminOrders: React.FC = () => {
     });
   };
 
+  const formatStatusLabel = (status: string): string =>
+    status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
   const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
       case "completed":
@@ -99,6 +103,33 @@ const AdminOrders: React.FC = () => {
         return "bg-amber-100 text-amber-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getRowStatusClass = (status: string): string => {
+    switch (status.toLowerCase()) {
+      case "completed":
+      case "delivered":
+        return "border-l-green-500 bg-green-50/70 hover:bg-green-50";
+      case "out_for_delivery":
+        return "border-l-blue-500 bg-blue-50/70 hover:bg-blue-50";
+      case "ready_for_delivery":
+        return "border-l-cyan-500 bg-cyan-50/70 hover:bg-cyan-50";
+      case "packed":
+        return "border-l-purple-500 bg-purple-50/70 hover:bg-purple-50";
+      case "order_confirmed":
+        return "border-l-emerald-500 bg-emerald-50/70 hover:bg-emerald-50";
+      case "address_confirmed":
+        return "border-l-yellow-500 bg-yellow-50/70 hover:bg-yellow-50";
+      case "pending":
+        return "border-l-orange-500 bg-orange-50/70 hover:bg-orange-50";
+      case "cancelled":
+      case "failed_delivery":
+        return "border-l-red-500 bg-red-50/70 hover:bg-red-50";
+      case "rescheduled":
+        return "border-l-amber-500 bg-amber-50/70 hover:bg-amber-50";
+      default:
+        return "border-l-gray-300 bg-white hover:bg-gray-50";
     }
   };
 
@@ -413,13 +444,12 @@ const AdminOrders: React.FC = () => {
                     <TableHead>Status</TableHead>
                     <TableHead>Payment</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {orders.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-12">
+                      <TableCell colSpan={7} className="text-center py-12">
                         <div className="flex flex-col items-center gap-2">
                           <Package className="h-12 w-12 text-gray-400" />
                           <p className="text-lg font-medium text-gray-900">
@@ -440,8 +470,26 @@ const AdminOrders: React.FC = () => {
                     </TableRow>
                   ) : (
                     orders.map((order) => (
-                      <TableRow key={order._id}>
-                        <TableCell>
+                      <TableRow
+                        key={order._id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleShowOrderDetails(order)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleShowOrderDetails(order);
+                          }
+                        }}
+                        className={cn(
+                          "border-l-4 cursor-pointer transition-colors",
+                          getRowStatusClass(order.status),
+                        )}
+                      >
+                        <TableCell
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        >
                           <Checkbox
                             checked={selectedOrders.includes(order._id)}
                             onCheckedChange={() =>
@@ -464,13 +512,13 @@ const AdminOrders: React.FC = () => {
                           {formatCurrency(order.totalPrice)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <Badge className={getStatusColor(order.status)}>
-                              {order.status}
+                              {formatStatusLabel(order.status)}
                             </Badge>
                             {(order as any).cancellationRequested && (
                               <Badge className="bg-orange-100 text-orange-800 text-xs">
-                                ⏳ Cancellation Pending
+                                Cancellation Pending
                               </Badge>
                             )}
                           </div>
@@ -486,18 +534,6 @@ const AdminOrders: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell>{formatDate(order.orderDate)}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleShowOrderDetails(order)}
-                              title="Show Details"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
                       </TableRow>
                     ))
                   )}
