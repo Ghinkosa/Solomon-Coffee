@@ -1,27 +1,25 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { auth } from "@clerk/nextjs/server";
+import { resolveAdminAccess } from "@/lib/adminGate";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 
-const AdminNotificationsPage = async () => {
-  // Check authentication and admin access
+const AdminNotificationsPage = async ({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) => {
+  const { lang } = await params;
   const { userId } = await auth();
+  const gate = await resolveAdminAccess(userId);
 
-  if (!userId) {
-    redirect("/sign-in");
+  if (gate.status === "unauthenticated") {
+    redirect(`/${lang}/admin/login?redirectTo=/${lang}/admin/notifications`);
+  }
+  if (gate.status !== "admin") {
+    redirect(`/${lang}/admin/access-denied`);
   }
 
-  // Get current user details to check admin status
-  const clerk = await clerkClient();
-  const currentUser = await clerk.users.getUser(userId);
-  const userEmail = currentUser.primaryEmailAddress?.emailAddress;
-
-  // Check if current user is admin
-  if (!userEmail || !isUserAdmin(userEmail)) {
-    redirect("/");
-  }
-
-  return <AdminNotifications adminEmail={userEmail} />;
+  return <AdminNotifications adminEmail={gate.email} />;
 };
 
 export default AdminNotificationsPage;

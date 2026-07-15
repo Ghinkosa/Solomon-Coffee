@@ -3,7 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import { getAccountDiscount } from "@/lib/checkout-pricing";
 import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
-import { isUserAdmin } from "@/lib/adminUtils";
+import { isAnyEmailAdmin } from "@/lib/adminUtils";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -65,7 +65,9 @@ export async function GET() {
         user: user || null,
         ordersCount: orders || 0,
         isEmployee: user?.isEmployee || false,
-        isAdmin: isUserAdmin(email),
+        isAdmin: isAnyEmailAdmin(
+          clerkUser.emailAddresses.map((entry) => entry.emailAddress),
+        ),
         unreadNotifications: notifications?.length || 0,
         accountDiscountRate: accountDiscount.rate,
         accountDiscountType: accountDiscount.type,
