@@ -11,6 +11,7 @@ import {
   Mail,
   Phone,
   Building2,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { downloadAdminCsv } from "@/lib/downloadAdminCsv";
 import { safeApiCall, handleApiError } from "./apiHelpers";
 
 type WholesaleStatus = "new" | "contacted" | "qualified" | "closed";
@@ -104,6 +106,7 @@ export default function AdminWholesale() {
   const [selected, setSelected] = useState<WholesaleInquiry | null>(null);
   const [savingStatus, setSavingStatus] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -179,22 +182,58 @@ export default function AdminWholesale() {
     }
   };
 
+  const handleExportCsv = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (statusFilter !== "all") params.set("status", statusFilter);
+      const qs = params.toString();
+      await downloadAdminCsv(
+        `/api/admin/wholesale/export${qs ? `?${qs}` : ""}`,
+        `wholesale-${new Date().toISOString().slice(0, 10)}.csv`,
+      );
+      toast.success("Wholesale CSV downloaded");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to export wholesale CSV",
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6 p-4 md:p-6">
       <AdminPageHeader
         title="Wholesale"
         description="Review cafe and retailer inquiries submitted from the site."
         actions={
-          <Button
-            variant="outline"
-            onClick={() => void fetchInquiries()}
-            disabled={loading}
-          >
-            <RefreshCw
-              className={cn("me-2 h-4 w-4", loading && "animate-spin")}
-            />
-            Refresh
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              onClick={() => void handleExportCsv()}
+              disabled={loading || isExporting}
+            >
+              <Download
+                className={cn("me-2 h-4 w-4", isExporting && "animate-pulse")}
+              />
+              {isExporting ? "Exporting..." : "Export CSV"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => void fetchInquiries()}
+              disabled={loading}
+            >
+              <RefreshCw
+                className={cn("me-2 h-4 w-4", loading && "animate-spin")}
+              />
+              Refresh
+            </Button>
+          </>
         }
       />
 

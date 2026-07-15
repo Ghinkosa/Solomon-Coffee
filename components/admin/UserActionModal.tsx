@@ -50,57 +50,57 @@ export const UserActionModal: FC<UserActionModalProps> = ({
       case "activate":
         return {
           title: user.inSanity
-            ? "Activate User in Sanity"
-            : "Add User to Sanity",
+            ? "Activate store profile"
+            : "Create store profile",
           icon: <UserCheck className="h-5 w-5 text-green-600" />,
           description: user.inSanity
-            ? "This will activate the user in Sanity, allowing them to receive notifications."
-            : "This will create a new user record in Sanity and activate them for notifications.",
-          confirmText: user.inSanity ? "Activate User" : "Add to Sanity",
+            ? "This will activate the user store profile so they can receive notifications."
+            : "This will create a store profile for the user and enable notifications.",
+          confirmText: user.inSanity ? "Activate User" : "Create profile",
           confirmVariant: "default" as const,
           consequences: [
             user.inSanity
-              ? "User will be activated in Sanity"
-              : "User will be created in Sanity database",
+              ? "Store profile will be activated"
+              : "A store profile will be created",
             "User will be able to receive notifications",
-            "User data will be synchronized with Clerk",
+            "Account data will stay in sync",
             "Action will be logged with your admin email",
           ],
         };
 
       case "deactivate":
         return {
-          title: "Deactivate User in Sanity",
+          title: "Deactivate store profile",
           icon: <UserX className="h-5 w-5 text-orange-600" />,
           description:
-            "This will deactivate the user in Sanity. They will no longer receive notifications.",
+            "This will deactivate the user store profile. They will no longer receive notifications.",
           confirmText: "Deactivate User",
           confirmVariant: "destructive" as const,
           consequences: [
-            "User will be deactivated in Sanity",
+            "Store profile will be deactivated",
             "User will NOT receive any notifications",
-            "User data will remain in Sanity but marked as inactive",
+            "Profile data remains but is marked inactive",
             "User can be reactivated later if needed",
           ],
         };
 
       case "delete":
         return {
-          title: "Delete User from Sanity",
+          title: "Delete store profile",
           icon: <Trash2 className="h-5 w-5 text-red-600" />,
           description:
-            "This will permanently delete the user and ALL related data from Sanity database.",
-          confirmText: "Delete from Sanity",
+            "This will permanently delete the store profile and related store data for this user.",
+          confirmText: "Delete profile",
           confirmVariant: "destructive" as const,
           consequences: [
-            "❌ User record will be permanently deleted from Sanity",
-            "📧 All addresses will be deleted",
-            "🛒 All orders will be deleted",
-            "⭐ All reviews will be deleted",
-            "🔔 All notifications will be deleted",
-            "💼 Employee data (if any) will be deleted",
-            "⚠️ This action CANNOT be undone",
-            "✅ User will remain in Clerk (can re-register)",
+            "User store profile will be permanently deleted",
+            "All addresses will be deleted",
+            "All orders will be deleted",
+            "All reviews will be deleted",
+            "All notifications will be deleted",
+            "Employee data (if any) will be deleted",
+            "This action CANNOT be undone",
+            "Sign-in account will remain (user can re-register)",
           ],
         };
 
@@ -171,7 +171,7 @@ export const UserActionModal: FC<UserActionModalProps> = ({
                 </Badge>
                 <Badge variant={user.inSanity ? "default" : "outline"}>
                   <Database className="h-3 w-3 mr-1" />
-                  {user.inSanity ? "In Sanity" : "Clerk Only"}
+                  {user.inSanity ? "Store profile" : "Sign-in only"}
                 </Badge>
                 {user.notificationCount && user.notificationCount > 0 && (
                   <Badge variant="outline" className="text-xs">
@@ -243,7 +243,7 @@ export const UserActionModal: FC<UserActionModalProps> = ({
                 <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 animate-pulse" />
                 <div className="text-sm text-red-800">
                   {action === "delete"
-                    ? "This action is permanent and cannot be undone. The user will lose all their Sanity data."
+                    ? "This action is permanent and cannot be undone. The user will lose their store profile and related data."
                     : `This user has received ${user.notificationCount} notifications. Deactivating will prevent future notifications.`}
                 </div>
               </div>

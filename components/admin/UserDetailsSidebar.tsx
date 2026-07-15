@@ -105,7 +105,7 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
           };
           onUserUpdate(updatedUser);
           showToast.success(
-            "User added to Sanity successfully!",
+            "Store profile created",
             `${user.fullName} can now receive notifications and track loyalty points.`
           );
         } else {
@@ -133,7 +133,7 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
           ) : (
             <UserCheck className="h-4 w-4 mr-2" />
           )}
-          Add to Sanity
+          Add store profile
         </Button>
       );
     }
@@ -185,7 +185,7 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
           <SheetHeader className="px-6 pt-6 pb-4 border-b">
             <SheetTitle>User Details</SheetTitle>
             <SheetDescription>
-              Manage user account and Sanity integration
+              Manage user account and store profile
             </SheetDescription>
           </SheetHeader>
 
@@ -230,7 +230,7 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
                       {user.locked && <Badge variant="outline">Locked</Badge>}
                       {actionLoading === "activate" && (
                         <Badge variant="outline" className="animate-pulse">
-                          Adding to Sanity...
+                          Creating store profile...
                         </Badge>
                       )}
                     </div>
@@ -263,7 +263,7 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
                   <div className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2 text-muted-foreground">
                       <Database className="h-4 w-4" />
-                      Clerk ID
+                      Account ID
                     </span>
                     <span className="font-mono text-xs">
                       {user.clerkUserId.slice(0, 12)}...
@@ -272,11 +272,11 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
                 </div>
               </Card>
 
-              {/* Sanity Status */}
+              {/* Store profile */}
               <Card className="p-6">
                 <h4 className="font-medium mb-4 flex items-center gap-2">
                   <Database className="h-4 w-4" />
-                  Sanity Integration
+                  Store profile
                 </h4>
 
                 {user.inSanity ? (
@@ -347,11 +347,11 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
                   <div className="text-center py-4">
                     <Database className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                     <p className="text-sm text-muted-foreground mb-3">
-                      This user is not yet added to Sanity. Add them to enable
-                      notifications and track their activity.
+                      This user does not have a store profile yet. Create one to
+                      enable notifications and track their activity.
                     </p>
                     <div className="text-xs text-muted-foreground">
-                      Adding to Sanity will create a user record and enable:
+                      Creating a store profile enables:
                     </div>
                     <ul className="text-xs text-muted-foreground mt-1 space-y-1">
                       <li>• Notification management</li>

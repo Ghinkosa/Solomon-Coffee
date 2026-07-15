@@ -190,10 +190,10 @@ export async function DELETE(req: NextRequest) {
           error
         );
         result.error = result.error
-          ? `${result.error}; Sanity: ${
+          ? `${result.error}; store profile: ${
               error instanceof Error ? error.message : "Unknown error"
             }`
-          : `Sanity: ${
+          : `store profile: ${
               error instanceof Error ? error.message : "Unknown error"
             }`;
       }
@@ -211,7 +211,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Deleted ${totalDeleted.clerk} user(s) from Clerk and ${totalDeleted.sanity} user(s) from Sanity`,
+      message: `Deleted ${totalDeleted.clerk} sign-in account(s) and ${totalDeleted.sanity} store profile(s)`,
       totalProcessed: userIds.length,
       successCount,
       results: deleteResults,

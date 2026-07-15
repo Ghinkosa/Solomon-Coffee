@@ -304,7 +304,7 @@ export const EmployeeAssignmentSidebar: React.FC<
             {!user.sanityId ? (
               <div className="text-center p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground">
-                  User must be in Sanity database before assigning an employee
+                  User must have a store profile before assigning an employee
                   role.
                 </p>
               </div>

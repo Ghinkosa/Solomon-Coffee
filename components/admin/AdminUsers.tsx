@@ -21,6 +21,7 @@ import {
   UserX,
   Database,
   Briefcase,
+  Download,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import {
@@ -48,6 +49,7 @@ import {
 import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { downloadAdminCsv } from "@/lib/downloadAdminCsv";
 
 interface CombinedUser {
   id: string;
@@ -96,6 +98,7 @@ const AdminUsers: React.FC = () => {
   );
   const [tableLoading, setTableLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "sanity" | "clerk">("all");
+  const [isExporting, setIsExporting] = useState(false);
 
   // Modal state
   const [actionModal, setActionModal] = useState<{
@@ -245,7 +248,7 @@ const AdminUsers: React.FC = () => {
       // Immediately fetch fresh data
       await fetchUsers(currentPage, true);
     } catch (error) {
-      handleApiError(error, "User deletion from Sanity");
+      handleApiError(error, "User profile deletion");
     } finally {
       setActivatingUsers((prev) => {
         const newSet = new Set(prev);
@@ -411,23 +414,63 @@ const AdminUsers: React.FC = () => {
     setCurrentPage(0);
   }, [activeTab]);
 
+  const handleExportCsv = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearchTerm) {
+        params.set("query", debouncedSearchTerm);
+      }
+      if (activeTab === "sanity") {
+        params.set("sanityOnly", "true");
+      } else if (activeTab === "clerk") {
+        params.set("clerkOnly", "true");
+      }
+      const qs = params.toString();
+      await downloadAdminCsv(
+        `/api/admin/users/export${qs ? `?${qs}` : ""}`,
+        `users-${new Date().toISOString().slice(0, 10)}.csv`,
+      );
+      toast.success("Users CSV downloaded");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to export users CSV",
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <>
       <div className="space-y-6 p-4 md:p-6">
         <AdminPageHeader
           title="Users"
-          description="Manage customer accounts across Clerk and Sanity."
+          description="Manage customer accounts, store profiles, and access."
           actions={
-            <Button
-              onClick={() => fetchUsers(currentPage)}
-              variant="outline"
-              disabled={tableLoading}
-            >
-              <RefreshCw
-                className={cn("me-2 h-4 w-4", tableLoading && "animate-spin")}
-              />
-              Refresh
-            </Button>
+            <>
+              <Button
+                onClick={handleExportCsv}
+                variant="outline"
+                disabled={tableLoading || isExporting}
+              >
+                <Download
+                  className={cn("me-2 h-4 w-4", isExporting && "animate-pulse")}
+                />
+                {isExporting ? "Exporting..." : "Export CSV"}
+              </Button>
+              <Button
+                onClick={() => fetchUsers(currentPage)}
+                variant="outline"
+                disabled={tableLoading}
+              >
+                <RefreshCw
+                  className={cn("me-2 h-4 w-4", tableLoading && "animate-spin")}
+                />
+                Refresh
+              </Button>
+            </>
           }
         />
 
@@ -461,7 +504,7 @@ const AdminUsers: React.FC = () => {
           </div>
           <div className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
             <Database className="mr-1 inline h-3 w-3" />
-            Sanity: {sanityUsersCount}
+            Store profiles: {sanityUsersCount}
           </div>
           <div className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800">
             <UserCheck className="mr-1 inline h-3 w-3" />
@@ -495,7 +538,7 @@ const AdminUsers: React.FC = () => {
             )}
           >
             <Database className="h-4 w-4 inline mr-1" />
-            Sanity Users
+            Store profiles
             <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">
               {sanityUsersCount}
             </span>
@@ -509,7 +552,7 @@ const AdminUsers: React.FC = () => {
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            Clerk Only
+            Sign-in only
             <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-800 text-xs rounded-full">
               {clerkOnlyCount}
             </span>
@@ -571,7 +614,7 @@ const AdminUsers: React.FC = () => {
                         Status
                       </TableHead>
                       <TableHead className="min-w-[140px]">
-                        Sanity Status
+                        Store profile
                       </TableHead>
                       <TableHead className="min-w-[120px]">Actions</TableHead>
                     </TableRow>
@@ -665,7 +708,7 @@ const AdminUsers: React.FC = () => {
                                 </Badge>
                               ) : (
                                 <Badge variant="outline" className="text-xs">
-                                  Not in Sanity
+                                  No store profile
                                 </Badge>
                               )}
                               {employeeOpsEnabled &&
@@ -846,17 +889,17 @@ const AdminUsers: React.FC = () => {
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="text-xs">
-                              Not in Sanity
+                              No store profile
                             </Badge>
                           )}
                           {employeeOpsEnabled &&
                             user.isEmployee &&
                             user.employeeRole && (
-                            <Badge variant="secondary" className="text-xs">
-                              <Briefcase className="h-3 w-3 mr-1" />
-                              {user.employeeRole}
-                            </Badge>
-                          )}
+                              <Badge variant="secondary" className="text-xs">
+                                <Briefcase className="h-3 w-3 mr-1" />
+                                {user.employeeRole}
+                              </Badge>
+                            )}
                           {user.notificationCount > 1 && (
                             <Badge variant="outline" className="text-xs">
                               {user.notificationCount} notifications

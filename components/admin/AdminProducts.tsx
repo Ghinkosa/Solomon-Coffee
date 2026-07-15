@@ -48,12 +48,14 @@ import {
   Archive,
   ArchiveRestore,
   Scale,
+  Download,
 } from "lucide-react";
 import { ProductsSkeleton } from "./SkeletonLoaders";
 import { Product } from "./types";
 import { safeApiCall, handleApiError } from "./apiHelpers";
 import type { Category } from "@/sanity.types";
 import { toast } from "sonner";
+import { downloadAdminCsv } from "@/lib/downloadAdminCsv";
 import ProductEditor, { type ProductEditorState } from "./ProductEditor";
 import {
   Dialog,
@@ -117,6 +119,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
     Array<{ _key: string; weight: string; stock: string }>
   >([]);
   const [savingWeights, setSavingWeights] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const limit = 10;
 
@@ -462,6 +465,35 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
     }
   };
 
+  const handleExportCsv = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (productCategory && productCategory !== "all") {
+        params.set("category", productCategory);
+      }
+      if (debouncedSearchTerm) {
+        params.set("search", debouncedSearchTerm);
+      }
+      if (archiveFilter) {
+        params.set("archived", archiveFilter);
+      }
+      const qs = params.toString();
+      await downloadAdminCsv(
+        `/api/admin/products/export${qs ? `?${qs}` : ""}`,
+        `products-${new Date().toISOString().slice(0, 10)}.csv`,
+      );
+      toast.success("Products CSV downloaded");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to export products CSV",
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6 p-4 md:p-6">
       <AdminPageHeader
@@ -472,6 +504,16 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
             <Button onClick={() => setEditorState({ mode: "create" })}>
               <Plus className="me-2 h-4 w-4" />
               Add product
+            </Button>
+            <Button
+              onClick={handleExportCsv}
+              variant="outline"
+              disabled={isExporting}
+            >
+              <Download
+                className={`me-2 h-4 w-4 ${isExporting ? "animate-pulse" : ""}`}
+              />
+              {isExporting ? "Exporting..." : "Export CSV"}
             </Button>
             <Button
               onClick={() => fetchProducts(currentPage)}

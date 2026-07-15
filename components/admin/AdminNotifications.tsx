@@ -215,7 +215,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
 
       return syncResult;
     } catch (error) {
-      handleApiError(error, "User sync to Sanity");
+      handleApiError(error, "User profile sync");
       throw error;
     } finally {
       setSyncingUsers(false);
@@ -428,7 +428,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
       if (sendResult?.historyCreated === false) {
         showToast.info(
           "History not saved",
-          "User inboxes were updated, but send history could not be saved to Sanity.",
+          "User inboxes were updated, but send history could not be saved.",
         );
       }
     } catch (error) {
@@ -844,7 +844,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
                             variant={user.inSanity ? "default" : "outline"}
                             className="text-xs"
                           >
-                            {user.inSanity ? "In Sanity" : "Clerk Only"}
+                            {user.inSanity ? "Store profile" : "Sign-in only"}
                           </Badge>
                         </div>
                       </div>
@@ -859,7 +859,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
                       {syncingUsers && (
                         <div className="text-blue-600 mt-1 flex items-center gap-2">
                           <Clock className="w-3 h-3 animate-spin" />
-                          Syncing users to Sanity...
+                          Preparing user profiles...
                         </div>
                       )}
                       {(() => {
@@ -874,7 +874,7 @@ const AdminNotifications: React.FC<AdminNotificationsProps> = ({
                           return (
                             <div className="text-orange-600 mt-1 text-xs">
                               {usersToSync.length} user(s) will be automatically
-                              activated in Sanity
+                              activated
                             </div>
                           );
                         }

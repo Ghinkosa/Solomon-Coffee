@@ -32,7 +32,7 @@ export async function DELETE(
 
     if (!existingUser) {
       return NextResponse.json(
-        { error: "User not found in Sanity" },
+        { error: "User profile not found" },
         { status: 404 }
       );
     }
@@ -92,7 +92,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: `User ${existingUser.firstName} ${existingUser.lastName} and all related data have been deleted from Sanity`,
+      message: `User ${existingUser.firstName} ${existingUser.lastName} and related store data have been deleted`,
       user: {
         id: targetUserId,
         email: existingUser.email,

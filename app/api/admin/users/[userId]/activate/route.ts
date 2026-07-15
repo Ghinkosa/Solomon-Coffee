@@ -95,7 +95,7 @@ export async function POST(
 
       return NextResponse.json({
         success: true,
-        message: `User ${targetUser.firstName} ${targetUser.lastName} has been activated in Sanity`,
+        message: `User ${targetUser.firstName} ${targetUser.lastName} has been activated`,
         user: {
           id: targetUserId,
           email: userEmail,
@@ -117,7 +117,7 @@ export async function POST(
 
         return NextResponse.json({
           success: true,
-          message: `User ${targetUser.firstName} ${targetUser.lastName} has been deactivated in Sanity`,
+          message: `User ${targetUser.firstName} ${targetUser.lastName} has been deactivated`,
           user: {
             id: targetUserId,
             email: userEmail,
@@ -128,7 +128,7 @@ export async function POST(
         });
       } else {
         return NextResponse.json(
-          { error: "User not found in Sanity" },
+          { error: "User profile not found" },
           { status: 404 }
         );
       }

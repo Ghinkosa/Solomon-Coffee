@@ -500,7 +500,7 @@ export async function buildOrderPdfBuffer(order: OrderPdfInput): Promise<Buffer>
       y += 12;
       doc.font("Helvetica").fontSize(8).fillColor(COLORS.muted);
       // Multi-line notes: use a bounded height via manual wrap approximation
-      const safe = pdfSafe(value);
+      const safe = pdfSafe(value || "");
       const words = safe.split(/\s+/);
       let line = "";
       for (const word of words) {

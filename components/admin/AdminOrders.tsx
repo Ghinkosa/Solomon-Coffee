@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, Trash2, Package, Search } from "lucide-react";
+import { RefreshCw, Trash2, Package, Search, Download } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { OrdersSkeleton } from "./SkeletonLoaders";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
@@ -29,6 +29,8 @@ import OrderDetailsSidebar from "./OrderDetailsSidebar";
 import { Order } from "./types";
 import { safeApiCall, handleApiError } from "./apiHelpers";
 import { cn } from "@/lib/utils";
+import { downloadAdminCsv } from "@/lib/downloadAdminCsv";
+import { showToast } from "@/lib/toast";
 
 const AdminOrders: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -50,6 +52,7 @@ const AdminOrders: React.FC = () => {
     totalPages: 0,
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const limit = perPage;
 
@@ -317,6 +320,32 @@ const AdminOrders: React.FC = () => {
     }
   }, [fetchOrders, currentPage]);
 
+  const handleExportCsv = useCallback(async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (orderStatus && orderStatus !== "all") {
+        params.set("status", orderStatus);
+      }
+      if (debouncedSearch) {
+        params.set("search", debouncedSearch);
+      }
+      const qs = params.toString();
+      await downloadAdminCsv(
+        `/api/admin/orders/export${qs ? `?${qs}` : ""}`,
+        `orders-${new Date().toISOString().slice(0, 10)}.csv`,
+      );
+      showToast.success("Orders CSV downloaded");
+    } catch (error) {
+      showToast.error(
+        error instanceof Error ? error.message : "Failed to export orders CSV",
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  }, [isExporting, orderStatus, debouncedSearch]);
+
   // Effects - Combined to avoid multiple re-renders
   useEffect(() => {
     fetchOrders(currentPage);
@@ -335,18 +364,30 @@ const AdminOrders: React.FC = () => {
           title="Orders"
           description="Confirm, pack, deliver, and manage customer orders."
           actions={
-            <Button
-              onClick={handleRefresh}
-              variant="outline"
-              disabled={loading || isRefreshing}
-            >
-              <RefreshCw
-                className={`me-2 h-4 w-4 ${
-                  loading || isRefreshing ? "animate-spin" : ""
-                }`}
-              />
-              Refresh
-            </Button>
+            <>
+              <Button
+                onClick={handleExportCsv}
+                variant="outline"
+                disabled={loading || isExporting}
+              >
+                <Download
+                  className={`me-2 h-4 w-4 ${isExporting ? "animate-pulse" : ""}`}
+                />
+                {isExporting ? "Exporting..." : "Export CSV"}
+              </Button>
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                disabled={loading || isRefreshing}
+              >
+                <RefreshCw
+                  className={`me-2 h-4 w-4 ${
+                    loading || isRefreshing ? "animate-spin" : ""
+                  }`}
+                />
+                Refresh
+              </Button>
+            </>
           }
         />
 
