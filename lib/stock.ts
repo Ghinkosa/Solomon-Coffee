@@ -89,18 +89,37 @@ async function adjustLineStock(
  * When a line has a selected weight variant, the matching `weightOptions[]`
  * entry is decremented; otherwise the product's base `stock` is decremented.
  * This mirrors the stock source that `validateOrderPricing` checks.
+ *
+ * Pass `{ strict: true }` from order creation so a reservation failure aborts
+ * the checkout instead of leaving an oversold order in place. Already-decremented
+ * lines are restored before the error is rethrown.
  */
 export async function decrementOrderStock(
   orderProducts: OrderProductRef[],
+  options?: { strict?: boolean },
 ): Promise<void> {
+  const strict = options?.strict === true;
+  const completed: OrderProductRef[] = [];
+
   for (const orderProduct of orderProducts) {
     try {
       await adjustLineStock(orderProduct, "dec");
+      completed.push(orderProduct);
     } catch (error) {
       console.error(
         `Failed to decrement stock for product ${orderProduct.product._ref}:`,
         error,
       );
+      if (strict) {
+        if (completed.length > 0) {
+          await incrementOrderStock(completed);
+        }
+        throw error instanceof Error
+          ? error
+          : new Error(
+              `Failed to reserve stock for ${orderProduct.product._ref}`,
+            );
+      }
     }
   }
 }

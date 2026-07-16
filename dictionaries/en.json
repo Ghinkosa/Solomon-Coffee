@@ -63,6 +63,10 @@
       "freeShippingQualified": "You qualify for free shipping",
       "subtotal": "Subtotal",
       "discount": "Discount",
+      "shipping": "Shipping",
+      "free": "Free",
+      "tax": "Tax",
+      "taxAtCheckout": "Calculated at checkout",
       "estimatedTotal": "Estimated total",
       "checkout": "Checkout",
       "continueShopping": "Continue shopping",
@@ -87,6 +91,7 @@
       "shipping": "Shipping",
       "free": "Free",
       "tax": "Tax",
+      "taxAtCheckout": "Calculated at checkout",
       "total": "Total"
     },
     "actions": {
@@ -519,7 +524,7 @@
       "experience": "We provide a seamless coffee buying experience with fresh roasts and dependable service",
       "customerTrusted": "Trusted by thousands of customers worldwide",
       "freeDelivery": "Free Delivery",
-      "freeDeliveryDesc": "Free shipping over $100",
+      "freeDeliveryDesc": "Free shipping over {amount}",
       "freeReturn": "Free Return",
       "customerSupport": "Customer Support",
       "customerSupportDesc": "Friendly 27/7 customer support",
@@ -945,7 +950,7 @@
       },
       "fastDelivery": {
         "title": "Fast Delivery",
-        "description": "Free shipping on orders over $50"
+        "description": "Free shipping on orders over {amount}"
       },
       "qualityPromise": {
         "title": "Quality Promise",
@@ -1047,12 +1052,14 @@
     "codDescription": "Pay when your order is delivered to your doorstep",
     "cardDescription": "Pay securely with your credit or debit card via Stripe",
     "addressSelected": "Selected",
-    "businessDiscount": "Business Account Discount (2%)",
-    "premiumDiscount": "Premium Member Discount (5%)",
+    "businessDiscount": "Business Account Discount ({percent}%)",
+    "premiumDiscount": "Premium Member Discount ({percent}%)",
     "packaging": "Packaging",
     "packagingExtra": "packaging",
     "subtotalWithCount": "Subtotal ({count} items)",
     "emptyCartHint": "Add some products to continue with checkout",
+    "taxAfterAddress": "Calculated after address",
+    "taxLoading": "Calculating...",
     "redirecting": {
       "title": "Processing your order...",
       "description": "Please wait while we redirect you to complete your payment."
@@ -1802,9 +1809,9 @@
         },
         "business": {
           "upgradeTitle": "Upgrade to Business Account",
-          "upgradeDescription": "Get 2% off all orders with our Business Account plan. Perfect for companies and bulk purchases.",
+          "upgradeDescription": "Get {percent}% off all orders with our Business Account plan. Perfect for companies and bulk purchases.",
           "upgradeBenefits": [
-            "2% discount on all orders",
+            "{percent}% discount on all orders",
             "Priority customer support",
             "Bulk order management",
             "Business invoicing"
@@ -1814,7 +1821,7 @@
           "pendingDescription": "Excellent! Your business account application has been submitted successfully and is currently under administrative review.",
           "pendingBenefitsTitle": "Business Account Benefits (Upon Approval):",
           "pendingBenefits": [
-            "2% discount on all orders",
+            "{percent}% discount on all orders",
             "Priority customer support",
             "Bulk order management",
             "Business invoicing capabilities"
@@ -1825,7 +1832,7 @@
           "activeDescription": "Fantastic! Your business account is now active and you're enjoying exclusive business benefits.",
           "activeBenefitsTitle": "Active Business Benefits:",
           "activeBenefits": [
-            "2% discount automatically applied at checkout",
+            "{percent}% discount automatically applied at checkout",
             "Priority customer support",
             "Advanced bulk order management",
             "Professional business invoicing"
@@ -2679,7 +2686,7 @@
         "id": "shipping-1",
         "category": "shipping",
         "question": "How much does shipping cost?",
-        "answer": "Shipping costs vary based on your location and the shipping method you choose. Standard shipping is free for orders over $50. Express shipping options are available at checkout with their respective costs displayed."
+        "answer": "We use a flat US shipping fee of {fee}. Standard shipping is free for orders over {amount} (after discounts and packaging). Exact shipping and tax are shown at checkout based on your address."
       },
       {
         "id": "shipping-2",
@@ -2768,7 +2775,7 @@
     "hero": {
       "title": "Privacy Policy",
       "description": "Your privacy is fundamental to how we operate. Learn how we collect, use, and protect your personal information.",
-      "lastUpdated": "Last updated: January 2024"
+      "lastUpdated": "Last updated: July 16, 2026"
     },
     "highlights": {
       "title": "Our Privacy Commitments",
@@ -2824,12 +2831,12 @@
           ]
         },
         {
-          "category": "Device Information",
+          "category": "Device & Security Information",
           "items": [
             "Browser and device type",
-            "IP address",
+            "IP address (for security, rate limiting, and abuse prevention)",
             "Operating system",
-            "Cookies and tracking"
+            "Cookies and similar technologies"
           ]
         }
       ]
@@ -2841,12 +2848,26 @@
         {
           "id": "collection",
           "title": "Information Collection & Use",
-          "intro": "We collect information to provide better services to all users. The information we collect falls into several categories:",
+          "intro": "We collect information to operate our US online store, fulfill orders, and protect our services. The information we collect falls into several categories:",
           "items": [
-            "Information you provide when creating an account or making purchases",
+            "Information you provide when creating an account, checking out, or making purchases",
+            "Email address and related details when you subscribe to our newsletter or marketing updates",
+            "Contact, wholesale, and support form submissions you send us",
             "Automatic information collected through cookies and similar technologies",
-            "Communication data when you contact our support team",
+            "IP address and related technical data when you submit forms (including newsletter signup), place orders, or use our site — used for security, fraud and abuse prevention, rate limiting, and troubleshooting",
             "Usage analytics to improve our website and services"
+          ]
+        },
+        {
+          "id": "newsletter",
+          "title": "Newsletter & Marketing Emails",
+          "intro": "When you subscribe to our newsletter or opt in to marketing emails:",
+          "items": [
+            "We collect your email address and, where provided, related preference settings",
+            "We may record your IP address and the time of signup to help prevent spam, duplicate signups, and abuse",
+            "We use this information only to send the communications you requested, manage your subscription, and protect our systems",
+            "You can unsubscribe at any time using the link in our emails or your account email settings",
+            "We do not sell your email address or newsletter data"
           ]
         },
         {
@@ -2854,7 +2875,8 @@
           "title": "Information Sharing & Disclosure",
           "intro": "We do not sell, trade, or rent your personal information to third parties. We may share information only in these limited circumstances:",
           "items": [
-            "With service providers who assist in our operations (payment processing, shipping)",
+            "With service providers who assist in our operations (payment processing, shipping, email delivery, hosting)",
+            "With authorized Sheba Cup Coffee staff who need access to operate the store (for example, viewing newsletter subscriptions in our secure admin tools for support, compliance, and security)",
             "When required by law or to protect our rights and safety",
             "With your explicit consent for specific purposes",
             "In connection with a business transfer or merger"
@@ -2865,11 +2887,22 @@
           "title": "Data Security & Protection",
           "intro": "We implement industry-standard security measures to protect your information:",
           "items": [
-            "SSL encryption for all data transmission",
-            "Secure data storage with regular security audits",
-            "Access controls limiting who can view your information",
-            "Regular security training for our team members",
+            "SSL/TLS encryption for data transmission",
+            "Secure data storage with access limited to authorized personnel",
+            "Access controls for admin tools and customer records",
+            "Rate limiting and abuse checks that may use IP address data",
             "Incident response procedures for potential breaches"
+          ]
+        },
+        {
+          "id": "retention",
+          "title": "Data Retention",
+          "intro": "We keep personal information only as long as needed for the purposes described in this policy, including:",
+          "items": [
+            "Account and order records for as long as needed to fulfill orders, provide support, and meet legal or tax requirements",
+            "Newsletter subscription records until you unsubscribe or we delete them as part of list maintenance",
+            "IP addresses and related security logs for a limited period needed for rate limiting, fraud prevention, and troubleshooting",
+            "You may request deletion of your personal information subject to legal retention obligations"
           ]
         },
         {
@@ -2879,10 +2912,22 @@
           "items": [
             "Essential cookies for website functionality",
             "Analytics cookies to understand usage patterns",
-            "Marketing cookies for personalized advertising (with consent)",
+            "Marketing cookies for personalized advertising (with consent where required)",
             "Preference cookies to remember your settings"
           ],
           "footer": "You can control cookie preferences through your browser settings or our cookie preference center."
+        },
+        {
+          "id": "us-rights",
+          "title": "US State Privacy Rights",
+          "intro": "Depending on where you live in the United States, you may have rights under state privacy laws (including California’s CCPA/CPRA and similar laws in other states). These may include the right to:",
+          "items": [
+            "Know what personal information we collect and how we use it",
+            "Request access to or deletion of your personal information",
+            "Correct inaccurate personal information",
+            "Opt out of certain sharing or targeted advertising, where applicable",
+            "Contact us at privacy@shebascoffee.com to exercise these rights. We will not discriminate against you for exercising privacy rights"
+          ]
         }
       ]
     },
@@ -2893,7 +2938,7 @@
       "items": [
         {
           "right": "Access Your Data",
-          "description": "Request a copy of all personal information we have about you",
+          "description": "Request a copy of the personal information we have about you",
           "action": "Request Data Export"
         },
         {
@@ -2903,12 +2948,12 @@
         },
         {
           "right": "Delete Account",
-          "description": "Request complete removal of your account and associated data",
+          "description": "Request removal of your account and associated data",
           "action": "Delete Account"
         },
         {
           "right": "Control Communications",
-          "description": "Manage email preferences and marketing communications",
+          "description": "Manage email preferences, newsletter subscription, and marketing communications",
           "action": "Email Settings"
         }
       ]
@@ -2922,7 +2967,7 @@
       "email": "privacy@shebascoffee.com"
     },
     "footer": {
-      "lastUpdated": "This privacy policy was last updated on January 15, 2024",
+      "lastUpdated": "This privacy policy was last updated on July 16, 2026",
       "notice": "We may update this policy periodically. We'll notify you of significant changes via email or website notice."
     }
   },
@@ -3203,7 +3248,7 @@
         },
         "shipping": {
           "title": "Free Shipping",
-          "description": "Enjoy free shipping on orders over $50"
+          "description": "Enjoy free shipping on orders over {amount}"
         },
         "payments": {
           "title": "Secure Payments",

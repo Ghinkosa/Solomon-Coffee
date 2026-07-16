@@ -18,11 +18,15 @@ import {
   AlertCircle,
   ExternalLink,
 } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import workersOnFarm from "@/images/farm/workers-on-farm.webp";
+import {
+  formatUsdAmount,
+  useCheckoutSettings,
+} from "@/hooks/useCheckoutSettings";
 
 const CONTACT_HERO_IMAGE = workersOnFarm;
 
@@ -38,6 +42,29 @@ interface ContactClientProps {
 }
 
 const ContactClient = ({ dictionary }: ContactClientProps) => {
+  const checkoutSettings = useCheckoutSettings();
+  const contactFaqs = useMemo(
+    () =>
+      (dictionary.contact?.faq?.questions ?? []).map(
+        (faq: { q: string; a: string }) => ({
+          ...faq,
+          a: String(faq.a ?? "")
+            .replace(
+              /\{amount\}/g,
+              formatUsdAmount(checkoutSettings.freeShippingThreshold),
+            )
+            .replace(
+              /\{fee\}/g,
+              formatUsdAmount(checkoutSettings.flatShippingFee),
+            ),
+        }),
+      ),
+    [
+      dictionary.contact?.faq?.questions,
+      checkoutSettings.freeShippingThreshold,
+      checkoutSettings.flatShippingFee,
+    ],
+  );
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string>("");
@@ -390,7 +417,7 @@ const ContactClient = ({ dictionary }: ContactClientProps) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {dictionary.contact.faq.questions.map((faq: any, index: number) => (
+            {contactFaqs.map((faq: { q: string; a: string }, index: number) => (
               <div
                 key={index}
                 className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"

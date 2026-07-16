@@ -16,6 +16,7 @@ import { userAccessRequestType } from "./userAccessRequestType";
 import { reviewType } from "./reviewType";
 import { subscriptionType } from "./subscriptionType";
 import { packagingType } from "./packaging";
+import { checkoutSettingsType } from "./checkoutSettingsType";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -35,5 +36,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     reviewType,
     subscriptionType,
     packagingType,
+    checkoutSettingsType,
   ],
 };

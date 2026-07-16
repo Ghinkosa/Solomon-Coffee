@@ -7,7 +7,19 @@ export const structure: StructureResolver = (S) =>
     .items([
       S.documentTypeListItem("category").title("Categories"),
       S.divider(),
+      S.listItem()
+        .title("Checkout Settings")
+        .id("checkoutSettings")
+        .child(
+          S.document()
+            .schemaType("checkoutSettings")
+            .documentId("checkoutSettings")
+            .title("Checkout Settings"),
+        ),
+      S.divider(),
       ...S.documentTypeListItems().filter(
-        (item) => item.getId() && !["category"].includes(item.getId()!)
+        (item) =>
+          item.getId() &&
+          !["category", "checkoutSettings"].includes(item.getId()!),
       ),
     ]);

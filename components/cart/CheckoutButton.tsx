@@ -2,14 +2,11 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Package, Box, ShoppingBag, Check } from "lucide-react";
-import useCartStore, { CartItem } from "@/store";
+import { Package, ShoppingBag, Check } from "lucide-react";
+import { CartItem } from "@/store";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
-import { useOrderPlacement } from "@/hooks/useOrderPlacement";
-import { PAYMENT_METHODS } from "@/lib/orderStatus";
 import { trackCheckoutStarted } from "@/lib/analytics";
-import { OrderPlacementOverlay } from "./OrderPlacementSkeleton";
 import { useRouter } from "next/navigation";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import {
@@ -18,6 +15,7 @@ import {
 } from "@/lib/checkout-pricing";
 import { useDictionary } from "@/lib/dictionary-context";
 import type { Dictionary } from "@/lib/dictionary-context";
+import { useUserData } from "@/contexts/UserDataContext";
 
 interface Address {
   _id: string;
@@ -37,22 +35,22 @@ interface CheckoutButtonProps {
   isGuestCheckout?: boolean;
 }
 
-// Helper to get current price based on selected weight
 const getItemCurrentPrice = (item: CartItem): number => {
   if (item.selectedWeight && item.selectedWeight.price) {
     return item.selectedWeight.price;
   }
-  const defaultWeight = (item.product as any).weightOptions?.find((w: any) => w.isDefault);
+  const defaultWeight = (item.product as any).weightOptions?.find(
+    (w: any) => w.isDefault,
+  );
   return defaultWeight?.price || item.product.price || 0;
 };
 
-// Helper to get packaging fee for an item
 const getItemPackagingFee = (item: CartItem): number => {
   return item.selectedPackaging?.price || 0;
 };
 
-export function CheckoutButton({ 
-  cart, 
+export function CheckoutButton({
+  cart,
   selectedAddress,
   isGuestCheckout = false,
 }: CheckoutButtonProps) {
@@ -63,14 +61,10 @@ export function CheckoutButton({
   const { user } = useUser();
   const router = useRouter();
   const toLocalizedPath = useLocalizedPath();
-  const { setOrderPlacementState } = useCartStore();
-  const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
-    user: user ? { emailAddresses: user.emailAddresses } : null,
-  });
+  const { accountDiscountRate } = useUserData();
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [actionType, setActionType] = useState<"checkout" | "order" | null>(null);
+  const [actionType, setActionType] = useState<"checkout" | "cod" | null>(null);
 
-  // Calculate cart totals with shared checkout pricing
   const checkoutTotals = calculateCheckoutTotals({
     items: buildCheckoutPricingItems(
       cart.map((item) => ({
@@ -80,18 +74,20 @@ export function CheckoutButton({
         packagingPrice: getItemPackagingFee(item),
       })),
     ),
+    businessDiscountRate: accountDiscountRate,
+    taxRate: 0,
+    taxShipping: false,
   });
 
-  const grossSubtotal = checkoutTotals.subtotal;
   const totalPackagingFee = checkoutTotals.packagingFee;
-  const shipping = checkoutTotals.shipping;
-  const tax = checkoutTotals.tax;
-  const finalTotal = checkoutTotals.total;
 
   const hasOutOfStockItems = cart.some((item) => {
     const selectedWeightStock = item.selectedWeight?.stock;
     const productStock = item.product.stock;
-    return (selectedWeightStock !== undefined ? selectedWeightStock : productStock) === 0;
+    const available =
+      selectedWeightStock !== undefined ? selectedWeightStock : productStock;
+    if (available === undefined || available === null) return false;
+    return available < item.quantity;
   });
 
   const addressReady = isGuestCheckout || Boolean(selectedAddress);
@@ -108,13 +104,15 @@ export function CheckoutButton({
       ? `address=${encodeURIComponent(JSON.stringify(selectedAddress))}&`
       : "";
     const intentParam = intent ? `intent=${intent}&` : "";
-    const selectionsParam = encodeURIComponent(JSON.stringify(selectionsDataForUrl));
+    const selectionsParam = encodeURIComponent(
+      JSON.stringify(selectionsDataForUrl),
+    );
 
     return `${toLocalizedPath("/checkout")}?${addressParam}${intentParam}selections=${selectionsParam}`;
   };
 
-  const redirectToCheckout = async () => {
-    const checkoutUrl = buildCheckoutUrl();
+  const redirectToCheckout = async (intent?: "cod") => {
+    const checkoutUrl = buildCheckoutUrl(intent);
 
     try {
       await router.push(checkoutUrl);
@@ -126,7 +124,7 @@ export function CheckoutButton({
 
   const handleProceedToCheckout = async (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     if (!isGuestCheckout && !selectedAddress) {
       toast.error(
         btn?.selectAddressToast ?? "Please select a shipping address",
@@ -138,9 +136,12 @@ export function CheckoutButton({
     const outOfStockItems = cart.filter((item) => {
       const selectedWeightStock = item.selectedWeight?.stock;
       const productStock = item.product.stock;
-      return (selectedWeightStock !== undefined ? selectedWeightStock : productStock) === 0;
+      const available =
+        selectedWeightStock !== undefined ? selectedWeightStock : productStock;
+      if (available === undefined || available === null) return false;
+      return available < item.quantity;
     });
-    
+
     if (outOfStockItems.length > 0) {
       toast.error(
         btn?.outOfStock ??
@@ -154,10 +155,12 @@ export function CheckoutButton({
     setActionType("checkout");
 
     const cartValue = cart.reduce(
-      (sum, item) => sum + (getItemCurrentPrice(item) + getItemPackagingFee(item)) * item.quantity,
-      0
+      (sum, item) =>
+        sum +
+        (getItemCurrentPrice(item) + getItemPackagingFee(item)) * item.quantity,
+      0,
     );
-    
+
     trackCheckoutStarted({
       userId: user?.id,
       cartValue: cartValue,
@@ -176,192 +179,123 @@ export function CheckoutButton({
       return;
     }
 
-    if (isGuestCheckout) {
-      setIsRedirecting(true);
-      setActionType("checkout");
-      const checkoutUrl = buildCheckoutUrl("cod");
-
-      try {
-        await router.push(checkoutUrl);
-      } catch (error) {
-        console.error("Redirect error:", error);
-        window.location.href = checkoutUrl;
-      }
-      return;
-    }
-    
-    if (!selectedAddress) {
+    if (!isGuestCheckout && !selectedAddress) {
       toast.error(
         btn?.selectAddressToast ?? "Please select a shipping address",
       );
       return;
     }
 
-    setActionType("order");
-
-    const selectionsData = cart.map((item) => ({
-      productId: item.product._id,
-      weight: item.selectedWeight || null,
-      grind: item.selectedGrind || null,
-      packaging: item.selectedPackaging || null,
-    }));
-
-    const checkoutTotalsForOrder = calculateCheckoutTotals({
-      items: buildCheckoutPricingItems(
-        cart.map((item) => ({
-          product: item.product,
-          quantity: item.quantity,
-          unitPrice: getItemCurrentPrice(item),
-          packagingPrice: getItemPackagingFee(item),
-        })),
-      ),
-    });
-
-    const result = await placeOrder(
-      selectedAddress,
-      PAYMENT_METHODS.CASH_ON_DELIVERY,
-      checkoutTotalsForOrder.subtotal - checkoutTotalsForOrder.productDiscount,
-      checkoutTotalsForOrder.packagingFee,
-      checkoutTotalsForOrder.shipping,
-      checkoutTotalsForOrder.tax,
-      checkoutTotalsForOrder.total,
-      false,                  // redirectToCheckout
-      selectionsData          // selectionsData with weight, grind, packaging
-    );
-
-    if (result?.success && result.redirectTo) {
-      if (result.orderNumber) {
-        sessionStorage.setItem("completedOrder", result.orderNumber);
-      }
-      setTimeout(() => {
-        setOrderPlacementState(false, "validating");
-        window.location.href = result.redirectTo;
-      }, 1500);
-    } else {
-      console.error("❌ Order placement failed");
-      setOrderPlacementState(false, "validating");
-      setActionType(null);
-    }
+    // Destination tax is resolved on checkout from admin state rates.
+    setIsRedirecting(true);
+    setActionType("cod");
+    await redirectToCheckout("cod");
   };
 
   return (
-    <>
-      {isPlacingOrder && actionType === "order" && (
-        <OrderPlacementOverlay step={orderStep} isCheckoutRedirect={false} />
-      )}
-
-      <div className="space-y-4">
-        {totalPackagingFee > 0 && (
-          <div className="p-3 bg-shop_light_bg border border-shop_orange/25 rounded-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Package className="w-4 h-4 text-shop_light_green" />
-                <span className="text-sm font-medium text-shop_dark_green">
-                  {btn?.packagingFee ?? "Packaging Fee"}
-                </span>
-              </div>
-              <span className="text-sm font-semibold text-shop_light_green">
-                +${totalPackagingFee.toFixed(2)}
+    <div className="space-y-4">
+      {totalPackagingFee > 0 && (
+        <div className="p-3 bg-shop_light_bg border border-shop_orange/25 rounded-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Package className="w-4 h-4 text-shop_light_green" />
+              <span className="text-sm font-medium text-shop_dark_green">
+                {btn?.packagingSelected ?? "Packaging Selected"}
               </span>
             </div>
-            <p className="text-xs text-light-color mt-1">
-              {btn?.packagingHint ?? "Premium packaging selected for your items"}
-            </p>
+            <span className="text-sm font-semibold text-shop_dark_green">
+              +${totalPackagingFee.toFixed(2)}
+            </span>
           </div>
-        )}
-
-        {hasOutOfStockItems && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-700">
-              {btn?.outOfStock ??
-                "Some items are out of stock. Please remove them to continue."}
-            </p>
-          </div>
-        )}
-
-        {!isGuestCheckout && !selectedAddress && (
-          <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
-            <p className="text-sm text-orange-700">
-              {btn?.selectAddress ?? "Please select a shipping address to continue"}
-            </p>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          <Button
-            onClick={handleProceedToCheckout}
-            disabled={
-              isRedirecting ||
-              isPlacingOrder ||
-              hasOutOfStockItems ||
-              (!isGuestCheckout && !selectedAddress) ||
-              cart.length === 0
-            }
-            className="w-full h-12 text-lg font-semibold bg-shop_dark_green hover:bg-shop_light_green text-white shadow-md hover:shadow-shop_orange/20"
-            size="lg"
-          >
-            {isRedirecting ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                {btn?.redirecting ?? "Redirecting to Checkout..."}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5" />
-                {btn?.proceedToCheckout ?? "Proceed to Checkout"}
-                {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
-              </div>
-            )}
-          </Button>
-
-          <Button
-            onClick={handlePlaceOrder}
-            disabled={
-              isRedirecting ||
-              isPlacingOrder ||
-              hasOutOfStockItems ||
-              !addressReady ||
-              cart.length === 0
-            }
-            variant="outline"
-            className="w-full h-12 text-lg font-semibold"
-            size="lg"
-          >
-            {isPlacingOrder && actionType === "order" ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
-                {btn?.placingOrder ?? "Placing Order..."}
-              </div>
-            ) : isRedirecting && actionType === "checkout" ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
-                {btn?.redirecting ?? "Redirecting to Checkout..."}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Package className="w-5 h-5" />
-                {btn?.placeOrder ?? "Place Order (Pay Later)"}
-                {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
-              </div>
-            )}
-          </Button>
-        </div>
-
-        <div className="text-center text-xs text-muted-foreground">
-          <p className="text-shop_light_green inline-flex items-center justify-center gap-1.5">
-            <Check className="h-3.5 w-3.5" />
-            {btn?.recommended ??
-              'Recommended: Use "Proceed to Checkout" for secure payment'}
-          </p>
-          <p className="text-muted-foreground mt-1">
-            {isGuestCheckout
-              ? (btn?.guestCodHint ??
-                '"Place Order (Pay Later)" takes you to checkout to complete shipping and pay on delivery')
-              : (btn?.signedCodHint ??
-                '"Place Order (Pay Later)" places order directly with Cash on Delivery')}
+          <p className="text-xs text-light-color mt-1">
+            {btn?.packagingHint ??
+              "Premium packaging selected for your items"}
           </p>
         </div>
+      )}
+
+      {hasOutOfStockItems && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-sm text-red-700">
+            {btn?.outOfStock ??
+              "Some items are out of stock. Please remove them to continue."}
+          </p>
+        </div>
+      )}
+
+      {!isGuestCheckout && !selectedAddress && (
+        <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
+          <p className="text-sm text-orange-700">
+            {btn?.selectAddress ??
+              "Please select a shipping address to continue"}
+          </p>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        <Button
+          onClick={handleProceedToCheckout}
+          disabled={
+            isRedirecting ||
+            hasOutOfStockItems ||
+            (!isGuestCheckout && !selectedAddress) ||
+            cart.length === 0
+          }
+          className="w-full h-12 text-lg font-semibold bg-shop_dark_green hover:bg-shop_light_green text-white shadow-md hover:shadow-shop_orange/20"
+          size="lg"
+        >
+          {isRedirecting && actionType === "checkout" ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              {btn?.redirecting ?? "Redirecting to Checkout..."}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5" />
+              {btn?.proceedToCheckout ?? "Proceed to Checkout"}
+              {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
+            </div>
+          )}
+        </Button>
+
+        <Button
+          onClick={handlePlaceOrder}
+          disabled={
+            isRedirecting ||
+            hasOutOfStockItems ||
+            !addressReady ||
+            cart.length === 0
+          }
+          variant="outline"
+          className="w-full h-12 text-lg font-semibold"
+          size="lg"
+        >
+          {isRedirecting && actionType === "cod" ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+              {btn?.redirecting ?? "Redirecting to Checkout..."}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              {btn?.placeOrder ?? "Place Order (Pay Later)"}
+              {totalPackagingFee > 0 && ` (+$${totalPackagingFee.toFixed(2)})`}
+            </div>
+          )}
+        </Button>
       </div>
-    </>
+
+      <div className="text-center text-xs text-muted-foreground">
+        <p className="text-shop_light_green inline-flex items-center justify-center gap-1.5">
+          <Check className="h-3.5 w-3.5" />
+          {btn?.recommended ??
+            'Recommended: Use "Proceed to Checkout" for secure payment'}
+        </p>
+        <p className="text-muted-foreground mt-1">
+          {btn?.signedCodHint ??
+            '"Place Order (Pay Later)" continues to checkout with cash on delivery and destination tax'}
+        </p>
+      </div>
+    </div>
   );
 }

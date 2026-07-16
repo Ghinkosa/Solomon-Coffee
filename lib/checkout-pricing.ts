@@ -20,7 +20,10 @@ export interface CheckoutCartLineInput {
 export interface CheckoutPricingOptions {
   items: CheckoutPricingItem[];
   businessDiscountRate?: number;
+  /** Decimal tax rate for the destination state (e.g. 0.0625). Defaults to 0. */
   taxRate?: number;
+  /** When true, shipping is included in the taxable base. */
+  taxShipping?: boolean;
   freeShippingThreshold?: number;
   flatShippingFee?: number;
 }
@@ -35,23 +38,17 @@ export interface CheckoutPricingResult {
   total: number;
 }
 
-const DEFAULT_FREE_SHIPPING_THRESHOLD = 100;
-const DEFAULT_SHIPPING_FEE = 10;
+export const DEFAULT_FREE_SHIPPING_THRESHOLD = 100;
+export const DEFAULT_SHIPPING_FEE = 10;
 
-/** Free-shipping threshold, overridable via NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD. */
+/** Default used before admin checkout settings load. */
 export function getFreeShippingThreshold(): number {
-  const parsed = parseFloat(
-    process.env.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD || "",
-  );
-  return Number.isFinite(parsed) && parsed >= 0
-    ? parsed
-    : DEFAULT_FREE_SHIPPING_THRESHOLD;
+  return DEFAULT_FREE_SHIPPING_THRESHOLD;
 }
 
-/** Flat shipping fee, overridable via NEXT_PUBLIC_SHIPPING_FEE. */
+/** Default used before admin checkout settings load. */
 export function getFlatShippingFee(): number {
-  const parsed = parseFloat(process.env.NEXT_PUBLIC_SHIPPING_FEE || "");
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_SHIPPING_FEE;
+  return DEFAULT_SHIPPING_FEE;
 }
 
 // Account-level discount rates applied to the post-product-discount subtotal.
@@ -67,23 +64,42 @@ export interface AccountDiscountProfile {
   premiumStatus?: string;
 }
 
+export interface AccountDiscountRates {
+  /** Decimal rate, e.g. 0.02 for 2%. Defaults to BUSINESS_DISCOUNT_RATE. */
+  businessRate?: number;
+  /** Decimal rate, e.g. 0.05 for 5%. Defaults to PREMIUM_DISCOUNT_RATE. */
+  premiumRate?: number;
+}
+
 /**
  * Resolve the account-level discount for a user profile.
  * Business and premium do NOT stack — the higher applicable rate wins.
  */
-export function getAccountDiscount(profile?: AccountDiscountProfile | null): {
+export function getAccountDiscount(
+  profile?: AccountDiscountProfile | null,
+  rates?: AccountDiscountRates | null,
+): {
   rate: number;
   type: AccountDiscountType;
 } {
   if (!profile) return { rate: 0, type: null };
 
+  const configuredBusiness = clampDiscountRate(
+    rates?.businessRate,
+    BUSINESS_DISCOUNT_RATE,
+  );
+  const configuredPremium = clampDiscountRate(
+    rates?.premiumRate,
+    PREMIUM_DISCOUNT_RATE,
+  );
+
   const businessRate =
     profile.isBusiness && profile.businessStatus === "active"
-      ? BUSINESS_DISCOUNT_RATE
+      ? configuredBusiness
       : 0;
   const premiumRate =
     profile.isActive && profile.premiumStatus === "active"
-      ? PREMIUM_DISCOUNT_RATE
+      ? configuredPremium
       : 0;
 
   if (businessRate === 0 && premiumRate === 0) {
@@ -95,8 +111,22 @@ export function getAccountDiscount(profile?: AccountDiscountProfile | null): {
     : { rate: businessRate, type: "business" };
 }
 
+function clampDiscountRate(
+  rate: number | undefined,
+  fallback: number,
+): number {
+  if (typeof rate !== "number" || !Number.isFinite(rate)) return fallback;
+  if (rate < 0) return 0;
+  if (rate > 1) return 1;
+  return rate;
+}
+
+/**
+ * @deprecated Tax is destination-based via admin checkout settings.
+ * Kept as a zero stub so accidental callers never read NEXT_PUBLIC_TAX_AMOUNT.
+ */
 export function getTaxRate(): number {
-  return parseFloat(process.env.NEXT_PUBLIC_TAX_AMOUNT || "0") || 0;
+  return 0;
 }
 
 export function buildCheckoutPricingItems(
@@ -117,7 +147,8 @@ export function calculateCheckoutTotals(
   const {
     items,
     businessDiscountRate = 0,
-    taxRate = getTaxRate(),
+    taxRate = 0,
+    taxShipping = false,
     freeShippingThreshold = getFreeShippingThreshold(),
     flatShippingFee = getFlatShippingFee(),
   } = options;
@@ -130,7 +161,6 @@ export function calculateCheckoutTotals(
     const lineUnitPrice = item.unitPrice;
     const linePackaging = item.packagingPrice || 0;
     const discountPercent = item.discountPercent || 0;
-    const lineGross = (lineUnitPrice + linePackaging) * item.quantity;
     const lineDiscount = (discountPercent * lineUnitPrice * item.quantity) / 100;
 
     subtotal += lineUnitPrice * item.quantity;
@@ -142,11 +172,14 @@ export function calculateCheckoutTotals(
   const businessDiscount = subtotalAfterProductDiscount * businessDiscountRate;
   const subtotalAfterBusinessDiscount =
     subtotalAfterProductDiscount - businessDiscount;
-  const subtotalWithPackaging = subtotalAfterBusinessDiscount + packagingFee;
+  const merchandiseBase = subtotalAfterBusinessDiscount + packagingFee;
   const shipping =
-    subtotalWithPackaging >= freeShippingThreshold ? 0 : flatShippingFee;
-  const tax = subtotalWithPackaging * taxRate;
-  const total = subtotalWithPackaging + shipping + tax;
+    merchandiseBase >= freeShippingThreshold ? 0 : flatShippingFee;
+  const taxableBase = taxShipping
+    ? merchandiseBase + shipping
+    : merchandiseBase;
+  const tax = taxableBase * (Number.isFinite(taxRate) ? Math.max(0, taxRate) : 0);
+  const total = merchandiseBase + shipping + tax;
 
   return {
     subtotal: roundCurrency(subtotal),

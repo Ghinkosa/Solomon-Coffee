@@ -18,6 +18,8 @@ interface UserData {
   unreadNotifications: number;
   accountDiscountRate: number;
   accountDiscountType: AccountDiscountType;
+  businessDiscountPercent: number;
+  premiumDiscountPercent: number;
   isLoading: boolean;
 }
 
@@ -42,6 +44,8 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
     unreadNotifications: 0,
     accountDiscountRate: 0,
     accountDiscountType: null,
+    businessDiscountPercent: 2,
+    premiumDiscountPercent: 5,
     isLoading: false,
   });
 
@@ -77,6 +81,14 @@ export function UserDataProvider({ children }: { children: React.ReactNode }) {
             unreadNotifications: data.unreadNotifications || 0,
             accountDiscountRate: data.accountDiscountRate || 0,
             accountDiscountType: data.accountDiscountType || null,
+            businessDiscountPercent:
+              typeof data.businessDiscountPercent === "number"
+                ? data.businessDiscountPercent
+                : 2,
+            premiumDiscountPercent:
+              typeof data.premiumDiscountPercent === "number"
+                ? data.premiumDiscountPercent
+                : 5,
             isLoading: false,
           };
 

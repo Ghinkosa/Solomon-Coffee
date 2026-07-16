@@ -31,6 +31,7 @@ import ApplicationSuccessNotification from "@/components/ui/application-success-
 import { toast } from "sonner";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useCheckoutSettings } from "@/hooks/useCheckoutSettings";
 
 interface UserStats {
   ordersCount: number;
@@ -69,10 +70,18 @@ interface UserProfile {
 export default function UserDashboardPage() {
   const { user } = useUser();
   const dictionary = useDictionary();
+  const checkoutSettings = useCheckoutSettings();
+  const withBusinessPercent = (value: string) =>
+    value.replace(
+      /\{percent\}/g,
+      String(checkoutSettings.businessDiscountPercent),
+    );
   const d = (path: string, fallback: string) =>
     t(dictionary, `userDashboard.dashboard.${path}`, fallback);
   const a = (path: string, fallback: string) =>
-    t(dictionary, `userDashboard.dashboard.applications.${path}`, fallback);
+    withBusinessPercent(
+      t(dictionary, `userDashboard.dashboard.applications.${path}`, fallback),
+    );
   const list = (path: string, fallback: string[]) => {
     const segments = `userDashboard.dashboard.applications.${path}`.split(".");
     let node: unknown = dictionary;
@@ -80,9 +89,10 @@ export default function UserDashboardPage() {
       if (!node || typeof node !== "object") return fallback;
       node = (node as Record<string, unknown>)[seg];
     }
-    return Array.isArray(node)
+    const items = Array.isArray(node)
       ? node.filter((item): item is string => typeof item === "string")
       : fallback;
+    return items.map(withBusinessPercent);
   };
   const formatLocaleDate = (value: string) =>
     new Date(value).toLocaleDateString(undefined, {
@@ -496,10 +506,11 @@ export default function UserDashboardPage() {
             </div>
           )}
 
-        {(!userProfile ||
-          (!userProfile.isBusiness &&
-            userProfile.businessStatus !== "pending" &&
-            userProfile.businessStatus !== "rejected")) && (
+        {userProfile &&
+          userProfile.isActive &&
+          !userProfile.isBusiness &&
+          userProfile.businessStatus !== "pending" &&
+          userProfile.businessStatus !== "rejected" && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start justify-between">
                 <div>

@@ -33,6 +33,10 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
+  useCheckoutSettings,
+  withAmount,
+} from "@/hooks/useCheckoutSettings";
+import {
   ProductAnimationWrapper,
   ProductImageWrapper,
   ProductDetailsWrapper,
@@ -57,6 +61,7 @@ const ProductContent = ({
   relatedProducts,
 }: ProductContentProps) => {
   const dictionary = useDictionary() as Dictionary;
+  const checkoutSettings = useCheckoutSettings();
   const productCopy = dictionary.product as Record<string, unknown>;
   const select = productCopy?.select as Record<string, string> | undefined;
   const stockCopy = productCopy?.stock as Record<string, string> | undefined;
@@ -499,8 +504,11 @@ const ProductContent = ({
                 {trust?.fastDelivery?.title ?? "Fast Delivery"}
               </h3>
               <p className="text-sm text-gray-600">
-                {trust?.fastDelivery?.description ??
-                  "Free shipping on orders over $50"}
+                {withAmount(
+                  trust?.fastDelivery?.description,
+                  checkoutSettings.freeShippingThreshold,
+                  "Free shipping on orders over {amount}",
+                )}
               </p>
             </Card>
 

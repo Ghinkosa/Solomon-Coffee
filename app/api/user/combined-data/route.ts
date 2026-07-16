@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
 import { getAccountDiscount } from "@/lib/checkout-pricing";
+import { fetchCheckoutTaxSettings, rateToPercent } from "@/lib/tax-settings";
 import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
 import { isAnyEmailAdmin } from "@/lib/adminUtils";
 
@@ -26,39 +27,44 @@ export async function GET() {
       clerkUser.emailAddresses?.[0]?.emailAddress;
 
     // Fetch all data in parallel
-    const [user, orders, notifications, accountProfile] = await Promise.all([
-      // Get user data including employee status
-      client.fetch(
-        `*[_type == "user" && clerkUserId == $userId][0]{
+    const [user, orders, notifications, accountProfile, checkoutSettings] =
+      await Promise.all([
+        // Get user data including employee status
+        client.fetch(
+          `*[_type == "user" && clerkUserId == $userId][0]{
           _id,
           email,
           role,
           isEmployee
         }`,
-        { userId }
-      ),
-      // Get orders count
-      client.fetch(`count(*[_type == "order" && userId == $userId])`, {
-        userId,
-      }),
-      // Get unread notifications count
-      client.fetch(
-        `*[_type == "notification" && userId == $userId && !read] | order(_createdAt desc)[0...20]{
+          { userId },
+        ),
+        // Get orders count
+        client.fetch(`count(*[_type == "order" && userId == $userId])`, {
+          userId,
+        }),
+        // Get unread notifications count
+        client.fetch(
+          `*[_type == "notification" && userId == $userId && !read] | order(_createdAt desc)[0...20]{
           _id,
           read
         }`,
-        { userId }
-      ),
-      // Get account tier profile (premium/business) used for checkout discounts.
-      email
-        ? client.fetch(
-            `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive, premiumStatus }`,
-            { email }
-          )
-        : Promise.resolve(null),
-    ]);
+          { userId },
+        ),
+        // Get account tier profile (premium/business) used for checkout discounts.
+        email
+          ? client.fetch(
+              `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive, premiumStatus }`,
+              { email },
+            )
+          : Promise.resolve(null),
+        fetchCheckoutTaxSettings(),
+      ]);
 
-    const accountDiscount = getAccountDiscount(accountProfile);
+    const accountDiscount = getAccountDiscount(accountProfile, {
+      businessRate: checkoutSettings.businessDiscountRate,
+      premiumRate: checkoutSettings.premiumDiscountRate,
+    });
 
     return NextResponse.json(
       {
@@ -71,6 +77,12 @@ export async function GET() {
         unreadNotifications: notifications?.length || 0,
         accountDiscountRate: accountDiscount.rate,
         accountDiscountType: accountDiscount.type,
+        businessDiscountPercent: rateToPercent(
+          checkoutSettings.businessDiscountRate,
+        ),
+        premiumDiscountPercent: rateToPercent(
+          checkoutSettings.premiumDiscountRate,
+        ),
       },
       {
         status: 200,
@@ -92,6 +104,8 @@ export async function GET() {
         unreadNotifications: 0,
         accountDiscountRate: 0,
         accountDiscountType: null,
+        businessDiscountPercent: 2,
+        premiumDiscountPercent: 5,
       },
       { status: 200 }
     );

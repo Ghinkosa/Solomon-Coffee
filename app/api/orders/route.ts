@@ -16,32 +16,10 @@ import {
   isShippingAddressValid,
   normalizeShippingAddress,
   validateShippingAddress,
+  validateShippingAddressField,
 } from "@/lib/shipping-address-validation";
 import crypto from "crypto";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
-
-interface CartItem {
-  product: {
-    _id: string;
-    name?: string;
-    price?: number;
-    category?: string;
-  };
-  quantity: number;
-  weight?: {
-    value: string;
-    price: number;
-  };
-  grind?: {
-    type: string;
-    label: string;
-  };
-  packaging?: {
-    id: string;
-    title: string;
-    price: number;
-  };
-}
 
 export async function GET() {
   try {
@@ -98,38 +76,64 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
+    if (isGuest && (!shippingAddress.email || !shippingAddress.name)) {
+      return NextResponse.json(
+        { error: "Guest name and email are required" },
+        { status: 400 },
+      );
+    }
+
+    const normalizedAddress = normalizeShippingAddress({
+      name: shippingAddress.name || "",
+      email: shippingAddress.email || "",
+      phone: shippingAddress.phone || "",
+      address: shippingAddress.address,
+      city: shippingAddress.city,
+      state: shippingAddress.state,
+      zip: shippingAddress.zip,
+    });
+
+    // Guests must provide a complete address including email. Logged-in users
+    // may omit email here (we fall back to Clerk) — validate physical fields.
     if (isGuest) {
-      if (!shippingAddress.email || !shippingAddress.name) {
-        return NextResponse.json(
-          { error: "Guest name and email are required" },
-          { status: 400 },
-        );
-      }
-
-      const guestAddress = normalizeShippingAddress({
-        name: shippingAddress.name,
-        email: shippingAddress.email,
-        phone: shippingAddress.phone || "",
-        address: shippingAddress.address,
-        city: shippingAddress.city,
-        state: shippingAddress.state,
-        zip: shippingAddress.zip,
-      });
-
-      if (!isShippingAddressValid(guestAddress)) {
-        const errors = validateShippingAddress(guestAddress);
-        const firstError = Object.values(errors)[0] || "Invalid shipping address";
+      if (!isShippingAddressValid(normalizedAddress)) {
+        const errors = validateShippingAddress(normalizedAddress);
+        const firstError =
+          Object.values(errors)[0] || "Invalid shipping address";
         return NextResponse.json({ error: firstError }, { status: 400 });
       }
-
-      shippingAddress.name = guestAddress.name;
-      shippingAddress.email = guestAddress.email;
-      shippingAddress.phone = guestAddress.phone;
-      shippingAddress.address = guestAddress.address;
-      shippingAddress.city = guestAddress.city;
-      shippingAddress.state = guestAddress.state;
-      shippingAddress.zip = guestAddress.zip;
+    } else {
+      for (const field of ["name", "address", "city", "state", "zip"] as const) {
+        const fieldError = validateShippingAddressField(
+          field,
+          normalizedAddress[field],
+        );
+        if (fieldError) {
+          return NextResponse.json({ error: fieldError }, { status: 400 });
+        }
+      }
+      // Phone is required when provided; empty legacy addresses still check out
+      // using the Clerk phone fallback below.
+      if (normalizedAddress.phone.trim()) {
+        const phoneError = validateShippingAddressField(
+          "phone",
+          normalizedAddress.phone,
+        );
+        if (phoneError) {
+          return NextResponse.json({ error: phoneError }, { status: 400 });
+        }
+      }
     }
+
+    shippingAddress.name = normalizedAddress.name;
+    if (normalizedAddress.email) {
+      shippingAddress.email = normalizedAddress.email;
+    }
+    shippingAddress.phone = normalizedAddress.phone;
+    shippingAddress.address = normalizedAddress.address;
+    shippingAddress.city = normalizedAddress.city;
+    shippingAddress.state = normalizedAddress.state;
+    shippingAddress.zip = normalizedAddress.zip;
 
     if (
       !paymentMethod ||
@@ -154,17 +158,25 @@ export const POST = async (request: NextRequest) => {
 
     let businessDiscountRate = 0;
     if (!isGuest && userEmail) {
-      const profile = await readClient.fetch<{
-        isBusiness?: boolean;
-        businessStatus?: string;
-        isActive?: boolean;
-        premiumStatus?: string;
-      }>(
-        `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive, premiumStatus }`,
-        { email: userEmail },
-      );
+      const [profile, checkoutSettings] = await Promise.all([
+        readClient.fetch<{
+          isBusiness?: boolean;
+          businessStatus?: string;
+          isActive?: boolean;
+          premiumStatus?: string;
+        }>(
+          `*[${USER_BY_EMAIL_FILTER}][0]{ isBusiness, businessStatus, isActive, premiumStatus }`,
+          { email: userEmail },
+        ),
+        import("@/lib/tax-settings").then((mod) =>
+          mod.fetchCheckoutTaxSettings(),
+        ),
+      ]);
 
-      businessDiscountRate = getAccountDiscount(profile).rate;
+      businessDiscountRate = getAccountDiscount(profile, {
+        businessRate: checkoutSettings.businessDiscountRate,
+        premiumRate: checkoutSettings.premiumDiscountRate,
+      }).rate;
     }
 
     const pricingValidation = await validateOrderPricing({
@@ -175,6 +187,7 @@ export const POST = async (request: NextRequest) => {
       tax,
       packagingFee,
       businessDiscountRate,
+      shippingState: shippingAddress.state,
     });
 
     if (!pricingValidation.valid) {
@@ -188,6 +201,7 @@ export const POST = async (request: NextRequest) => {
     }
 
     const calculated = pricingValidation.calculated;
+    const resolvedLines = pricingValidation.resolvedLines;
 
     // Generate order number
     const orderNumber = `ORDER-${Date.now()}-${Math.random()
@@ -205,51 +219,50 @@ export const POST = async (request: NextRequest) => {
       email: userEmail,
       phone: userPhone,
       ...(isGuest ? {} : { clerkUserId: userId }),
-      products: items.map((item: CartItem) => {
-        const productItem: any = {
+      products: resolvedLines.map((line) => {
+        const productItem: Record<string, unknown> = {
           _key: crypto.randomUUID(),
           product: {
             _type: "reference",
-            _ref: item.product._id,
+            _ref: line.productId,
           },
-          quantity: item.quantity,
+          quantity: line.quantity,
         };
-        
-        // ✅ Add weight information if present
-        if (item.weight && item.weight.value) {
+
+        if (line.weightValue) {
           productItem.weight = {
-            value: item.weight.value,
-            price: item.weight.price,
+            value: line.weightValue,
+            price: line.unitPrice,
           };
         }
-        
-        // ✅ Add grind information if present
-        if (item.grind && item.grind.type) {
+
+        if (line.grind?.type) {
           productItem.grind = {
-            type: item.grind.type,
-            label: item.grind.label || 
-              (item.grind.type === "whole-bean" ? "Whole Bean" :
-               item.grind.type === "cafetiere" ? "Cafetiere" :
-               item.grind.type === "filter" ? "Filter" : "Espresso"),
+            type: line.grind.type,
+            label:
+              line.grind.label ||
+              (line.grind.type === "whole-bean"
+                ? "Whole Bean"
+                : line.grind.type === "cafetiere"
+                  ? "Cafetiere"
+                  : line.grind.type === "filter"
+                    ? "Filter"
+                    : "Espresso"),
           };
         }
-        
-        // ✅ Add packaging information if present
-        if (item.packaging && item.packaging.id) {
+
+        if (line.packagingId) {
           productItem.packaging = {
-            id: item.packaging.id,
-            title: item.packaging.title,
-            price: item.packaging.price,
+            id: line.packagingId,
+            title: line.packagingTitle || "",
+            price: line.packagingPrice,
           };
-          // Also add packaging reference if needed
-          if (item.packaging.id) {
-            productItem.packagingRef = {
-              _type: "reference",
-              _ref: item.packaging.id,
-            };
-          }
+          productItem.packagingRef = {
+            _type: "reference",
+            _ref: line.packagingId,
+          };
         }
-        
+
         return productItem;
       }),
       totalPrice: calculated.total,
@@ -299,6 +312,7 @@ export const POST = async (request: NextRequest) => {
             quantity: number;
             weight?: { value?: string; price?: number };
           }>,
+          { strict: true },
         );
         await writeClient
           .patch(createdOrder._id)
@@ -306,15 +320,45 @@ export const POST = async (request: NextRequest) => {
           .commit();
       } catch (stockError) {
         console.error("Failed to reserve stock for order:", stockError);
+        try {
+          await writeClient.delete(createdOrder._id);
+        } catch (deleteError) {
+          console.error(
+            "Failed to roll back order after stock reservation error:",
+            deleteError,
+          );
+        }
+        return NextResponse.json(
+          {
+            error:
+              "Unable to reserve inventory for this order. Please try again.",
+            code: "STOCK_RESERVATION_FAILED",
+          },
+          { status: 409 },
+        );
       }
     }
 
-    // Track order placed event
+    // Track order_placed always; purchase only when payment is effectively
+    // confirmed (COD at create, Stripe after webhook payment success).
     try {
       const baseUrl =
         process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
         "http://localhost:3000";
       const origin = new URL(baseUrl).origin;
+
+      const analyticsProducts = resolvedLines.map((line) => ({
+        productId: line.productId,
+        name: line.productName || "Unknown Product",
+        category: line.productCategory || "Uncategorized",
+        quantity: line.quantity,
+        price: line.unitPrice,
+        weight: line.weightValue || null,
+        weightPrice: line.weightValue ? line.unitPrice : null,
+        grind: line.grind?.label || null,
+        packaging: line.packagingTitle || null,
+        packagingPrice: line.packagingPrice,
+      }));
 
       const trackOrderPromise = fetch(`${origin}/api/analytics/track`, {
         method: "POST",
@@ -328,57 +372,42 @@ export const POST = async (request: NextRequest) => {
             status: createdOrder.status,
             userId: userId || "guest",
             paymentMethod: paymentMethod,
-            itemCount: items.length,
+            itemCount: resolvedLines.length,
             subtotal: calculated.subtotal,
             shipping: calculated.shipping,
             tax: calculated.tax,
             packagingFee: calculated.packagingFee,
             customerEmail: userEmail,
-            products: items.map((item: CartItem) => ({
-              productId: item.product._id,
-              name: item.product.name || "Unknown Product",
-              quantity: item.quantity,
-              price: item.product.price || 0,
-              weight: item.weight?.value || null,
-              weightPrice: item.weight?.price || null,
-              grind: item.grind?.label || null,
-              packaging: item.packaging?.title || null,
-              packagingPrice: item.packaging?.price || 0,
-            })),
+            products: analyticsProducts,
           },
         }),
         signal: AbortSignal.timeout(5000),
       });
 
-      const trackPurchasePromise = fetch(`${origin}/api/analytics/track`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventName: "purchase",
-          eventParams: {
-            orderId: createdOrder._id,
-            value: calculated.total,
-            currency: "USD",
-            items: items.map((item: CartItem) => ({
-              productId: item.product._id,
-              name: item.product.name || "Unknown Product",
-              category: item.product.category || "Uncategorized",
-              quantity: item.quantity,
-              price: item.product.price || 0,
-              weight: item.weight?.value || null,
-              weightPrice: item.weight?.price || null,
-              grind: item.grind?.label || null,
-              packaging: item.packaging?.title || null,
-              packagingPrice: item.packaging?.price || 0,
-            })),
-            userId: userId || "guest",
-          },
-        }),
-        signal: AbortSignal.timeout(5000),
-      });
+      const trackingPromises: Promise<Response>[] = [trackOrderPromise];
 
-      Promise.allSettled([trackOrderPromise, trackPurchasePromise]).catch(
-        (err) => console.error("Analytics tracking failed:", err),
+      if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
+        trackingPromises.push(
+          fetch(`${origin}/api/analytics/track`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              eventName: "purchase",
+              eventParams: {
+                orderId: createdOrder._id,
+                value: calculated.total,
+                currency: "USD",
+                items: analyticsProducts,
+                userId: userId || "guest",
+              },
+            }),
+            signal: AbortSignal.timeout(5000),
+          }),
+        );
+      }
+
+      Promise.allSettled(trackingPromises).catch((err) =>
+        console.error("Analytics tracking failed:", err),
       );
     } catch (analyticsError) {
       console.error("Failed to initiate analytics tracking:", analyticsError);

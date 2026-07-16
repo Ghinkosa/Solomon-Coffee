@@ -20,11 +20,16 @@ import { Suspense } from "react";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { safeRelativeRedirect } from "@/lib/safeRedirect";
+import {
+  useCheckoutSettings,
+  withAmount,
+} from "@/hooks/useCheckoutSettings";
 
 const SignUpContent = () => {
   const searchParams = useSearchParams();
   const toLocalizedPath = useLocalizedPath();
   const dictionary = useDictionary();
+  const checkoutSettings = useCheckoutSettings();
   const redirectTo = safeRelativeRedirect(
     searchParams.get("redirectTo"),
     "/user/dashboard",
@@ -65,10 +70,14 @@ const SignUpContent = () => {
         "authPages.signUp.benefits.shipping.title",
         "Free Shipping",
       ),
-      description: t(
-        dictionary,
-        "authPages.signUp.benefits.shipping.description",
-        "Enjoy free shipping on orders over $50",
+      description: withAmount(
+        t(
+          dictionary,
+          "authPages.signUp.benefits.shipping.description",
+          "Enjoy free shipping on orders over {amount}",
+        ),
+        checkoutSettings.freeShippingThreshold,
+        "Enjoy free shipping on orders over {amount}",
       ),
     },
     {

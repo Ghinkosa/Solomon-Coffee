@@ -20,19 +20,17 @@ import { Button } from "@/components/ui/button";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButtons from "@/components/QuantityButtons";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import { useCheckoutSettings } from "@/hooks/useCheckoutSettings";
 import { image } from "@/sanity/image";
 import { cn } from "@/lib/utils";
 import {
   buildCheckoutPricingItems,
   calculateCheckoutTotals,
-  getFreeShippingThreshold,
 } from "@/lib/checkout-pricing";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import { useUserData } from "@/contexts/UserDataContext";
-
-const FREE_SHIPPING_THRESHOLD = getFreeShippingThreshold();
 
 function getItemUnitPrice(item: CartItem): number {
   return item.selectedWeight?.price ?? item.product.price ?? 0;
@@ -146,7 +144,13 @@ export default function CartDrawer() {
     cartDrawerHighlightKey,
     closeCartDrawer,
   } = useCartStore();
-  const { accountDiscountRate, accountDiscountType } = useUserData();
+  const {
+    accountDiscountRate,
+    accountDiscountType,
+    businessDiscountPercent,
+    premiumDiscountPercent,
+  } = useUserData();
+  const shippingSettings = useCheckoutSettings();
 
   const checkoutTotals = useMemo(
     () =>
@@ -160,8 +164,10 @@ export default function CartDrawer() {
           })),
         ),
         businessDiscountRate: accountDiscountRate,
+        flatShippingFee: shippingSettings.flatShippingFee,
+        freeShippingThreshold: shippingSettings.freeShippingThreshold,
       }),
-    [items, accountDiscountRate],
+    [items, accountDiscountRate, shippingSettings],
   );
 
   const itemQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -172,7 +178,7 @@ export default function CartDrawer() {
     checkoutTotals.packagingFee;
   const amountToFreeShipping = Math.max(
     0,
-    FREE_SHIPPING_THRESHOLD - subtotalBeforeShipping,
+    shippingSettings.freeShippingThreshold - subtotalBeforeShipping,
   );
 
   useEffect(() => {
@@ -308,12 +314,18 @@ export default function CartDrawer() {
                         ? t(
                             dictionary,
                             "checkout.premiumDiscount",
-                            "Premium Member Discount (5%)",
+                            "Premium Member Discount ({percent}%)",
+                          ).replace(
+                            "{percent}",
+                            String(premiumDiscountPercent),
                           )
                         : t(
                             dictionary,
                             "checkout.businessDiscount",
-                            "Business Account Discount (2%)",
+                            "Business Account Discount ({percent}%)",
+                          ).replace(
+                            "{percent}",
+                            String(businessDiscountPercent),
                           )}
                     </span>
                     <span>
@@ -321,6 +333,34 @@ export default function CartDrawer() {
                     </span>
                   </div>
                 )}
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">
+                    {drawerCopy.shipping ??
+                      t(dictionary, "cart.summary.shipping", "Shipping")}
+                  </span>
+                  {checkoutTotals.shipping === 0 ? (
+                    <span className="font-semibold text-shop_light_green">
+                      {drawerCopy.free ??
+                        t(dictionary, "cart.summary.free", "Free")}
+                    </span>
+                  ) : (
+                    <PriceFormatter amount={checkoutTotals.shipping} />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">
+                    {drawerCopy.tax ??
+                      t(dictionary, "cart.summary.tax", "Tax")}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {drawerCopy.taxAtCheckout ??
+                      t(
+                        dictionary,
+                        "cart.summary.taxAtCheckout",
+                        "Calculated at checkout",
+                      )}
+                  </span>
+                </div>
                 <div className="flex items-center justify-between font-semibold text-shop_dark_green">
                   <span>{drawerCopy.estimatedTotal ?? "Estimated total"}</span>
                   <PriceFormatter amount={checkoutTotals.total} />

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { writeClient, client } from "@/sanity/lib/client";
-import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
-import { DEFAULT_USER_PREFERENCES } from "@/lib/userPreferences";
+import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
 
 export async function POST() {
   try {
@@ -21,104 +20,63 @@ export async function POST() {
       );
     }
 
-    // Check if user exists in Sanity
     const existingUser = await client.fetch(
       `*[${USER_BY_EMAIL_FILTER}][0]`,
       { email },
     );
 
-    // Existing users: guard against duplicate/invalid applications
-    if (existingUser) {
-      if (existingUser.businessStatus === "rejected") {
-        return NextResponse.json(
-          {
-            error:
-              "Business account application was rejected. Please contact admin for assistance.",
-          },
-          { status: 400 },
-        );
-      }
-
-      if (existingUser.businessStatus === "pending") {
-        return NextResponse.json(
-          { error: "Business account application is already pending approval." },
-          { status: 400 },
-        );
-      }
-
-      if (existingUser.isBusiness) {
-        return NextResponse.json(
-          { error: "Business account already approved" },
-          { status: 400 },
-        );
-      }
-
-      const result = await writeClient
-        .patch(existingUser._id)
-        .set({
-          businessStatus: "pending",
-          businessAppliedAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        })
-        .commit();
-
-      try {
-        const { notifyAdminsAccountApplication } = await import(
-          "@/lib/emails/adminEmails"
-        );
-        const { sendAccountStatusEmail } = await import(
-          "@/lib/emails/accountEmails"
-        );
-        const customerName = [user.firstName, user.lastName]
-          .filter(Boolean)
-          .join(" ");
-        await Promise.allSettled([
-          notifyAdminsAccountApplication({
-            type: "business",
-            customerName,
-            customerEmail: email,
-          }),
-          sendAccountStatusEmail({
-            email,
-            customerName,
-            type: "business",
-            event: "received",
-          }),
-        ]);
-      } catch (emailError) {
-        console.error("Business apply emails failed:", emailError);
-      }
-
-      return NextResponse.json({
-        success: true,
-        message:
-          "Business account application submitted successfully! Your application is under review and you'll enjoy a Business Account discount once approved.",
-        user: result,
-      });
+    if (!existingUser) {
+      return NextResponse.json(
+        {
+          error:
+            "Please register for a premium account first before applying for a business account.",
+        },
+        { status: 400 },
+      );
     }
 
-    // New user (never registered for premium): create the record directly
-    // with a pending business application. Premium is no longer a prerequisite.
-    const newUser = await writeClient.create({
-      _type: SANITY_USER_TYPE,
-      clerkUserId: user.id,
-      email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      isActive: false,
-      premiumStatus: "none",
-      isBusiness: false,
-      businessStatus: "pending",
-      membershipType: "standard",
-      businessAppliedAt: new Date().toISOString(),
-      rewardPoints: 0,
-      loyaltyPoints: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      preferences: {
-        ...DEFAULT_USER_PREFERENCES,
-      },
-    });
+    if (!existingUser.isActive || existingUser.premiumStatus !== "active") {
+      return NextResponse.json(
+        {
+          error:
+            "Business account upgrades are available to active premium members only.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (existingUser.businessStatus === "rejected") {
+      return NextResponse.json(
+        {
+          error:
+            "Business account application was rejected. Please contact admin for assistance.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (existingUser.businessStatus === "pending") {
+      return NextResponse.json(
+        { error: "Business account application is already pending approval." },
+        { status: 400 },
+      );
+    }
+
+    if (existingUser.isBusiness) {
+      return NextResponse.json(
+        { error: "Business account already approved" },
+        { status: 400 },
+      );
+    }
+
+    const result = await writeClient
+      .patch(existingUser._id)
+      .set({
+        businessStatus: "pending",
+        businessAppliedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+      .commit();
 
     try {
       const { notifyAdminsAccountApplication } = await import(
@@ -151,7 +109,7 @@ export async function POST() {
       success: true,
       message:
         "Business account application submitted successfully! Your application is under review and you'll enjoy a Business Account discount once approved.",
-      user: newUser,
+      user: result,
     });
   } catch (error) {
     console.error("Error applying for business account:", error);

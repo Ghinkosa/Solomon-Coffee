@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import {
   Search,
@@ -31,6 +31,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
+import {
+  formatUsdAmount,
+  useCheckoutSettings,
+} from "@/hooks/useCheckoutSettings";
 
 interface FAQ {
   id: string;
@@ -54,6 +58,7 @@ interface FAQClientProps {
 
 const FAQClient = ({ dictionary }: FAQClientProps) => {
   const toLocalizedPath = useLocalizedPath();
+  const checkoutSettings = useCheckoutSettings();
   const page = dictionary?.faqPage ?? {};
   const hero = page.hero ?? {};
   const search = page.search ?? {};
@@ -61,10 +66,26 @@ const FAQClient = ({ dictionary }: FAQClientProps) => {
   const empty = page.empty ?? {};
   const support = page.support ?? {};
 
-  const faqs: FAQ[] = (page.questions ?? []).map((q: FAQ) => ({
-    ...q,
-    answer: q.answer?.replace(/&apos;/g, "'") ?? q.answer,
-  }));
+  const faqs: FAQ[] = useMemo(
+    () =>
+      (page.questions ?? []).map((q: FAQ) => ({
+        ...q,
+        answer: (q.answer?.replace(/&apos;/g, "'") ?? q.answer ?? "")
+          .replace(
+            /\{amount\}/g,
+            formatUsdAmount(checkoutSettings.freeShippingThreshold),
+          )
+          .replace(
+            /\{fee\}/g,
+            formatUsdAmount(checkoutSettings.flatShippingFee),
+          ),
+      })),
+    [
+      page.questions,
+      checkoutSettings.freeShippingThreshold,
+      checkoutSettings.flatShippingFee,
+    ],
+  );
 
   const categories = (page.categories ?? []).map((cat: { id: string; label: string }) => ({
     ...cat,

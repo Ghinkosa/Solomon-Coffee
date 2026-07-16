@@ -194,11 +194,8 @@ export async function POST(req: NextRequest) {
             );
           }
 
-          // Admin new-order alert for paid Stripe orders (COD alerted at create).
+          // Admin alert + purchase analytics for paid Stripe (COD handled at create).
           try {
-            const { notifyAdminsNewOrder } = await import(
-              "@/lib/emails/adminEmails"
-            );
             const orderMeta = await backendClient.fetch<{
               orderNumber?: string;
               customerName?: string;
@@ -206,26 +203,98 @@ export async function POST(req: NextRequest) {
               totalPrice?: number;
               paymentMethod?: string;
               paymentStatus?: string;
+              clerkUserId?: string;
+              products?: Array<{
+                quantity?: number;
+                weight?: { value?: string; price?: number };
+                packaging?: { title?: string; price?: number };
+                grind?: { label?: string };
+                product?: {
+                  _id?: string;
+                  name?: string;
+                  price?: number;
+                  category?: string | { title?: string };
+                };
+              }>;
             } | null>(
               `*[_type == "order" && _id == $orderId][0]{
-                orderNumber, customerName, email, totalPrice, paymentMethod, paymentStatus
+                orderNumber, customerName, email, totalPrice, paymentMethod, paymentStatus, clerkUserId,
+                products[]{
+                  quantity,
+                  weight,
+                  packaging,
+                  grind,
+                  product->{_id, name, price, category}
+                }
               }`,
               { orderId },
             );
-            if (orderMeta?.orderNumber) {
-              await notifyAdminsNewOrder({
-                orderNumber: orderMeta.orderNumber,
-                customerName: orderMeta.customerName,
-                customerEmail: orderMeta.email,
-                total: orderMeta.totalPrice,
-                paymentMethod: orderMeta.paymentMethod,
-                paymentStatus: orderMeta.paymentStatus || "paid",
-              });
+
+            try {
+              const { notifyAdminsNewOrder } = await import(
+                "@/lib/emails/adminEmails"
+              );
+              if (orderMeta?.orderNumber) {
+                await notifyAdminsNewOrder({
+                  orderNumber: orderMeta.orderNumber,
+                  customerName: orderMeta.customerName,
+                  customerEmail: orderMeta.email,
+                  total: orderMeta.totalPrice,
+                  paymentMethod: orderMeta.paymentMethod,
+                  paymentStatus: orderMeta.paymentStatus || "paid",
+                });
+              }
+            } catch (adminEmailError) {
+              console.error(
+                "Failed to notify admins of paid Stripe order:",
+                adminEmailError,
+              );
             }
-          } catch (adminEmailError) {
+
+            try {
+              const baseUrl =
+                process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
+                "http://localhost:3000";
+              const origin = new URL(baseUrl).origin;
+              await fetch(`${origin}/api/analytics/track`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  eventName: "purchase",
+                  eventParams: {
+                    orderId,
+                    value: orderMeta?.totalPrice || amountPaid || 0,
+                    currency: "USD",
+                    items: (orderMeta?.products || []).map((line) => ({
+                      productId: line.product?._id || "",
+                      name: line.product?.name || "Unknown Product",
+                      category:
+                        typeof line.product?.category === "string"
+                          ? line.product.category
+                          : line.product?.category?.title || "Uncategorized",
+                      quantity: line.quantity || 0,
+                      price: line.weight?.price ?? line.product?.price ?? 0,
+                      weight: line.weight?.value || null,
+                      weightPrice: line.weight?.price ?? null,
+                      grind: line.grind?.label || null,
+                      packaging: line.packaging?.title || null,
+                      packagingPrice: line.packaging?.price || 0,
+                    })),
+                    userId: orderMeta?.clerkUserId || "guest",
+                  },
+                }),
+                signal: AbortSignal.timeout(5000),
+              });
+            } catch (purchaseAnalyticsError) {
+              console.error(
+                "Failed to track Stripe purchase analytics:",
+                purchaseAnalyticsError,
+              );
+            }
+          } catch (paidOrderSideEffectError) {
             console.error(
-              "Failed to notify admins of paid Stripe order:",
-              adminEmailError,
+              "Failed paid-order side effects:",
+              paidOrderSideEffectError,
             );
           }
         }

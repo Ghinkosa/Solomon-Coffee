@@ -428,7 +428,7 @@
       "experience": "Ofrecemos una experiencia de compra de café fluida con tostados frescos y un servicio confiable",
       "customerTrusted": "La confianza de miles de clientes en todo el mundo",
       "freeDelivery": "Envío gratis",
-      "freeDeliveryDesc": "Envío gratis en pedidos superiores a $100",
+      "freeDeliveryDesc": "Envío gratis en pedidos superiores a {amount}",
       "freeReturn": "Devolución gratuita",
       "customerSupport": "Atención al cliente",
       "customerSupportDesc": "Atención al cliente amable 24/7",
@@ -791,7 +791,7 @@
       },
       "fastDelivery": {
         "title": "Entrega rápida",
-        "description": "Envío gratis en pedidos superiores a $50"
+        "description": "Envío gratis en pedidos superiores a {amount}"
       },
       "qualityPromise": {
         "title": "Promesa de calidad",
@@ -893,8 +893,8 @@
     "codDescription": "Paga cuando tu pedido llegue a tu puerta",
     "cardDescription": "Paga de forma segura con tarjeta de crédito o débito vía Stripe",
     "addressSelected": "Seleccionada",
-    "businessDiscount": "Descuento cuenta comercial (2%)",
-    "premiumDiscount": "Descuento miembro premium (5%)",
+    "businessDiscount": "Descuento cuenta comercial ({percent}%)",
+    "premiumDiscount": "Descuento miembro premium ({percent}%)",
     "packaging": "Empaque",
     "packagingExtra": "empaque",
     "subtotalWithCount": "Subtotal ({count} artículos)",
@@ -1454,9 +1454,9 @@
         },
         "business": {
           "upgradeTitle": "Actualizar a cuenta comercial",
-          "upgradeDescription": "Obtén un 2% de descuento en todos los pedidos. Ideal para empresas y compras al por mayor.",
+          "upgradeDescription": "Obtén un {percent}% de descuento en todos los pedidos. Ideal para empresas y compras al por mayor.",
           "upgradeBenefits": [
-            "2% de descuento en todos los pedidos",
+            "{percent}% de descuento en todos los pedidos",
             "Soporte prioritario",
             "Gestión de pedidos al por mayor",
             "Facturación comercial"
@@ -1466,7 +1466,7 @@
           "pendingDescription": "¡Excelente! Tu solicitud de cuenta comercial se envió correctamente y está en revisión administrativa.",
           "pendingBenefitsTitle": "Beneficios comerciales (tras aprobación):",
           "pendingBenefits": [
-            "2% de descuento en todos los pedidos",
+            "{percent}% de descuento en todos los pedidos",
             "Soporte prioritario",
             "Gestión de pedidos al por mayor",
             "Capacidades de facturación comercial"
@@ -1477,7 +1477,7 @@
           "activeDescription": "¡Fantástico! Tu cuenta comercial está activa y disfrutas de beneficios exclusivos.",
           "activeBenefitsTitle": "Beneficios comerciales activos:",
           "activeBenefits": [
-            "2% de descuento aplicado automáticamente al pagar",
+            "{percent}% de descuento aplicado automáticamente al pagar",
             "Soporte prioritario",
             "Gestión avanzada de pedidos al por mayor",
             "Facturación comercial profesional"
@@ -2525,7 +2525,7 @@
         "id": "shipping-1",
         "category": "shipping",
         "question": "¿Cuánto cuesta el envío?",
-        "answer": "Los costos de envío varían según tu ubicación y el método de envío que elijas. El envío estándar es gratuito para pedidos superiores a $50. Las opciones de envío express están disponibles en el pago con sus respectivos costos."
+        "answer": "Usamos una tarifa plana de envío en EE. UU. de {fee}. El envío estándar es gratuito para pedidos superiores a {amount} (después de descuentos y empaque). El envío e impuestos exactos se muestran al pagar según tu dirección."
       },
       {
         "id": "shipping-2",
@@ -2633,6 +2633,10 @@
       "freeShippingQualified": "Calificas para envío gratis",
       "subtotal": "Subtotal",
       "discount": "Descuento",
+      "shipping": "Envío",
+      "free": "Gratis",
+      "tax": "Impuesto",
+      "taxAtCheckout": "Se calcula al pagar",
       "estimatedTotal": "Total estimado",
       "checkout": "Pagar",
       "continueShopping": "Seguir comprando",
@@ -2842,7 +2846,7 @@
         },
         "shipping": {
           "title": "Envío gratis",
-          "description": "Disfruta envío gratis en pedidos superiores a $50"
+          "description": "Disfruta envío gratis en pedidos superiores a {amount}"
         },
         "payments": {
           "title": "Pagos seguros",

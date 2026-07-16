@@ -116,11 +116,14 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
     const cartSnapshot: CartItem[] = JSON.parse(JSON.stringify(cart));
 
-    // Stock validation with weight consideration
+    // Stock validation with weight consideration (qty must fit available stock)
     const outOfStockItems = cartSnapshot.filter((item) => {
       const selectedWeightStock = item.selectedWeight?.stock;
       const productStock = item.product.stock;
-      return (selectedWeightStock !== undefined ? selectedWeightStock : productStock) === 0;
+      const available =
+        selectedWeightStock !== undefined ? selectedWeightStock : productStock;
+      if (available === undefined || available === null) return false;
+      return available < item.quantity;
     });
     
     if (outOfStockItems.length > 0) {
@@ -214,6 +217,17 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
               dictionary,
               "checkoutPlacement.staleCartPrices",
               "Your cart prices are out of date. Please refresh the page or clear your cart and try again.",
+            ),
+          );
+          setOrderPlacementState(false, "validating");
+          return { success: false };
+        }
+        if (errorData.code === "STOCK_RESERVATION_FAILED") {
+          toast.error(
+            t(
+              dictionary,
+              "checkoutPlacement.stockReservationFailed",
+              "Unable to reserve inventory for this order. Please try again.",
             ),
           );
           setOrderPlacementState(false, "validating");

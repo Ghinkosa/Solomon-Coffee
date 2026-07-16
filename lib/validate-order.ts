@@ -4,16 +4,23 @@ import {
   totalsAreClose,
   type CheckoutPricingItem,
 } from "@/lib/checkout-pricing";
+import { getTaxRuleForState } from "@/lib/tax-settings";
 
 interface OrderRequestItem {
   product: {
     _id: string;
     price?: number;
+    name?: string;
+    category?: string;
   };
   quantity: number;
   weight?: {
     value: string;
     price: number;
+  };
+  grind?: {
+    type: string;
+    label: string;
   };
   packaging?: {
     id: string;
@@ -30,6 +37,8 @@ interface ValidateOrderInput {
   tax?: number;
   packagingFee?: number;
   businessDiscountRate?: number;
+  /** Destination shipping state — tax is resolved server-side from admin settings. */
+  shippingState?: string;
 }
 
 interface SanityProduct {
@@ -47,8 +56,26 @@ interface SanityProduct {
     packaging?: {
       _id: string;
       price: number;
+      title?: string;
     };
   }>;
+}
+
+/** Server-resolved line used when persisting the order (never trust client prices). */
+export interface ResolvedOrderLine {
+  productId: string;
+  productName?: string;
+  productCategory?: string;
+  quantity: number;
+  unitPrice: number;
+  packagingPrice: number;
+  packagingId?: string;
+  packagingTitle?: string;
+  weightValue?: string;
+  grind?: {
+    type: string;
+    label: string;
+  };
 }
 
 export async function validateOrderPricing(input: ValidateOrderInput) {
@@ -64,7 +91,8 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
       packagingOptions[]{
         packaging->{
           _id,
-          price
+          price,
+          title
         }
       }
     }`,
@@ -73,6 +101,7 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
 
   const productMap = new Map(products.map((product) => [product._id, product]));
   const pricingItems: CheckoutPricingItem[] = [];
+  const resolvedLines: ResolvedOrderLine[] = [];
 
   for (const item of input.items) {
     const product = productMap.get(item.product._id);
@@ -102,6 +131,8 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
         )?.packaging
       : undefined;
 
+    const packagingPrice = packagingFromDb?.price ?? 0;
+
     pricingItems.push({
       productId: item.product._id,
       quantity: item.quantity,
@@ -110,19 +141,47 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
       // Only ever trust the server-side packaging price. Never fall back to the
       // client-supplied price — an unmatched packaging id contributes $0 and the
       // total check below will reject a tampered cart.
-      packagingPrice: packagingFromDb?.price ?? 0,
+      packagingPrice,
+    });
+
+    resolvedLines.push({
+      productId: item.product._id,
+      productName: item.product.name,
+      productCategory: item.product.category,
+      quantity: item.quantity,
+      unitPrice,
+      packagingPrice,
+      packagingId: packagingFromDb?._id,
+      packagingTitle: packagingFromDb?.title || item.packaging?.title,
+      weightValue: selectedWeight?.weight || item.weight?.value,
+      grind: item.grind?.type
+        ? {
+            type: item.grind.type,
+            label: item.grind.label,
+          }
+        : undefined,
     });
   }
 
+  const taxRule = await getTaxRuleForState(input.shippingState);
   const calculated = calculateCheckoutTotals({
     items: pricingItems,
     businessDiscountRate: input.businessDiscountRate ?? 0,
+    taxRate: taxRule.taxRate,
+    taxShipping: taxRule.taxShipping,
+    flatShippingFee: taxRule.flatShippingFee,
+    freeShippingThreshold: taxRule.freeShippingThreshold,
   });
 
   if (!totalsAreClose(calculated.total, input.totalAmount)) {
     console.error("Order pricing mismatch:", {
       clientTotal: input.totalAmount,
       serverTotal: calculated.total,
+      shippingState: input.shippingState,
+      taxRate: taxRule.taxRate,
+      taxShipping: taxRule.taxShipping,
+      flatShippingFee: taxRule.flatShippingFee,
+      freeShippingThreshold: taxRule.freeShippingThreshold,
     });
     return {
       valid: false as const,
@@ -137,5 +196,7 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
     valid: true as const,
     calculated,
     productSubtotal: calculated.subtotal,
+    resolvedLines,
+    taxRule,
   };
 }

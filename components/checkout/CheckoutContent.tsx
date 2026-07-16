@@ -148,6 +148,7 @@ export function CheckoutContent() {
     isBusiness: boolean;
     isActive: boolean;
     businessStatus?: string;
+    premiumStatus?: string;
   } | null>(null);
   const [guestDetails, setGuestDetails] = useState<GuestCheckoutDetails>({
     name: "",
@@ -160,6 +161,18 @@ export function CheckoutContent() {
   });
   const [showGuestFormErrors, setShowGuestFormErrors] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [destinationTax, setDestinationTax] = useState<{
+    stateCode: string;
+    taxRate: number;
+    taxShipping: boolean;
+    flatShippingFee: number;
+    freeShippingThreshold: number;
+    businessDiscountRate: number;
+    premiumDiscountRate: number;
+    businessDiscountPercent: number;
+    premiumDiscountPercent: number;
+  } | null>(null);
+  const [taxLoading, setTaxLoading] = useState(false);
   const [selectionsData, setSelectionsData] = useState<Array<{
     productId: string;
     weight: WeightOption | null;
@@ -187,19 +200,95 @@ export function CheckoutContent() {
     }
   }, [searchParams]);
 
+  const destinationState = useMemo(() => {
+    if (!user) {
+      return guestDetails.state?.trim().toUpperCase() || "";
+    }
+    return selectedAddress?.state?.trim().toUpperCase() || "";
+  }, [user, guestDetails.state, selectedAddress?.state]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setTaxLoading(true);
+
+    const query =
+      destinationState.length === 2
+        ? `?state=${encodeURIComponent(destinationState)}`
+        : "";
+
+    fetch(`/api/checkout/tax${query}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Failed to load tax");
+        return response.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setDestinationTax({
+          stateCode: data.stateCode,
+          taxRate: typeof data.taxRate === "number" ? data.taxRate : 0,
+          taxShipping: Boolean(data.taxShipping),
+          flatShippingFee:
+            typeof data.flatShippingFee === "number"
+              ? data.flatShippingFee
+              : 10,
+          freeShippingThreshold:
+            typeof data.freeShippingThreshold === "number"
+              ? data.freeShippingThreshold
+              : 100,
+          businessDiscountRate:
+            typeof data.businessDiscountRate === "number"
+              ? data.businessDiscountRate
+              : 0.02,
+          premiumDiscountRate:
+            typeof data.premiumDiscountRate === "number"
+              ? data.premiumDiscountRate
+              : 0.05,
+          businessDiscountPercent:
+            typeof data.businessDiscountPercent === "number"
+              ? data.businessDiscountPercent
+              : 2,
+          premiumDiscountPercent:
+            typeof data.premiumDiscountPercent === "number"
+              ? data.premiumDiscountPercent
+              : 5,
+        });
+      })
+      .catch((error) => {
+        console.error("Destination tax lookup failed:", error);
+        if (!cancelled) {
+          setDestinationTax(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setTaxLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [destinationState]);
+
   const checkoutTotals = useMemo(() => {
     const lines = cart.map((item) => resolveCheckoutLine(item, selectionsData));
 
-    const accountDiscount = getAccountDiscount(userProfile);
+    const accountDiscount = getAccountDiscount(userProfile, {
+      businessRate: destinationTax?.businessDiscountRate,
+      premiumRate: destinationTax?.premiumDiscountRate,
+    });
 
     return {
       ...calculateCheckoutTotals({
         items: buildCheckoutPricingItems(lines),
         businessDiscountRate: accountDiscount.rate,
+        taxRate: destinationTax?.taxRate ?? 0,
+        taxShipping: destinationTax?.taxShipping ?? false,
+        flatShippingFee: destinationTax?.flatShippingFee ?? 10,
+        freeShippingThreshold:
+          destinationTax?.freeShippingThreshold ?? 100,
       }),
       accountDiscountType: accountDiscount.type,
     };
-  }, [cart, selectionsData, userProfile]);
+  }, [cart, selectionsData, userProfile, destinationTax]);
 
   const grossSubtotal = checkoutTotals.subtotal;
   const totalDiscount = checkoutTotals.productDiscount;
@@ -226,6 +315,7 @@ export function CheckoutContent() {
               isBusiness: data.userProfile.isBusiness || false,
               isActive: data.userProfile.isActive || false,
               businessStatus: data.userProfile.businessStatus || "none",
+              premiumStatus: data.userProfile.premiumStatus || "none",
             });
           }
         }
@@ -478,6 +568,10 @@ export function CheckoutContent() {
   };
 
   const checkoutAddressReady = Boolean(getCheckoutAddress());
+  const taxQuoteReady =
+    !destinationState || (!taxLoading && destinationTax !== null);
+  const canSubmitCheckout =
+    checkoutAddressReady && taxQuoteReady && cart.length > 0 && !isPlacingOrder;
 
   if (!isLoaded) {
     return <CheckoutSkeleton />;
@@ -781,16 +875,26 @@ export function CheckoutContent() {
                           t(
                             dictionary,
                             "checkout.premiumDiscount",
-                            "Premium Member Discount (5%)",
+                            "Premium Member Discount ({percent}%)",
                           ),
+                      ).replace(
+                        "{percent}",
+                        String(
+                          destinationTax?.premiumDiscountPercent ?? 5,
+                        ),
                       )
                     : String(
                         checkoutCopy.businessDiscount ??
                           t(
                             dictionary,
                             "checkout.businessDiscount",
-                            "Business Account Discount (2%)",
+                            "Business Account Discount ({percent}%)",
                           ),
+                      ).replace(
+                        "{percent}",
+                        String(
+                          destinationTax?.businessDiscountPercent ?? 2,
+                        ),
                       )}
                 </span>
                 <span>
@@ -822,7 +926,27 @@ export function CheckoutContent() {
             </div>
             <div className="flex justify-between">
               <span>{summary?.tax ?? "Tax"}</span>
-              <PriceFormatter amount={tax} />
+              {!destinationState ? (
+                <span className="text-sm text-muted-foreground">
+                  {String(
+                    checkoutCopy.taxAfterAddress ??
+                      t(
+                        dictionary,
+                        "checkout.taxAfterAddress",
+                        "Calculated after address",
+                      ),
+                  )}
+                </span>
+              ) : taxLoading ? (
+                <span className="text-sm text-muted-foreground">
+                  {String(
+                    checkoutCopy.taxLoading ??
+                      t(dictionary, "checkout.taxLoading", "Calculating..."),
+                  )}
+                </span>
+              ) : (
+                <PriceFormatter amount={tax} />
+              )}
             </div>
             <Separator />
             <div className="flex justify-between text-lg font-bold">
@@ -835,7 +959,7 @@ export function CheckoutContent() {
         <div className="space-y-3">
           <Button
             onClick={handlePayNowClick}
-            disabled={isPlacingOrder || !checkoutAddressReady || cart.length === 0}
+            disabled={!canSubmitCheckout}
             className="w-full h-12 text-lg font-semibold bg-shop_dark_green hover:bg-shop_light_green text-white shadow-md hover:shadow-shop_orange/20"
             size="lg"
           >
@@ -855,7 +979,7 @@ export function CheckoutContent() {
 
           <Button
             onClick={() => handlePlaceOrder("order")}
-            disabled={isPlacingOrder || !checkoutAddressReady || cart.length === 0}
+            disabled={!canSubmitCheckout}
             variant="outline"
             className="w-full h-12 text-lg font-semibold border-shop_dark_green text-shop_dark_green hover:bg-shop_light_bg hover:text-shop_dark_green"
             size="lg"

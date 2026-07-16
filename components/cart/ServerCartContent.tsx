@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useCartStore from "@/store";
 import type { PackagingOption } from "@/store";
 import { Separator } from "@/components/ui/separator";
@@ -33,6 +33,7 @@ import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import type { Dictionary } from "@/lib/dictionary-context";
+import { useUserData } from "@/contexts/UserDataContext";
 
 interface WeightOption {
   weight: string;
@@ -154,8 +155,16 @@ export function ServerCartContent({
     updateCartItemGrind,
   } = useCartStore();
 
+  const { accountDiscountRate } = useUserData();
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [showClearModal, setShowClearModal] = useState(false);
+  const [destinationTax, setDestinationTax] = useState<{
+    taxRate: number;
+    taxShipping: boolean;
+    flatShippingFee: number;
+    freeShippingThreshold: number;
+  } | null>(null);
+  const [taxLoading, setTaxLoading] = useState(false);
 
   // Initialize Default Address
   useEffect(() => {
@@ -170,6 +179,53 @@ export function ServerCartContent({
   useEffect(() => {
     setOrderPlacementState(false, "validating");
   }, [setOrderPlacementState]);
+
+  const destinationState = useMemo(
+    () => selectedAddress?.state?.trim().toUpperCase() || "",
+    [selectedAddress?.state],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    setTaxLoading(true);
+
+    const query =
+      destinationState.length === 2
+        ? `?state=${encodeURIComponent(destinationState)}`
+        : "";
+
+    fetch(`/api/checkout/tax${query}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Failed to load tax");
+        return response.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setDestinationTax({
+          taxRate: typeof data.taxRate === "number" ? data.taxRate : 0,
+          taxShipping: Boolean(data.taxShipping),
+          flatShippingFee:
+            typeof data.flatShippingFee === "number"
+              ? data.flatShippingFee
+              : 10,
+          freeShippingThreshold:
+            typeof data.freeShippingThreshold === "number"
+              ? data.freeShippingThreshold
+              : 100,
+        });
+      })
+      .catch((error) => {
+        console.error("Cart tax lookup failed:", error);
+        if (!cancelled) setDestinationTax(null);
+      })
+      .finally(() => {
+        if (!cancelled) setTaxLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [destinationState]);
 
   const handleResetCart = () => setShowClearModal(true);
 
@@ -188,21 +244,31 @@ export function ServerCartContent({
     return defaultWeight?.price || item.product.price || 0;
   };
 
-  const checkoutTotals = calculateCheckoutTotals({
-    items: buildCheckoutPricingItems(
-      cart.map((item) => ({
-        product: item.product,
-        quantity: item.quantity,
-        unitPrice: getItemCurrentPrice(item),
-        packagingPrice: item.selectedPackaging?.price || 0,
-      })),
-    ),
-  });
+  const checkoutTotals = useMemo(
+    () =>
+      calculateCheckoutTotals({
+        items: buildCheckoutPricingItems(
+          cart.map((item) => ({
+            product: item.product,
+            quantity: item.quantity,
+            unitPrice: getItemCurrentPrice(item),
+            packagingPrice: item.selectedPackaging?.price || 0,
+          })),
+        ),
+        businessDiscountRate: accountDiscountRate,
+        taxRate: destinationTax?.taxRate ?? 0,
+        taxShipping: destinationTax?.taxShipping ?? false,
+        flatShippingFee: destinationTax?.flatShippingFee ?? 10,
+        freeShippingThreshold:
+          destinationTax?.freeShippingThreshold ?? 100,
+      }),
+    [cart, accountDiscountRate, destinationTax],
+  );
 
   const grossSubtotal = checkoutTotals.subtotal;
   const totalDiscount = checkoutTotals.productDiscount;
   const totalPackagingFee = checkoutTotals.packagingFee;
-  const currentSubtotal = grossSubtotal - totalDiscount + totalPackagingFee;
+  const businessDiscount = checkoutTotals.businessDiscount;
   const shipping = checkoutTotals.shipping;
   const tax = checkoutTotals.tax;
   const finalTotal = checkoutTotals.total;
@@ -376,6 +442,21 @@ export function ServerCartContent({
                   <span>-<PriceFormatter amount={totalDiscount} /></span>
                 </div>
               )}
+
+              {businessDiscount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>
+                    {t(
+                      dictionary,
+                      "checkout.accountDiscount",
+                      "Account discount",
+                    )}
+                  </span>
+                  <span>
+                    -<PriceFormatter amount={businessDiscount} />
+                  </span>
+                </div>
+              )}
               
               {totalPackagingFee > 0 && (
                 <div className="flex justify-between text-sm">
@@ -399,7 +480,17 @@ export function ServerCartContent({
               
               <div className="flex justify-between text-sm">
                 <span>{summary.tax ?? "Tax"}</span>
-                <PriceFormatter amount={tax} />
+                {!destinationState ? (
+                  <span className="text-muted-foreground">
+                    {summary.taxAtCheckout ?? "Calculated at checkout"}
+                  </span>
+                ) : taxLoading ? (
+                  <span className="text-muted-foreground">
+                    {t(dictionary, "checkout.taxLoading", "Calculating...")}
+                  </span>
+                ) : (
+                  <PriceFormatter amount={tax} />
+                )}
               </div>
               
               <Separator />

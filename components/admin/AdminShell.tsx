@@ -28,6 +28,7 @@ import {
   Store,
   MessageSquare,
   PanelsTopLeft,
+  Percent,
 } from "lucide-react";
 
 interface AdminShellProps {
@@ -59,6 +60,11 @@ const adminNavGroups: { label: string; routes: AdminRoute[] }[] = [
         label: "Account Requests",
         icon: UserCheck,
         href: "/admin/account-requests",
+      },
+      {
+        label: "Checkout Settings",
+        icon: Percent,
+        href: "/admin/checkout-settings",
       },
     ],
   },

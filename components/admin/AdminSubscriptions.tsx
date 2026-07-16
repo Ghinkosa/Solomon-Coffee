@@ -196,13 +196,12 @@ export default function AdminSubscriptions() {
 
   const handleExportCSV = () => {
     const csvContent = [
-      ["Email", "Status", "Source", "Subscribed At", "IP Address"],
+      ["Email", "Status", "Source", "Subscribed At"],
       ...filteredSubscriptions.map((sub) => [
         sub.email,
         sub.status,
         sub.source,
         new Date(sub.subscribedAt).toLocaleString(),
-        sub.ipAddress || "N/A",
       ]),
     ]
       .map((row) => row.join(","))
