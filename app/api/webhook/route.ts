@@ -10,6 +10,11 @@ import { sendOrderConfirmationEmail } from "@/lib/emailService";
 import { getEmailImageUrl } from "@/lib/emailImageUtils";
 import { buildStripeInvoiceLineItems } from "@/lib/invoice-lines";
 import { normalizeEmailLocale } from "@/lib/email-translations";
+import { shouldSendTransactionalEmail } from "@/lib/userPreferences";
+import {
+  getUserPreferencesByClerkId,
+  getUserPreferencesByEmail,
+} from "@/lib/userPreferences.server";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -417,6 +422,7 @@ async function sendConfirmationEmail(orderId: string) {
   const order = await backendClient.fetch<{
     orderNumber?: string;
     email?: string;
+    clerkUserId?: string;
     customerName?: string;
     orderDate?: string;
     locale?: string;
@@ -444,6 +450,7 @@ async function sendConfirmationEmail(orderId: string) {
     `*[_type == "order" && _id == $orderId][0]{
       orderNumber,
       email,
+      clerkUserId,
       customerName,
       orderDate,
       locale,
@@ -462,6 +469,17 @@ async function sendConfirmationEmail(orderId: string) {
   );
 
   if (!order?.email) return;
+
+  const prefsRecord = order.clerkUserId
+    ? await getUserPreferencesByClerkId(order.clerkUserId)
+    : await getUserPreferencesByEmail(order.email);
+
+  if (prefsRecord && !shouldSendTransactionalEmail(prefsRecord.raw)) {
+    console.log(
+      `Skipped confirmation email for order ${orderId}: user opted out of transactional email`,
+    );
+    return;
+  }
 
   await sendOrderConfirmationEmail({
     customerName: order.customerName || "Customer",

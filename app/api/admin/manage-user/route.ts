@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeClient, readClient } from "@/sanity/lib/client";
 import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
 import { requireAdminUser } from "@/lib/adminAuth";
+import { DEFAULT_USER_PREFERENCES } from "@/lib/userPreferences";
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,11 +65,7 @@ export async function POST(request: NextRequest) {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         preferences: {
-          newsletter: true,
-          emailNotifications: true,
-          smsNotifications: false,
-          preferredCurrency: "USD",
-          preferredLanguage: "en",
+          ...DEFAULT_USER_PREFERENCES,
         },
       });
 

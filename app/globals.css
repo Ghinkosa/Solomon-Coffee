@@ -434,9 +434,19 @@
   width: 100%;
 }
 
+/* Keep Clerk card centered with equal side margins inside admin shell */
+.admin-clerk-sign-in .cl-rootBox,
+.admin-clerk-sign-in .cl-cardBox,
+.admin-clerk-sign-in .cl-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
 /* Minimal responsive adjustments */
 @media (max-width: 640px) {
-  .clerk-sign-in,
+  .clerk-sign-in:not(.admin-clerk-sign-in),
   .clerk-sign-up {
     padding: 1rem 0.5rem !important;
   }

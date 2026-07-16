@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import { motion } from "motion/react";
@@ -24,6 +24,16 @@ import {
   ChevronRight,
   Expand,
 } from "lucide-react";
+import naturalSundry from "@/images/natural/sundry.webp";
+import naturalSundry2 from "@/images/natural/sundry2.webp";
+import naturalWomenPicking from "@/images/natural/women-picking-coffee.webp";
+import washedFermentation from "@/images/washed/fermentation-tank.webp";
+import washedFermentation2 from "@/images/washed/fermentation-tank-2.webp";
+import washedDrying from "@/images/washed/drying.webp";
+import honeyCoffee1 from "@/images/honey/coffee1.webp";
+import honeyCoffee2 from "@/images/honey/coffee2.webp";
+import honeyCoffee3 from "@/images/honey/coffee3.webp";
+import farmDroneShot from "@/images/farm/farm-drone-shot.webp";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 36 },
@@ -31,50 +41,50 @@ const fadeInUp = {
 };
 
 type GalleryImage = {
-  src: string;
+  src: StaticImageData;
   alt: string;
 };
 
 const PROCESS_GALLERIES: Record<string, GalleryImage[]> = {
   natural: [
     {
-      src: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=1400&auto=format",
+      src: naturalSundry,
       alt: "Raised drying beds under sunlight",
     },
     {
-      src: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1400&auto=format",
+      src: naturalSundry2,
       alt: "Coffee cherries drying naturally",
     },
     {
-      src: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=1400&auto=format",
-      alt: "Sun-dried coffee cherries close up",
+      src: naturalWomenPicking,
+      alt: "Women picking coffee cherries",
     },
   ],
   washed: [
     {
-      src: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1400&auto=format",
-      alt: "Washed coffee processing",
+      src: washedFermentation,
+      alt: "Washed coffee fermentation tank",
     },
     {
-      src: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1400&auto=format",
-      alt: "Coffee washing channels",
+      src: washedFermentation2,
+      alt: "Coffee washing and fermentation",
     },
     {
-      src: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1400&auto=format",
-      alt: "Fermentation and washing beds",
+      src: washedDrying,
+      alt: "Washed coffee drying beds",
     },
   ],
   honey: [
     {
-      src: "https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1400&auto=format",
+      src: honeyCoffee1,
       alt: "Honey process mucilage on beans",
     },
     {
-      src: "https://images.unsplash.com/photo-1504630083234-14187a9df0f5?q=80&w=1400&auto=format",
+      src: honeyCoffee2,
       alt: "Honey processed coffee beans drying",
     },
     {
-      src: "https://images.unsplash.com/photo-1497935582031-02786dd579da?q=80&w=1400&auto=format",
+      src: honeyCoffee3,
       alt: "Sticky mucilage during honey processing",
     },
   ],
@@ -184,7 +194,7 @@ function ProcessGallery({
             <div className="flex">
               {images.map((image, index) => (
                 <button
-                  key={image.src}
+                  key={image.src.src}
                   type="button"
                   className="relative aspect-[4/5] min-w-0 flex-[0_0_100%] cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset"
                   onClick={() => openLightbox(index)}
@@ -246,7 +256,7 @@ function ProcessGallery({
         <div className="mt-3 flex justify-center gap-2">
           {images.map((image, index) => (
             <button
-              key={image.src}
+              key={image.src.src}
               type="button"
               onClick={() => emblaApi?.scrollTo(index)}
               className={`h-1.5 rounded-full transition-all ${
@@ -409,7 +419,7 @@ export default function OurCoffee({ dictionary }: { dictionary: any }) {
       {/* Hero — matched to /education */}
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-stone-900">
         <Image
-          src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=2000&auto=format"
+          src={farmDroneShot}
           alt={page.heroImageAlt ?? "Coffee farm and processing"}
           fill
           priority

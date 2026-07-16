@@ -1,5 +1,5 @@
 import Image from "next/image";
-import aboutUsHeadshot from "@/images/about-us-headshot.jpg";
+import aboutUsHeadshot from "@/images/about-us-headshot.webp";
 import { homeEyebrowClass } from "./HomeSectionHeader";
 import {
   OurStoryBody,

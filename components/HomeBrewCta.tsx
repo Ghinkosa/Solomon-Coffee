@@ -2,9 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { homeOutlineButtonClass } from "./HomeSectionHeader";
-
-const CTA_IMAGE =
-  "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=2400&auto=format&fit=crop";
+import farmSunset from "@/images/farm/farm-sunset.webp";
 
 interface HomeBrewCtaProps {
   lang: string;
@@ -20,7 +18,7 @@ const HomeBrewCta = ({ lang, copy }: HomeBrewCtaProps) => {
   return (
     <section className="relative min-h-[320px] w-full overflow-hidden sm:min-h-[380px]">
       <Image
-        src={CTA_IMAGE}
+        src={farmSunset}
         alt={copy.imageAlt}
         fill
         sizes="100vw"

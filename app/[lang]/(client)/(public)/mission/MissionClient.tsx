@@ -18,30 +18,29 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
+import farmDroneShot from "@/images/farm/farm-drone-shot.webp";
+import farmDroneShot2 from "@/images/farm/farm-drone-shot-2.webp";
+import farmDroneShot3 from "@/images/farm/farm-drone-shot-3.webp";
+import farmDroneShot4 from "@/images/farm/farm-drone-shot-4.webp";
+import farmSunset from "@/images/farm/farm-sunset.webp";
+import coffeeTree from "@/images/farm/coffee-tree.webp";
+import warehouse from "@/images/farm/warehouse.webp";
+import workersCloseUp from "@/images/farm/workers-close-up.webp";
+import workersOnFarm from "@/images/farm/workers-on-farm.webp";
+import womenPickingCoffee from "@/images/natural/women-picking-coffee.webp";
 
 const MISSION_IMAGES = {
-  hero:
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80",
-  missionMain:
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80",
-  missionCare:
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
-  missionCommunity:
-    "https://images.unsplash.com/photo-1504630083234-14187a9df0f5?auto=format&fit=crop&w=1200&q=80",
-  farmMain:
-    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1200&q=80",
-  farmPractice:
-    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
-  farmHeritage:
-    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=80",
-  foundation:
-    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80",
-  impactCare:
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80",
-  impactEducation:
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
-  impactSustainable:
-    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1200&q=80",
+  hero: farmDroneShot,
+  missionMain: farmDroneShot2,
+  missionCare: workersCloseUp,
+  missionCommunity: womenPickingCoffee,
+  farmMain: workersOnFarm,
+  farmPractice: coffeeTree,
+  farmHeritage: farmSunset,
+  foundation: warehouse,
+  impactCare: workersCloseUp,
+  impactEducation: farmDroneShot3,
+  impactSustainable: farmDroneShot4,
 } as const;
 
 interface MissionClientProps {

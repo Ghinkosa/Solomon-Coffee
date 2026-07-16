@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
-import aboutUsHeadshot from "@/images/about-us-headshot.jpg";
+import aboutUsHeadshot from "@/images/about-us-headshot.webp";
 
 interface AboutClientProps {
   dictionary: any;

@@ -21,22 +21,22 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import Image from "next/image";
+import farmSunset from "@/images/farm/farm-sunset.webp";
+import workersOnFarm from "@/images/farm/workers-on-farm.webp";
+import coffeeTree from "@/images/farm/coffee-tree.webp";
+import warehouse from "@/images/farm/warehouse.webp";
+import naturalSundry from "@/images/natural/sundry.webp";
+import washedDrying from "@/images/washed/drying.webp";
+import honeyCoffee1 from "@/images/honey/coffee1.webp";
 
 const ROASTING_IMAGES = {
-  hero:
-    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=2000&auto=format",
-  roast1:
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
-  roast2:
-    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=80",
-  roast3:
-    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80",
-  natural:
-    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=1200&q=80",
-  washed:
-    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
-  honey:
-    "https://images.unsplash.com/photo-1504630083234-14187a9df0f5?auto=format&fit=crop&w=1200&q=80",
+  hero: farmSunset,
+  roast1: workersOnFarm,
+  roast2: coffeeTree,
+  roast3: warehouse,
+  natural: naturalSundry,
+  washed: washedDrying,
+  honey: honeyCoffee1,
 } as const;
 
 interface RoastingClientProps {

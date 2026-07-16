@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import missionPrimary from "@/images/3D/mission-primary.jpg";
-import missionSecondary from "@/images/3D/mission-secondary.jpg";
+import missionPrimary from "@/images/farm/farm-drone-shot.webp";
+import missionSecondary from "@/images/farm/workers-on-farm.webp";
 
 interface MissionVisual3DProps {
   alt: string;

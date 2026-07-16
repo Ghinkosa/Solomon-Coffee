@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { readClient, writeClient } from "@/sanity/lib/client";
 import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
+import { DEFAULT_USER_PREFERENCES } from "@/lib/userPreferences";
 
 export async function GET() {
   try {
@@ -146,11 +147,7 @@ export async function POST() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       preferences: {
-        newsletter: true,
-        emailNotifications: true,
-        smsNotifications: false,
-        preferredCurrency: "USD",
-        preferredLanguage: "en",
+        ...DEFAULT_USER_PREFERENCES,
       },
     });
 

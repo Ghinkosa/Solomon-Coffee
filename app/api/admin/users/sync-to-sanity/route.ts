@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { requireAdminUser } from "@/lib/adminAuth";
 import { writeClient } from "@/sanity/lib/client";
+import { DEFAULT_USER_PREFERENCES } from "@/lib/userPreferences";
 
 export async function POST(req: NextRequest) {
   try {
@@ -90,11 +91,7 @@ export async function POST(req: NextRequest) {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             preferences: {
-              emailNotifications: true,
-              smsNotifications: false,
-              newsletter: false,
-              preferredCurrency: "USD",
-              preferredLanguage: "en",
+              ...DEFAULT_USER_PREFERENCES,
             },
             loyaltyPoints: 0,
             totalSpent: 0,

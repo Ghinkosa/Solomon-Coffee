@@ -22,9 +22,9 @@ import { FormEvent, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import workersOnFarm from "@/images/farm/workers-on-farm.webp";
 
-const CONTACT_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=800&auto=format";
+const CONTACT_HERO_IMAGE = workersOnFarm;
 
 interface FormData {
   name: string;

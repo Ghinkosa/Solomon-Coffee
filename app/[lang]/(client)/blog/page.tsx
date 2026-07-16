@@ -19,9 +19,9 @@ import { Metadata } from "next";
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
 import { localizedPath } from "@/lib/localized-path";
+import farmDroneShot from "@/images/farm/farm-drone-shot.webp";
 
-const BLOG_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format";
+const BLOG_HERO_IMAGE = farmDroneShot;
 
 export const metadata: Metadata = {
   title: "Blog",

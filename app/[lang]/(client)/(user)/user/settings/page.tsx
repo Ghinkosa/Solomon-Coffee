@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, Shield, Trash2, Download } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Bell, Download, Loader2, Shield, Trash2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -17,40 +17,132 @@ import { toast } from "sonner";
 import NewsletterSubscription from "@/components/profile/NewsletterSubscription";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import type { NotificationChannelPreference } from "@/lib/userPreferences";
+import { DEFAULT_NOTIFICATION_PREFERENCES } from "@/lib/userPreferences";
+
+type PreferenceKey = keyof NotificationChannelPreference;
+
+const PREFERENCE_META: Array<{
+  key: PreferenceKey;
+  labelKey: string;
+  labelFallback: string;
+  hintKey: string;
+  hintFallback: string;
+}> = [
+  {
+    key: "emailNotifications",
+    labelKey: "emailNotifications",
+    labelFallback: "Email Notifications",
+    hintKey: "emailNotificationsHint",
+    hintFallback: "Receive transactional emails such as order confirmations",
+  },
+  {
+    key: "orderUpdates",
+    labelKey: "orderUpdates",
+    labelFallback: "Order Updates",
+    hintKey: "orderUpdatesHint",
+    hintFallback: "Get in-app notifications when your order status changes",
+  },
+  {
+    key: "marketingEmails",
+    labelKey: "marketingEmails",
+    labelFallback: "Marketing Emails",
+    hintKey: "marketingEmailsHint",
+    hintFallback: "Receive promotional offers and marketing messages",
+  },
+];
 
 export default function UserSettingsPage() {
   const dictionary = useDictionary();
   const s = (path: string, fallback: string) =>
     t(dictionary, `userDashboard.settings.${path}`, fallback);
 
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: false,
-    orderUpdates: true,
-    marketingEmails: false,
-    twoFactorAuth: false,
-    profileVisibility: true,
-  });
+  const [preferences, setPreferences] = useState<NotificationChannelPreference>(
+    DEFAULT_NOTIFICATION_PREFERENCES,
+  );
+  const [loading, setLoading] = useState(true);
+  const [savingKey, setSavingKey] = useState<PreferenceKey | null>(null);
 
-  const handleSettingChange = async (key: string, value: boolean) => {
+  const loadSettings = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/user/settings", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      if (response.status === 404) {
+        setPreferences(DEFAULT_NOTIFICATION_PREFERENCES);
+        toast.message(
+          s(
+            "profileRequired",
+            "Complete account setup to save notification preferences.",
+          ),
+        );
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("Failed to load settings");
+      }
+
+      const data = await response.json();
+      if (data.preferences) {
+        setPreferences({
+          ...DEFAULT_NOTIFICATION_PREFERENCES,
+          ...data.preferences,
+        });
+      }
+    } catch (error) {
+      console.error("Error loading settings:", error);
+      toast.error(s("loadFailed", "Failed to load settings"));
+    } finally {
+      setLoading(false);
+    }
+  }, [dictionary]);
+
+  useEffect(() => {
+    void loadSettings();
+  }, [loadSettings]);
+
+  const handleSettingChange = async (key: PreferenceKey, value: boolean) => {
+    const previous = preferences;
+    setPreferences((prev) => ({ ...prev, [key]: value }));
+    setSavingKey(key);
+
     try {
       const response = await fetch("/api/user/settings", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ [key]: value }),
       });
 
-      if (response.ok) {
-        setSettings((prev) => ({ ...prev, [key]: value }));
-        toast.success(s("updated", "Settings updated successfully"));
-      } else {
-        toast.error(s("updateFailed", "Failed to update settings"));
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to update settings");
       }
+
+      if (data?.preferences) {
+        setPreferences({
+          ...DEFAULT_NOTIFICATION_PREFERENCES,
+          ...data.preferences,
+        });
+      }
+
+      toast.success(s("updated", "Settings updated successfully"));
     } catch (error) {
       console.error("Error updating settings:", error);
-      toast.error(s("updateFailed", "Failed to update settings"));
+      setPreferences(previous);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : s("updateFailed", "Failed to update settings"),
+      );
+    } finally {
+      setSavingKey(null);
     }
   };
 
@@ -79,27 +171,29 @@ export default function UserSettingsPage() {
 
   const handleDeleteAccount = async () => {
     if (
-      window.confirm(
+      !window.confirm(
         s(
           "deleteConfirm",
           "Are you sure you want to delete your account? This action cannot be undone.",
         ),
       )
     ) {
-      try {
-        const response = await fetch("/api/user/delete-account", {
-          method: "DELETE",
-        });
+      return;
+    }
 
-        if (response.ok) {
-          toast.success(s("deleteInitiated", "Account deletion initiated"));
-        } else {
-          toast.error(s("deleteFailed", "Failed to delete account"));
-        }
-      } catch (error) {
-        console.error("Error deleting account:", error);
+    try {
+      const response = await fetch("/api/user/delete-account", {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success(s("deleteInitiated", "Account deletion initiated"));
+      } else {
         toast.error(s("deleteFailed", "Failed to delete account"));
       }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      toast.error(s("deleteFailed", "Failed to delete account"));
     }
   };
 
@@ -128,71 +222,36 @@ export default function UserSettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{s("emailNotifications", "Email Notifications")}</Label>
-              <p className="text-sm text-gray-500">
-                {s("emailNotificationsHint", "Receive notifications via email")}
-              </p>
+          {loading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-6">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {s("loading", "Loading preferences…")}
             </div>
-            <Switch
-              checked={settings.emailNotifications}
-              onCheckedChange={(checked) =>
-                handleSettingChange("emailNotifications", checked)
-              }
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{s("pushNotifications", "Push Notifications")}</Label>
-              <p className="text-sm text-gray-500">
-                {s(
-                  "pushNotificationsHint",
-                  "Receive push notifications in your browser",
-                )}
-              </p>
-            </div>
-            <Switch
-              checked={settings.pushNotifications}
-              onCheckedChange={(checked) =>
-                handleSettingChange("pushNotifications", checked)
-              }
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{s("orderUpdates", "Order Updates")}</Label>
-              <p className="text-sm text-gray-500">
-                {s("orderUpdatesHint", "Get notified about order status changes")}
-              </p>
-            </div>
-            <Switch
-              checked={settings.orderUpdates}
-              onCheckedChange={(checked) =>
-                handleSettingChange("orderUpdates", checked)
-              }
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{s("marketingEmails", "Marketing Emails")}</Label>
-              <p className="text-sm text-gray-500">
-                {s(
-                  "marketingEmailsHint",
-                  "Receive promotional offers and updates",
-                )}
-              </p>
-            </div>
-            <Switch
-              checked={settings.marketingEmails}
-              onCheckedChange={(checked) =>
-                handleSettingChange("marketingEmails", checked)
-              }
-            />
-          </div>
+          ) : (
+            PREFERENCE_META.map((item) => (
+              <div
+                key={item.key}
+                className="flex items-center justify-between gap-4"
+              >
+                <div className="space-y-0.5">
+                  <Label htmlFor={`pref-${item.key}`}>
+                    {s(item.labelKey, item.labelFallback)}
+                  </Label>
+                  <p className="text-sm text-gray-500">
+                    {s(item.hintKey, item.hintFallback)}
+                  </p>
+                </div>
+                <Switch
+                  id={`pref-${item.key}`}
+                  checked={preferences[item.key]}
+                  disabled={savingKey !== null}
+                  onCheckedChange={(checked) =>
+                    void handleSettingChange(item.key, checked)
+                  }
+                />
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
 
@@ -205,46 +264,17 @@ export default function UserSettingsPage() {
           <CardDescription>
             {s(
               "securityDescription",
-              "Manage your account security and privacy preferences",
+              "Password and sign-in security are managed through your account menu.",
             )}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{s("twoFactorAuth", "Two-Factor Authentication")}</Label>
-              <p className="text-sm text-gray-500">
-                {s(
-                  "twoFactorAuthHint",
-                  "Add an extra layer of security to your account",
-                )}
-              </p>
-            </div>
-            <Switch
-              checked={settings.twoFactorAuth}
-              onCheckedChange={(checked) =>
-                handleSettingChange("twoFactorAuth", checked)
-              }
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{s("profileVisibility", "Profile Visibility")}</Label>
-              <p className="text-sm text-gray-500">
-                {s(
-                  "profileVisibilityHint",
-                  "Make your profile visible to other users",
-                )}
-              </p>
-            </div>
-            <Switch
-              checked={settings.profileVisibility}
-              onCheckedChange={(checked) =>
-                handleSettingChange("profileVisibility", checked)
-              }
-            />
-          </div>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            {s(
+              "securityHint",
+              "Use the account menu in the header to update your password, email, or enable two-factor authentication.",
+            )}
+          </p>
         </CardContent>
       </Card>
 

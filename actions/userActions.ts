@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { client } from "@/sanity/lib/client";
+import { DEFAULT_USER_PREFERENCES } from "@/lib/userPreferences";
 
 // Types for server actions
 interface CreateUserData {
@@ -76,11 +77,7 @@ export async function createOrUpdateUser(userData: CreateUserData) {
         lastName: userData.lastName,
         phone: userData.phone,
         preferences: {
-          newsletter: false,
-          emailNotifications: true,
-          smsNotifications: false,
-          preferredCurrency: "USD",
-          preferredLanguage: "en",
+          ...DEFAULT_USER_PREFERENCES,
         },
         cart: [],
         wishlist: [],

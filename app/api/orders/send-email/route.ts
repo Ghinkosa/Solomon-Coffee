@@ -8,6 +8,11 @@ import { getEmailImageUrl } from "@/lib/emailImageUtils";
 import { readClient } from "@/sanity/lib/client";
 import { PAYMENT_METHODS } from "@/lib/orderStatus";
 import { normalizeEmailLocale } from "@/lib/email-translations";
+import { shouldSendTransactionalEmail } from "@/lib/userPreferences";
+import {
+  getUserPreferencesByClerkId,
+  getUserPreferencesByEmail,
+} from "@/lib/userPreferences.server";
 
 // Extended interface for email preparation that can handle Sanity images
 interface EmailOrderItem {
@@ -135,6 +140,21 @@ export async function POST(request: NextRequest) {
         { error: "Cannot send confirmation for a cancelled order" },
         { status: 400 },
       );
+    }
+
+    // Honor emailNotifications when a store profile exists.
+    // Guests without a profile still receive transactional confirmations.
+    const prefsRecord = order.clerkUserId
+      ? await getUserPreferencesByClerkId(order.clerkUserId)
+      : await getUserPreferencesByEmail(order.email || orderData.customerEmail);
+
+    if (prefsRecord && !shouldSendTransactionalEmail(prefsRecord.raw)) {
+      return NextResponse.json({
+        success: true,
+        skipped: true,
+        reason: "preference_opt_out",
+        message: "Email skipped due to user preferences",
+      });
     }
 
     const emailDataWithImages: OrderConfirmationData = {

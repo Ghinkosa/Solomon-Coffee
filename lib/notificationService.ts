@@ -1,4 +1,5 @@
 import { writeClient } from "@/sanity/lib/client";
+import { shouldDeliverInAppNotification } from "@/lib/userPreferences";
 import { v4 as uuidv4 } from "uuid";
 
 export type NotificationType =
@@ -28,7 +29,8 @@ interface OrderStatusNotificationParams {
 }
 
 /**
- * Creates a notification for a user in Sanity
+ * Creates a notification for a user in Sanity.
+ * Honors the user's notification preferences (system always delivers).
  */
 export const createNotification = async (params: CreateNotificationParams) => {
   try {
@@ -44,13 +46,35 @@ export const createNotification = async (params: CreateNotificationParams) => {
 
     // Fetch the user from Sanity
     const user = await writeClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId][0]{
+        _id,
+        email,
+        firstName,
+        lastName,
+        preferences,
+        notifications
+      }`,
       { clerkUserId }
     );
 
     if (!user) {
       console.error("User not found:", clerkUserId);
       return { success: false, error: "User not found" };
+    }
+
+    if (!shouldDeliverInAppNotification(user.preferences, type)) {
+      return {
+        success: true,
+        skipped: true,
+        reason: "preference_opt_out",
+        recipient: {
+          email: user.email || "unknown@example.com",
+          name:
+            [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
+            user.email ||
+            "User",
+        },
+      };
     }
 
     const recipientName =

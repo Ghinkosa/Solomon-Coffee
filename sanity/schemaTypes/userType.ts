@@ -72,12 +72,28 @@ export const userType = defineType({
           title: "Newsletter Subscription",
           type: "boolean",
           initialValue: false,
+          description: "Legacy alias; prefer marketingEmails",
         }),
         defineField({
           name: "emailNotifications",
           title: "Email Notifications",
           type: "boolean",
           initialValue: true,
+          description: "Transactional emails such as order confirmations",
+        }),
+        defineField({
+          name: "orderUpdates",
+          title: "Order Updates",
+          type: "boolean",
+          initialValue: true,
+          description: "In-app notifications for order status changes",
+        }),
+        defineField({
+          name: "marketingEmails",
+          title: "Marketing Emails",
+          type: "boolean",
+          initialValue: false,
+          description: "Promotional emails and marketing in-app messages",
         }),
         defineField({
           name: "smsNotifications",
