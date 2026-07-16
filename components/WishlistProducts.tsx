@@ -10,7 +10,7 @@ import Link from "next/link";
 import { Product } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import Container from "./Container";
-import { Heart, X, Trash2, AlertTriangle } from "lucide-react";
+import { Heart, X, Trash2, AlertTriangle, ShoppingBag, Bell } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -217,7 +217,9 @@ const WishlistProducts = () => {
           {/* Feature highlights */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mt-8">
             <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-50">
-              <Heart className="h-8 w-8 text-red-400" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-shop_orange/10">
+                <Heart className="h-5 w-5 text-shop_orange" />
+              </div>
               <h3 className="font-semibold text-sm">
                 {features?.saveFavorites?.title ?? "Save Favorites"}
               </h3>
@@ -226,8 +228,8 @@ const WishlistProducts = () => {
               </p>
             </div>
             <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-50">
-              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-green-600 text-sm font-bold">🛍️</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-shop_light_green/15">
+                <ShoppingBag className="h-5 w-5 text-shop_light_green" />
               </div>
               <h3 className="font-semibold text-sm">
                 {features?.easyShopping?.title ?? "Easy Shopping"}
@@ -237,8 +239,8 @@ const WishlistProducts = () => {
               </p>
             </div>
             <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-50">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 text-sm font-bold">🔔</span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-shop_dark_green/10">
+                <Bell className="h-5 w-5 text-shop_dark_green" />
               </div>
               <h3 className="font-semibold text-sm">
                 {features?.stayUpdated?.title ?? "Stay Updated"}

@@ -70,6 +70,22 @@ export async function POST(request: NextRequest) {
 
     await writeClient.patch(userId).set(updateData).commit();
 
+    try {
+      const { sendAccountStatusEmail } = await import(
+        "@/lib/emails/accountEmails"
+      );
+      if (user.email) {
+        await sendAccountStatusEmail({
+          email: user.email,
+          customerName: [user.firstName, user.lastName].filter(Boolean).join(" "),
+          type: type as "premium" | "business",
+          event: "rejected",
+        });
+      }
+    } catch (emailError) {
+      console.error("Account rejection email failed:", emailError);
+    }
+
     return NextResponse.json({
       success: true,
       message: `${type === "premium" ? "Premium" : "Business"} account rejected for ${user.firstName || ""} ${user.lastName || ""}`.trim(),

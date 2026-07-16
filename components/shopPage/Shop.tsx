@@ -311,7 +311,7 @@ const Shop = ({ categories, dictionary }: Props) => {
       </Container>
 
       {dictionary?.wholesalers && (
-        <ShopWholesaleSection dictionary={dictionary.wholesalers} />
+        <ShopWholesaleSection dictionary={dictionary} />
       )}
     </div>
   );

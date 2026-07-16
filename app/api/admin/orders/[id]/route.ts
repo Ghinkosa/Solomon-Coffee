@@ -29,6 +29,8 @@ export async function PATCH(
         totalPrice,
         amountPaid,
         clerkUserId,
+        email,
+        customerName,
         addressConfirmedAt,
         addressConfirmedBy,
         orderConfirmedAt,
@@ -208,6 +210,31 @@ export async function PATCH(
         console.error(
           "Failed to send order status notification:",
           notificationError,
+        );
+      }
+
+      try {
+        const { maybeSendOrderMilestoneEmail } = await import(
+          "@/lib/emails/orderHooks"
+        );
+        await maybeSendOrderMilestoneEmail({
+          status: String(updateData.status),
+          orderNumber: currentOrder.orderNumber,
+          customerEmail:
+            currentOrder.email || currentOrder.user?.email || null,
+          customerName:
+            currentOrder.customerName ||
+            [currentOrder.user?.firstName, currentOrder.user?.lastName]
+              .filter(Boolean)
+              .join(" ") ||
+            null,
+          clerkUserId:
+            currentOrder.clerkUserId || currentOrder.user?.clerkUserId,
+        });
+      } catch (milestoneEmailError) {
+        console.error(
+          "Failed to send order milestone email:",
+          milestoneEmailError,
         );
       }
 

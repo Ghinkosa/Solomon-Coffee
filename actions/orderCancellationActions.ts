@@ -58,6 +58,8 @@ export async function approveCancellationRequest(
         paymentMethod,
         stripePaymentIntentId,
         clerkUserId,
+        email,
+        customerName,
         cancellationRequested,
         cancellationRequestReason
       }`,
@@ -119,6 +121,21 @@ export async function approveCancellationRequest(
       );
     }
 
+    try {
+      const { maybeSendOrderMilestoneEmail } = await import(
+        "@/lib/emails/orderHooks"
+      );
+      await maybeSendOrderMilestoneEmail({
+        status: "cancelled",
+        orderNumber: order.orderNumber,
+        customerEmail: order.email,
+        customerName: order.customerName,
+        clerkUserId: order.clerkUserId,
+      });
+    } catch (emailError) {
+      console.error("Failed to send cancellation email:", emailError);
+    }
+
     revalidatePath("/admin/orders");
     revalidatePath("/user/orders");
 
@@ -154,7 +171,9 @@ export async function rejectCancellationRequest(
         orderNumber,
         status,
         cancellationRequested,
-        clerkUserId
+        clerkUserId,
+        email,
+        customerName
       }`,
       { orderId },
     );
@@ -197,6 +216,23 @@ export async function rejectCancellationRequest(
       );
     }
 
+    try {
+      const { maybeSendOrderMilestoneEmail } = await import(
+        "@/lib/emails/orderHooks"
+      );
+      await maybeSendOrderMilestoneEmail({
+        status: "order_confirmed",
+        orderNumber: order.orderNumber,
+        customerEmail: order.email,
+        customerName: order.customerName,
+        clerkUserId: order.clerkUserId,
+        milestoneOverride: "cancellation_rejected",
+        reason: rejectionReason,
+      });
+    } catch (emailError) {
+      console.error("Failed to send cancellation rejection email:", emailError);
+    }
+
     revalidatePath("/admin/orders");
     revalidatePath("/user/orders");
 
@@ -235,7 +271,9 @@ export async function cancelOrder(
         amountPaid,
         paymentMethod,
         stripePaymentIntentId,
-        clerkUserId
+        clerkUserId,
+        email,
+        customerName
       }`,
       { orderId },
     );
@@ -295,6 +333,25 @@ export async function cancelOrder(
       );
     }
 
+    try {
+      const { maybeSendOrderMilestoneEmail } = await import(
+        "@/lib/emails/orderHooks"
+      );
+      await maybeSendOrderMilestoneEmail({
+        status: "cancelled",
+        orderNumber: order.orderNumber,
+        customerEmail: order.email,
+        customerName: order.customerName,
+        clerkUserId: order.clerkUserId,
+        reason,
+      });
+    } catch (emailError) {
+      console.error("Failed to send cancellation email:", emailError);
+    }
+
+    revalidatePath("/admin/orders");
+    revalidatePath("/user/orders");
+
     return {
       success: true,
       message: buildRefundMessage(refundResult, { adminContext: true }),
@@ -329,7 +386,9 @@ export async function requestOrderCancellation(
         orderNumber,
         status,
         paymentStatus,
-        cancellationRequested
+        cancellationRequested,
+        email,
+        customerName
       }`,
       { orderId, clerkUserId },
     );
@@ -373,6 +432,20 @@ export async function requestOrderCancellation(
         cancellationRequestReason: reason,
       })
       .commit();
+
+    try {
+      const { notifyAdminsCancellationRequest } = await import(
+        "@/lib/emails/adminEmails"
+      );
+      await notifyAdminsCancellationRequest({
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail: order.email,
+        reason,
+      });
+    } catch (emailError) {
+      console.error("Failed to notify admins of cancellation request:", emailError);
+    }
 
     return {
       success: true,

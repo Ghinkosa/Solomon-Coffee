@@ -90,6 +90,27 @@ export async function POST(req: NextRequest) {
         }
         await patch.commit();
 
+        try {
+          const { sendAccountStatusEmail } = await import(
+            "@/lib/emails/accountEmails"
+          );
+          if (user.email) {
+            await sendAccountStatusEmail({
+              email: user.email,
+              customerName: [user.firstName, user.lastName]
+                .filter(Boolean)
+                .join(" "),
+              type: finalAccountType as "premium" | "business",
+              event: "approved",
+            });
+          }
+        } catch (emailError) {
+          console.error(
+            `Approval email failed for ${userIdToApprove}:`,
+            emailError,
+          );
+        }
+
         results.successful.push(userIdToApprove);
       } catch (error) {
         console.error(`Error approving user ${userIdToApprove}:`, error);

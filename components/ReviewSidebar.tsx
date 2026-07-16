@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { StarIcon, Loader2, Star } from "lucide-react";
+import { StarIcon, Loader2, Star, CheckCircle2 } from "lucide-react";
 import { submitReviewAPI } from "@/lib/reviewAPI";
 import { toast } from "sonner";
 import { useDictionary } from "@/lib/dictionary-context";
@@ -171,11 +171,12 @@ const ReviewSidebar = React.memo(
               )}
             </SheetDescription>
             {isVerifiedPurchase && (
-              <div className="bg-green-50 border border-green-200 rounded-md p-3 mt-2">
-                <p className="text-sm text-green-700 font-medium">
+              <div className="bg-shop_light_green/10 border border-shop_light_green/25 rounded-md p-3 mt-2">
+                <p className="text-sm text-shop_dark_green font-medium inline-flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-shop_light_green shrink-0" />
                   {s(
                     "verifiedNotice",
-                    "✓ This will be marked as a verified purchase"
+                    "This will be marked as a verified purchase"
                   )}
                 </p>
               </div>
@@ -284,7 +285,12 @@ const ReviewSidebar = React.memo(
                           "{count}",
                           String(5 - titleLength)
                         )
-                      : s("titleGood", "✓ Title looks good")}
+                      : (
+                        <span className="inline-flex items-center gap-1 text-shop_light_green">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {s("titleGood", "Title looks good")}
+                        </span>
+                      )}
                   </p>
                   <p className="text-xs text-gray-500">{titleLength}/100</p>
                 </div>
@@ -329,7 +335,12 @@ const ReviewSidebar = React.memo(
                           "contentCharsNeeded",
                           "{count} more characters needed"
                         ).replace("{count}", String(20 - contentLength))
-                      : s("contentGood", "✓ Review is detailed enough")}
+                      : (
+                        <span className="inline-flex items-center gap-1 text-shop_light_green">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {s("contentGood", "Review is detailed enough")}
+                        </span>
+                      )}
                   </p>
                   <p className="text-xs text-gray-500">{contentLength}/1000</p>
                 </div>

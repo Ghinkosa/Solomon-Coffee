@@ -1,3 +1,5 @@
+import { Check, Package, Lock } from "lucide-react";
+
 interface OrderPlacementSkeletonProps {
   step?: "validating" | "creating" | "emailing" | "redirecting";
   isCheckoutRedirect?: boolean;
@@ -96,7 +98,11 @@ export function OrderPlacementSkeleton({
                         : "bg-shop_light_bg text-light-color"
                     }`}
                   >
-                    {status === "completed" ? "✓" : stepNum}
+                    {status === "completed" ? (
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2.5} />
+                    ) : (
+                      stepNum
+                    )}
                   </div>
                   {index < 3 && (
                     <div
@@ -124,7 +130,7 @@ export function OrderPlacementSkeleton({
           <div className="space-y-3 sm:space-y-4 max-w-xs sm:max-w-sm mx-auto px-2">
             <div className={getStepDisplay("validating")}>
               {getStepStatus("validating") === "completed" && (
-                <span className="text-shop_light_green font-bold">✓</span>
+                <Check className="h-4 w-4 text-shop_light_green" strokeWidth={2.5} />
               )}
               {getStepStatus("validating") === "active" && (
                 <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
@@ -134,7 +140,7 @@ export function OrderPlacementSkeleton({
 
             <div className={getStepDisplay("creating")}>
               {getStepStatus("creating") === "completed" && (
-                <span className="text-shop_light_green font-bold">✓</span>
+                <Check className="h-4 w-4 text-shop_light_green" strokeWidth={2.5} />
               )}
               {getStepStatus("creating") === "active" && (
                 <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
@@ -144,7 +150,7 @@ export function OrderPlacementSkeleton({
 
             <div className={getStepDisplay("emailing")}>
               {getStepStatus("emailing") === "completed" && (
-                <span className="text-shop_light_green font-bold">✓</span>
+                <Check className="h-4 w-4 text-shop_light_green" strokeWidth={2.5} />
               )}
               {getStepStatus("emailing") === "active" && (
                 <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
@@ -154,7 +160,7 @@ export function OrderPlacementSkeleton({
 
             <div className={getStepDisplay("redirecting")}>
               {getStepStatus("redirecting") === "completed" && (
-                <span className="text-shop_light_green font-bold">✓</span>
+                <Check className="h-4 w-4 text-shop_light_green" strokeWidth={2.5} />
               )}
               {getStepStatus("redirecting") === "active" && (
                 <div className="w-4 h-4 border-2 border-shop_light_green border-t-transparent rounded-full animate-spin" />
@@ -166,8 +172,9 @@ export function OrderPlacementSkeleton({
 
         {/* Order Summary Skeleton */}
         <div className="bg-gradient-to-r from-shop_light_bg to-shop_light_pink rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4 border border-shop_orange/20 mx-2 sm:mx-0">
-          <div className="text-base font-semibold text-shop_dark_green mb-4 text-center">
-            📦 Order Summary
+          <div className="mb-4 flex items-center justify-center gap-2 text-base font-semibold text-shop_dark_green">
+            <Package className="h-4 w-4" />
+            Order Summary
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
@@ -194,7 +201,8 @@ export function OrderPlacementSkeleton({
         {/* Footer Message */}
         <div className="text-xs sm:text-sm text-shop_dark_green space-y-2 bg-shop_light_bg border border-shop_orange/25 rounded-lg p-3 sm:p-4 mx-2 sm:mx-0">
           <p className="flex items-center justify-center gap-2 font-medium">
-            🔒 <span>Secure Processing</span>
+            <Lock className="h-3.5 w-3.5 text-shop_dark_green" />
+            <span>Secure Processing</span>
           </p>
           <p className="text-xs text-center text-light-color">
             Please keep this window open until the process completes

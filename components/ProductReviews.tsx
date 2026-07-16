@@ -235,7 +235,10 @@ const ProductReviews = React.memo(
                     totalReviews > 0 ? (rating.count / totalReviews) * 100 : 0;
                   return (
                     <div key={rating.stars} className="flex items-center gap-2">
-                      <span className="text-sm w-8">{rating.stars}★</span>
+                      <span className="text-sm w-10 inline-flex items-center gap-0.5 tabular-nums">
+                        {rating.stars}
+                        <StarIcon className="h-3.5 w-3.5 fill-shop_orange text-shop_orange" />
+                      </span>
                       <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-shop_light_green rounded-full transition-all duration-300"

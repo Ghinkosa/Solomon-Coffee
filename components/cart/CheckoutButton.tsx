@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Package, Box, ShoppingBag } from "lucide-react";
+import { CreditCard, Package, Box, ShoppingBag, Check } from "lucide-react";
 import useCartStore, { CartItem } from "@/store";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
@@ -348,9 +348,10 @@ export function CheckoutButton({
         </div>
 
         <div className="text-center text-xs text-muted-foreground">
-          <p className="text-green-600">
+          <p className="text-shop_light_green inline-flex items-center justify-center gap-1.5">
+            <Check className="h-3.5 w-3.5" />
             {btn?.recommended ??
-              '✓ Recommended: Use "Proceed to Checkout" for secure payment'}
+              'Recommended: Use "Proceed to Checkout" for secure payment'}
           </p>
           <p className="text-muted-foreground mt-1">
             {isGuestCheckout

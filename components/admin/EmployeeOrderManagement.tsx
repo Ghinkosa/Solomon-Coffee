@@ -413,34 +413,40 @@ export default function EmployeeOrderManagement() {
                     </h4>
                     <div className="space-y-1 text-xs">
                       {order.tracking.addressConfirmedBy && (
-                        <p className="text-gray-600">
-                          ✓ Address confirmed by{" "}
+                        <p className="text-gray-600 flex items-center gap-1.5">
+                          <CheckCircle className="h-3.5 w-3.5 text-shop_light_green shrink-0" />
+                          Address confirmed by{" "}
                           {order.tracking.addressConfirmedBy}
                         </p>
                       )}
                       {order.tracking.orderConfirmedBy && (
-                        <p className="text-gray-600">
-                          ✓ Order confirmed by {order.tracking.orderConfirmedBy}
+                        <p className="text-gray-600 flex items-center gap-1.5">
+                          <CheckCircle className="h-3.5 w-3.5 text-shop_light_green shrink-0" />
+                          Order confirmed by {order.tracking.orderConfirmedBy}
                         </p>
                       )}
                       {order.tracking.packedBy && (
-                        <p className="text-gray-600">
-                          ✓ Packed by {order.tracking.packedBy}
+                        <p className="text-gray-600 flex items-center gap-1.5">
+                          <CheckCircle className="h-3.5 w-3.5 text-shop_light_green shrink-0" />
+                          Packed by {order.tracking.packedBy}
                         </p>
                       )}
                       {order.tracking.assignedDeliverymanName && (
-                        <p className="text-gray-600">
-                          ✓ Assigned to {order.tracking.assignedDeliverymanName}
+                        <p className="text-gray-600 flex items-center gap-1.5">
+                          <CheckCircle className="h-3.5 w-3.5 text-shop_light_green shrink-0" />
+                          Assigned to {order.tracking.assignedDeliverymanName}
                         </p>
                       )}
                       {order.tracking.deliveredBy && (
-                        <p className="text-gray-600">
-                          ✓ Delivered by {order.tracking.deliveredBy}
+                        <p className="text-gray-600 flex items-center gap-1.5">
+                          <CheckCircle className="h-3.5 w-3.5 text-shop_light_green shrink-0" />
+                          Delivered by {order.tracking.deliveredBy}
                         </p>
                       )}
                       {order.tracking.paymentReceivedBy && (
-                        <p className="text-gray-600">
-                          ✓ Payment received by{" "}
+                        <p className="text-gray-600 flex items-center gap-1.5">
+                          <CheckCircle className="h-3.5 w-3.5 text-shop_light_green shrink-0" />
+                          Payment received by{" "}
                           {order.tracking.paymentReceivedBy}
                         </p>
                       )}

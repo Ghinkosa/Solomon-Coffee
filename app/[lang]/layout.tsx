@@ -88,7 +88,7 @@ export async function generateMetadata({
           url: "/og-image.jpg",
           width: 1200,
           height: 630,
-          alt: "Sheba Cup Coffee Online Store",
+          alt: "Sheba Cup Coffee logo",
         },
       ],
     },

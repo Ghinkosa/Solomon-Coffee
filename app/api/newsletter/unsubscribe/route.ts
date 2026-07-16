@@ -39,6 +39,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.message }, { status: 400 });
     }
 
+    try {
+      const { sendNewsletterUnsubscribedEmail } = await import(
+        "@/lib/emails/newsletterEmails"
+      );
+      await sendNewsletterUnsubscribedEmail(email);
+    } catch (emailError) {
+      console.error("Failed to send unsubscribe confirmation email:", emailError);
+    }
+
     return NextResponse.json(
       {
         message: result.message,

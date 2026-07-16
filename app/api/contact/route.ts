@@ -54,6 +54,31 @@ export async function POST(request: NextRequest) {
     });
 
     if (result.success) {
+      try {
+        const { notifyAdminsContactMessage } = await import(
+          "@/lib/emails/adminEmails"
+        );
+        const { sendContactAutoReply } = await import(
+          "@/lib/emails/newsletterEmails"
+        );
+        const trimmedName = name.trim();
+        const normalizedEmail = email.trim().toLowerCase();
+        await Promise.allSettled([
+          notifyAdminsContactMessage({
+            name: trimmedName,
+            email: normalizedEmail,
+            subject: subject.trim(),
+            message: message.trim(),
+          }),
+          sendContactAutoReply({
+            name: trimmedName,
+            email: normalizedEmail,
+          }),
+        ]);
+      } catch (emailError) {
+        console.error("Contact email notifications failed:", emailError);
+      }
+
       return NextResponse.json(
         {
           message: "Message sent successfully! We'll get back to you soon.",

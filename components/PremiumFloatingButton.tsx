@@ -8,6 +8,15 @@ import {
   Zap,
   CheckCircle2,
   ShieldCheck,
+  BarChart3,
+  Users,
+  Star,
+  Mail,
+  TrendingUp,
+  Download,
+  Palette,
+  Rocket,
+  type LucideIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
@@ -44,19 +53,19 @@ export default function PremiumFloatingButton({
     features: {},
   };
 
-  const featuresList = [
-    { icon: "�", key: "analytics" },
-    { icon: "👥", key: "employees" },
-    { icon: "�", key: "reviews" },
-    { icon: "📬", key: "subscription" },
-    { icon: "📈", key: "insights" },
-    { icon: "📥", key: "export" },
-    { icon: "🎨", key: "branding" },
-    { icon: "🚀", key: "support" },
+  const featuresList: Array<{ icon: LucideIcon; key: string }> = [
+    { icon: BarChart3, key: "analytics" },
+    { icon: Users, key: "employees" },
+    { icon: Star, key: "reviews" },
+    { icon: Mail, key: "subscription" },
+    { icon: TrendingUp, key: "insights" },
+    { icon: Download, key: "export" },
+    { icon: Palette, key: "branding" },
+    { icon: Rocket, key: "support" },
   ];
 
   const premiumFeatures = featuresList.map((item) => ({
-    icon: item.icon,
+    Icon: item.icon,
     title: premium.features?.[item.key]?.title || "",
     description: premium.features?.[item.key]?.description || "",
   }));
@@ -151,8 +160,8 @@ export default function PremiumFloatingButton({
                         transition={{ delay: 0.1 + index * 0.05 }}
                         className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 group"
                       >
-                        <span className="text-xl bg-gray-50 w-10 h-10 flex items-center justify-center rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all duration-300">
-                          {feature.icon}
+                        <span className="w-10 h-10 flex items-center justify-center rounded-lg bg-shop_dark_green/5 text-shop_dark_green group-hover:bg-shop_orange/10 group-hover:text-shop_orange group-hover:shadow-sm transition-all duration-300">
+                          <feature.Icon className="h-5 w-5" />
                         </span>
                         <div className="flex-1 min-w-0 pt-0.5">
                           <h4 className="text-gray-900 font-semibold text-sm mb-0.5">

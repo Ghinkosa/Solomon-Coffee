@@ -2,7 +2,7 @@
 
 import { Product } from "@/sanity.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, Truck, Shield, Award } from "lucide-react";
+import { Package, Truck, Shield, Award, Check } from "lucide-react";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
@@ -107,10 +107,9 @@ const ProductSpecs = ({ product }: ProductSpecsProps) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-green-600 font-medium">
-              {s("freeShipping", "✓ Free Shipping")}
-            </span>
+          <div className="flex items-center gap-2 text-shop_light_green font-medium">
+            <Check className="h-4 w-4 shrink-0" />
+            <span>{s("freeShipping", "Free Shipping")}</span>
           </div>
           <div className="text-gray-600">
             {s("estimatedDelivery", "Estimated: 2-5 business days")}
@@ -172,20 +171,17 @@ const ProductSpecs = ({ product }: ProductSpecsProps) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-green-600 font-medium">
-              {s("qualityTested", "✓ Quality Tested")}
-            </span>
+          <div className="flex items-center gap-2 text-shop_light_green font-medium">
+            <Check className="h-4 w-4 shrink-0" />
+            <span>{s("qualityTested", "Quality Tested")}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-green-600 font-medium">
-              {s("authenticProduct", "✓ Authentic Product")}
-            </span>
+          <div className="flex items-center gap-2 text-shop_light_green font-medium">
+            <Check className="h-4 w-4 shrink-0" />
+            <span>{s("authenticProduct", "Authentic Product")}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-green-600 font-medium">
-              {s("securePackaging", "✓ Secure Packaging")}
-            </span>
+          <div className="flex items-center gap-2 text-shop_light_green font-medium">
+            <Check className="h-4 w-4 shrink-0" />
+            <span>{s("securePackaging", "Secure Packaging")}</span>
           </div>
         </CardContent>
       </Card>

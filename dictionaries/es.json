@@ -591,7 +591,7 @@
       "businessName": "Nombre del negocio",
       "businessNamePlaceholder": "Tu cafetería, restaurante o empresa",
       "phone": "Teléfono",
-      "phonePlaceholder": "+1 (555) 000-0000",
+      "phonePlaceholder": "(555) 555-5555",
       "businessType": "Tipo de negocio",
       "businessTypePlaceholder": "Selecciona el tipo de negocio",
       "estimatedOrderQuantity": "Volumen mensual estimado",
@@ -740,7 +740,7 @@
       "sidebar": {
         "title": "Escribir reseña",
         "description": "Comparte tu experiencia con {product}",
-        "verifiedNotice": "✓ Se marcará como compra verificada",
+        "verifiedNotice": "Se marcará como compra verificada",
         "yourRating": "Tu valoración",
         "clickToRate": "Haz clic para valorar este producto",
         "star": "estrella",
@@ -749,11 +749,11 @@
         "reviewTitle": "Título de la reseña",
         "titlePlaceholder": "Resume tu experiencia en pocas palabras",
         "titleCharsNeeded": "Faltan {count} caracteres",
-        "titleGood": "✓ El título está bien",
+        "titleGood": "El título está bien",
         "yourReview": "Tu reseña",
         "contentPlaceholder": "Cuéntanos más sobre tu experiencia con este producto... ¿Qué te gustó? ¿Qué se podría mejorar?",
         "contentCharsNeeded": "Faltan {count} caracteres",
-        "contentGood": "✓ La reseña tiene suficiente detalle",
+        "contentGood": "La reseña tiene suficiente detalle",
         "guidelinesTitle": "Directrices de reseñas",
         "guidelines": [
           "Sé honesto y constructivo en tus comentarios",
@@ -817,7 +817,7 @@
       "package": "Paquete:",
       "code": "Código:",
       "shipping": "Envío",
-      "freeShipping": "✓ Envío gratis",
+      "freeShipping": "Envío gratis",
       "estimatedDelivery": "Estimado: 2-5 días hábiles",
       "expressDelivery": "Express: 1-2 días hábiles",
       "brewingDetails": "Detalles de preparación",
@@ -826,9 +826,9 @@
       "brewMethods": "Métodos:",
       "flavorNotes": "Notas de sabor:",
       "quality": "Calidad",
-      "qualityTested": "✓ Calidad verificada",
-      "authenticProduct": "✓ Producto auténtico",
-      "securePackaging": "✓ Embalaje seguro",
+      "qualityTested": "Calidad verificada",
+      "authenticProduct": "Producto auténtico",
+      "securePackaging": "Embalaje seguro",
       "notAvailable": "—",
       "currentHarvest": "Cosecha actual"
     },
@@ -904,16 +904,16 @@
       "description": "Espera mientras te redirigimos para completar el pago."
     },
     "toasts": {
-      "readyTitle": "¡Listo para pagar! 🛒",
+      "readyTitle": "¡Listo para pagar!",
       "readyDescription": "Completa tu pedido seleccionando un método de pago abajo",
       "addressLoadError": "Error al cargar la dirección del carrito",
       "fixShipping": "Corrige tus datos de envío",
       "selectAddress": "Selecciona una dirección de envío",
       "completeGuest": "Completa tus datos de pago como invitado"
     },
-    "stripeSecure": "🔒 Pago seguro con Stripe",
+    "stripeSecure": "Pago seguro con Stripe",
     "stripeEncrypted": "Tu información de pago está cifrada y segura",
-    "codPayOnArrival": "💵 Paga cuando llegue tu pedido",
+    "codPayOnArrival": "Paga cuando llegue tu pedido",
     "codCashToAgent": "Pago en efectivo al repartidor",
     "paymentModal": {
       "title": "Seleccionar método de pago",
@@ -2690,7 +2690,7 @@
       "proceedToCheckout": "Proceder al pago",
       "placingOrder": "Realizando pedido...",
       "placeOrder": "Realizar pedido (pagar después)",
-      "recommended": "✓ Recomendado: usa \"Proceder al pago\" para un pago seguro",
+      "recommended": "Recomendado: usa \"Proceder al pago\" para un pago seguro",
       "guestCodHint": "\"Realizar pedido (pagar después)\" te lleva al pago para completar el envío y pagar contra entrega",
       "signedCodHint": "\"Realizar pedido (pagar después)\" realiza el pedido directamente con pago contra entrega"
     }

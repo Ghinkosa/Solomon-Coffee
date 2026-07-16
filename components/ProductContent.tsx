@@ -23,6 +23,7 @@ import {
   Coffee,
   Package,
   Check,
+  BadgePercent,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
@@ -253,8 +254,8 @@ const ProductContent = ({
 
               {/* Discount Information */}
               {product?.discount && product.discount > 0 && (
-                <div className="bg-shop_orange/10 text-shop_orange px-3 py-2 rounded-lg text-sm font-medium">
-                  💰{" "}
+                <div className="bg-shop_orange/10 text-shop_orange px-3 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2">
+                  <BadgePercent className="h-4 w-4 shrink-0" />
                   {(t(dictionary, "product.saveDiscount", "Save {discount}% on this item!")).replace(
                     "{discount}",
                     String(product.discount),

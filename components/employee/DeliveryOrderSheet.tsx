@@ -660,8 +660,9 @@ export default function DeliveryOrderSheet({
                     {order.cashSubmissionStatus === "rejected" && (
                       <div className="border-t border-red-200 pt-3 mt-2 space-y-3">
                         <div className="bg-red-50 p-2 rounded text-xs space-y-1 mb-3">
-                          <div className="text-red-700 font-medium">
-                            ❌ Submission Rejected
+                          <div className="text-red-700 font-medium inline-flex items-center gap-1.5">
+                            <AlertCircle className="h-3.5 w-3.5" />
+                            Submission Rejected
                           </div>
                           {order.cashSubmissionRejectionReason && (
                             <div className="text-red-600">
@@ -736,8 +737,9 @@ export default function DeliveryOrderSheet({
                     {(!order.cashSubmittedToAccounts ||
                       order.cashSubmissionStatus === "not_submitted") && (
                       <div className="border-t border-orange-200 pt-3 mt-2 space-y-3">
-                        <div className="text-xs text-orange-700 font-medium">
-                          ⚠ Pending Submission to Accounts
+                        <div className="text-xs text-orange-700 font-medium inline-flex items-center gap-1.5">
+                          <AlertCircle className="h-3.5 w-3.5" />
+                          Pending Submission to Accounts
                         </div>
                         <div>
                           <Label htmlFor="accountsEmployee" className="text-xs">

@@ -120,7 +120,7 @@
       "proceedToCheckout": "Proceed to Checkout",
       "placingOrder": "Placing Order...",
       "placeOrder": "Place Order (Pay Later)",
-      "recommended": "✓ Recommended: Use \"Proceed to Checkout\" for secure payment",
+      "recommended": "Recommended: Use \"Proceed to Checkout\" for secure payment",
       "guestCodHint": "\"Place Order (Pay Later)\" takes you to checkout to complete shipping and pay on delivery",
       "signedCodHint": "\"Place Order (Pay Later)\" places order directly with Cash on Delivery"
     }
@@ -686,7 +686,7 @@
       "businessName": "Business Name",
       "businessNamePlaceholder": "Your café, restaurant, or company",
       "phone": "Phone Number",
-      "phonePlaceholder": "+1 (555) 000-0000",
+      "phonePlaceholder": "(555) 555-5555",
       "businessType": "Business Type",
       "businessTypePlaceholder": "Select business type",
       "estimatedOrderQuantity": "Estimated Monthly Volume",
@@ -894,7 +894,7 @@
       "sidebar": {
         "title": "Write a Review",
         "description": "Share your experience with {product}",
-        "verifiedNotice": "✓ This will be marked as a verified purchase",
+        "verifiedNotice": "This will be marked as a verified purchase",
         "yourRating": "Your Rating",
         "clickToRate": "Click to rate this product",
         "star": "star",
@@ -903,11 +903,11 @@
         "reviewTitle": "Review Title",
         "titlePlaceholder": "Sum up your experience in a few words",
         "titleCharsNeeded": "{count} more characters needed",
-        "titleGood": "✓ Title looks good",
+        "titleGood": "Title looks good",
         "yourReview": "Your Review",
         "contentPlaceholder": "Tell us more about your experience with this product... What did you like? What could be improved?",
         "contentCharsNeeded": "{count} more characters needed",
-        "contentGood": "✓ Review is detailed enough",
+        "contentGood": "Review is detailed enough",
         "guidelinesTitle": "Review Guidelines",
         "guidelines": [
           "Be honest and constructive in your feedback",
@@ -971,7 +971,7 @@
       "package": "Package:",
       "code": "Code:",
       "shipping": "Shipping",
-      "freeShipping": "✓ Free Shipping",
+      "freeShipping": "Free Shipping",
       "estimatedDelivery": "Estimated: 2-5 business days",
       "expressDelivery": "Express: 1-2 business days",
       "brewingDetails": "Brewing Details",
@@ -980,9 +980,9 @@
       "brewMethods": "Brew Methods:",
       "flavorNotes": "Flavor Notes:",
       "quality": "Quality",
-      "qualityTested": "✓ Quality Tested",
-      "authenticProduct": "✓ Authentic Product",
-      "securePackaging": "✓ Secure Packaging",
+      "qualityTested": "Quality Tested",
+      "authenticProduct": "Authentic Product",
+      "securePackaging": "Secure Packaging",
       "notAvailable": "—",
       "currentHarvest": "Current Harvest"
     },
@@ -1058,16 +1058,16 @@
       "description": "Please wait while we redirect you to complete your payment."
     },
     "toasts": {
-      "readyTitle": "Ready for Checkout! 🛒",
+      "readyTitle": "Ready for Checkout!",
       "readyDescription": "Complete your order by selecting a payment method below",
       "addressLoadError": "Error loading address from cart",
       "fixShipping": "Please fix your shipping details",
       "selectAddress": "Please select a shipping address",
       "completeGuest": "Please complete your guest checkout details"
     },
-    "stripeSecure": "🔒 Secure checkout powered by Stripe",
+    "stripeSecure": "Secure checkout powered by Stripe",
     "stripeEncrypted": "Your payment information is encrypted and secure",
-    "codPayOnArrival": "💵 Pay when your order arrives",
+    "codPayOnArrival": "Pay when your order arrives",
     "codCashToAgent": "Cash payment to delivery agent",
     "paymentModal": {
       "title": "Select Payment Method",

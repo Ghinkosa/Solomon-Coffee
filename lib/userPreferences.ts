@@ -105,3 +105,9 @@ export function shouldSendTransactionalEmail(
 ): boolean {
   return normalizeNotificationPreferences(preferences).emailNotifications;
 }
+
+export function shouldSendOrderUpdateEmail(
+  preferences: StoredUserPreferences | null | undefined,
+): boolean {
+  return normalizeNotificationPreferences(preferences).orderUpdates;
+}

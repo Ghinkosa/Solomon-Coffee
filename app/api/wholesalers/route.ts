@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveWholesaleInquiry } from "@/sanity/helpers";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { validateShippingAddressField } from "@/lib/shipping-address-validation";
 
 const LIMIT = 5;
 const WINDOW_MS = 15 * 60 * 1000;
@@ -50,13 +51,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const phoneValidationError = validateShippingAddressField(
+      "phone",
+      typeof phone === "string" ? phone : "",
+    );
+    if (phoneValidationError) {
+      return NextResponse.json(
+        { error: phoneValidationError, field: "phone" },
+        { status: 400 },
+      );
+    }
+
     const userAgent = request.headers.get("user-agent") || "unknown";
+    const normalizedPhone = String(phone).trim();
 
     const result = await saveWholesaleInquiry({
       name: name.trim(),
       email: email.trim().toLowerCase(),
       businessName: businessName?.trim() || "",
-      phone: phone?.trim() || "",
+      phone: normalizedPhone,
       businessType: businessType?.trim() || "",
       estimatedOrderQuantity: estimatedOrderQuantity?.trim() || "",
       message: message?.trim() || "",
@@ -65,6 +78,34 @@ export async function POST(request: NextRequest) {
     });
 
     if (result.success) {
+      try {
+        const { notifyAdminsWholesaleInquiry } = await import(
+          "@/lib/emails/adminEmails"
+        );
+        const { sendWholesaleAutoReply } = await import(
+          "@/lib/emails/newsletterEmails"
+        );
+        const contactName = name.trim();
+        const normalizedEmail = email.trim().toLowerCase();
+        const biz = businessName?.trim() || "Wholesale inquiry";
+        await Promise.allSettled([
+          notifyAdminsWholesaleInquiry({
+            businessName: biz,
+            contactName,
+            email: normalizedEmail,
+            phone: normalizedPhone,
+            message: message?.trim(),
+          }),
+          sendWholesaleAutoReply({
+            contactName,
+            email: normalizedEmail,
+            businessName: biz,
+          }),
+        ]);
+      } catch (emailError) {
+        console.error("Wholesale email notifications failed:", emailError);
+      }
+
       return NextResponse.json(
         {
           message:

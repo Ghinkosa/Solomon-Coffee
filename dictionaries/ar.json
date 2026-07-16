@@ -120,7 +120,7 @@
       "proceedToCheckout": "المتابعة إلى الدفع",
       "placingOrder": "جاري تقديم الطلب...",
       "placeOrder": "تقديم الطلب (الدفع لاحقاً)",
-      "recommended": "✓ موصى به: استخدم \"المتابعة إلى الدفع\" للدفع الآمن",
+      "recommended": "موصى به: استخدم \"المتابعة إلى الدفع\" للدفع الآمن",
       "guestCodHint": "\"تقديم الطلب (الدفع لاحقاً)\" ينقلك إلى الدفع لإكمال الشحن والدفع عند الاستلام",
       "signedCodHint": "\"تقديم الطلب (الدفع لاحقاً)\" يقدّم الطلب مباشرة مع الدفع عند الاستلام"
     }
@@ -693,7 +693,7 @@
       "businessName": "اسم النشاط التجاري",
       "businessNamePlaceholder": "مقهاك أو مطعمك أو شركتك",
       "phone": "رقم الهاتف",
-      "phonePlaceholder": "+1 (555) 000-0000",
+      "phonePlaceholder": "(555) 555-5555",
       "businessType": "نوع النشاط",
       "businessTypePlaceholder": "اختر نوع النشاط",
       "estimatedOrderQuantity": "الحجم الشهري التقديري",
@@ -895,7 +895,7 @@
       "sidebar": {
         "title": "اكتب مراجعة",
         "description": "شارك تجربتك مع {product}",
-        "verifiedNotice": "✓ سيتم وضع علامة شراء موثّق",
+        "verifiedNotice": "سيتم وضع علامة شراء موثّق",
         "yourRating": "تقييمك",
         "clickToRate": "انقر لتقييم هذا المنتج",
         "star": "نجمة",
@@ -904,11 +904,11 @@
         "reviewTitle": "عنوان المراجعة",
         "titlePlaceholder": "لخّص تجربتك في بضع كلمات",
         "titleCharsNeeded": "مطلوب {count} حرف إضافي",
-        "titleGood": "✓ العنوان جيد",
+        "titleGood": "العنوان جيد",
         "yourReview": "مراجعتك",
         "contentPlaceholder": "أخبرنا المزيد عن تجربتك مع هذا المنتج... ما الذي أعجبك؟ ما الذي يمكن تحسينه؟",
         "contentCharsNeeded": "مطلوب {count} حرف إضافي",
-        "contentGood": "✓ المراجعة مفصّلة بما يكفي",
+        "contentGood": "المراجعة مفصّلة بما يكفي",
         "guidelinesTitle": "إرشادات المراجعة",
         "guidelines": [
           "كن صادقاً وبنّاءً في ملاحظاتك",
@@ -972,7 +972,7 @@
       "package": "العبوة:",
       "code": "الرمز:",
       "shipping": "الشحن",
-      "freeShipping": "✓ شحن مجاني",
+      "freeShipping": "شحن مجاني",
       "estimatedDelivery": "التقدير: 2-5 أيام عمل",
       "expressDelivery": "سريع: 1-2 أيام عمل",
       "brewingDetails": "تفاصيل التحضير",
@@ -981,9 +981,9 @@
       "brewMethods": "طرق التحضير:",
       "flavorNotes": "ملاحظات النكهة:",
       "quality": "الجودة",
-      "qualityTested": "✓ جودة مُختبرة",
-      "authenticProduct": "✓ منتج أصلي",
-      "securePackaging": "✓ تعبئة آمنة",
+      "qualityTested": "جودة مُختبرة",
+      "authenticProduct": "منتج أصلي",
+      "securePackaging": "تعبئة آمنة",
       "notAvailable": "—",
       "currentHarvest": "محصول حالي"
     },
@@ -1059,16 +1059,16 @@
       "description": "يرجى الانتظار بينما نوجهك لإتمام الدفع."
     },
     "toasts": {
-      "readyTitle": "جاهز للدفع! 🛒",
+      "readyTitle": "جاهز للدفع!",
       "readyDescription": "أكمل طلبك باختيار طريقة الدفع أدناه",
       "addressLoadError": "خطأ في تحميل العنوان من العربة",
       "fixShipping": "يرجى تصحيح تفاصيل الشحن",
       "selectAddress": "يرجى اختيار عنوان الشحن",
       "completeGuest": "يرجى إكمال تفاصيل الدفع كضيف"
     },
-    "stripeSecure": "🔒 دفع آمن عبر Stripe",
+    "stripeSecure": "دفع آمن عبر Stripe",
     "stripeEncrypted": "معلومات الدفع مشفرة وآمنة",
-    "codPayOnArrival": "💵 ادفع عند وصول طلبك",
+    "codPayOnArrival": "ادفع عند وصول طلبك",
     "codCashToAgent": "الدفع نقداً لمندوب التوصيل",
     "paymentModal": {
       "title": "اختر طريقة الدفع",

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   AlertCircle,
@@ -23,6 +23,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { contactConfig } from "@/config/contact";
+import { translateGuestValidationError } from "@/lib/checkout-guest-validation-i18n";
+import type { Dictionary } from "@/lib/dictionary-context";
+import { cn } from "@/lib/utils";
+import {
+  formatPhoneInput,
+  validateShippingAddressField,
+} from "@/lib/shipping-address-validation";
 
 interface FormData {
   name: string;
@@ -35,7 +42,7 @@ interface FormData {
 }
 
 interface WholesalersClientProps {
-  dictionary: {
+  dictionary: Dictionary & {
     wholesalers: {
       hero: { badge: string; title: string; description: string };
       info: {
@@ -93,6 +100,8 @@ const WholesalersClient = ({ dictionary }: WholesalersClientProps) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [showPhoneErrors, setShowPhoneErrors] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -103,21 +112,40 @@ const WholesalersClient = ({ dictionary }: WholesalersClientProps) => {
     message: "",
   });
 
+  const phoneValidationError = useMemo(
+    () => validateShippingAddressField("phone", formData.phone),
+    [formData.phone],
+  );
+  const phoneErrorMessage = translateGuestValidationError(
+    dictionary,
+    phoneValidationError,
+  );
+  const shouldShowPhoneError = Boolean(
+    phoneValidationError && (showPhoneErrors || phoneTouched),
+  );
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const nextValue = name === "phone" ? formatPhoneInput(value) : value;
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
     if (error) setError("");
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
     setSuccess(false);
+    setShowPhoneErrors(true);
+
+    if (phoneValidationError) {
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch("/api/wholesalers", {
@@ -138,6 +166,11 @@ const WholesalersClient = ({ dictionary }: WholesalersClientProps) => {
           estimatedOrderQuantity: "",
           message: "",
         });
+        setPhoneTouched(false);
+        setShowPhoneErrors(false);
+      } else if (data.field === "phone") {
+        setShowPhoneErrors(true);
+        setError("");
       } else {
         setError(data.error || "Something went wrong. Please try again.");
       }
@@ -345,11 +378,27 @@ const WholesalersClient = ({ dictionary }: WholesalersClientProps) => {
                       type="tel"
                       id="phone"
                       name="phone"
+                      inputMode="tel"
+                      autoComplete="tel"
                       placeholder={t.form.phonePlaceholder}
                       value={formData.phone}
                       onChange={handleChange}
-                      className="h-12 focus:border-shop_light_green focus:ring-shop_light_green/20"
+                      onBlur={() => setPhoneTouched(true)}
+                      aria-invalid={shouldShowPhoneError}
+                      aria-describedby={
+                        shouldShowPhoneError ? "phone-error" : undefined
+                      }
+                      className={cn(
+                        "h-12 focus:border-shop_light_green focus:ring-shop_light_green/20",
+                        shouldShowPhoneError &&
+                          "border-red-500 focus-visible:ring-red-500",
+                      )}
                     />
+                    {shouldShowPhoneError ? (
+                      <p id="phone-error" className="text-sm text-red-600">
+                        {phoneErrorMessage}
+                      </p>
+                    ) : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="businessType" className="text-shop_dark_green font-medium">

@@ -83,6 +83,28 @@ export async function POST(req: NextRequest) {
         }
 
         await writeClient.patch(userIdToReject).set(updateData).commit();
+
+        try {
+          const { sendAccountStatusEmail } = await import(
+            "@/lib/emails/accountEmails"
+          );
+          if (user.email) {
+            await sendAccountStatusEmail({
+              email: user.email,
+              customerName: [user.firstName, user.lastName]
+                .filter(Boolean)
+                .join(" "),
+              type: finalAccountType as "premium" | "business",
+              event: "rejected",
+            });
+          }
+        } catch (emailError) {
+          console.error(
+            `Rejection email failed for ${userIdToReject}:`,
+            emailError,
+          );
+        }
+
         results.successful.push(userIdToReject);
       } catch (error) {
         console.error(`Error rejecting user ${userIdToReject}:`, error);

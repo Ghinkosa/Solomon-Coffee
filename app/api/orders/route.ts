@@ -407,6 +407,23 @@ export const POST = async (request: NextRequest) => {
       }
     }
 
+    // Admin alert for COD (Stripe alerts fire after payment in webhook).
+    if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
+      try {
+        const { notifyAdminsNewOrder } = await import("@/lib/emails/adminEmails");
+        await notifyAdminsNewOrder({
+          orderNumber: createdOrder.orderNumber,
+          customerName: createdOrder.customerName,
+          customerEmail: createdOrder.email,
+          total: createdOrder.totalPrice,
+          paymentMethod: createdOrder.paymentMethod,
+          paymentStatus: createdOrder.paymentStatus,
+        });
+      } catch (adminEmailError) {
+        console.error("Failed to notify admins of new order:", adminEmailError);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       order: {

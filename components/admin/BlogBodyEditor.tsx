@@ -30,6 +30,7 @@ import {
   Quote,
   Pilcrow,
   Loader2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -341,7 +342,7 @@ function LinkBtn() {
             onMouseDown={keepSelection}
             onClick={() => setOpen(false)}
           >
-            ✕
+            <X className="h-4 w-4" />
           </Button>
         </div>
       )}

@@ -121,10 +121,37 @@ export async function POST() {
         })
         .commit();
 
+      try {
+        const { notifyAdminsAccountApplication } = await import(
+          "@/lib/emails/adminEmails"
+        );
+        const { sendAccountStatusEmail } = await import(
+          "@/lib/emails/accountEmails"
+        );
+        const customerName = [user.firstName, user.lastName]
+          .filter(Boolean)
+          .join(" ");
+        await Promise.allSettled([
+          notifyAdminsAccountApplication({
+            type: "premium",
+            customerName,
+            customerEmail: userEmail,
+          }),
+          sendAccountStatusEmail({
+            email: userEmail,
+            customerName,
+            type: "premium",
+            event: "received",
+          }),
+        ]);
+      } catch (emailError) {
+        console.error("Premium apply emails failed:", emailError);
+      }
+
       return NextResponse.json({
         success: true,
         message:
-          "🎉 Premium application submitted successfully! Your application is now under review and you'll be notified within 24-48 hours once it's processed.",
+          "Premium application submitted successfully! Your application is now under review and you'll be notified within 24-48 hours once it's processed.",
         userProfile: updatedUser,
       });
     }
@@ -175,10 +202,37 @@ export async function POST() {
       console.error("Failed to track user registration event:", analyticsError);
     }
 
+    try {
+      const { notifyAdminsAccountApplication } = await import(
+        "@/lib/emails/adminEmails"
+      );
+      const { sendAccountStatusEmail } = await import(
+        "@/lib/emails/accountEmails"
+      );
+      const customerName = [user.firstName, user.lastName]
+        .filter(Boolean)
+        .join(" ");
+      await Promise.allSettled([
+        notifyAdminsAccountApplication({
+          type: "premium",
+          customerName,
+          customerEmail: userEmail,
+        }),
+        sendAccountStatusEmail({
+          email: userEmail,
+          customerName,
+          type: "premium",
+          event: "received",
+        }),
+      ]);
+    } catch (emailError) {
+      console.error("Premium apply emails failed:", emailError);
+    }
+
     return NextResponse.json({
       success: true,
       message:
-        "🎉 Premium application submitted successfully! Your application is now under review and you'll be notified within 24-48 hours once it's processed.",
+        "Premium application submitted successfully! Your application is now under review and you'll be notified within 24-48 hours once it's processed.",
       userProfile: newUser,
     });
   } catch (error) {

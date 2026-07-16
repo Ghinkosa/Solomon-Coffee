@@ -739,7 +739,48 @@ const sendMail = async ({
   }
 };
 
-export { sendOrderConfirmationEmail, sendMail };
+/**
+ * Fan-out the same message to every ADMIN_EMAIL allowlist address.
+ * Best-effort: returns aggregate success if at least one send succeeds.
+ */
+const sendMailToAdmins = async ({
+  subject,
+  text,
+  html,
+}: Omit<SendMailParams, "email">): Promise<EmailResponse & { sentTo: string[] }> => {
+  const { getAdminEmails } = await import("@/lib/adminUtils");
+  const admins = getAdminEmails();
+  if (admins.length === 0) {
+    console.warn("[email] No ADMIN_EMAIL recipients configured");
+    return {
+      success: false,
+      error: "No admin recipients configured",
+      sentTo: [],
+    };
+  }
+
+  const sentTo: string[] = [];
+  let lastError: string | undefined;
+
+  for (const email of admins) {
+    const result = await sendMail({ email, subject, text, html });
+    if (result.success) {
+      sentTo.push(email);
+    } else {
+      lastError = result.error;
+      console.error(`[email] Failed to notify admin ${email}:`, result.error);
+    }
+  }
+
+  return {
+    success: sentTo.length > 0,
+    messageId: sentTo.length ? `admins:${sentTo.length}` : undefined,
+    error: sentTo.length === 0 ? lastError || "All admin sends failed" : undefined,
+    sentTo,
+  };
+};
+
+export { sendOrderConfirmationEmail, sendMail, sendMailToAdmins };
 export type {
   OrderConfirmationData,
   OrderItem,

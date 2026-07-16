@@ -94,13 +94,27 @@ export async function PATCH(request: NextRequest) {
 
     // Keep marketing list in sync when marketing preference changes
     if (result.marketingChanged && result.email) {
-      if (result.preferences.marketingEmails) {
-        await subscribeToNewsletter({
-          email: result.email,
-          source: "user_settings",
-        });
-      } else {
-        await unsubscribeFromNewsletter(result.email);
+      try {
+        if (result.preferences.marketingEmails) {
+          const sub = await subscribeToNewsletter({
+            email: result.email,
+            source: "user_settings",
+          });
+          if (sub.success && !sub.alreadySubscribed) {
+            const { sendNewsletterWelcomeEmail } = await import(
+              "@/lib/emails/newsletterEmails"
+            );
+            await sendNewsletterWelcomeEmail(result.email);
+          }
+        } else {
+          await unsubscribeFromNewsletter(result.email);
+          const { sendNewsletterUnsubscribedEmail } = await import(
+            "@/lib/emails/newsletterEmails"
+          );
+          await sendNewsletterUnsubscribedEmail(result.email);
+        }
+      } catch (emailError) {
+        console.error("Marketing preference email sync failed:", emailError);
       }
     }
 

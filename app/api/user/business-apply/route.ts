@@ -62,10 +62,37 @@ export async function POST() {
         })
         .commit();
 
+      try {
+        const { notifyAdminsAccountApplication } = await import(
+          "@/lib/emails/adminEmails"
+        );
+        const { sendAccountStatusEmail } = await import(
+          "@/lib/emails/accountEmails"
+        );
+        const customerName = [user.firstName, user.lastName]
+          .filter(Boolean)
+          .join(" ");
+        await Promise.allSettled([
+          notifyAdminsAccountApplication({
+            type: "business",
+            customerName,
+            customerEmail: email,
+          }),
+          sendAccountStatusEmail({
+            email,
+            customerName,
+            type: "business",
+            event: "received",
+          }),
+        ]);
+      } catch (emailError) {
+        console.error("Business apply emails failed:", emailError);
+      }
+
       return NextResponse.json({
         success: true,
         message:
-          "🚀 Business account application submitted successfully! Your application is under review and you'll enjoy a Business Account discount once approved.",
+          "Business account application submitted successfully! Your application is under review and you'll enjoy a Business Account discount once approved.",
         user: result,
       });
     }
@@ -93,10 +120,37 @@ export async function POST() {
       },
     });
 
+    try {
+      const { notifyAdminsAccountApplication } = await import(
+        "@/lib/emails/adminEmails"
+      );
+      const { sendAccountStatusEmail } = await import(
+        "@/lib/emails/accountEmails"
+      );
+      const customerName = [user.firstName, user.lastName]
+        .filter(Boolean)
+        .join(" ");
+      await Promise.allSettled([
+        notifyAdminsAccountApplication({
+          type: "business",
+          customerName,
+          customerEmail: email,
+        }),
+        sendAccountStatusEmail({
+          email,
+          customerName,
+          type: "business",
+          event: "received",
+        }),
+      ]);
+    } catch (emailError) {
+      console.error("Business apply emails failed:", emailError);
+    }
+
     return NextResponse.json({
       success: true,
       message:
-        "🚀 Business account application submitted successfully! Your application is under review and you'll enjoy a Business Account discount once approved.",
+        "Business account application submitted successfully! Your application is under review and you'll enjoy a Business Account discount once approved.",
       user: newUser,
     });
   } catch (error) {

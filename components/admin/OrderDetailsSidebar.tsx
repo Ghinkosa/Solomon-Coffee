@@ -486,7 +486,14 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                       disabled={isUpdating}
                       className="bg-green-600 hover:bg-green-700"
                     >
-                      {isUpdating ? "Processing..." : "✓ Keep order"}
+                      {isUpdating ? (
+                        "Processing..."
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Keep order
+                        </span>
+                      )}
                     </Button>
                     <Button
                       onClick={async () => {
@@ -525,7 +532,14 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                       disabled={isUpdating}
                       variant="destructive"
                     >
-                      {isUpdating ? "Processing..." : "✗ Cancel & refund"}
+                      {isUpdating ? (
+                        "Processing..."
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5">
+                          <XCircle className="h-4 w-4" />
+                          Cancel & refund
+                        </span>
+                      )}
                     </Button>
                   </div>
                 </CardContent>
@@ -954,8 +968,18 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                     <Label className="text-sm font-medium">
                       Cash Collected
                     </Label>
-                    <p className="text-sm font-semibold">
-                      {order.cashCollected ? "✅ Yes" : "❌ No"}
+                    <p className="text-sm font-semibold inline-flex items-center gap-1.5">
+                      {order.cashCollected ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 text-shop_light_green" />
+                          Yes
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-4 w-4 text-red-500" />
+                          No
+                        </>
+                      )}
                     </p>
                   </div>
                   <div>

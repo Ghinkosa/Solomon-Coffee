@@ -66,6 +66,24 @@ export async function POST(req: NextRequest) {
 
     await writeClient.patch(accountId).set(updateData).commit();
 
+    try {
+      const { sendAccountStatusEmail } = await import(
+        "@/lib/emails/accountEmails"
+      );
+      if (existingUser.email) {
+        await sendAccountStatusEmail({
+          email: existingUser.email,
+          customerName: [existingUser.firstName, existingUser.lastName]
+            .filter(Boolean)
+            .join(" "),
+          type: type as "premium" | "business",
+          event: "downgraded",
+        });
+      }
+    } catch (emailError) {
+      console.error("Account downgrade email failed:", emailError);
+    }
+
     return NextResponse.json({
       success: true,
       message: `${type} account cancelled successfully`,

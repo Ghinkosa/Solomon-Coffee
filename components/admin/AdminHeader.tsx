@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Bell, Search, Calendar, Clock } from "lucide-react";
+import { Bell, Search, Calendar, Clock, Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -165,8 +165,9 @@ const AdminHeader = ({ user }: AdminHeaderProps) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         {/* Left Side - Welcome & Date */}
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-dark-color">
-            Welcome back, {user?.firstName || "Admin"}! 👋
+          <h1 className="text-2xl font-bold text-dark-color inline-flex items-center gap-2">
+            Welcome back, {user?.firstName || "Admin"}!
+            <Hand className="h-6 w-6 text-shop_orange" />
           </h1>
           <div className="flex items-center gap-4 text-sm text-light-color">
             <div className="flex items-center gap-1">

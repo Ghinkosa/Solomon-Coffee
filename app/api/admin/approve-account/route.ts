@@ -82,6 +82,22 @@ export async function POST(request: NextRequest) {
     }
     await patch.commit();
 
+    try {
+      const { sendAccountStatusEmail } = await import(
+        "@/lib/emails/accountEmails"
+      );
+      if (user.email) {
+        await sendAccountStatusEmail({
+          email: user.email,
+          customerName: [user.firstName, user.lastName].filter(Boolean).join(" "),
+          type: type as "premium" | "business",
+          event: "approved",
+        });
+      }
+    } catch (emailError) {
+      console.error("Account approval email failed:", emailError);
+    }
+
     return NextResponse.json({
       success: true,
       message: `${type === "premium" ? "Premium" : "Business"} account approved for ${user.firstName || ""} ${user.lastName || ""}`.trim(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   AlertCircle,
@@ -14,6 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { translateGuestValidationError } from "@/lib/checkout-guest-validation-i18n";
+import type { Dictionary } from "@/lib/dictionary-context";
+import { cn } from "@/lib/utils";
+import {
+  formatPhoneInput,
+  validateShippingAddressField,
+} from "@/lib/shipping-address-validation";
 
 interface FormData {
   name: string;
@@ -26,7 +33,21 @@ interface FormData {
 }
 
 interface ShopWholesaleSectionProps {
-  dictionary: {
+  dictionary: Dictionary;
+}
+
+const emptyForm: FormData = {
+  name: "",
+  email: "",
+  businessName: "",
+  phone: "",
+  businessType: "",
+  estimatedOrderQuantity: "",
+  message: "",
+};
+
+const ShopWholesaleSection = ({ dictionary }: ShopWholesaleSectionProps) => {
+  const t = (dictionary.wholesalers as {
     hero: { badge: string; title: string; description: string };
     form: {
       title: string;
@@ -51,25 +72,25 @@ interface ShopWholesaleSectionProps {
       successMessage: string;
       privacyNote: string;
     };
-  };
-}
-
-const emptyForm: FormData = {
-  name: "",
-  email: "",
-  businessName: "",
-  phone: "",
-  businessType: "",
-  estimatedOrderQuantity: "",
-  message: "",
-};
-
-const ShopWholesaleSection = ({ dictionary }: ShopWholesaleSectionProps) => {
-  const t = dictionary;
+  });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [showPhoneErrors, setShowPhoneErrors] = useState(false);
   const [formData, setFormData] = useState<FormData>(emptyForm);
+
+  const phoneValidationError = useMemo(
+    () => validateShippingAddressField("phone", formData.phone),
+    [formData.phone],
+  );
+  const phoneErrorMessage = translateGuestValidationError(
+    dictionary,
+    phoneValidationError,
+  );
+  const shouldShowPhoneError = Boolean(
+    phoneValidationError && (showPhoneErrors || phoneTouched),
+  );
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -77,15 +98,22 @@ const ShopWholesaleSection = ({ dictionary }: ShopWholesaleSectionProps) => {
     >,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const nextValue = name === "phone" ? formatPhoneInput(value) : value;
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
     if (error) setError("");
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
     setSuccess(false);
+    setShowPhoneErrors(true);
+
+    if (phoneValidationError) {
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch("/api/wholesalers", {
@@ -98,6 +126,10 @@ const ShopWholesaleSection = ({ dictionary }: ShopWholesaleSectionProps) => {
       if (response.ok) {
         setSuccess(true);
         setFormData(emptyForm);
+        setPhoneTouched(false);
+        setShowPhoneErrors(false);
+      } else if (data.field === "phone") {
+        setShowPhoneErrors(true);
       } else {
         setError(data.error || "Something went wrong. Please try again.");
       }
@@ -184,11 +216,30 @@ const ShopWholesaleSection = ({ dictionary }: ShopWholesaleSectionProps) => {
                       id="wholesale-phone"
                       type="tel"
                       name="phone"
+                      inputMode="tel"
+                      autoComplete="tel"
                       value={formData.phone}
                       onChange={handleChange}
+                      onBlur={() => setPhoneTouched(true)}
                       placeholder={t.form.phonePlaceholder}
                       disabled={loading}
+                      aria-invalid={shouldShowPhoneError}
+                      aria-describedby={
+                        shouldShowPhoneError ? "wholesale-phone-error" : undefined
+                      }
+                      className={cn(
+                        shouldShowPhoneError &&
+                          "border-red-500 focus-visible:ring-red-500",
+                      )}
                     />
+                    {shouldShowPhoneError ? (
+                      <p
+                        id="wholesale-phone-error"
+                        className="text-sm text-red-600"
+                      >
+                        {phoneErrorMessage}
+                      </p>
+                    ) : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="wholesale-type">{t.form.businessType}</Label>

@@ -219,6 +219,21 @@ export async function confirmOrder(
       );
     }
 
+    try {
+      const { maybeSendOrderMilestoneEmail } = await import(
+        "@/lib/emails/orderHooks"
+      );
+      await maybeSendOrderMilestoneEmail({
+        status: "order_confirmed",
+        orderNumber: order.orderNumber,
+        customerEmail: order.email,
+        customerName: order.customerName,
+        clerkUserId: order.clerkUserId,
+      });
+    } catch (emailError) {
+      console.error("Failed to send order confirmed email:", emailError);
+    }
+
     // Update employee performance
     const currentPerformance = employee.employeePerformance || {};
     await updateEmployeePerformance(employee._id, {
@@ -487,6 +502,21 @@ export async function markAsDelivered(
       );
     }
 
+    try {
+      const { maybeSendOrderMilestoneEmail } = await import(
+        "@/lib/emails/orderHooks"
+      );
+      await maybeSendOrderMilestoneEmail({
+        status: "delivered",
+        orderNumber: order.orderNumber,
+        customerEmail: order.email,
+        customerName: order.customerName,
+        clerkUserId: order.clerkUserId,
+      });
+    } catch (emailError) {
+      console.error("Failed to send delivered email:", emailError);
+    }
+
     // Update employee performance
     const currentPerformance = employee.employeePerformance || {};
     await updateEmployeePerformance(employee._id, {
@@ -655,6 +685,21 @@ export async function startDelivery(
         "Failed to send out for delivery notification:",
         notificationError
       );
+    }
+
+    try {
+      const { maybeSendOrderMilestoneEmail } = await import(
+        "@/lib/emails/orderHooks"
+      );
+      await maybeSendOrderMilestoneEmail({
+        status: "out_for_delivery",
+        orderNumber: order.orderNumber,
+        customerEmail: order.email,
+        customerName: order.customerName,
+        clerkUserId: order.clerkUserId,
+      });
+    } catch (emailError) {
+      console.error("Failed to send out for delivery email:", emailError);
     }
 
     return {

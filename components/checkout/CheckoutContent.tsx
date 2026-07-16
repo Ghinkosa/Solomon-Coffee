@@ -19,6 +19,9 @@ import {
   Box,
   Scale,
   Coffee,
+  Check,
+  Lock,
+  Banknote,
 } from "lucide-react";
 import useCartStore, { CartItem, WeightOption, GrindOption, PackagingOption } from "@/store";
 import { useLocalizedPath } from "@/hooks/useLocale";
@@ -297,7 +300,7 @@ export function CheckoutContent() {
         setSelectedAddress(orderAddress);
 
         toast.success(
-          toasts?.readyTitle ?? t(dictionary, "checkout.toasts.readyTitle", "Ready for Checkout! 🛒"),
+          toasts?.readyTitle ?? t(dictionary, "checkout.toasts.readyTitle", "Ready for Checkout!"),
           {
             description:
               toasts?.readyDescription ??
@@ -652,8 +655,9 @@ export function CheckoutContent() {
                         {selectedAddress.zip}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded">
-                      ✓ {String(checkoutCopy.addressSelected ?? t(dictionary, "checkout.addressSelected", "Selected"))}
+                    <div className="flex items-center gap-1 text-xs text-shop_light_green font-medium bg-shop_light_green/10 px-2 py-1 rounded">
+                      <Check className="h-3.5 w-3.5" />
+                      {String(checkoutCopy.addressSelected ?? t(dictionary, "checkout.addressSelected", "Selected"))}
                     </div>
                   </div>
                 </div>
@@ -877,10 +881,11 @@ export function CheckoutContent() {
         <div className="text-center text-xs text-muted-foreground">
           {selectedPaymentMethod === PAYMENT_METHODS.STRIPE ? (
             <>
-              <p>
+              <p className="inline-flex items-center justify-center gap-1.5">
+                <Lock className="h-3.5 w-3.5 text-shop_dark_green" />
                 {String(
                   checkoutCopy.stripeSecure ??
-                    t(dictionary, "checkout.stripeSecure", "🔒 Secure checkout powered by Stripe"),
+                    t(dictionary, "checkout.stripeSecure", "Secure checkout powered by Stripe"),
                 )}
               </p>
               <p>
@@ -896,10 +901,11 @@ export function CheckoutContent() {
             </>
           ) : (
             <>
-              <p>
+              <p className="inline-flex items-center justify-center gap-1.5">
+                <Banknote className="h-3.5 w-3.5 text-shop_orange" />
                 {String(
                   checkoutCopy.codPayOnArrival ??
-                    t(dictionary, "checkout.codPayOnArrival", "💵 Pay when your order arrives"),
+                    t(dictionary, "checkout.codPayOnArrival", "Pay when your order arrives"),
                 )}
               </p>
               <p>

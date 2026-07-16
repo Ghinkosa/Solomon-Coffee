@@ -193,6 +193,41 @@ export async function POST(req: NextRequest) {
               emailError,
             );
           }
+
+          // Admin new-order alert for paid Stripe orders (COD alerted at create).
+          try {
+            const { notifyAdminsNewOrder } = await import(
+              "@/lib/emails/adminEmails"
+            );
+            const orderMeta = await backendClient.fetch<{
+              orderNumber?: string;
+              customerName?: string;
+              email?: string;
+              totalPrice?: number;
+              paymentMethod?: string;
+              paymentStatus?: string;
+            } | null>(
+              `*[_type == "order" && _id == $orderId][0]{
+                orderNumber, customerName, email, totalPrice, paymentMethod, paymentStatus
+              }`,
+              { orderId },
+            );
+            if (orderMeta?.orderNumber) {
+              await notifyAdminsNewOrder({
+                orderNumber: orderMeta.orderNumber,
+                customerName: orderMeta.customerName,
+                customerEmail: orderMeta.email,
+                total: orderMeta.totalPrice,
+                paymentMethod: orderMeta.paymentMethod,
+                paymentStatus: orderMeta.paymentStatus || "paid",
+              });
+            }
+          } catch (adminEmailError) {
+            console.error(
+              "Failed to notify admins of paid Stripe order:",
+              adminEmailError,
+            );
+          }
         }
 
         // 5. Mark fully processed — the real idempotency flag.

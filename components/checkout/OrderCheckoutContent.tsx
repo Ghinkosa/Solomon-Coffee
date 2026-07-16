@@ -13,6 +13,8 @@ import {
   Package,
   ArrowLeft,
   Loader2,
+  Lock,
+  Banknote,
 } from "lucide-react";
 import PriceFormatter from "@/components/PriceFormatter";
 import Image from "next/image";
@@ -401,10 +403,11 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
         <div className="text-center text-xs text-muted-foreground">
           {selectedPaymentMethod === PAYMENT_METHODS.STRIPE ? (
             <>
-              <p>
+              <p className="inline-flex items-center justify-center gap-1.5">
+                <Lock className="h-3.5 w-3.5 text-shop_dark_green" />
                 {String(
                   checkoutCopy.stripeSecure ??
-                    t(dictionary, "checkout.stripeSecure", "🔒 Secure checkout powered by Stripe"),
+                    t(dictionary, "checkout.stripeSecure", "Secure checkout powered by Stripe"),
                 )}
               </p>
               <p>
@@ -420,10 +423,11 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
             </>
           ) : (
             <>
-              <p>
+              <p className="inline-flex items-center justify-center gap-1.5">
+                <Banknote className="h-3.5 w-3.5 text-shop_orange" />
                 {String(
                   checkoutCopy.codPayOnArrival ??
-                    t(dictionary, "checkout.codPayOnArrival", "💵 Pay when your order arrives"),
+                    t(dictionary, "checkout.codPayOnArrival", "Pay when your order arrives"),
                 )}
               </p>
               <p>
