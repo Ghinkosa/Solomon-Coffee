@@ -98,6 +98,30 @@ export const orderType = defineType({
         document?.paymentMethod !== "stripe",
     }),
 
+    defineField({
+      name: "stripeCheckoutSessionId",
+      title: "Stripe Checkout Session ID",
+      type: "string",
+      readOnly: true,
+      hidden: true,
+    }),
+
+    defineField({
+      name: "stripeCheckoutExpiresAt",
+      title: "Stripe Checkout Expires At",
+      type: "datetime",
+      readOnly: true,
+      hidden: true,
+    }),
+
+    defineField({
+      name: "stripeCheckoutExpiredAt",
+      title: "Stripe Checkout Expired At",
+      type: "datetime",
+      readOnly: true,
+      hidden: true,
+    }),
+
     // Internal webhook bookkeeping — ensures payment side effects run exactly
     // once even across Stripe webhook retries. Not meant for manual editing.
     defineField({

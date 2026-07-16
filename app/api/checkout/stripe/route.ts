@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import stripe from "@/lib/stripe";
-import { readClient } from "@/sanity/lib/client";
+import { readClient, writeClient } from "@/sanity/lib/client";
 import { getBaseUrl } from "@/lib/get-base-url";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
@@ -38,6 +38,7 @@ export const POST = async (request: NextRequest) => {
       _id: string;
       orderNumber: string;
       totalPrice: number;
+      status?: string;
       paymentStatus: string;
       email?: string;
       currency?: string;
@@ -48,6 +49,7 @@ export const POST = async (request: NextRequest) => {
         _id,
         orderNumber,
         totalPrice,
+        status,
         paymentStatus,
         email,
         currency,
@@ -87,6 +89,12 @@ export const POST = async (request: NextRequest) => {
         { status: 400 },
       );
     }
+    if (order.status === "cancelled" || order.paymentStatus === "cancelled") {
+      return NextResponse.json(
+        { error: "This checkout expired. Please place the order again." },
+        { status: 400 },
+      );
+    }
 
     if (!order.totalPrice || order.totalPrice <= 0) {
       return NextResponse.json(
@@ -100,6 +108,7 @@ export const POST = async (request: NextRequest) => {
     const resolvedOrderNumber = order.orderNumber || orderNumber || orderId;
     const customerEmail = order.email || email;
     const guestFlag = Boolean(isGuest || order.isGuest || !order.clerkUserId);
+    const expiresAt = Math.floor(Date.now() / 1000) + 30 * 60;
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -126,7 +135,16 @@ export const POST = async (request: NextRequest) => {
         isGuest: String(guestFlag),
       },
       customer_email: customerEmail || undefined,
+      expires_at: expiresAt,
     });
+
+    await writeClient
+      .patch(order._id)
+      .set({
+        stripeCheckoutSessionId: session.id,
+        stripeCheckoutExpiresAt: new Date(expiresAt * 1000).toISOString(),
+      })
+      .commit();
 
     return NextResponse.json({
       success: true,

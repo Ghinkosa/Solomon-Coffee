@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { client } from "@/sanity/lib/client";
+import { backendClient } from "@/sanity/lib/backendClient";
 import stripe from "@/lib/stripe";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { getBaseUrl } from "@/lib/get-base-url";
@@ -81,6 +82,7 @@ export async function POST(
 
     const baseUrl = getBaseUrl();
     const currency = (order.currency || "USD").toLowerCase();
+    const expiresAt = Math.floor(Date.now() / 1000) + 30 * 60;
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -109,7 +111,16 @@ export async function POST(
         orderAmount: order.totalPrice?.toString() || "",
       },
       customer_email: order.email,
+      expires_at: expiresAt,
     });
+
+    await backendClient
+      .patch(order._id)
+      .set({
+        stripeCheckoutSessionId: session.id,
+        stripeCheckoutExpiresAt: new Date(expiresAt * 1000).toISOString(),
+      })
+      .commit();
 
     return NextResponse.json({
       success: true,

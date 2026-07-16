@@ -18,19 +18,17 @@ interface WeightOption {
 
 interface StockProduct {
   _id: string;
+  _rev: string;
   stock?: number;
   weightOptions?: WeightOption[];
 }
 
 type StockOp = "inc" | "dec";
+const MAX_STOCK_RETRIES = 5;
 
 /**
- * Atomically adjust stock for a single order line.
- *
- * The product is read only to resolve the target field path (base stock vs the
- * matching weight-variant `_key`) and to confirm a numeric stock field exists —
- * never to compute the new value. The mutation itself uses Sanity's atomic
- * `inc()`/`dec()`, so concurrent adjustments can't lose updates.
+ * Revision-lock the read/check/write cycle so a decrement can never cross zero.
+ * Concurrent mutations conflict and retry against the latest stock value.
  */
 async function adjustLineStock(
   orderProduct: OrderProductRef,
@@ -39,52 +37,79 @@ async function adjustLineStock(
   const productId = orderProduct.product._ref;
   const quantity = orderProduct.quantity;
 
-  if (!productId || typeof quantity !== "number" || quantity <= 0) return;
-
-  const product = await backendClient.getDocument<StockProduct>(productId);
-
-  if (!product) {
-    console.warn(`Product with ID ${productId} not found.`);
-    return;
+  if (!productId || !Number.isInteger(quantity) || quantity <= 0) {
+    throw new Error(`Invalid stock quantity for product ${productId || "unknown"}`);
   }
 
-  const selectedWeightValue = orderProduct.weight?.value;
-
-  // Weight-variant line: adjust the matching variant's stock atomically.
-  if (selectedWeightValue && Array.isArray(product.weightOptions)) {
-    const option = product.weightOptions.find(
-      (opt) => opt.weight === selectedWeightValue,
-    );
-
-    if (option?._key && typeof option.stock === "number") {
-      const path = `weightOptions[_key=="${option._key}"].stock`;
-      const patch = backendClient.patch(productId);
-      await (op === "dec"
-        ? patch.dec({ [path]: quantity })
-        : patch.inc({ [path]: quantity })
-      ).commit();
-      return;
+  for (let attempt = 1; attempt <= MAX_STOCK_RETRIES; attempt += 1) {
+    const product = await backendClient.getDocument<StockProduct>(productId);
+    if (!product?._rev) {
+      throw new Error(`Product with ID ${productId} not found`);
     }
-    // Fall through to base stock if the variant has no tracked stock.
-  }
 
-  if (typeof product.stock !== "number") {
-    console.warn(
-      `Product with ID ${productId} has no tracked stock to adjust.`,
-    );
-    return;
-  }
+    const selectedWeightValue = orderProduct.weight?.value;
+    let path = "stock";
+    let currentStock = product.stock;
 
-  const patch = backendClient.patch(productId);
-  await (op === "dec"
-    ? patch.dec({ stock: quantity })
-    : patch.inc({ stock: quantity })
-  ).commit();
+    if (selectedWeightValue) {
+      const option = product.weightOptions?.find(
+        (candidate) => candidate.weight === selectedWeightValue,
+      );
+      if (!option) {
+        throw new Error(
+          `Weight ${selectedWeightValue} no longer exists for product ${productId}`,
+        );
+      }
+      // A variant with its own numeric stock uses that pool. Otherwise it
+      // intentionally shares the product's base stock, matching validation.
+      if (option._key && typeof option.stock === "number") {
+        path = `weightOptions[_key=="${option._key}"].stock`;
+        currentStock = option.stock;
+      }
+    }
+
+    // Undefined stock intentionally means inventory is not tracked.
+    if (typeof currentStock !== "number") return;
+    if (op === "dec" && currentStock < quantity) {
+      throw new Error(`Insufficient stock for product ${productId}`);
+    }
+
+    const nextStock =
+      op === "dec" ? currentStock - quantity : currentStock + quantity;
+
+    try {
+      await backendClient
+        .patch(productId)
+        .ifRevisionId(product._rev)
+        .set({ [path]: nextStock })
+        .commit();
+      return;
+    } catch (error) {
+      if (!isRevisionConflict(error) || attempt === MAX_STOCK_RETRIES) {
+        throw error;
+      }
+    }
+  }
+}
+
+function isRevisionConflict(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as {
+    statusCode?: number;
+    status?: number;
+    response?: { statusCode?: number; status?: number };
+  };
+  return (
+    candidate.statusCode === 409 ||
+    candidate.status === 409 ||
+    candidate.response?.statusCode === 409 ||
+    candidate.response?.status === 409
+  );
 }
 
 /**
  * Decrement product stock for each line in an order.
- * Used after COD placement and after Stripe payment confirmation.
+ * Used to reserve inventory when an order is created.
  *
  * When a line has a selected weight variant, the matching `weightOptions[]`
  * entry is decremented; otherwise the product's base `stock` is decremented.
@@ -150,9 +175,12 @@ export async function incrementOrderStock(
  * (`stockDecremented === true`) and hasn't already been restored
  * (`stockRestored !== true`), so it is safe to call from every cancellation
  * path (user self-cancel, admin cancel, cancellation-request approval) and for
- * orders that never decremented (e.g. unpaid Stripe orders) — those are no-ops.
+ * orders that never reserved inventory — those are no-ops.
  */
-export async function restoreOrderStock(orderId: string): Promise<void> {
+export async function restoreOrderStock(
+  orderId: string,
+  options?: { throwOnError?: boolean },
+): Promise<void> {
   try {
     const order = await backendClient.fetch<{
       stockDecremented?: boolean;
@@ -177,5 +205,6 @@ export async function restoreOrderStock(orderId: string): Promise<void> {
       .commit();
   } catch (error) {
     console.error(`Failed to restore stock for order ${orderId}:`, error);
+    if (options?.throwOnError) throw error;
   }
 }

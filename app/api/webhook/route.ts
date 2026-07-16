@@ -5,7 +5,7 @@ import stripe from "@/lib/stripe";
 import { backendClient } from "@/sanity/lib/backendClient";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
-import { decrementOrderStock } from "@/lib/stock";
+import { decrementOrderStock, restoreOrderStock } from "@/lib/stock";
 import { sendOrderConfirmationEmail } from "@/lib/emailService";
 import { getEmailImageUrl } from "@/lib/emailImageUtils";
 import { buildStripeInvoiceLineItems } from "@/lib/invoice-lines";
@@ -52,6 +52,74 @@ export async function POST(req: NextRequest) {
       },
       { status: 400 }
     );
+  }
+
+  if (event.type === "checkout.session.expired") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const orderId = session.metadata?.orderId;
+
+    if (!orderId) {
+      return NextResponse.json({ received: true, skipped: "missing-order-id" });
+    }
+
+    try {
+      const order = await backendClient.fetch<{
+        _rev?: string;
+        status?: string;
+        paymentStatus?: string;
+        paymentMethod?: string;
+        stripeCheckoutSessionId?: string;
+        stockDecremented?: boolean;
+        stockRestored?: boolean;
+      } | null>(
+        `*[_type == "order" && _id == $orderId][0]{
+          _rev, status, paymentStatus, paymentMethod, stripeCheckoutSessionId,
+          stockDecremented, stockRestored
+        }`,
+        { orderId },
+      );
+
+      if (!order?._rev) {
+        return NextResponse.json({ received: true, skipped: "order-not-found" });
+      }
+      if (
+        order.paymentStatus === PAYMENT_STATUSES.PAID ||
+        order.paymentMethod === "cash_on_delivery" ||
+        (order.stripeCheckoutSessionId &&
+          order.stripeCheckoutSessionId !== session.id)
+      ) {
+        return NextResponse.json({ received: true, skipped: "not-active" });
+      }
+
+      // Claim cancellation with a revision lock. Only one webhook delivery can
+      // release inventory; stale sessions cannot cancel a newer checkout.
+      try {
+        await backendClient
+          .patch(orderId)
+          .ifRevisionId(order._rev)
+          .set({
+            status: ORDER_STATUSES.CANCELLED,
+            paymentStatus: PAYMENT_STATUSES.CANCELLED,
+            stripeCheckoutExpiredAt: new Date().toISOString(),
+          })
+          .commit();
+      } catch {
+        return NextResponse.json({ received: true, skipped: "concurrent-update" });
+      }
+
+      if (order.stockDecremented && !order.stockRestored) {
+        await restoreOrderStock(orderId, { throwOnError: true });
+      }
+
+      return NextResponse.json({ received: true, released: true });
+    } catch (error) {
+      console.error(`Failed to expire Stripe order ${orderId}:`, error);
+      // Non-2xx asks Stripe to retry the event.
+      return NextResponse.json(
+        { error: "Failed to release expired checkout inventory" },
+        { status: 500 },
+      );
+    }
   }
 
   if (event.type === "checkout.session.completed") {

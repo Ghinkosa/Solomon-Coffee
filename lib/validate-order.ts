@@ -79,6 +79,23 @@ export interface ResolvedOrderLine {
 }
 
 export async function validateOrderPricing(input: ValidateOrderInput) {
+  if (!Array.isArray(input.items) || input.items.length === 0) {
+    return { valid: false as const, error: "Your cart is empty" };
+  }
+
+  for (const item of input.items) {
+    if (
+      !item?.product?._id ||
+      !Number.isInteger(item.quantity) ||
+      item.quantity <= 0
+    ) {
+      return {
+        valid: false as const,
+        error: "Every order item must have a positive whole-number quantity",
+      };
+    }
+  }
+
   const productIds = [...new Set(input.items.map((item) => item.product._id))];
 
   const products = await readClient.fetch<SanityProduct[]>(
@@ -110,9 +127,17 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
       return { valid: false as const, error: "One or more products were not found" };
     }
 
-    const selectedWeight = item.weight?.value
-      ? product.weightOptions?.find((option) => option.weight === item.weight?.value)
+    const requestedWeight = item.weight?.value?.trim();
+    const selectedWeight = requestedWeight
+      ? product.weightOptions?.find((option) => option.weight === requestedWeight)
       : product.weightOptions?.find((option) => option.isDefault);
+
+    if (requestedWeight && !selectedWeight) {
+      return {
+        valid: false as const,
+        error: `The selected weight is no longer available for ${item.product._id}`,
+      };
+    }
 
     const unitPrice = selectedWeight?.price ?? product.price ?? 0;
     const availableStock =

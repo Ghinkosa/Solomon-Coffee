@@ -66,6 +66,12 @@ export async function POST(
         { status: 400 }
       );
     }
+    if (order.paymentStatus === "cancelled" || order.status === "cancelled") {
+      return NextResponse.json(
+        { error: "Cannot pay for a cancelled or expired order" },
+        { status: 400 },
+      );
+    }
 
     // Validate order has products and total
     if (!order.products || order.products.length === 0) {
@@ -129,6 +135,7 @@ export async function POST(
     // Create Stripe checkout session for the order
     const currency = (order.currency || "USD").toLowerCase();
     const baseUrl = getBaseUrl();
+    const expiresAt = Math.floor(Date.now() / 1000) + 30 * 60;
 
     try {
       const checkoutSession = await stripe.checkout.sessions.create({
@@ -154,6 +161,7 @@ export async function POST(
           orderNumber: order.orderNumber || "",
           customerName: order.customerName || "",
         },
+        expires_at: expiresAt,
       });
 
       // Update order with checkout session ID
@@ -161,6 +169,7 @@ export async function POST(
         .patch(order._id)
         .set({
           stripeCheckoutSessionId: checkoutSession.id,
+          stripeCheckoutExpiresAt: new Date(expiresAt * 1000).toISOString(),
           stripeCustomerId, // Ensure we have the correct customer ID
         })
         .commit();
