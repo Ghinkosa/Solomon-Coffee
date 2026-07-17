@@ -320,97 +320,50 @@ export const POST = async (request: NextRequest) => {
           .commit();
       } catch (stockError) {
         console.error("Failed to reserve stock for order:", stockError);
+
+        // Hard-delete first. If that fails, soft-cancel so the order cannot
+        // sit as a live pending order with no reserved inventory.
+        let rolledBack = false;
         try {
           await writeClient.delete(createdOrder._id);
+          rolledBack = true;
         } catch (deleteError) {
           console.error(
-            "Failed to roll back order after stock reservation error:",
+            "Failed to delete order after stock reservation error:",
             deleteError,
           );
+          try {
+            await writeClient
+              .patch(createdOrder._id)
+              .set({
+                status: ORDER_STATUSES.CANCELLED,
+                paymentStatus: PAYMENT_STATUSES.CANCELLED,
+                stockDecremented: false,
+                cancelledAt: new Date().toISOString(),
+                cancelledBy: "system",
+                notes:
+                  "Auto-cancelled: stock reservation failed and order delete rollback failed.",
+              })
+              .commit();
+            rolledBack = true;
+          } catch (cancelError) {
+            console.error(
+              "Failed to cancel orphaned order after stock reservation error:",
+              cancelError,
+            );
+          }
         }
+
         return NextResponse.json(
           {
             error:
               "Unable to reserve inventory for this order. Please try again.",
             code: "STOCK_RESERVATION_FAILED",
+            ...(!rolledBack ? { orphanedOrderId: createdOrder._id } : {}),
           },
           { status: 409 },
         );
       }
-    }
-
-    // Track order_placed always; purchase only when payment is effectively
-    // confirmed (COD at create, Stripe after webhook payment success).
-    try {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
-        "http://localhost:3000";
-      const origin = new URL(baseUrl).origin;
-
-      const analyticsProducts = resolvedLines.map((line) => ({
-        productId: line.productId,
-        name: line.productName || "Unknown Product",
-        category: line.productCategory || "Uncategorized",
-        quantity: line.quantity,
-        price: line.unitPrice,
-        weight: line.weightValue || null,
-        weightPrice: line.weightValue ? line.unitPrice : null,
-        grind: line.grind?.label || null,
-        packaging: line.packagingTitle || null,
-        packagingPrice: line.packagingPrice,
-      }));
-
-      const trackOrderPromise = fetch(`${origin}/api/analytics/track`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventName: "order_placed",
-          eventParams: {
-            orderId: createdOrder._id,
-            orderNumber: createdOrder.orderNumber,
-            amount: calculated.total,
-            status: createdOrder.status,
-            userId: userId || "guest",
-            paymentMethod: paymentMethod,
-            itemCount: resolvedLines.length,
-            subtotal: calculated.subtotal,
-            shipping: calculated.shipping,
-            tax: calculated.tax,
-            packagingFee: calculated.packagingFee,
-            customerEmail: userEmail,
-            products: analyticsProducts,
-          },
-        }),
-        signal: AbortSignal.timeout(5000),
-      });
-
-      const trackingPromises: Promise<Response>[] = [trackOrderPromise];
-
-      if (paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
-        trackingPromises.push(
-          fetch(`${origin}/api/analytics/track`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              eventName: "purchase",
-              eventParams: {
-                orderId: createdOrder._id,
-                value: calculated.total,
-                currency: "USD",
-                items: analyticsProducts,
-                userId: userId || "guest",
-              },
-            }),
-            signal: AbortSignal.timeout(5000),
-          }),
-        );
-      }
-
-      Promise.allSettled(trackingPromises).catch((err) =>
-        console.error("Analytics tracking failed:", err),
-      );
-    } catch (analyticsError) {
-      console.error("Failed to initiate analytics tracking:", analyticsError);
     }
 
     // Only notify at creation for COD orders — a Stripe order isn't really

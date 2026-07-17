@@ -93,7 +93,7 @@ Our stack is chosen for performance, developer experience, and long-term maintai
 | **Language**   | TypeScript 5+                              |
 | **UI/Styling** | Tailwind CSS, Framer Motion, Shadcn UI     |
 | **State Mgmt** | Zustand, React Context                     |
-| **Database**   | Sanity CMS (Content), Firebase (User Data) |
+| **Database**   | Sanity CMS                                 |
 | **Auth**       | Clerk                                      |
 | **Payments**   | Stripe                                     |
 | **Forms**      | React Hook Form, Zod                       |
@@ -186,7 +186,6 @@ For detailed configuration instructions, please refer to the [**SETUP.md**](./SE
 - Sanity CMS Project creation & import
 - Clerk Authentication setup
 - Stripe Payment configuration
-- Firebase database connection
 - Admin user creation
 
 ---

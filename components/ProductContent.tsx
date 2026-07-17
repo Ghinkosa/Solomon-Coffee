@@ -9,7 +9,6 @@ import ProductsDetails from "@/components/ProductsDetails";
 import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 import ProductSpecs from "@/components/ProductSpecs";
 import ProductReviews from "@/components/ProductReviews";
-import { trackProductView } from "@/lib/analytics";
 import { toPlainText } from "@/lib/sanity-text";
 
 import { Product } from "@/sanity.types";
@@ -87,16 +86,6 @@ const ProductContent = ({
   const averageRating = product?.averageRating || 0;
   const totalReviews = product?.totalReviews || 0;
   const descriptionText = toPlainText(product?.description);
-
-  // Track product view on component mount
-  useEffect(() => {
-    if (product) {
-      trackProductView({
-        productId: product._id,
-        name: product.name || "Unknown",
-      });
-    }
-  }, [product]);
 
   // Fetch packaging from API (same as PackagingSelector)
   useEffect(() => {

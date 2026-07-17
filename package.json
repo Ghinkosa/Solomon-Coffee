@@ -50,7 +50,6 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-fade": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "firebase": "^12.9.0",
     "js-isarray": "^1.0.4",
     "lodash": "^4.17.23",
     "lucide-react": "^0.564.0",
@@ -93,7 +92,6 @@
     "esbuild@0.28.0": true,
     "esbuild@0.27.7": true,
     "@clerk/shared@3.47.7": true,
-    "@firebase/util@1.15.0": true,
     "protobufjs@7.6.2": true,
     "unrs-resolver@1.11.1": true,
     "fsevents@2.3.3": true

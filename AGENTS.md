@@ -104,7 +104,6 @@ All storefront URLs are prefixed with `[lang]` → `/en/shop`, `/es/cart`, etc.
 | `dictionary.ts` | Server i18n loader |
 | `seo.ts` | Metadata, JSON-LD |
 | `stripe.ts` | Stripe client |
-| `firebase.ts` | Firebase / analytics |
 | `emailService.ts` | Order & notification emails |
 | `sanity-text.ts` | Portable Text → plain string |
 | `adminUtils.ts` | Admin email allowlist |

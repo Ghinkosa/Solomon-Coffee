@@ -47,7 +47,6 @@ import {
 } from "lucide-react";
 import { Order } from "./types";
 import { showToast } from "@/lib/toast";
-import { trackOrderFullfillment, trackOrderDetails } from "@/lib/analytics";
 import { OrderDetailsSkeleton } from "./SkeletonLoaders";
 import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
 
@@ -275,35 +274,6 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
       }
 
       const result = await response.json();
-
-      // Track order fulfillment analytics
-      if (formData.status !== order.status) {
-        trackOrderFullfillment({
-          orderId: order._id,
-          status: formData.status,
-          previousStatus: order.status,
-          value: formData.totalPrice,
-          userId: order.clerkUserId || "",
-        });
-      }
-
-      // Track detailed order information
-      trackOrderDetails({
-        orderId: order._id,
-        orderNumber: order.orderNumber,
-        status: formData.status,
-        value: formData.totalPrice,
-        itemCount: order.products?.length || 0,
-        paymentMethod: order.paymentMethod,
-        userId: order.clerkUserId || "",
-        products:
-          order.products?.map((p) => ({
-            productId: p.product?._id || "",
-            name: p.product?.name || "Unknown Product",
-            quantity: p.quantity,
-            price: p.product?.price || 0,
-          })) || [],
-      });
 
       // Show success message with refund info if applicable
       if (result.stripeRefunded && result.refundAmount > 0) {

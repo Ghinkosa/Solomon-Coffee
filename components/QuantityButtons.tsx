@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import useCartStore, { GrindOption, PackagingOption, WeightOption } from "@/store";
 import { Product } from "@/sanity.types";
 import { twMerge } from "tailwind-merge";
-import { trackAddToCart, trackRemoveFromCart } from "@/lib/analytics";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 
@@ -53,13 +52,6 @@ const QuantityButtons = ({
         ),
       );
     }
-    // Firebase Analytics event
-    trackRemoveFromCart({
-      productId: product._id,
-      name: product.name || "Unknown",
-      price: product.price ?? 0,
-      quantity: itemCount - 1,
-    });
   };
 
   const handleAddToCart = () => {
@@ -68,13 +60,6 @@ const QuantityButtons = ({
       toast.success(
         t(dictionary, "cartToasts.quantityIncreased", "Quantity increased successfully!"),
       );
-      // Firebase Analytics event
-      trackAddToCart({
-        productId: product._id,
-        name: product.name || "Unknown",
-        price: product.price ?? 0,
-        quantity: itemCount + 1,
-      });
     } else {
       toast.error(
         t(dictionary, "cartToasts.stockLimit", "Cannot add more than available stock"),

@@ -8,7 +8,6 @@ import useCartStore, { WeightOption, GrindOption, PackagingOption } from "@/stor
 import QuantityButtons from "./QuantityButtons";
 import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
-import { trackAddToCart } from "@/lib/analytics";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
@@ -95,16 +94,6 @@ const AddToCartButton = memo(({
         selectedWeight: effectiveWeight,
         selectedGrind: effectiveGrind,
         selectedPackaging: effectivePackaging,
-      });
-
-      trackAddToCart({
-        productId: product._id,
-        name: product.name || "Unknown",
-        price: totalItemPrice,
-        quantity: itemCount + 1,
-        weight: effectiveWeight?.weight,
-        grind: effectiveGrind?.grindType,
-        packaging: effectivePackaging?.title,
       });
     } else {
       toast.error(

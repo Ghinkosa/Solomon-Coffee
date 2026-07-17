@@ -178,30 +178,6 @@ export async function POST() {
       },
     });
 
-    // Track user registration event
-    try {
-      await fetch(
-        `${
-          process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-        }/api/analytics/track`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            eventName: "user_registration",
-            eventParams: {
-              userId: newUser._id,
-              email: userEmail,
-              membershipType: "standard",
-              premiumStatus: "pending",
-            },
-          }),
-        }
-      );
-    } catch (analyticsError) {
-      console.error("Failed to track user registration event:", analyticsError);
-    }
-
     try {
       const { notifyAdminsAccountApplication } = await import(
         "@/lib/emails/adminEmails"

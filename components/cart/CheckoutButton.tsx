@@ -6,7 +6,6 @@ import { Package, ShoppingBag, Check } from "lucide-react";
 import { CartItem } from "@/store";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
-import { trackCheckoutStarted } from "@/lib/analytics";
 import { useRouter } from "next/navigation";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import {
@@ -153,19 +152,6 @@ export function CheckoutButton({
 
     setIsRedirecting(true);
     setActionType("checkout");
-
-    const cartValue = cart.reduce(
-      (sum, item) =>
-        sum +
-        (getItemCurrentPrice(item) + getItemPackagingFee(item)) * item.quantity,
-      0,
-    );
-
-    trackCheckoutStarted({
-      userId: user?.id,
-      cartValue: cartValue,
-      itemCount: cart.length,
-    });
 
     await redirectToCheckout();
   };

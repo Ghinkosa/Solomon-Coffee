@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import isArray from "js-isarray";
 import _ from "lodash";
-import { trackWishlistAdd, trackWishlistRemove } from "@/lib/analytics";
 import { useLocalizedPath } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
@@ -63,17 +62,6 @@ const FavoriteButton = ({
           },
         );
 
-        if (isRemoving) {
-          trackWishlistRemove({
-            productId: product._id,
-            name: product.name || "Unknown Product",
-          });
-        } else {
-          trackWishlistAdd({
-            productId: product._id,
-            name: product.name || "Unknown Product",
-          });
-        }
       });
     }
   };

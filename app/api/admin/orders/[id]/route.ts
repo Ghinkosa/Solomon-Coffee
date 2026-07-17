@@ -164,32 +164,6 @@ export async function PATCH(
 
     if (updateData.status && updateData.status !== currentOrder.status) {
       try {
-        await fetch(
-          `${
-            process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-          }/api/analytics/track`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              eventName: "order_status_update",
-              eventParams: {
-                orderId: id,
-                status: updateData.status,
-                previousStatus: currentOrder.status,
-                adminUserId: admin.userId,
-              },
-            }),
-          },
-        );
-      } catch (analyticsError) {
-        console.error(
-          "Failed to track order status update event:",
-          analyticsError,
-        );
-      }
-
-      try {
         const userClerkId =
           currentOrder.clerkUserId || currentOrder.user?.clerkUserId;
 

@@ -11,9 +11,8 @@ Welcome to Sheba Cup Coffee! This guide will walk you through setting up your ne
 3.  [Step 2: Sanity CMS (Content)](#step-2-sanity-cms-content)
 4.  [Step 3: Clerk (Authentication)](#step-3-clerk-authentication)
 5.  [Step 4: Stripe (Payments)](#step-4-stripe-payments)
-6.  [Step 5: Firebase (Database)](#step-5-firebase-database)
-7.  [Step 6: Email Service](#step-6-email-service)
-8.  [Step 7: Launch](#step-7-launch)
+5.  [Step 5: Email Service](#step-5-email-service)
+6.  [Step 6: Launch](#step-6-launch)
 
 ---
 
@@ -110,17 +109,7 @@ Stripe handles all payment processing securely.
 
 ---
 
-## Step 5: Firebase Analytics (optional)
-
-Firebase is **optional analytics only**. Orders, profiles, and reviews live in **Sanity + Clerk**.
-
-1.  Create a Firebase web app if you want client analytics.
-2.  Copy the public Firebase config keys into `.env` (`NEXT_PUBLIC_FIREBASE_*`).
-3.  If unset, analytics helpers no-op safely.
-
----
-
-## Step 6: Email Service
+## Step 5: Email Service
 
 To send order confirmations, set up Gmail OAuth2 (or later migrate to Resend / branded SMTP).
 
@@ -142,7 +131,7 @@ To send order confirmations, set up Gmail OAuth2 (or later migrate to Resend / b
 
 ---
 
-## Step 7: Launch
+## Step 6: Launch
 
 You are ready!
 
