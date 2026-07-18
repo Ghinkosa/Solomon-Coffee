@@ -17,8 +17,6 @@
 
 ## 📸 Platform Overview
 
-[![Sheba Cup Coffee Preview](./public/preview.png)](https://shebascoffee.com)
-
 Sheba Cup Coffee is a comprehensive e-commerce solution engineered for performance, scalability, and conversion. Built with the latest Next.js 16, React 19, and TypeScript stack, it offers an enterprise-grade shopping experience right out of the box.
 
 Whether you're launching a coffee brand or specialty retail store, Sheba Cup Coffee provides the robust foundation you need to succeed.
