@@ -43,6 +43,14 @@ export interface ProductReviewsData {
     twoStars: number;
     oneStar: number;
   };
+  myReview?: {
+    _id: string;
+    rating: number;
+    title: string;
+    content: string;
+    status: string;
+    createdAt: string;
+  } | null;
 }
 
 // Submit a new review
@@ -83,15 +91,25 @@ export async function getProductReviewsAPI(
   productId: string
 ): Promise<ProductReviewsData | null> {
   try {
-    const response = await fetch(`/api/user/reviews?productId=${productId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `/api/user/reviews?productId=${encodeURIComponent(productId)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      }
+    );
 
     if (!response.ok) {
-      console.error("Failed to fetch reviews");
+      console.error("Failed to fetch reviews", response.status);
+      return null;
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      console.error("Reviews API returned non-JSON response", contentType);
       return null;
     }
 

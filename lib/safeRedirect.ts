@@ -30,7 +30,7 @@ export function safeRelativeRedirect(
 }
 
 /**
- * Admin login may only bounce into /admin (locale-prefixed or not).
+ * Admin login may bounce into the admin console or Sanity Studio only.
  */
 export function safeAdminRedirect(
   redirectTo: string | undefined,
@@ -39,6 +39,11 @@ export function safeAdminRedirect(
   const fallback = `/${lang}/admin`;
   const safe = safeRelativeRedirect(redirectTo, fallback);
   if (safe === fallback && !redirectTo) return fallback;
+
+  // Studio is mounted at /studio (no locale prefix).
+  if (safe === "/studio" || safe.startsWith("/studio/")) {
+    return safe;
+  }
 
   const normalized = safe.replace(/^\/[a-z]{2}(?=\/|$)/, "") || "/";
   if (!normalized.startsWith("/admin")) return fallback;

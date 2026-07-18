@@ -1,6 +1,6 @@
 "use server";
 
-import { client } from "@/sanity/lib/client";
+import { readClient, writeClient } from "@/sanity/lib/client";
 import { auth } from "@clerk/nextjs/server";
 import { invalidateProductReviews } from "@/lib/cache";
 
@@ -50,9 +50,17 @@ interface ProductReviewsData {
   };
 }
 
+const purchasedProductQuery = `count(*[
+  _type == "order"
+  && clerkUserId == $clerkUserId
+  && paymentStatus == "paid"
+  && status != "cancelled"
+  && $productId in products[].product._ref
+]) > 0`;
+
 // Submit a new review
 export async function submitReview(
-  data: SubmitReviewData
+  data: SubmitReviewData,
 ): Promise<ReviewResponse> {
   try {
     const { userId } = await auth();
@@ -64,14 +72,13 @@ export async function submitReview(
       };
     }
 
-    // Get the user from Sanity
-    const sanityUser = await client.fetch(
+    const sanityUser = await writeClient.fetch(
       `*[_type == "user" && clerkUserId == $clerkUserId][0]{
         _id,
         firstName,
         lastName
       }`,
-      { clerkUserId: userId }
+      { clerkUserId: userId },
     );
 
     if (!sanityUser) {
@@ -81,10 +88,9 @@ export async function submitReview(
       };
     }
 
-    // Check if user has already reviewed this product
-    const existingReview = await client.fetch(
+    const existingReview = await writeClient.fetch(
       `*[_type == "review" && user._ref == $userId && product._ref == $productId][0]`,
-      { userId: sanityUser._id, productId: data.productId }
+      { userId: sanityUser._id, productId: data.productId },
     );
 
     if (existingReview) {
@@ -94,14 +100,12 @@ export async function submitReview(
       };
     }
 
-    // Check if user has purchased this product
-    const hasPurchased = await client.fetch(
-      `count(*[_type == "order" && user._ref == $userId && status == "delivered" && $productId in products[].product._ref]) > 0`,
-      { userId: sanityUser._id, productId: data.productId }
-    );
+    const hasPurchased = await writeClient.fetch(purchasedProductQuery, {
+      clerkUserId: userId,
+      productId: data.productId,
+    });
 
-    // Create the review
-    const review = await client.create({
+    const review = await writeClient.create({
       _type: "review",
       product: {
         _type: "reference",
@@ -114,14 +118,13 @@ export async function submitReview(
       rating: data.rating,
       title: data.title,
       content: data.content,
-      isVerifiedPurchase: hasPurchased,
+      isVerifiedPurchase: Boolean(hasPurchased),
       status: "pending",
       helpful: 0,
       helpfulBy: [],
       createdAt: new Date().toISOString(),
     });
 
-    // Invalidate product reviews cache for instant updates
     await invalidateProductReviews(data.productId);
 
     return {
@@ -142,11 +145,10 @@ export async function submitReview(
 
 // Get reviews for a product
 export async function getProductReviews(
-  productId: string
+  productId: string,
 ): Promise<ProductReviewsData | null> {
   try {
-    // Get approved reviews
-    const reviews = await client.fetch(
+    const reviews = await readClient.fetch(
       `*[_type == "review" && product._ref == $productId && status == "approved"] | order(createdAt desc) {
         _id,
         rating,
@@ -166,7 +168,7 @@ export async function getProductReviews(
           }
         }
       }`,
-      { productId }
+      { productId },
     );
 
     if (!reviews || reviews.length === 0) {
@@ -184,15 +186,13 @@ export async function getProductReviews(
       };
     }
 
-    // Calculate statistics
     const totalReviews = reviews.length;
     const totalRating = reviews.reduce(
       (sum: number, review: { rating: number }) => sum + review.rating,
-      0
+      0,
     );
     const averageRating = totalRating / totalReviews;
 
-    // Calculate rating distribution
     const ratingDistribution = {
       fiveStars: reviews.filter((r: { rating: number }) => r.rating === 5)
         .length,
@@ -205,8 +205,7 @@ export async function getProductReviews(
       oneStar: reviews.filter((r: { rating: number }) => r.rating === 1).length,
     };
 
-    // Update product with calculated values
-    await client
+    await writeClient
       .patch(productId)
       .set({
         averageRating: parseFloat(averageRating.toFixed(1)),
@@ -229,7 +228,7 @@ export async function getProductReviews(
 
 // Mark a review as helpful
 export async function markReviewHelpful(
-  reviewId: string
+  reviewId: string,
 ): Promise<ReviewResponse> {
   try {
     const { userId } = await auth();
@@ -241,12 +240,11 @@ export async function markReviewHelpful(
       };
     }
 
-    // Get the user from Sanity
-    const sanityUser = await client.fetch(
+    const sanityUser = await writeClient.fetch(
       `*[_type == "user" && clerkUserId == $clerkUserId][0]{
         _id
       }`,
-      { clerkUserId: userId }
+      { clerkUserId: userId },
     );
 
     if (!sanityUser) {
@@ -256,14 +254,13 @@ export async function markReviewHelpful(
       };
     }
 
-    // Get the review
-    const review = await client.fetch(
+    const review = await writeClient.fetch(
       `*[_type == "review" && _id == $reviewId][0]{
         _id,
         helpful,
-        helpfulBy[]->_id
+        "helpfulByIds": helpfulBy[]._ref
       }`,
-      { reviewId }
+      { reviewId },
     );
 
     if (!review) {
@@ -273,15 +270,13 @@ export async function markReviewHelpful(
       };
     }
 
-    // Check if user has already marked this review as helpful
-    const alreadyMarked = review.helpfulBy?.includes(sanityUser._id);
+    const alreadyMarked = review.helpfulByIds?.includes(sanityUser._id);
 
     if (alreadyMarked) {
-      // Remove the helpful mark
-      await client
+      await writeClient
         .patch(reviewId)
         .set({
-          helpful: Math.max(0, review.helpful - 1),
+          helpful: Math.max(0, (review.helpful || 0) - 1),
         })
         .unset([`helpfulBy[_ref == "${sanityUser._id}"]`])
         .commit();
@@ -290,27 +285,27 @@ export async function markReviewHelpful(
         success: true,
         message: "Review unmarked as helpful",
       };
-    } else {
-      // Add the helpful mark
-      await client
-        .patch(reviewId)
-        .set({
-          helpful: review.helpful + 1,
-        })
-        .setIfMissing({ helpfulBy: [] })
-        .append("helpfulBy", [
-          {
-            _type: "reference",
-            _ref: sanityUser._id,
-          },
-        ])
-        .commit();
-
-      return {
-        success: true,
-        message: "Review marked as helpful",
-      };
     }
+
+    await writeClient
+      .patch(reviewId)
+      .set({
+        helpful: (review.helpful || 0) + 1,
+      })
+      .setIfMissing({ helpfulBy: [] })
+      .append("helpfulBy", [
+        {
+          _type: "reference",
+          _ref: sanityUser._id,
+          _key: sanityUser._id,
+        },
+      ])
+      .commit();
+
+    return {
+      success: true,
+      message: "Review marked as helpful",
+    };
   } catch (error) {
     console.error("Error marking review as helpful:", error);
     return {
@@ -326,6 +321,7 @@ export async function canUserReviewProduct(productId: string): Promise<{
   canReview: boolean;
   hasAlreadyReviewed: boolean;
   hasPurchased: boolean;
+  reviewStatus: "pending" | "approved" | "rejected" | null;
 }> {
   try {
     const { userId } = await auth();
@@ -335,15 +331,15 @@ export async function canUserReviewProduct(productId: string): Promise<{
         canReview: false,
         hasAlreadyReviewed: false,
         hasPurchased: false,
+        reviewStatus: null,
       };
     }
 
-    // Get the user from Sanity
-    const sanityUser = await client.fetch(
+    const sanityUser = await readClient.fetch(
       `*[_type == "user" && clerkUserId == $clerkUserId][0]{
         _id
       }`,
-      { clerkUserId: userId }
+      { clerkUserId: userId },
     );
 
     if (!sanityUser) {
@@ -351,25 +347,32 @@ export async function canUserReviewProduct(productId: string): Promise<{
         canReview: false,
         hasAlreadyReviewed: false,
         hasPurchased: false,
+        reviewStatus: null,
       };
     }
 
-    // Check if user has already reviewed this product
-    const hasAlreadyReviewed = await client.fetch(
-      `count(*[_type == "review" && user._ref == $userId && product._ref == $productId]) > 0`,
-      { userId: sanityUser._id, productId }
+    const existingReview = await readClient.fetch(
+      `*[_type == "review" && user._ref == $userId && product._ref == $productId][0]{ status }`,
+      { userId: sanityUser._id, productId },
     );
 
-    // Check if user has purchased this product
-    const hasPurchased = await client.fetch(
-      `count(*[_type == "order" && user._ref == $userId && status == "delivered" && $productId in products[].product._ref]) > 0`,
-      { userId: sanityUser._id, productId }
-    );
+    const hasPurchased = await readClient.fetch(purchasedProductQuery, {
+      clerkUserId: userId,
+      productId,
+    });
+
+    const reviewStatus =
+      existingReview?.status === "pending" ||
+      existingReview?.status === "approved" ||
+      existingReview?.status === "rejected"
+        ? existingReview.status
+        : null;
 
     return {
-      canReview: !hasAlreadyReviewed,
-      hasAlreadyReviewed,
-      hasPurchased,
+      canReview: !existingReview,
+      hasAlreadyReviewed: Boolean(existingReview),
+      hasPurchased: Boolean(hasPurchased),
+      reviewStatus,
     };
   } catch (error) {
     console.error("Error checking if user can review product:", error);
@@ -377,6 +380,7 @@ export async function canUserReviewProduct(productId: string): Promise<{
       canReview: false,
       hasAlreadyReviewed: false,
       hasPurchased: false,
+      reviewStatus: null,
     };
   }
 }
@@ -384,11 +388,10 @@ export async function canUserReviewProduct(productId: string): Promise<{
 // Admin: Approve a review
 export async function approveReview(
   reviewId: string,
-  adminEmail: string
+  adminEmail: string,
 ): Promise<ReviewResponse> {
   try {
-    // Update the review status
-    await client
+    await writeClient
       .patch(reviewId)
       .set({
         status: "approved",
@@ -398,18 +401,16 @@ export async function approveReview(
       })
       .commit();
 
-    // Get the product ID to update ratings
-    const review = await client.fetch(
+    const review = await writeClient.fetch(
       `*[_type == "review" && _id == $reviewId][0]{
         product-> {
           _id
         }
       }`,
-      { reviewId }
+      { reviewId },
     );
 
     if (review?.product?._id) {
-      // Trigger recalculation of product ratings
       await getProductReviews(review.product._id);
     }
 
@@ -430,10 +431,10 @@ export async function approveReview(
 // Admin: Reject a review
 export async function rejectReview(
   reviewId: string,
-  adminNotes?: string
+  adminNotes?: string,
 ): Promise<ReviewResponse> {
   try {
-    await client
+    await writeClient
       .patch(reviewId)
       .set({
         status: "rejected",
@@ -459,7 +460,7 @@ export async function rejectReview(
 // Get pending reviews for admin
 export async function getPendingReviews() {
   try {
-    const reviews = await client.fetch(
+    const reviews = await writeClient.fetch(
       `*[_type == "review" && status == "pending"] | order(createdAt desc) {
         _id,
         rating,
@@ -483,7 +484,7 @@ export async function getPendingReviews() {
           name,
           slug
         }
-      }`
+      }`,
     );
 
     return reviews;

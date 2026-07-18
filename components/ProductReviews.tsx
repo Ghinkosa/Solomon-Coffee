@@ -59,6 +59,14 @@ const ProductReviews = React.memo(
     const [canReview, setCanReview] = useState(false);
     const [hasPurchased, setHasPurchased] = useState(false);
     const [hasReviewed, setHasReviewed] = useState(false);
+    const [reviewStatus, setReviewStatus] = useState<
+      "pending" | "approved" | "rejected" | null
+    >(null);
+    const [myPendingReview, setMyPendingReview] = useState<{
+      title: string;
+      content: string;
+      rating: number;
+    } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showAll, setShowAll] = useState(false);
     const [isReviewSidebarOpen, setIsReviewSidebarOpen] = useState(false);
@@ -71,6 +79,28 @@ const ProductReviews = React.memo(
           setAverageRating(data.averageRating);
           setTotalReviews(data.totalReviews);
           setRatingDistribution(data.ratingDistribution);
+          if (data.myReview?.status === "pending") {
+            setMyPendingReview({
+              title: data.myReview.title,
+              content: data.myReview.content,
+              rating: data.myReview.rating,
+            });
+            setReviewStatus("pending");
+            setHasReviewed(true);
+            setCanReview(false);
+          } else if (data.myReview?.status === "approved") {
+            setMyPendingReview(null);
+            setReviewStatus("approved");
+            setHasReviewed(true);
+            setCanReview(false);
+          } else if (data.myReview?.status === "rejected") {
+            setMyPendingReview(null);
+            setReviewStatus("rejected");
+            setHasReviewed(true);
+            setCanReview(false);
+          } else {
+            setMyPendingReview(null);
+          }
         }
       } catch (error) {
         console.error("Error loading reviews:", error);
@@ -91,6 +121,7 @@ const ProductReviews = React.memo(
         setCanReview(result.canReview);
         setHasPurchased(result.hasPurchased);
         setHasReviewed(result.hasAlreadyReviewed);
+        setReviewStatus(result.reviewStatus);
       } catch (error) {
         console.error("Error checking review eligibility:", error);
       }
@@ -214,11 +245,18 @@ const ProductReviews = React.memo(
                     >
                       {r("writeReview", "Write a Review")}
                     </Button>
+                  ) : reviewStatus === "pending" ? (
+                    <p className="mt-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                      {r(
+                        "pendingReview",
+                        "Your review was submitted and is waiting for admin approval.",
+                      )}
+                    </p>
                   ) : hasReviewed ? (
                     <p className="mt-4 text-sm text-gray-500">
                       {r(
                         "alreadyReviewed",
-                        "You have already reviewed this product"
+                        "You have already reviewed this product",
                       )}
                     </p>
                   ) : null
@@ -226,6 +264,32 @@ const ProductReviews = React.memo(
                   <p className="mt-4 text-sm text-gray-500">
                     {r("signInToReview", "Sign in to write a review")}
                   </p>
+                )}
+                {myPendingReview && (
+                  <div className="mt-4 rounded-lg border border-dashed border-amber-300 bg-amber-50/60 p-3 text-left">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-amber-800 mb-1">
+                      {r("yourPendingReview", "Your pending review")}
+                    </p>
+                    <div className="flex items-center gap-1 mb-1">
+                      {[...Array(5)].map((_, index) => (
+                        <StarIcon
+                          key={index}
+                          size={14}
+                          className={
+                            index < myPendingReview.rating
+                              ? "text-shop_light_green fill-shop_light_green"
+                              : "text-gray-300"
+                          }
+                        />
+                      ))}
+                    </div>
+                    <p className="text-sm font-medium text-shop_dark_green">
+                      {myPendingReview.title}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {myPendingReview.content}
+                    </p>
+                  </div>
                 )}
               </div>
 

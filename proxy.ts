@@ -6,17 +6,23 @@ import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { resolveAdminAccess } from "@/lib/adminGate";
 
+// Use real locales only — `/:locale/user(.*)` would match `/api/user/...`
+// (locale = "api") and force Clerk sign-in on public review APIs.
+const localeUserRoutes = i18n.locales.map((l) => `/${l}/user(.*)`);
+const localeSettingsRoutes = i18n.locales.map((l) => `/${l}/settings(.*)`);
+const localeAdminRoutes = i18n.locales.map((l) => `/${l}/admin(.*)`);
+
 const isProtectedRoute = createRouteMatcher([
   "/user(.*)",
   "/settings(.*)",
-  "/:locale/user(.*)",
-  "/:locale/settings(.*)",
+  ...localeUserRoutes,
+  ...localeSettingsRoutes,
 ]);
 
 const isAdminApiRoute = createRouteMatcher(["/api/admin(.*)"]);
 const isDebugApiRoute = createRouteMatcher(["/api/debug(.*)"]);
 
-const isAdminRoute = createRouteMatcher(["/admin(.*)", "/:locale/admin(.*)"]);
+const isAdminRoute = createRouteMatcher(["/admin(.*)", ...localeAdminRoutes]);
 
 function getLocaleFromPath(pathname: string): string {
   return (
@@ -49,10 +55,39 @@ export default clerkMiddleware(async (auth, req) => {
   const pathname = req.nextUrl.pathname;
   const searchParams = req.nextUrl.searchParams;
 
-  // 1. Locale prefix
+  // 1. API routes — never apply locale redirects or page auth.protect()
+  if (pathname.startsWith("/api/") || pathname === "/api") {
+    if (isDebugApiRoute(req) && process.env.NODE_ENV === "production") {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    if (isAdminApiRoute(req) || isDebugApiRoute(req)) {
+      const authResult = await auth();
+      const gate = await resolveAdminAccess(authResult.userId);
+
+      if (gate.status === "unauthenticated") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      if (gate.status === "denied") {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      if (gate.status === "unavailable") {
+        return NextResponse.json(
+          {
+            error: "Auth service temporarily unavailable",
+            message: "Could not verify admin access. Please retry.",
+          },
+          { status: 503 },
+        );
+      }
+    }
+
+    return NextResponse.next();
+  }
+
+  // 2. Locale prefix for pages
   if (
     !pathname.startsWith("/_next") &&
-    !pathname.includes("/api/") &&
     !pathname.startsWith("/studio") &&
     !pathname.includes(".")
   ) {
@@ -70,35 +105,6 @@ export default clerkMiddleware(async (auth, req) => {
       });
       return NextResponse.redirect(newUrl);
     }
-  }
-
-  // 2. Protect admin/debug API routes
-  if (isDebugApiRoute(req) && process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  if (isAdminApiRoute(req) || isDebugApiRoute(req)) {
-    const authResult = await auth();
-    const gate = await resolveAdminAccess(authResult.userId);
-
-    if (gate.status === "unauthenticated") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    if (gate.status === "denied") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-    if (gate.status === "unavailable") {
-      // Clerk outage — do not pretend the user is forbidden.
-      return NextResponse.json(
-        {
-          error: "Auth service temporarily unavailable",
-          message: "Could not verify admin access. Please retry.",
-        },
-        { status: 503 },
-      );
-    }
-
-    return NextResponse.next();
   }
 
   // 3. Admin console pages

@@ -42,8 +42,8 @@ export const orderType = defineType({
       name: "stripeCheckoutSessionId",
       title: "Stripe Checkout Session ID",
       type: "string",
-      hidden: ({ document }) =>
-        document?.paymentMethod !== "stripe",
+      readOnly: true,
+      hidden: ({ document }) => document?.paymentMethod !== "stripe",
     }),
 
     defineField({
@@ -96,14 +96,6 @@ export const orderType = defineType({
       type: "string",
       hidden: ({ document }) =>
         document?.paymentMethod !== "stripe",
-    }),
-
-    defineField({
-      name: "stripeCheckoutSessionId",
-      title: "Stripe Checkout Session ID",
-      type: "string",
-      readOnly: true,
-      hidden: true,
     }),
 
     defineField({

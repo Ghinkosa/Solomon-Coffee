@@ -67,24 +67,22 @@ export async function PATCH(request: NextRequest) {
     if (action === "approve" && review.product) {
       const productId = review.product._id;
 
-      // Get all approved reviews for this product
+      // Get all approved reviews for this product (includes the one just approved)
       const approvedReviews = await writeClient.fetch(
         `*[_type == "review" && product._ref == $productId && status == "approved"]{
           rating
         }`,
-        { productId }
+        { productId },
       );
 
       if (approvedReviews && approvedReviews.length > 0) {
-        // Calculate new statistics
         const totalReviews = approvedReviews.length;
         const totalRating = approvedReviews.reduce(
           (sum: number, r: { rating: number }) => sum + r.rating,
-          0
+          0,
         );
         const averageRating = totalRating / totalReviews;
 
-        // Calculate rating distribution
         const distribution = approvedReviews.reduce(
           (
             acc: {
@@ -94,7 +92,7 @@ export async function PATCH(request: NextRequest) {
               twoStars: number;
               oneStar: number;
             },
-            r: { rating: number }
+            r: { rating: number },
           ) => {
             if (r.rating === 5) acc.fiveStars++;
             else if (r.rating === 4) acc.fourStars++;
@@ -109,10 +107,9 @@ export async function PATCH(request: NextRequest) {
             threeStars: 0,
             twoStars: 0,
             oneStar: 0,
-          }
+          },
         );
 
-        // Update product with new statistics
         await writeClient
           .patch(productId)
           .set({
@@ -121,6 +118,17 @@ export async function PATCH(request: NextRequest) {
             ratingDistribution: distribution,
           })
           .commit();
+      }
+
+      try {
+        const { invalidateProductReviews } = await import("@/lib/cache");
+        const productSlug = await writeClient.fetch(
+          `*[_type == "product" && _id == $productId][0].slug.current`,
+          { productId },
+        );
+        await invalidateProductReviews(productId, productSlug || undefined);
+      } catch (cacheError) {
+        console.error("Failed to invalidate review cache:", cacheError);
       }
     }
 
