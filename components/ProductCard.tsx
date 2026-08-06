@@ -10,9 +10,10 @@ import { StarIcon } from "@sanity/icons";
 import ProductSideMenu from "./ProductSideMenu";
 import { Flame, ArrowUpRight } from "lucide-react";
 import { image } from "@/sanity/image";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { getProductName } from "@/lib/product-locale";
 
 interface ProductCardProps {
   product: Product;
@@ -70,9 +71,11 @@ const ProductCard = memo(
     onHoverEnd,
   }: ProductCardProps) => {
   const dictionary = useDictionary();
+  const lang = useLocale();
   const toLocalizedPath = useLocalizedPath();
+  const productName = getProductName(product, lang);
   const imageAlt =
-    product.name ||
+    productName ||
     t(dictionary, "productCard.imageAlt", "Product image");
   const isHomeMode = mode === "home";
   const isShopMode = mode === "shop";
@@ -174,7 +177,7 @@ const ProductCard = memo(
           )}
 
           <Title className={`${isShopMode ? "text-base font-semibold leading-snug line-clamp-2 min-h-[2.5rem]" : "text-sm line-clamp-1"}`}>
-            {product?.name}
+            {productName}
           </Title>
 
           <div className="flex items-center gap-2">

@@ -8,7 +8,6 @@ import {
   Package,
   Heart,
   Bell,
-  Star,
   TrendingUp,
   Clock,
   ArrowRight,
@@ -38,7 +37,6 @@ interface UserStats {
   wishlistCount: number;
   notificationsCount: number;
   unreadNotifications: number;
-  rewardPoints: number;
 }
 
 interface RecentActivity {
@@ -86,7 +84,9 @@ export default function UserDashboardPage() {
     const segments = `userDashboard.dashboard.applications.${path}`.split(".");
     let node: unknown = dictionary;
     for (const seg of segments) {
-      if (!node || typeof node !== "object") return fallback;
+      if (!node || typeof node !== "object") {
+        return fallback.map(withBusinessPercent);
+      }
       node = (node as Record<string, unknown>)[seg];
     }
     const items = Array.isArray(node)
@@ -116,7 +116,6 @@ export default function UserDashboardPage() {
     wishlistCount: 0,
     notificationsCount: 0,
     unreadNotifications: 0,
-    rewardPoints: 0,
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,6 +184,9 @@ export default function UserDashboardPage() {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          email: user.emailAddresses[0].emailAddress,
+        }),
       });
 
       const data = await response.json();
@@ -483,7 +485,7 @@ export default function UserDashboardPage() {
                       {list("premium.activeBenefits", [
                         "Exclusive access to premium features",
                         "Priority customer support",
-                        "Enhanced rewards and loyalty points",
+                        "Early access to new products",
                         "Eligible for Business Account upgrade",
                       ]).map((benefit) => (
                         <li key={benefit}>• {benefit}</li>
@@ -520,12 +522,12 @@ export default function UserDashboardPage() {
                   <p className="text-blue-700 text-sm mb-3">
                     {a(
                       "business.upgradeDescription",
-                      "Get 2% off all orders with our Business Account plan. Perfect for companies and bulk purchases.",
+                      "Get {percent}% off all orders with our Business Account plan. Perfect for companies and bulk purchases.",
                     )}
                   </p>
                   <ul className="text-blue-600 text-sm space-y-1 mb-4">
                     {list("business.upgradeBenefits", [
-                      "2% discount on all orders",
+                      "{percent}% discount on all orders",
                       "Priority customer support",
                       "Bulk order management",
                       "Business invoicing",
@@ -585,7 +587,7 @@ export default function UserDashboardPage() {
                   </h4>
                   <ul className="text-blue-700 text-xs space-y-1">
                     {list("business.pendingBenefits", [
-                        "2% discount on all orders",
+                      "{percent}% discount on all orders",
                       "Priority customer support",
                       "Bulk order management",
                       "Business invoicing capabilities",
@@ -638,7 +640,7 @@ export default function UserDashboardPage() {
                     </h4>
                     <ul className="text-emerald-700 text-xs space-y-1">
                       {list("business.activeBenefits", [
-                        "2% discount automatically applied at checkout",
+                        "{percent}% discount automatically applied at checkout",
                         "Priority customer support",
                         "Advanced bulk order management",
                         "Professional business invoicing",
@@ -700,7 +702,7 @@ export default function UserDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <Link
           href={toLocalizedPath("/user/orders")}
           className="rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
@@ -765,21 +767,6 @@ export default function UserDashboardPage() {
             </CardContent>
           </Card>
         </Link>
-
-        <Card className="bg-linear-to-br from-green-500 to-green-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium">
-              {d("rewardPoints", "Reward Points")}
-            </CardTitle>
-            <Star className="h-5 w-5" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">{stats.rewardPoints}</div>
-            <p className="text-xs text-green-100">
-              {d("availablePoints", "Available points")}
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Content Section with Proper Spacing */}

@@ -24,7 +24,7 @@ import {
   Banknote,
 } from "lucide-react";
 import useCartStore, { CartItem, WeightOption, GrindOption, PackagingOption } from "@/store";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import PriceFormatter from "@/components/PriceFormatter";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
@@ -38,6 +38,7 @@ import {
   isGuestCheckoutComplete,
   type GuestCheckoutDetails,
 } from "@/components/checkout/GuestCheckoutForm";
+import { getProductName } from "@/lib/product-locale";
 import { useOrderPlacement } from "@/hooks/useOrderPlacement";
 import { CheckoutSkeleton } from "@/components/checkout/CheckoutSkeleton";
 import { OrderPlacementOverlay } from "@/components/cart/OrderPlacementSkeleton";
@@ -126,6 +127,7 @@ export function CheckoutContent() {
     resetCart,
   } = useCartStore();
   const toLocalizedPath = useLocalizedPath();
+  const lang = useLocale();
   const { placeOrder, isPlacingOrder, orderStep } = useOrderPlacement({
     user: user
       ? {
@@ -791,14 +793,19 @@ export function CheckoutContent() {
                           ? urlFor(item.product.images[0]).url()
                           : "/placeholder.png"
                       }
-                      alt={item.product.name || t(dictionary, "ordersTrack.product", "Product")}
+                      alt={
+                        getProductName(item.product, lang) ||
+                        t(dictionary, "ordersTrack.product", "Product")
+                      }
                       width={64}
                       height={64}
                       className="w-full h-full object-cover rounded"
                     />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-medium">{item.product.name}</h4>
+                    <h4 className="font-medium">
+                      {getProductName(item.product, lang)}
+                    </h4>
                     <p className="text-sm text-muted-foreground">
                       {String(checkoutCopy.qty ?? t(dictionary, "checkout.qty", "Qty"))}: {item.quantity}
                     </p>

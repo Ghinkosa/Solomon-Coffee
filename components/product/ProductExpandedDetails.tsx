@@ -6,9 +6,13 @@ import {
   getCoffeeDetails,
   getCoffeeOrigin,
 } from "@/lib/product-coffee-details";
-import { toPlainText } from "@/lib/sanity-text";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useLocale } from "@/hooks/useLocale";
+import {
+  getProductDescription,
+  getProductName,
+} from "@/lib/product-locale";
 
 interface ProductExpandedDetailsProps {
   product: Product;
@@ -72,8 +76,11 @@ export function ProductExpandedDetails({
   variant = "default",
 }: ProductExpandedDetailsProps) {
   const dictionary = useDictionary();
+  const lang = useLocale();
   const e = (path: string, fallback: string) =>
     t(dictionary, `product.expandedDetails.${path}`, fallback);
+  const productName = getProductName(product, lang);
+  const descriptionText = getProductDescription(product, lang);
 
   const isCompact = variant === "compact";
   const isSide = variant === "side";
@@ -158,19 +165,27 @@ export function ProductExpandedDetails({
       ? specChips.slice(0, 4)
       : specChips;
 
-  const descriptionText = toPlainText(product.description);
-
   const categoriesLabel = Array.isArray(product.categories)
-    ? product.categories.join(", ")
+    ? product.categories
+        .map((cat: unknown) => {
+          if (typeof cat === "string") return cat.trim();
+          if (!cat || typeof cat !== "object") return "";
+          if ("title" in cat && typeof (cat as { title?: unknown }).title === "string") {
+            return ((cat as { title: string }).title).trim();
+          }
+          return "";
+        })
+        .filter(Boolean)
+        .join(", ")
     : typeof product.categories === "string"
       ? product.categories
       : "";
 
   return (
     <div className={isCompact || isSide ? "min-w-0 flex-1 space-y-3" : "space-y-3"}>
-      {product.name && (
+      {productName && (
         <p className="text-base font-semibold leading-snug text-[#fdf6e8]">
-          {product.name}
+          {productName}
         </p>
       )}
 

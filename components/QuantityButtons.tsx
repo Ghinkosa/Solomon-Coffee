@@ -6,6 +6,8 @@ import { Product } from "@/sanity.types";
 import { twMerge } from "tailwind-merge";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useLocale } from "@/hooks/useLocale";
+import { getProductName } from "@/lib/product-locale";
 
 interface Props {
   product: Product;
@@ -30,6 +32,8 @@ const QuantityButtons = ({
 }: Props) => {
   const { addItem, removeItem, getItemCount } = useCartStore();
   const dictionary = useDictionary();
+  const lang = useLocale();
+  const productName = getProductName(product, lang);
   const itemCount = getItemCount(
     product?._id,
     selectedWeight,
@@ -48,7 +52,7 @@ const QuantityButtons = ({
       toast.success(
         t(dictionary, "cartToasts.itemRemovedNamed", "{name} removed successfully!").replace(
           "{name}",
-          product?.name?.substring(0, 12) || "",
+          productName.substring(0, 12) || "",
         ),
       );
     }

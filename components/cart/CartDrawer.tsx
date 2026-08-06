@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButtons from "@/components/QuantityButtons";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import { useCheckoutSettings } from "@/hooks/useCheckoutSettings";
 import { image } from "@/sanity/image";
 import { cn } from "@/lib/utils";
@@ -31,6 +31,7 @@ import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import { useUserData } from "@/contexts/UserDataContext";
+import { getProductName } from "@/lib/product-locale";
 
 function getItemUnitPrice(item: CartItem): number {
   return item.selectedWeight?.price ?? item.product.price ?? 0;
@@ -52,6 +53,8 @@ function CartDrawerItem({
   dictionary: ReturnType<typeof useDictionary>;
 }) {
   const toLocalizedPath = useLocalizedPath();
+  const lang = useLocale();
+  const productName = getProductName(item.product, lang);
   const grindLabel = item.selectedGrind
     ? getGrindLabel(
         dictionary,
@@ -77,7 +80,7 @@ function CartDrawerItem({
         {productImage ? (
           <img
             src={image(productImage).width(160).height(160).url()}
-            alt={item.product.name || "Product"}
+            alt={productName || "Product"}
             className="h-full w-full object-contain p-1"
           />
         ) : (
@@ -93,7 +96,7 @@ function CartDrawerItem({
             href={toLocalizedPath(`/product/${item.product.slug?.current}`)}
             className="line-clamp-2 text-sm font-semibold text-shop_dark_green hover:text-shop_light_green"
           >
-            {item.product.name}
+            {productName}
           </Link>
 
           <div className="space-y-0.5 text-xs text-muted-foreground">

@@ -54,15 +54,24 @@ export const productType = defineType({
     defineField({
       name: "name",
       title: "Product Name",
-      type: "string",
-      validation: (Rule) => Rule.required(),
+      type: "localeString",
+      description:
+        "Enter English (required for storefront fallback). Add Spanish and Arabic for localization.",
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) return "Product name is required";
+          if (typeof value === "string") return true; // legacy documents
+          const en = (value as { en?: string }).en?.trim();
+          if (!en) return "English name is required";
+          return true;
+        }),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
       options: {
-        source: "name",
+        source: "name.en",
         maxLength: 96,
       },
       validation: (Rule) => Rule.required(),
@@ -76,7 +85,9 @@ export const productType = defineType({
     defineField({
       name: "description",
       title: "Description",
-      type: "string",
+      type: "localeText",
+      description:
+        "Product description per language. English is used when a translation is missing.",
     }),
     defineField({
       name: "price",
@@ -197,25 +208,25 @@ export const productType = defineType({
     // Grind Options
     defineField({
       name: "grindOptions",
-      title: "Grind Options",
+      title: "Coffee Style Options",
       type: "array",
-      description: "Select available grind types for this product",
+      description:
+        "Wholebean, natural, or classic wash — not brew grind sizes",
       of: [
         defineField({
           name: "grindOption",
-          title: "Grind Option",
+          title: "Style Option",
           type: "object",
           fields: [
             defineField({
               name: "grindType",
-              title: "Grind Type",
+              title: "Style",
               type: "string",
               options: {
                 list: [
-                  { title: "Whole Bean", value: "whole-bean" },
-                  { title: "Cafetiere", value: "cafetiere" },
-                  { title: "Filter", value: "filter" },
-                  { title: "Espresso", value: "espresso" },
+                  { title: "Wholebean", value: "whole-bean" },
+                  { title: "Natural", value: "natural" },
+                  { title: "Classic Wash", value: "classic-wash" },
                 ],
               },
               validation: (Rule) => Rule.required(),
@@ -224,14 +235,14 @@ export const productType = defineType({
               name: "isDefault",
               title: "Set as Default",
               type: "boolean",
-              description: "This grind will be selected by default",
+              description: "This style will be selected by default",
               initialValue: false,
             }),
             defineField({
               name: "available",
               title: "Available",
               type: "boolean",
-              description: "Is this grind option available?",
+              description: "Is this option available?",
               initialValue: true,
             }),
           ],
@@ -499,13 +510,19 @@ export const productType = defineType({
     prepare(selection) {
       const { title, price, stock, media, weightOptions } = selection;
       const image = media && media[0];
-      
+      const resolvedTitle =
+        typeof title === "string"
+          ? title
+          : title?.en || title?.es || title?.ar || "Untitled product";
+
       // Find the default weight option - this changes the display price
       const defaultWeight = weightOptions?.find((opt: any) => opt.isDefault);
       const displayPrice = defaultWeight ? defaultWeight.price : price;
-      
+
       // Show weight info if default weight exists
-      const weightInfo = defaultWeight ? ` (Default: ${defaultWeight.weight})` : "";
+      const weightInfo = defaultWeight
+        ? ` (Default: ${defaultWeight.weight})`
+        : "";
 
       let stockStatus = "";
       let stockColor = "";
@@ -521,7 +538,7 @@ export const productType = defineType({
       }
 
       return {
-        title: title,
+        title: resolvedTitle,
         subtitle: `$${displayPrice}${weightInfo} • ${stockColor} ${stockStatus}`,
         media: image,
       };

@@ -20,13 +20,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocale, useLocalizedPath } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import type { Dictionary } from "@/lib/dictionary-context";
+import { getProductName } from "@/lib/product-locale";
 
 const WishlistProducts = () => {
   const dictionary = useDictionary() as Dictionary;
+  const locale = useLocale();
   const wl = (dictionary.wishlist ?? {}) as Record<string, unknown>;
   const empty = wl.empty as Record<string, string> | undefined;
   const features = wl.features as Record<
@@ -89,7 +91,7 @@ const WishlistProducts = () => {
                           ? urlFor(product.images[0]).url()
                           : "/placeholder.png"
                       }
-                      alt={product?.name ?? "Product"}
+                      alt={getProductName(product, locale) || "Product"}
                       width={200}
                       height={200}
                       className={`w-full h-48 object-contain group-hover:scale-105 transition-transform duration-200 ${
@@ -108,7 +110,7 @@ const WishlistProducts = () => {
                       }}
                     >
                       <h3 className="font-semibold text-gray-900 line-clamp-2 text-sm leading-tight hover:text-shop_dark_green transition-colors">
-                        {product?.name}
+                        {getProductName(product, locale)}
                       </h3>
                     </Link>
 

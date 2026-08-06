@@ -5,6 +5,7 @@ import { CheckCircle, X, Clock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useCheckoutSettings } from "@/hooks/useCheckoutSettings";
 
 interface ApplicationSuccessNotificationProps {
   isVisible: boolean;
@@ -20,31 +21,45 @@ export default function ApplicationSuccessNotification({
   userName,
 }: ApplicationSuccessNotificationProps) {
   const dictionary = useDictionary();
+  const checkoutSettings = useCheckoutSettings();
+  const withBusinessPercent = (value: string) =>
+    value.replace(
+      /\{percent\}/g,
+      String(checkoutSettings.businessDiscountPercent),
+    );
+
   const s = (path: string, fallback: string) =>
     t(
       dictionary,
       `userDashboard.dashboard.applicationSuccess.${path}`,
-      fallback
+      fallback,
     );
   const a = (path: string, fallback: string) =>
-    t(dictionary, `userDashboard.dashboard.applications.${path}`, fallback);
+    withBusinessPercent(
+      t(dictionary, `userDashboard.dashboard.applications.${path}`, fallback),
+    );
   const app = (path: string, fallback: string) =>
-    t(
-      dictionary,
-      `userDashboard.dashboard.applications.${type}.${path}`,
-      fallback
+    withBusinessPercent(
+      t(
+        dictionary,
+        `userDashboard.dashboard.applications.${type}.${path}`,
+        fallback,
+      ),
     );
   const listAt = (subpath: string, fallback: string[]) => {
     const segments =
       `userDashboard.dashboard.applications.${subpath}`.split(".");
     let node: unknown = dictionary;
     for (const seg of segments) {
-      if (!node || typeof node !== "object") return fallback;
+      if (!node || typeof node !== "object") {
+        return fallback.map(withBusinessPercent);
+      }
       node = (node as Record<string, unknown>)[seg];
     }
-    return Array.isArray(node)
+    const items = Array.isArray(node)
       ? node.filter((item): item is string => typeof item === "string")
       : fallback;
+    return items.map(withBusinessPercent);
   };
 
   const [isAnimating, setIsAnimating] = useState(false);
@@ -67,11 +82,11 @@ export default function ApplicationSuccessNotification({
       title: app("pendingTitle", "Premium Application Submitted!"),
       subtitle: s("premiumSubtitle", "Congratulations {name}!").replace(
         "{name}",
-        displayName
+        displayName,
       ),
       description: app(
         "pendingDescription",
-        "Your premium account application has been successfully submitted and is currently under administrative review."
+        "Your premium account application has been successfully submitted and is currently under administrative review.",
       ),
       bgColor: "from-amber-500 to-yellow-500",
       iconBg: "bg-amber-100",
@@ -79,7 +94,7 @@ export default function ApplicationSuccessNotification({
       benefits: listAt("premium.activeBenefits", [
         "Exclusive access to premium features",
         "Priority customer support",
-        "Enhanced rewards and loyalty points",
+        "Early access to new products",
         "Eligible for Business Account upgrade",
       ]),
       typeLabel: s("premiumType", "Premium"),
@@ -88,17 +103,17 @@ export default function ApplicationSuccessNotification({
       title: app("pendingTitle", "Business Application Submitted!"),
       subtitle: s("businessSubtitle", "Excellent choice {name}!").replace(
         "{name}",
-        displayName
+        displayName,
       ),
       description: app(
         "pendingDescription",
-        "Your business account application has been submitted successfully and is currently under administrative review."
+        "Your business account application has been submitted successfully and is currently under administrative review.",
       ),
       bgColor: "from-blue-500 to-indigo-500",
       iconBg: "bg-blue-100",
       iconColor: "text-blue-600",
       benefits: listAt("business.pendingBenefits", [
-        "2% discount on all orders",
+        "{percent}% discount on all orders",
         "Priority customer support",
         "Bulk order management",
         "Business invoicing capabilities",
@@ -108,11 +123,20 @@ export default function ApplicationSuccessNotification({
   };
 
   const currentConfig = config[type];
-  const nextSteps = listAt(`${type}.pendingSteps`, listAt("premium.pendingSteps", [
-    "Our admin team will review your application within 24-48 hours",
-    "You'll receive an email notification once your status changes",
-    "Upon approval, benefits will be activated immediately",
-  ]));
+  const nextSteps = listAt(
+    `${type}.pendingSteps`,
+    type === "business"
+      ? [
+          "Our admin team will review your business application within 24-48 hours",
+          "You'll receive an email notification once your status changes",
+          "Upon approval, your Business Account discount will apply at checkout",
+        ]
+      : [
+          "Our admin team will review your application within 24-48 hours",
+          "You'll receive an email notification once your status changes",
+          "Upon approval, you'll unlock premium features immediately",
+        ],
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -169,10 +193,10 @@ export default function ApplicationSuccessNotification({
 
           <div className="mb-6">
             <h4 className="font-semibold text-gray-900 mb-2">
-              {s("benefitsUponApproval", "{type} Benefits (Upon Approval):").replace(
-                "{type}",
-                currentConfig.typeLabel
-              )}
+              {s(
+                "benefitsUponApproval",
+                "{type} Benefits (Upon Approval):",
+              ).replace("{type}", currentConfig.typeLabel)}
             </h4>
             <ul className="text-sm text-gray-600 space-y-1">
               {currentConfig.benefits.map((benefit, index) => (

@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { readClient, writeClient } from "@/sanity/lib/client";
 import { makeKey, requireAdminUser, slugify } from "@/lib/adminAuth";
 import { invalidateProducts } from "@/lib/cache";
+import { toLocaleStrings, type LocaleStrings } from "@/lib/locale-content";
+import { getProductName } from "@/lib/product-locale";
+import { i18n } from "@/i18n-config";
 
 const WEIGHTS = new Set(["125G", "250G", "500G", "1KG"]);
-const GRINDS = new Set(["whole-bean", "cafetiere", "filter", "espresso"]);
+const GRINDS = new Set(["whole-bean", "natural", "classic-wash"]);
 const STATUSES = new Set(["new", "hot", "sale", ""]);
 const VARIANTS = new Set([
   "Light Roast",
@@ -170,9 +173,9 @@ type ImageInput = {
 };
 
 type ProductBody = {
-  name?: string;
+  name?: string | LocaleStrings;
   slug?: string;
-  description?: string;
+  description?: string | LocaleStrings;
   price?: number;
   discount?: number;
   stock?: number;
@@ -187,6 +190,25 @@ type ProductBody = {
   packagingOptions?: PackagingInput[];
   coffeeDetails?: CoffeeDetailsInput | null;
 };
+
+function englishNameFromBody(
+  name: string | LocaleStrings | undefined,
+): string {
+  if (!name) return "";
+  if (typeof name === "string") return name.trim();
+  return (name.en || name.es || name.ar || "").trim();
+}
+
+function normalizeNameField(
+  name: string | LocaleStrings | undefined,
+): LocaleStrings {
+  const locales = toLocaleStrings(name);
+  if (!locales.en && typeof name === "string") {
+    return toLocaleStrings(name);
+  }
+  // If only non-en provided, still require en for catalog consistency
+  return locales;
+}
 
 function parseNumber(value: unknown, field: string, { integer = false } = {}) {
   if (typeof value !== "number" || Number.isNaN(value) || value < 0) {
@@ -372,21 +394,25 @@ function buildDocumentFields(body: ProductBody, { forCreate }: { forCreate: bool
   const unset: string[] = [];
 
   if (forCreate || body.name !== undefined) {
-    if (!body.name?.trim()) throw new Error("name is required");
-    doc.name = body.name.trim();
+    const nameObj = normalizeNameField(body.name);
+    if (!nameObj.en?.trim()) {
+      throw new Error("English product name is required");
+    }
+    doc.name = nameObj;
   }
 
   if (forCreate || body.slug !== undefined || body.name) {
-    const slugSource = body.slug?.trim() || body.name?.trim() || "";
+    const slugSource =
+      body.slug?.trim() || englishNameFromBody(body.name) || "";
     const current = slugify(slugSource);
     if (!current) throw new Error("slug is required");
     doc.slug = { _type: "slug", current };
   }
 
   if (body.description !== undefined) {
-    doc.description = body.description?.trim() || "";
+    doc.description = toLocaleStrings(body.description);
   } else if (forCreate) {
-    doc.description = "";
+    doc.description = { en: "" };
   }
 
   if (body.price !== undefined) {
@@ -470,21 +496,14 @@ function buildDocumentFields(body: ProductBody, { forCreate }: { forCreate: bool
       {
         _type: "grindOption",
         _key: makeKey("gr"),
-        grindType: "filter",
+        grindType: "natural",
         isDefault: false,
         available: true,
       },
       {
         _type: "grindOption",
         _key: makeKey("gr"),
-        grindType: "espresso",
-        isDefault: false,
-        available: true,
-      },
-      {
-        _type: "grindOption",
-        _key: makeKey("gr"),
-        grindType: "cafetiere",
+        grindType: "classic-wash",
         isDefault: false,
         available: true,
       },
@@ -563,11 +582,14 @@ export async function GET(req: NextRequest) {
       params.category = category;
     }
     if (search) {
-      filters.push(`(name match $search || description match $search)`);
+      filters.push(
+        `(name.en match $search || name.es match $search || name.ar match $search || name match $search || description.en match $search || description.es match $search || description.ar match $search || description match $search)`,
+      );
       params.search = `${search}*`;
     }
 
     const filterClause = filters.join(" && ");
+    // Prefer English labels for admin list when localized objects exist
     const query = `
       *[${filterClause}] | order(${sortField} ${sortDir}) [$offset...$limitEnd] {
         _id,
@@ -609,10 +631,16 @@ export async function GET(req: NextRequest) {
 
     const countQuery = `count(*[${filterClause}])`;
 
-    const [products, totalCount] = await Promise.all([
+    const [rawProducts, totalCount] = await Promise.all([
       readClient.fetch(query, params),
       readClient.fetch(countQuery, params),
     ]);
+
+    const products = (rawProducts || []).map((product: Record<string, unknown>) => ({
+      ...product,
+      // Admin UI expects string labels; keep full locale payload + display name
+      displayName: getProductName(product, i18n.defaultLocale),
+    }));
 
     return NextResponse.json({
       products,

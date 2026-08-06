@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { writeClient, client } from "@/sanity/lib/client";
 import { USER_BY_EMAIL_FILTER } from "@/lib/sanity-user";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const user = await currentUser();
 
@@ -11,12 +11,34 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const email = user.emailAddresses[0]?.emailAddress;
+    let bodyEmail: string | undefined;
+    try {
+      const body = await request.json();
+      if (typeof body?.email === "string" && body.email.trim()) {
+        bodyEmail = body.email.trim();
+      }
+    } catch {
+      // Body is optional; Clerk session email is the source of truth.
+    }
+
+    const sessionEmail = user.emailAddresses[0]?.emailAddress?.trim();
+    const email = sessionEmail || bodyEmail;
 
     if (!email) {
       return NextResponse.json(
         { error: "User email not found" },
         { status: 400 },
+      );
+    }
+
+    if (
+      bodyEmail &&
+      sessionEmail &&
+      bodyEmail.toLowerCase() !== sessionEmail.toLowerCase()
+    ) {
+      return NextResponse.json(
+        { error: "Email does not match the signed-in account" },
+        { status: 403 },
       );
     }
 

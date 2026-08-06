@@ -10,9 +10,10 @@ import PriceView from "../PriceView";
 import Image from "next/image";
 import Link from "next/link";
 import { useOutsideClick } from "@/hooks";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { getProductName } from "@/lib/product-locale";
 
 const SearchBar = ({
   dictionary,
@@ -31,6 +32,7 @@ const SearchBar = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useOutsideClick<HTMLDivElement>(() => setShowSearch(false));
   const toLocalizedPath = useLocalizedPath();
+  const lang = useLocale();
   const contextDictionary = useDictionary();
   const dict = dictionary ?? contextDictionary;
 
@@ -102,7 +104,16 @@ const SearchBar = ({
 
     setLoading(true);
     try {
-      const query = `*[_type == "product" && (!defined(isArchived) || isArchived != true) && name match $search] | order(name asc)`;
+      const query = `*[_type == "product" && (!defined(isArchived) || isArchived != true) && (
+        name.en match $search ||
+        name.es match $search ||
+        name.ar match $search ||
+        name match $search ||
+        description.en match $search ||
+        description.es match $search ||
+        description.ar match $search ||
+        description match $search
+      )] | order(name.en asc)`;
       const params = { search: `${search}*` };
       const response = await client.fetch(query, params);
       setProducts(response);
@@ -250,7 +261,7 @@ const SearchBar = ({
                           {product?.images && (
                             <Image
                               src={urlFor(product?.images[0]).url()}
-                              alt={product.name || t(dict, "searchModal.productAlt", "Product")}
+                              alt={getProductName(product, lang) || t(dict, "searchModal.productAlt", "Product")}
                               fill
                               className="object-cover group-hover:scale-110 transition-transform duration-500"
                             />
@@ -286,7 +297,7 @@ const SearchBar = ({
                           className="block"
                         >
                           <h3 className="font-semibold text-gray-800 line-clamp-1 group-hover:text-shop_dark_green transition-colors mb-2">
-                            {product.name}
+                            {getProductName(product, lang)}
                           </h3>
                         </Link>
 

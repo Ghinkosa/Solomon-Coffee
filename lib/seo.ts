@@ -3,6 +3,10 @@ import { Product, Category } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import { i18n, type Locale } from "@/i18n-config";
 import { contactConfig } from "@/config/contact";
+import {
+  getProductDescription,
+  getProductName,
+} from "@/lib/product-locale";
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
@@ -32,23 +36,26 @@ export function buildHreflangAlternates(path: string = ""): Record<string, strin
 /**
  * Generate metadata for product pages
  */
-export function generateProductMetadata(product: any): Metadata {
-  const title = product.name || "Product";
+export function generateProductMetadata(
+  product: any,
+  locale: Locale = i18n.defaultLocale,
+): Metadata {
+  const title = getProductName(product, locale) || "Product";
   const description =
-    product.description ||
+    getProductDescription(product, locale) ||
     `Buy ${title} online at Sheba Cup Coffee. ${
       product.price ? `Price: $${product.price}` : ""
     }`;
   const imageUrl = product.images?.[0]
     ? urlFor(product.images[0]).url()
     : "/og-image.jpg";
-  const url = `${BASE_URL}/product/${product.slug?.current}`;
+  const url = `${BASE_URL}/${locale}/product/${product.slug?.current}`;
 
   return {
     title,
     description,
     keywords: [
-      product.name || "",
+      title,
       "Sheba Cup Coffee",
       "buy online",
       "shop",
@@ -186,14 +193,16 @@ export function generateBlogMetadata(blog: any): Metadata {
 /**
  * Generate Product Schema (JSON-LD) for rich snippets
  */
-export function generateProductSchema(product: any) {
+export function generateProductSchema(product: any, locale: Locale = i18n.defaultLocale) {
   const imageUrl = product.images?.[0] ? urlFor(product.images[0]).url() : "";
+  const name = getProductName(product, locale);
+  const description = getProductDescription(product, locale);
 
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
-    description: product.description,
+    name,
+    description,
     image: imageUrl,
     sku: product._id,
     brand: {
@@ -202,7 +211,7 @@ export function generateProductSchema(product: any) {
     },
     offers: {
       "@type": "Offer",
-      url: `${BASE_URL}/product/${product.slug?.current}`,
+      url: `${BASE_URL}/${locale}/product/${product.slug?.current}`,
       priceCurrency: "USD",
       price: product.price,
       priceValidUntil: new Date(
@@ -342,7 +351,7 @@ export function generateItemListSchema(products: any[], listName: string) {
       "@type": "ListItem",
       position: index + 1,
       url: `${BASE_URL}/product/${product.slug?.current}`,
-      name: product.name,
+      name: getProductName(product, i18n.defaultLocale),
     })),
   };
 }

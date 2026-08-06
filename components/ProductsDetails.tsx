@@ -1,9 +1,10 @@
 "use client";
 
 import { Product } from "@/sanity.types";
-import { toPlainText } from "@/lib/sanity-text";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useLocale } from "@/hooks/useLocale";
+import { getProductDescription } from "@/lib/product-locale";
 
 interface ProductsDetailsProps {
   product?: Product;
@@ -11,9 +12,8 @@ interface ProductsDetailsProps {
 
 const ProductsDetails = ({ product }: ProductsDetailsProps) => {
   const dictionary = useDictionary();
-  const descriptionText = product?.description
-    ? toPlainText(product.description)
-    : "";
+  const lang = useLocale();
+  const descriptionText = getProductDescription(product, lang);
 
   if (!descriptionText) {
     return null;

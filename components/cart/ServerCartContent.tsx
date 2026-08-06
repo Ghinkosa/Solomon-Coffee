@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import EmptyCart from "@/components/EmptyCart";
 import PriceFormatter from "@/components/PriceFormatter";
 import Link from "next/link";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { CartItemControls } from "./CartItemControls";
@@ -34,6 +34,8 @@ import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import type { Dictionary } from "@/lib/dictionary-context";
 import { useUserData } from "@/contexts/UserDataContext";
+import { getProductName } from "@/lib/product-locale";
+import { resolveProductStyleOptions } from "@/lib/product-style-options";
 
 interface WeightOption {
   weight: string;
@@ -84,7 +86,7 @@ const getWeightOptions = (product: any): WeightOption[] => {
 };
 
 const getGrindOptions = (product: any): GrindOption[] => {
-  return product.grindOptions || [];
+  return resolveProductStyleOptions(product.grindOptions) as GrindOption[];
 };
 
 const getPackagingOptions = (product: any): PackagingOption[] => {
@@ -146,6 +148,7 @@ export function ServerCartContent({
   const options = (cartCopy.options ?? {}) as Record<string, string>;
   const clearModal = (cartCopy.clearModal ?? {}) as Record<string, string>;
   const toLocalizedPath = useLocalizedPath();
+  const lang = useLocale();
   const {
     items: cart,
     resetCart,
@@ -302,7 +305,9 @@ export function ServerCartContent({
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-semibold">{item.product.name}</h3>
+                      <h3 className="font-semibold">
+                        {getProductName(item.product, lang)}
+                      </h3>
                       <PriceFormatter amount={getItemCurrentPrice(item)} />
                     </div>
                     

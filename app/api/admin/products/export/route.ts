@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdminUser } from "@/lib/adminAuth";
 import { readClient } from "@/sanity/lib/client";
 import { csvFileResponse, formatCsvDate } from "@/lib/csv";
+import { getProductDescription, getProductName } from "@/lib/product-locale";
+import { i18n } from "@/i18n-config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -105,7 +107,7 @@ export async function GET(req: NextRequest) {
         .join("; ");
 
       return [
-        product.name,
+        getProductName(product, i18n.defaultLocale),
         product.slug || "",
         (product.categories || []).join("; "),
         product.price ?? "",
@@ -123,7 +125,7 @@ export async function GET(req: NextRequest) {
         product.coffeeDetails?.beanFormat || "",
         product.coffeeDetails?.caffeineLevel || "",
         weights,
-        product.description || "",
+        getProductDescription(product, i18n.defaultLocale),
         product._id,
         formatCsvDate(product._createdAt),
       ];

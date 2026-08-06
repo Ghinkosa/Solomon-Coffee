@@ -243,11 +243,11 @@ const getCategories = unstable_cache(
   async (quantity?: number): Promise<Category[]> => {
     try {
       const query = quantity
-        ? `*[_type == 'category'] | order(name asc) [0...$quantity] {
+        ? `*[_type == 'category'] | order(title asc) [0...$quantity] {
             ...,
             "productCount": count(*[_type == "product" && references(^._id)])
           }`
-        : `*[_type == 'category'] | order(name asc) {
+        : `*[_type == 'category'] | order(title asc) {
             ...,
             "productCount": count(*[_type == "product" && references(^._id)])
           }`;

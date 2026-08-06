@@ -9,6 +9,8 @@ import {
 } from "./ui/accordion";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { useLocale } from "@/hooks/useLocale";
+import { getProductName } from "@/lib/product-locale";
 
 interface ProductCharacteristicsProps {
   product: Product;
@@ -48,6 +50,8 @@ const ProductCharacteristics = ({
   product,
 }: ProductCharacteristicsProps) => {
   const dictionary = useDictionary();
+  const lang = useLocale();
+  const productName = getProductName(product, lang);
   const c = (path: string, fallback: string) =>
     t(dictionary, `product.characteristics.${path}`, fallback);
   const na = t(dictionary, "product.specs.notAvailable", "—");
@@ -63,7 +67,7 @@ const ProductCharacteristics = ({
         <AccordionTrigger className="font-bold">
           {c("title", "{name}: Characteristics").replace(
             "{name}",
-            product?.name || ""
+            productName,
           )}
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-1">

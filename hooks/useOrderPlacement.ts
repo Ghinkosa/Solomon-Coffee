@@ -9,6 +9,8 @@ import { useLocale } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
+import { getProductName } from "@/lib/product-locale";
+import { i18n } from "@/i18n-config";
 
 interface EmailOrderItem {
   name: string;
@@ -152,7 +154,8 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
         const itemData: any = {
           product: {
             _id: item.product._id,
-            name: item.product.name,
+            // Store English for ops/invoices; storefront display uses live product docs
+            name: getProductName(item.product, i18n.defaultLocale) || "Unknown Product",
             price: itemPrice,
             originalPrice: item.product.price,
           },

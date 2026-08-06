@@ -1,9 +1,11 @@
+"use client";
+
 import { Dispatch, SetStateAction } from "react";
 import Title from "../Title";
-
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { Category } from "@/sanity.types";
+
 interface Props {
   categories: Category[];
   selectedCategory?: string | null;
@@ -30,40 +32,44 @@ const CategoryList = ({
         </span>
       </div>
 
-      <RadioGroup value={selectedCategory || ""} className="space-y-1">
-        {categories?.map((category) => (
-          <div
-            key={category?._id}
-            onClick={() =>
-              setSelectedCategory(category?.slug?.current as string)
-            }
-            className="group flex items-center space-x-3 px-2 py-1 -mx-2 rounded-md hover:bg-gray-50 cursor-pointer transition-colors duration-150"
-          >
-            <RadioGroupItem
-              value={category?.slug?.current as string}
-              id={category?.slug?.current}
-              className="border-gray-300 text-shop_dark_green focus:ring-shop_dark_green"
-            />
-            <Label
-              htmlFor={category?.slug?.current}
-              className={`flex-1 cursor-pointer transition-colors duration-150 ${
-                selectedCategory === category?.slug?.current
-                  ? "font-medium text-shop_dark_green"
-                  : "text-gray-700 group-hover:text-gray-900"
-              }`}
+      <RadioGroup
+        value={selectedCategory || ""}
+        onValueChange={(value) => setSelectedCategory(value || null)}
+        className="space-y-1"
+      >
+        {categories?.map((category) => {
+          const value = category._id;
+          if (!value) return null;
+
+          return (
+            <div
+              key={value}
+              className="group flex items-center space-x-3 px-2 py-1 -mx-2 rounded-md hover:bg-gray-50 cursor-pointer transition-colors duration-150"
             >
-              {category?.title}
-            </Label>
-          </div>
-        ))}
+              <RadioGroupItem
+                value={value}
+                id={`category-${value}`}
+                className="border-gray-300 text-shop_dark_green focus:ring-shop_dark_green"
+              />
+              <Label
+                htmlFor={`category-${value}`}
+                className={`flex-1 cursor-pointer transition-colors duration-150 ${
+                  selectedCategory === value
+                    ? "font-medium text-shop_dark_green"
+                    : "text-gray-700 group-hover:text-gray-900"
+                }`}
+              >
+                {category?.title}
+              </Label>
+            </div>
+          );
+        })}
       </RadioGroup>
 
       {selectedCategory && (
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedCategory(null);
-          }}
+          type="button"
+          onClick={() => setSelectedCategory(null)}
           className="mt-4 text-xs font-medium text-gray-600 hover:text-shop_dark_green underline underline-offset-2 decoration-1 transition-colors duration-150"
         >
           {clearCategoryFilterLabel}

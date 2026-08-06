@@ -13,7 +13,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import NoProductAvailable from "./product/NoProductAvailable";
-import { toPlainText } from "@/lib/sanity-text";
+import { productSearchBlob, getProductName } from "@/lib/product-locale";
+import { useLocale } from "@/hooks/useLocale";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import {
@@ -50,6 +51,7 @@ type SortOption =
 
 const ProductCatalog = ({ initialProducts, categories }: Props) => {
   const dictionary = useDictionary();
+  const lang = useLocale();
   const c = (path: string, fallback: string) =>
     t(dictionary, `productCatalog.${path}`, fallback);
   const [products] = useState<Product[]>(initialProducts);
@@ -78,19 +80,27 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
     // Search filter
     if (searchQuery) {
       const lowerSearchQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (product) =>
-          product.name?.toLowerCase().includes(lowerSearchQuery) ||
-          toPlainText(product.description)
-            .toLowerCase()
-            .includes(lowerSearchQuery)
+      filtered = filtered.filter((product) =>
+        productSearchBlob(product).includes(lowerSearchQuery),
       );
     }
 
-    // Category filter
+    // Category filter — support raw refs (_ref) and expanded docs (_id)
     if (selectedCategories.length > 0) {
       filtered = filtered.filter((product) =>
-        product.categories?.some((cat) => selectedCategories.includes(cat._ref))
+        product.categories?.some((cat) => {
+          const categoryId =
+            typeof cat === "string"
+              ? null
+              : "_ref" in cat && typeof cat._ref === "string"
+                ? cat._ref
+                : "_id" in cat && typeof cat._id === "string"
+                  ? cat._id
+                  : null;
+          return categoryId
+            ? selectedCategories.includes(categoryId)
+            : false;
+        }),
       );
     }
 
@@ -105,9 +115,13 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "name-asc":
-          return (a.name || "").localeCompare(b.name || "");
+          return getProductName(a, lang).localeCompare(
+            getProductName(b, lang),
+          );
         case "name-desc":
-          return (b.name || "").localeCompare(a.name || "");
+          return getProductName(b, lang).localeCompare(
+            getProductName(a, lang),
+          );
         case "price-low":
           return (a.price || 0) - (b.price || 0);
         case "price-high":
@@ -128,6 +142,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
     selectedCategories,
     priceRange,
     sortBy,
+    lang,
   ]);
 
   // Reset all filters

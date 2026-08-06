@@ -17,9 +17,12 @@ import { reviewType } from "./reviewType";
 import { subscriptionType } from "./subscriptionType";
 import { packagingType } from "./packaging";
 import { checkoutSettingsType } from "./checkoutSettingsType";
+import { localeStringType, localeTextType } from "./localeTypes";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    localeStringType,
+    localeTextType,
     blockContentType,
     categoryType,
     productType,

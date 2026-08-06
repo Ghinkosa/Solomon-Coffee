@@ -9,7 +9,8 @@ import ProductsDetails from "@/components/ProductsDetails";
 import DynamicBreadcrumb from "@/components/DynamicBreadcrumb";
 import ProductSpecs from "@/components/ProductSpecs";
 import ProductReviews from "@/components/ProductReviews";
-import { toPlainText } from "@/lib/sanity-text";
+import { getProductDescription, getProductName } from "@/lib/product-locale";
+import { useLocale } from "@/hooks/useLocale";
 
 import { Product } from "@/sanity.types";
 import {
@@ -25,10 +26,6 @@ import {
   BadgePercent,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { FaRegQuestionCircle } from "react-icons/fa";
-import { FiShare2 } from "react-icons/fi";
-import { RxBorderSplit } from "react-icons/rx";
-import { TbTruckDelivery } from "react-icons/tb";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -49,6 +46,10 @@ import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import type { Dictionary } from "@/lib/dictionary-context";
+import {
+  getDefaultStyleOption,
+  resolveProductStyleOptions,
+} from "@/lib/product-style-options";
 
 interface ProductContentProps {
   product: Product;
@@ -60,6 +61,7 @@ const ProductContent = ({
   relatedProducts,
 }: ProductContentProps) => {
   const dictionary = useDictionary() as Dictionary;
+  const lang = useLocale();
   const checkoutSettings = useCheckoutSettings();
   const productCopy = dictionary.product as Record<string, unknown>;
   const select = productCopy?.select as Record<string, string> | undefined;
@@ -72,11 +74,16 @@ const ProductContent = ({
   > | undefined;
   const defaultLabel = t(dictionary, "product.default", "Default");
   const packagingExtra = t(dictionary, "product.packagingExtra", "packaging");
+  const productName = getProductName(product, lang);
+  const descriptionText = getProductDescription(product, lang);
   const [selectedWeight, setSelectedWeight] = useState<WeightOption | undefined>(
     (product as any).weightOptions?.find((w: WeightOption) => w.isDefault)
   );
+  const styleOptions = resolveProductStyleOptions(
+    (product as any).grindOptions,
+  ) as GrindOption[];
   const [selectedGrind, setSelectedGrind] = useState<GrindOption | undefined>(
-    (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available)
+    getDefaultStyleOption((product as any).grindOptions) as GrindOption,
   );
   const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption | undefined>(undefined);
   const [packagingOptions, setPackagingOptions] = useState<PackagingOption[]>([]);
@@ -85,7 +92,6 @@ const ProductContent = ({
   // Get actual review data from product
   const averageRating = product?.averageRating || 0;
   const totalReviews = product?.totalReviews || 0;
-  const descriptionText = toPlainText(product?.description);
 
   // Fetch packaging from API (same as PackagingSelector)
   useEffect(() => {
@@ -142,7 +148,7 @@ const ProductContent = ({
         {/* Breadcrumb Navigation */}
         <DynamicBreadcrumb
           productData={{
-            name: product?.name || "",
+            name: productName,
             slug: product?.slug?.current || "",
           }}
         />
@@ -160,7 +166,7 @@ const ProductContent = ({
             {/* Title and Category */}
             <div className="space-y-3">
               <h1 className="text-3xl lg:text-4xl font-bold text-shop_dark_green leading-tight">
-                {product?.name}
+                {productName}
               </h1>
               {descriptionText && (
                 <p className="text-lg text-dark-text leading-relaxed">
@@ -289,15 +295,15 @@ const ProductContent = ({
               </div>
             )}
 
-            {/* Grind Selection */}
-            {(product as any).grindOptions && (product as any).grindOptions.length > 0 && (
+            {/* Coffee style (wholebean / natural / classic wash) */}
+            {styleOptions.length > 0 && (
               <div className="space-y-3">
                 <label className="flex items-center gap-2 font-medium text-gray-700">
                   <Coffee className="w-4 h-4 text-shop_dark_green" />
-                  {select?.grind ?? "Select Grind"}
+                  {select?.grind ?? "Select Style"}
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {(product as any).grindOptions
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {styleOptions
                     .filter((g: GrindOption) => g.available)
                     .map((option: GrindOption) => (
                       <button
@@ -411,26 +417,6 @@ const ProductContent = ({
               <ProductCharacteristics product={product} />
             </ProductActionWrapper>
 
-            {/* Action Links */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2">
-              <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
-                <RxBorderSplit className="text-lg" />
-                <span>{delivery?.compareColor ?? "Compare color"}</span>
-              </button>
-              <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
-                <FaRegQuestionCircle className="text-lg" />
-                <span>{delivery?.askQuestion ?? "Ask a question"}</span>
-              </button>
-              <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
-                <TbTruckDelivery className="text-lg" />
-                <span>{delivery?.title ?? "Delivery & Return"}</span>
-              </button>
-              <button className="flex items-center gap-2 text-sm text-black hover:text-shop_light_green hoverEffect transition-colors">
-                <FiShare2 className="text-lg" />
-                <span>{delivery?.share ?? "Share"}</span>
-              </button>
-            </div>
-
             {/* Delivery Information */}
             <ProductActionWrapper delay={0.5}>
               <div className="flex flex-col">
@@ -524,7 +510,7 @@ const ProductContent = ({
           <ProductReviews
             productId={product._id}
             productName={
-              product.name ||
+              productName ||
               t(dictionary, "product.defaultProductName", "this product")
             }
           />

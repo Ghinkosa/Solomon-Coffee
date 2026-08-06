@@ -11,9 +11,10 @@ import { Product } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import AddToCartButton from "./AddToCartButton";
 import FavoriteButton from "./FavoriteButton";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocale, useLocalizedPath } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import type { Dictionary } from "@/lib/dictionary-context";
+import { getProductName } from "@/lib/product-locale";
 
 interface RelatedProductsProps {
   currentProduct: Product;
@@ -22,6 +23,7 @@ interface RelatedProductsProps {
 
 const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
   const toLocalizedPath = useLocalizedPath();
+  const locale = useLocale();
   const dictionary = useDictionary() as Dictionary;
   const related = (dictionary.product as Record<string, unknown>)?.related as
     | Record<string, string>
@@ -48,6 +50,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {relatedProducts.map((product: Product) => {
+          const productName = getProductName(product, locale);
           const imageUrl = product?.images?.[0]
             ? urlFor(product.images[0]).url()
             : null;
@@ -68,7 +71,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
-                      alt={related?.productImage ?? "Product Image"}
+                      alt={productName || related?.productImage || "Product Image"}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
@@ -76,7 +79,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                       <span className="text-gray-500 text-sm">
-                        {related?.productImage ?? "Product Image"}
+                        {productName || related?.productImage || "Product Image"}
                       </span>
                     </div>
                   )}
@@ -110,7 +113,7 @@ const RelatedProducts = memo(({ relatedProducts }: RelatedProductsProps) => {
                     className="block hover:text-shop_light_green transition-colors"
                   >
                     <h3 className="font-semibold text-shop_dark_green line-clamp-2 text-sm">
-                      {product?.name}
+                      {productName}
                     </h3>
                   </Link>
 

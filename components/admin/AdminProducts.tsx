@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
+import { getProductName, getProductDescription } from "@/lib/product-locale";
+import { i18n } from "@/i18n-config";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -243,8 +245,8 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
     if (
       !window.confirm(
         next
-          ? `Archive "${product.name}"? It will be hidden from the storefront.`
-          : `Restore "${product.name}" to the catalog?`,
+          ? `Archive "${getProductName(product, i18n.defaultLocale)}"? It will be hidden from the storefront.`
+          : `Restore "${getProductName(product, i18n.defaultLocale)}" to the catalog?`,
       )
     ) {
       return;
@@ -605,7 +607,10 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                                       .width(48)
                                       .height(48)
                                       .url()}
-                                    alt={product.name || "Product"}
+                                    alt={
+                                      getProductName(product, i18n.defaultLocale) ||
+                                      "Product"
+                                    }
                                     width={48}
                                     height={48}
                                     className="w-full h-full object-cover"
@@ -619,7 +624,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                               {/* Product Info */}
                               <div className="min-w-0">
                                 <div className="font-medium truncate">
-                                  {product.name}
+                                  {getProductName(product, i18n.defaultLocale)}
                                 </div>
                                 {(product.featured || product.isFeatured) && (
                                   <Badge
@@ -751,7 +756,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                               .width(64)
                               .height(64)
                               .url()}
-                            alt={product.name || "Product"}
+                            alt={getProductName(product, i18n.defaultLocale) || "Product"}
                             width={64}
                             height={64}
                             className="w-full h-full object-cover"
@@ -766,7 +771,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                         <div className="flex items-start justify-between">
                           <div className="min-w-0 flex-1">
                             <h3 className="font-medium text-gray-900 truncate">
-                              {product.name}
+                              {getProductName(product, i18n.defaultLocale)}
                             </h3>
                             <div className="flex items-center gap-2 mt-1">
                               {(product.featured || product.isFeatured) && (
@@ -930,7 +935,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                             .width(400)
                             .height(400)
                             .url()}
-                          alt={`${selectedProduct.name} - Image ${
+                          alt={`${getProductName(selectedProduct, i18n.defaultLocale)} - Image ${
                             currentImageIndex + 1
                           }`}
                           width={400}
@@ -982,7 +987,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                             >
                               <Image
                                 src={urlFor(image).width(64).height(64).url()}
-                                alt={`${selectedProduct.name} - Thumbnail ${
+                                alt={`${getProductName(selectedProduct, i18n.defaultLocale)} - Thumbnail ${
                                   index + 1
                                 }`}
                                 width={64}
@@ -1030,7 +1035,7 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Name:</span>
                     <span className="text-sm font-medium text-right ml-2 flex-1">
-                      {selectedProduct.name}
+                      {getProductName(selectedProduct, i18n.defaultLocale)}
                     </span>
                   </div>
                   <div className="flex justify-between items-start">
@@ -1041,16 +1046,23 @@ const AdminProducts: React.FC<AdminProductsProps> = ({
                       {selectedProduct.slug?.current || "N/A"}
                     </span>
                   </div>
-                  {selectedProduct.description && (
-                    <div className="flex flex-col gap-2">
-                      <span className="text-sm text-gray-600">
-                        Description:
-                      </span>
-                      <span className="text-sm text-gray-800 bg-white p-3 rounded border leading-relaxed">
-                        {selectedProduct.description}
-                      </span>
-                    </div>
-                  )}
+                  {(() => {
+                    const descriptionText = getProductDescription(
+                      selectedProduct,
+                      i18n.defaultLocale,
+                    );
+                    if (!descriptionText) return null;
+                    return (
+                      <div className="flex flex-col gap-2">
+                        <span className="text-sm text-gray-600">
+                          Description:
+                        </span>
+                        <span className="text-sm text-gray-800 bg-white p-3 rounded border leading-relaxed whitespace-pre-wrap">
+                          {descriptionText}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 

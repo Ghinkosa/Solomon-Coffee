@@ -237,17 +237,20 @@ export const POST = async (request: NextRequest) => {
         }
 
         if (line.grind?.type) {
+          const grindLabels: Record<string, string> = {
+            "whole-bean": "Wholebean",
+            natural: "Natural",
+            "classic-wash": "Classic Wash",
+            cafetiere: "Cafetiere",
+            filter: "Filter",
+            espresso: "Espresso",
+          };
           productItem.grind = {
             type: line.grind.type,
             label:
               line.grind.label ||
-              (line.grind.type === "whole-bean"
-                ? "Whole Bean"
-                : line.grind.type === "cafetiere"
-                  ? "Cafetiere"
-                  : line.grind.type === "filter"
-                    ? "Filter"
-                    : "Espresso"),
+              grindLabels[line.grind.type] ||
+              line.grind.type,
           };
         }
 

@@ -680,13 +680,15 @@
   "product": {
     "grind": {
       "wholeBean": "Grano entero",
+      "natural": "Natural",
+      "classicWash": "Lavado clásico",
       "cafetiere": "Cafetera de émbolo",
       "filter": "Filtro",
       "espresso": "Espresso"
     },
     "select": {
       "weight": "Seleccionar peso",
-      "grind": "Seleccionar molienda",
+      "grind": "Seleccionar estilo",
       "packaging": "Seleccionar empaque",
       "noOptions": "No hay opciones disponibles para este producto",
       "noPackaging": "No hay opciones de empaque disponibles"
@@ -707,7 +709,7 @@
       "subtotal": "Subtotal",
       "add": "Añadir al carrito",
       "weight": "Peso",
-      "grind": "Molienda",
+      "grind": "Estilo",
       "packaging": "Empaque",
       "toasts": {
         "stockLimitTitle": "Límite de stock alcanzado",
@@ -1172,7 +1174,7 @@
         "orderDateLabel": "Fecha del pedido",
         "orderItems": "Artículos del pedido ({count})",
         "weight": "Peso: {value}",
-        "grind": "Molienda: {value}",
+        "grind": "Estilo: {value}",
         "packaging": "Embalaje: {value}",
         "qty": "Cant.: {count}",
         "orderSummary": "Resumen del pedido",
@@ -1448,7 +1450,7 @@
           "activeBenefits": [
             "Acceso exclusivo a funciones premium",
             "Soporte prioritario",
-            "Recompensas y puntos de fidelidad mejorados",
+            "Acceso anticipado a nuevos productos",
             "Elegible para actualización a cuenta comercial"
           ]
         },
@@ -1470,6 +1472,11 @@
             "Soporte prioritario",
             "Gestión de pedidos al por mayor",
             "Capacidades de facturación comercial"
+          ],
+          "pendingSteps": [
+            "Nuestro equipo revisará tu solicitud comercial en 24-48 horas",
+            "Recibirás un correo cuando cambie tu estado",
+            "Tras la aprobación, tu descuento de cuenta comercial se aplicará al pagar"
           ],
           "rejectedTitle": "Solicitud comercial rechazada",
           "rejectedDescription": "Tu solicitud de cuenta comercial no fue aprobada. Puedes cancelar para volver a solicitar.",
@@ -2650,7 +2657,7 @@
     },
     "options": {
       "weight": "Peso",
-      "grind": "Molienda",
+      "grind": "Estilo",
       "packaging": "Empaque"
     },
     "summary": {

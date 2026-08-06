@@ -32,15 +32,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { safeApiCall, handleApiError } from "./apiHelpers";
+import {
+  productDescriptionForm,
+  productNameForm,
+} from "@/lib/product-locale";
 import type { Category } from "@/sanity.types";
 import { makeKey, slugify } from "./productEditorUtils";
+import {
+  PRODUCT_STYLE_VALUES,
+  defaultProductStyleOptions,
+} from "@/lib/product-style-options";
 
 const WEIGHT_CHOICES = ["125G", "250G", "500G", "1KG"] as const;
 const GRIND_CHOICES = [
-  { value: "whole-bean", label: "Whole Bean" },
-  { value: "cafetiere", label: "Cafetiere" },
-  { value: "filter", label: "Filter" },
-  { value: "espresso", label: "Espresso" },
+  { value: "whole-bean", label: "Wholebean" },
+  { value: "natural", label: "Natural" },
+  { value: "classic-wash", label: "Classic Wash" },
 ] as const;
 const VARIANT_CHOICES = [
   "Light Roast",
@@ -145,9 +152,9 @@ type FormCoffeeDetails = {
 };
 
 type FormState = {
-  name: string;
+  name: { en: string; es: string; ar: string };
   slug: string;
-  description: string;
+  description: { en: string; es: string; ar: string };
   price: string;
   discount: string;
   stock: string;
@@ -214,19 +221,19 @@ function coffeeToForm(details: any): FormCoffeeDetails {
 }
 
 function defaultGrinds(): FormGrind[] {
-  return GRIND_CHOICES.map((g, i) => ({
+  return defaultProductStyleOptions().map((g) => ({
     _key: makeKey("gr"),
-    grindType: g.value,
-    isDefault: i === 0,
-    available: true,
+    grindType: g.grindType,
+    isDefault: g.isDefault,
+    available: g.available,
   }));
 }
 
 function emptyForm(): FormState {
   return {
-    name: "",
+    name: { en: "", es: "", ar: "" },
     slug: "",
-    description: "",
+    description: { en: "", es: "", ar: "" },
     price: "0",
     discount: "0",
     stock: "0",
@@ -245,9 +252,9 @@ function emptyForm(): FormState {
 
 function productToForm(product: any): FormState {
   return {
-    name: product.name || "",
+    name: productNameForm(product),
     slug: product.slug?.current || "",
-    description: product.description || "",
+    description: productDescriptionForm(product),
     price: String(product.price ?? 0),
     discount: String(product.discount ?? 0),
     stock: String(product.stock ?? 0),
@@ -271,15 +278,17 @@ function productToForm(product: any): FormState {
       stock: String(w.stock ?? 0),
       isDefault: Boolean(w.isDefault),
     })),
-    grinds:
-      product.grindOptions?.length > 0
-        ? product.grindOptions.map((g: any) => ({
-            _key: g._key || makeKey("gr"),
-            grindType: g.grindType,
-            isDefault: Boolean(g.isDefault),
-            available: g.available !== false,
-          }))
-        : defaultGrinds(),
+    grinds: (() => {
+      const fromProduct = (product.grindOptions || [])
+        .filter((g: any) => PRODUCT_STYLE_VALUES.has(g.grindType))
+        .map((g: any) => ({
+          _key: g._key || makeKey("gr"),
+          grindType: g.grindType,
+          isDefault: Boolean(g.isDefault),
+          available: g.available !== false,
+        }));
+      return fromProduct.length > 0 ? fromProduct : defaultGrinds();
+    })(),
     packaging: (product.packagingOptions || [])
       .map((p: any) => ({
         _key: p._key || makeKey("pk"),
@@ -354,7 +363,9 @@ export default function ProductEditor({
     const price = Number(form.price);
     const stock = Number(form.stock);
     const discount = Number(form.discount);
-    if (!form.name.trim()) throw new Error("Product name is required");
+    if (!form.name.en.trim()) {
+      throw new Error("English product name is required");
+    }
     if (Number.isNaN(price) || price < 0) throw new Error("Invalid price");
     if (!Number.isInteger(stock) || stock < 0) throw new Error("Invalid stock");
     if (Number.isNaN(discount) || discount < 0) {
@@ -362,9 +373,17 @@ export default function ProductEditor({
     }
 
     return {
-      name: form.name.trim(),
-      slug: form.slug.trim() || slugify(form.name),
-      description: form.description.trim(),
+      name: {
+        en: form.name.en.trim(),
+        es: form.name.es.trim(),
+        ar: form.name.ar.trim(),
+      },
+      slug: form.slug.trim() || slugify(form.name.en),
+      description: {
+        en: form.description.en.trim(),
+        es: form.description.es.trim(),
+        ar: form.description.ar.trim(),
+      },
       price,
       stock,
       discount,
@@ -546,20 +565,39 @@ export default function ProductEditor({
           <div className="flex-1 space-y-8 overflow-y-auto px-6 py-5">
             {/* Core */}
             <section className="grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2 space-y-1.5">
-                <Label htmlFor="name">Product name</Label>
-                <Input
-                  id="name"
-                  value={form.name}
-                  onChange={(e) => {
-                    const name = e.target.value;
-                    setForm((prev) => ({
-                      ...prev,
-                      name,
-                      slug: slugTouched ? prev.slug : slugify(name),
-                    }));
-                  }}
-                />
+              <div className="sm:col-span-2 space-y-3 rounded-lg border border-gray-100 bg-gray-50/60 p-4">
+                <p className="text-sm font-medium text-gray-900">
+                  Product name (localized)
+                </p>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {(
+                    [
+                      ["en", "English *"],
+                      ["es", "Spanish"],
+                      ["ar", "Arabic"],
+                    ] as const
+                  ).map(([locale, label]) => (
+                    <div key={locale} className="space-y-1.5">
+                      <Label htmlFor={`name-${locale}`}>{label}</Label>
+                      <Input
+                        id={`name-${locale}`}
+                        value={form.name[locale]}
+                        dir={locale === "ar" ? "rtl" : "ltr"}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setForm((prev) => ({
+                            ...prev,
+                            name: { ...prev.name, [locale]: value },
+                            slug:
+                              locale === "en" && !slugTouched
+                                ? slugify(value)
+                                : prev.slug,
+                          }));
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="slug">Slug</Label>
@@ -599,19 +637,38 @@ export default function ProductEditor({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="sm:col-span-2 space-y-1.5">
-                <Label htmlFor="description">Description</Label>
-                <textarea
-                  id="description"
-                  className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                />
+              <div className="sm:col-span-2 space-y-3 rounded-lg border border-gray-100 bg-gray-50/60 p-4">
+                <p className="text-sm font-medium text-gray-900">
+                  Description (localized)
+                </p>
+                <div className="grid gap-3">
+                  {(
+                    [
+                      ["en", "English"],
+                      ["es", "Spanish"],
+                      ["ar", "Arabic"],
+                    ] as const
+                  ).map(([locale, label]) => (
+                    <div key={locale} className="space-y-1.5">
+                      <Label htmlFor={`description-${locale}`}>{label}</Label>
+                      <textarea
+                        id={`description-${locale}`}
+                        className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={form.description[locale]}
+                        dir={locale === "ar" ? "rtl" : "ltr"}
+                        onChange={(e) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            description: {
+                              ...prev.description,
+                              [locale]: e.target.value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </section>
 
@@ -973,7 +1030,7 @@ export default function ProductEditor({
 
             {/* Grinds */}
             <section className="space-y-3">
-              <Label>Grind options</Label>
+              <Label>Style options</Label>
               <div className="grid gap-2 sm:grid-cols-2">
                 {form.grinds.map((g) => {
                   const label =

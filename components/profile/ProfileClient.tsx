@@ -335,18 +335,6 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
                 </div>
               </div>
 
-              {sanity?.rewardPoints !== undefined && (
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Shield className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">{p("rewardPoints", "Reward Points")}</p>
-                    <p className="font-medium">{sanity.rewardPoints}</p>
-                  </div>
-                </div>
-              )}
-
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <CheckCircle className="h-5 w-5 text-purple-600" />
@@ -458,24 +446,10 @@ export default function ProfileClient({ userData }: ProfileClientProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                <span className="text-gray-700">{p("rewardPoints", "Reward Points")}</span>
-                <span className="font-bold text-blue-600">
-                  {sanity?.rewardPoints || 0}
-                </span>
-              </div>
-
               <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
                 <span className="text-gray-700">{p("totalSpent", "Total Spent")}</span>
                 <span className="font-bold text-green-600">
                   ${sanity?.totalSpent || 0}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
-                <span className="text-gray-700">{p("loyaltyPoints", "Loyalty Points")}</span>
-                <span className="font-bold text-purple-600">
-                  {sanity?.loyaltyPoints || 0}
                 </span>
               </div>
 

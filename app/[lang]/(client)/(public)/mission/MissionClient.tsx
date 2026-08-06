@@ -387,17 +387,6 @@ const MissionClient = ({ dictionary }: MissionClientProps) => {
                 {foundation.paragraph2 ??
                   "Sheba Cup Coffee is proud to partner with this incredible organization, donating a portion of every sale to support their lifesaving work."}
               </p>
-              <div className="mt-6 text-center">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-amber-600 text-amber-700 hover:bg-amber-50 rounded-full"
-                >
-                  <Link href="#">
-                    {foundation.cta ?? "Learn More About Mathiwos Wondu Foundation"}
-                  </Link>
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </Container>

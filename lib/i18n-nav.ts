@@ -64,7 +64,10 @@ export function getGrindLabel(
   const grind = (dictionary as { product?: { grind?: Record<string, string> } })
     .product?.grind;
   const keyMap: Record<string, string> = {
-    "whole-bean": grind?.wholeBean ?? "Whole Bean",
+    "whole-bean": grind?.wholeBean ?? "Wholebean",
+    natural: grind?.natural ?? "Natural",
+    "classic-wash": grind?.classicWash ?? "Classic Wash",
+    // Legacy brew grinds (if still stored on older products)
     cafetiere: grind?.cafetiere ?? "Cafetiere",
     filter: grind?.filter ?? "Filter",
     espresso: grind?.espresso ?? "Espresso",

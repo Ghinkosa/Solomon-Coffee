@@ -11,6 +11,7 @@ import { ShoppingBag } from "lucide-react";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
+import { getDefaultStyleOption } from "@/lib/product-style-options";
 
 interface Props {
   product: Product;
@@ -28,7 +29,7 @@ const getDefaultWeight = (product: Product): WeightOption | undefined => {
 };
 
 const getDefaultGrind = (product: Product): GrindOption | undefined => {
-  return (product as any).grindOptions?.find((g: GrindOption) => g.isDefault && g.available);
+  return getDefaultStyleOption((product as any).grindOptions) as GrindOption;
 };
 
 const getDefaultPackaging = (product: Product): PackagingOption | undefined => {

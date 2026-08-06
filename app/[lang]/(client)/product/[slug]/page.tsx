@@ -10,6 +10,7 @@ import {
   generateProductSchema,
   generateBreadcrumbSchema,
 } from "@/lib/seo";
+import { getProductName } from "@/lib/product-locale";
 
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "@/i18n-config";
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  return generateProductMetadata(product);
+  return generateProductMetadata(product, lang);
 }
 
 const ProductPage = async ({
@@ -84,13 +85,16 @@ const ProductPageContent = async ({
     totalReviews: product.totalReviews ?? undefined,
   };
 
-  const productSchema = generateProductSchema(productWithReviews);
+  const productSchema = generateProductSchema(productWithReviews, lang);
   const bc = dictionary?.breadcrumb ?? {};
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: bc.home ?? "Home", url: "/" },
     { name: bc.shop ?? "Shop", url: "/shop" },
     {
-      name: productWithReviews.name || bc.product || "Product",
+      name:
+        getProductName(productWithReviews, lang) ||
+        bc.product ||
+        "Product",
       url: `/product/${slug}`,
     },
   ]);

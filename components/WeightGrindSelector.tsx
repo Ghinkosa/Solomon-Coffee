@@ -114,9 +114,9 @@ export function WeightGrindSelector({
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
             <Coffee className="w-4 h-4" />
-            {select?.grind ?? "Select Grind"}
+            {select?.grind ?? "Select Style"}
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {grindOptions
               .filter(option => option.available)
               .map((option) => (

@@ -30,40 +30,67 @@ const Shop = ({ categories, dictionary }: Props) => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const query = `
-        *[_type == 'product' 
-          && (!defined(isArchived) || isArchived != true)
-          && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
-        ] 
-        | order(name asc) {
-          ...,
-          "categories": categories[]->title,
-          weightOptions[],
-          grindOptions[],
-          packagingOptions[] {
+      const query = selectedCategory
+        ? `*[_type == 'product'
+            && (!defined(isArchived) || isArchived != true)
+            && $selectedCategory in categories[]._ref
+          ]
+          | order(name asc) {
             ...,
-            packaging-> {
+            categories[]->{
               _id,
               title,
-              slug,
-              description,
-              price,
-              default,
-              "imageUrl": image.asset->url
+              slug
+            },
+            weightOptions[],
+            grindOptions[],
+            packagingOptions[] {
+              ...,
+              packaging-> {
+                _id,
+                title,
+                slug,
+                description,
+                price,
+                default,
+                "imageUrl": image.asset->url
+              }
             }
-          }
-        }
-      `;
+          }`
+        : `*[_type == 'product'
+            && (!defined(isArchived) || isArchived != true)
+          ]
+          | order(name asc) {
+            ...,
+            categories[]->{
+              _id,
+              title,
+              slug
+            },
+            weightOptions[],
+            grindOptions[],
+            packagingOptions[] {
+              ...,
+              packaging-> {
+                _id,
+                title,
+                slug,
+                description,
+                price,
+                default,
+                "imageUrl": image.asset->url
+              }
+            }
+          }`;
 
-      const data = await client.fetch(
-        query,
-        { selectedCategory },
-        { next: { revalidate: 0 } },
-      );
+      const data = await client
+        .withConfig({ useCdn: false })
+        .fetch(query, selectedCategory ? { selectedCategory } : {});
 
       setProducts(data || []);
     } catch (error) {
-      console.log("Shop product fetching Error", error);
+      console.error("Shop product fetching Error", error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -122,9 +149,8 @@ const Shop = ({ categories, dictionary }: Props) => {
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {dictionary?.shop?.category || "Category"}:{" "}
                   {
-                    categories?.find(
-                      (cat) => cat?.slug?.current === selectedCategory,
-                    )?.title
+                    categories?.find((cat) => cat?._id === selectedCategory)
+                      ?.title
                   }
                 </span>
               </div>
