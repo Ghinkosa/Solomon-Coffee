@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { requireAdminUser } from "@/lib/adminAuth";
 import { readClient } from "@/sanity/lib/client";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 interface OrderProduct {
-  name: string;
+  name?: unknown;
   quantity?: number;
   price?: number;
   category?: string;
@@ -208,7 +210,9 @@ export async function GET(req: NextRequest) {
 
       topProducts.forEach((order: OrderWithStatus) => {
         order.products?.forEach((product: OrderProduct) => {
-          const key = product.name || "Unknown Product";
+          const key =
+            displayProductName({ name: product.name }, i18n.defaultLocale) ||
+            "Unknown Product";
           if (!productSales[key]) {
             productSales[key] = { name: key, sales: 0, revenue: 0 };
           }

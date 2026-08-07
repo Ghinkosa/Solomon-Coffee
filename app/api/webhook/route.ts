@@ -6,15 +6,8 @@ import { backendClient } from "@/sanity/lib/backendClient";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { decrementOrderStock, restoreOrderStock } from "@/lib/stock";
-import { sendOrderConfirmationEmail } from "@/lib/emailService";
-import { getEmailImageUrl } from "@/lib/emailImageUtils";
 import { buildStripeInvoiceLineItems } from "@/lib/invoice-lines";
-import { normalizeEmailLocale } from "@/lib/email-translations";
-import { shouldSendTransactionalEmail } from "@/lib/userPreferences";
-import {
-  getUserPreferencesByClerkId,
-  getUserPreferencesByEmail,
-} from "@/lib/userPreferences.server";
+import { sendOrderConfirmationEmailByOrderId } from "@/lib/order-confirmation-email";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -526,99 +519,7 @@ async function sendPaymentNotification(orderId: string) {
   }
 }
 
-// Send the order-confirmation email for a paid Stripe order. Best-effort:
-// runs after payment details are persisted, so a failure never blocks
-// fulfillment. Works for both guest and signed-in orders (uses order.email).
+// Send the order-confirmation email for a paid Stripe order. Best-effort.
 async function sendConfirmationEmail(orderId: string) {
-  const order = await backendClient.fetch<{
-    orderNumber?: string;
-    email?: string;
-    clerkUserId?: string;
-    customerName?: string;
-    orderDate?: string;
-    locale?: string;
-    subtotal?: number;
-    shipping?: number;
-    tax?: number;
-    totalPrice?: number;
-    address?: {
-      name?: string;
-      address?: string;
-      city?: string;
-      state?: string;
-      zip?: string;
-    };
-    products?: Array<{
-      quantity: number;
-      weight?: { price?: number };
-      product?: {
-        name?: string;
-        price?: number;
-        image?: unknown;
-      };
-    }>;
-  } | null>(
-    `*[_type == "order" && _id == $orderId][0]{
-      orderNumber,
-      email,
-      clerkUserId,
-      customerName,
-      orderDate,
-      locale,
-      subtotal,
-      shipping,
-      tax,
-      totalPrice,
-      address,
-      products[]{
-        quantity,
-        weight,
-        product->{ name, price, "image": images[0] }
-      }
-    }`,
-    { orderId },
-  );
-
-  if (!order?.email) return;
-
-  const prefsRecord = order.clerkUserId
-    ? await getUserPreferencesByClerkId(order.clerkUserId)
-    : await getUserPreferencesByEmail(order.email);
-
-  if (prefsRecord && !shouldSendTransactionalEmail(prefsRecord.raw)) {
-    console.log(
-      `Skipped confirmation email for order ${orderId}: user opted out of transactional email`,
-    );
-    return;
-  }
-
-  await sendOrderConfirmationEmail({
-    customerName: order.customerName || "Customer",
-    customerEmail: order.email,
-    orderId: order.orderNumber || orderId,
-    orderDate: order.orderDate
-      ? new Date(order.orderDate).toLocaleDateString()
-      : new Date().toLocaleDateString(),
-    items: (order.products || []).map((p) => ({
-      name: p.product?.name || "Product",
-      price: p.weight?.price || p.product?.price || 0,
-      quantity: p.quantity,
-      image: getEmailImageUrl(
-        p.product?.image as Parameters<typeof getEmailImageUrl>[0],
-      ),
-    })),
-    subtotal: order.subtotal || 0,
-    shipping: order.shipping || 0,
-    tax: order.tax || 0,
-    total: order.totalPrice || 0,
-    locale: normalizeEmailLocale(order.locale),
-    shippingAddress: {
-      name: order.address?.name || order.customerName || "",
-      street: order.address?.address || "",
-      city: order.address?.city || "",
-      state: order.address?.state || "",
-      zipCode: order.address?.zip || "",
-      country: "United States",
-    },
-  });
+  await sendOrderConfirmationEmailByOrderId(orderId);
 }

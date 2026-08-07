@@ -31,6 +31,8 @@ import { urlFor } from "@/sanity/lib/image";
 import PriceFormatter from "@/components/PriceFormatter";
 import { Employee } from "@/types/employee";
 import OrderNotes from "./OrderNotes";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 interface OrderDetailSheetProps {
   order: any;
@@ -519,14 +521,14 @@ export default function OrderDetailSheet({
                         .width(60)
                         .height(60)
                         .url()}
-                      alt={item.product.name}
+                      alt={displayProductName(item.product, i18n.defaultLocale)}
                       className="w-12 h-12 object-cover rounded"
                     />
                   )}
 
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">
-                      {item.product?.name}
+                      {displayProductName(item.product, i18n.defaultLocale)}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       <PriceFormatter amount={item.product?.price || 0} />

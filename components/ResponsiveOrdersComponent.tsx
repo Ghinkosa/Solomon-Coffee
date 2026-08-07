@@ -15,7 +15,8 @@ import { MY_ORDERS_QUERY_RESULT } from "@/sanity.types";
 import DirectPaymentModal from "./DirectPaymentModal";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
+import { displayProductName } from "@/lib/display-product-name";
 
 const ResponsiveOrdersComponent = ({
   orders,
@@ -23,6 +24,7 @@ const ResponsiveOrdersComponent = ({
   orders: MY_ORDERS_QUERY_RESULT;
 }) => {
   const dictionary = useDictionary();
+  const locale = useLocale();
   const toLocalizedPath = useLocalizedPath();
   const l = (path: string, fallback: string) =>
     t(dictionary, `userDashboard.orders.list.${path}`, fallback);
@@ -61,7 +63,7 @@ const ResponsiveOrdersComponent = ({
           {displayProducts.map((item, index) => {
             const productItem = item as {
               product?: {
-                name?: string;
+                name?: unknown;
                 images?: unknown[];
                 image?: unknown;
               };
@@ -79,7 +81,10 @@ const ResponsiveOrdersComponent = ({
                 {imageUrl ? (
                   <Image
                     src={urlFor(imageUrl).url()}
-                    alt={productItem.product?.name || l("productAlt", "Product")}
+                    alt={
+                      displayProductName(productItem.product, locale) ||
+                      l("productAlt", "Product")
+                    }
                     fill
                     className="object-cover"
                   />

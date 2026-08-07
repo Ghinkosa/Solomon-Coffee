@@ -3,12 +3,15 @@
  * Keep pricing/description rules identical across both outputs.
  */
 
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
+
 export interface OrderDocumentLine {
   quantity: number;
   weight?: { value?: string; price?: number };
   grind?: { label?: string; type?: string };
   packaging?: { title?: string; price?: number };
-  product?: { _id?: string; name?: string; price?: number };
+  product?: { _id?: string; name?: unknown; price?: number };
 }
 
 export interface OrderDocumentTotals {
@@ -33,6 +36,10 @@ export interface OrderDocumentLineRow {
   packaging?: string;
 }
 
+function lineName(line: OrderDocumentLine): string {
+  return displayProductName(line.product, i18n.defaultLocale) || "Product";
+}
+
 export function getLineUnitPrice(line: OrderDocumentLine): number {
   return line.weight?.price ?? line.product?.price ?? 0;
 }
@@ -42,14 +49,14 @@ export function getLinePackagingPrice(line: OrderDocumentLine): number {
 }
 
 export function buildLineDescription(line: OrderDocumentLine): string {
-  const name = line.product?.name || "Product";
+  const name = lineName(line);
   let description = `${name} x ${line.quantity}`;
 
   if (line.weight?.value) {
     description += `\nWeight: ${line.weight.value}`;
   }
   if (line.grind?.label || line.grind?.type) {
-    description += `\nGrind: ${line.grind.label || line.grind.type}`;
+    description += `\nStyle: ${line.grind.label || line.grind.type}`;
   }
   if (line.packaging?.title) {
     description += `\nPackaging: ${line.packaging.title}`;
@@ -64,20 +71,24 @@ export function buildOrderLineRows(
   const rows: OrderDocumentLineRow[] = [];
 
   for (const line of products || []) {
-    if (!line.product?.name) continue;
+    const name = lineName(line);
+    // Skip empty skeleton lines with no product reference and no pricing
+    if (!line.product?._id && name === "Product" && !line.weight?.price) {
+      continue;
+    }
 
     const unitPrice = getLineUnitPrice(line);
     const packagingPrice = getLinePackagingPrice(line);
     const lineTotal = (unitPrice + packagingPrice) * line.quantity;
 
     rows.push({
-      name: line.product.name,
+      name,
       description: buildLineDescription(line),
       quantity: line.quantity,
       unitPrice,
       packagingPrice,
       lineTotal,
-      productId: line.product._id || "",
+      productId: line.product?._id || "",
       weight: line.weight?.value,
       packaging: line.packaging?.title,
     });

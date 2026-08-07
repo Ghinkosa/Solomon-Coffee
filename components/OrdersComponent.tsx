@@ -17,10 +17,12 @@ import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
+import { displayProductName } from "@/lib/display-product-name";
 
 const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) => {
   const toLocalizedPath = useLocalizedPath();
+  const locale = useLocale();
   const [payingOrderId] = useState<string | null>(null);
   const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(
     null
@@ -51,7 +53,9 @@ const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERY_RESULT }) => {
                 {imageUrl ? (
                   <Image
                     src={urlFor(imageUrl).url()}
-                    alt={item.product?.name || "Product"}
+                    alt={
+                      displayProductName(item.product, locale) || "Product"
+                    }
                     fill
                     className="object-cover"
                   />

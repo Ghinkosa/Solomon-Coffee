@@ -3,6 +3,27 @@
 import { readClient, writeClient } from "@/sanity/lib/client";
 import { auth } from "@clerk/nextjs/server";
 import { invalidateProductReviews } from "@/lib/cache";
+import { resolveAdminAccess } from "@/lib/adminGate";
+
+async function requireReviewAdmin(): Promise<
+  { ok: true; email: string } | { ok: false; message: string }
+> {
+  const { userId } = await auth();
+  if (!userId) {
+    return { ok: false, message: "Unauthorized" };
+  }
+  const gate = await resolveAdminAccess(userId);
+  if (gate.status === "admin") {
+    return { ok: true, email: gate.email };
+  }
+  if (gate.status === "unavailable") {
+    return {
+      ok: false,
+      message: "Admin verification unavailable. Try again shortly.",
+    };
+  }
+  return { ok: false, message: "Admin access required" };
+}
 
 // Types for review actions
 interface SubmitReviewData {
@@ -385,18 +406,23 @@ export async function canUserReviewProduct(productId: string): Promise<{
   }
 }
 
-// Admin: Approve a review
+// Admin: Approve a review (ADMIN_EMAIL allowlist only; ignore client email)
 export async function approveReview(
   reviewId: string,
-  adminEmail: string,
+  _adminEmail?: string,
 ): Promise<ReviewResponse> {
   try {
+    const admin = await requireReviewAdmin();
+    if (!admin.ok) {
+      return { success: false, message: admin.message };
+    }
+
     await writeClient
       .patch(reviewId)
       .set({
         status: "approved",
         approvedAt: new Date().toISOString(),
-        approvedBy: adminEmail,
+        approvedBy: admin.email,
         updatedAt: new Date().toISOString(),
       })
       .commit();
@@ -434,6 +460,11 @@ export async function rejectReview(
   adminNotes?: string,
 ): Promise<ReviewResponse> {
   try {
+    const admin = await requireReviewAdmin();
+    if (!admin.ok) {
+      return { success: false, message: admin.message };
+    }
+
     await writeClient
       .patch(reviewId)
       .set({
@@ -460,6 +491,9 @@ export async function rejectReview(
 // Get pending reviews for admin
 export async function getPendingReviews() {
   try {
+    const admin = await requireReviewAdmin();
+    if (!admin.ok) return [];
+
     const reviews = await writeClient.fetch(
       `*[_type == "review" && status == "pending"] | order(createdAt desc) {
         _id,

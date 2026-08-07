@@ -38,6 +38,8 @@ import {
 } from "@/lib/adminReviewAPI";
 import { toast } from "sonner";
 import Link from "next/link";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 const AdminReviews: React.FC = React.memo(() => {
@@ -165,7 +167,7 @@ const AdminReviews: React.FC = React.memo(() => {
                     className="text-sm text-shop_light_green hover:underline"
                     target="_blank"
                   >
-                    {review.product?.name}
+                    {displayProductName(review.product, i18n.defaultLocale)}
                   </Link>
                 </div>
                 <div className="flex flex-col items-end gap-2">

@@ -31,7 +31,7 @@ import { format } from "date-fns";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { toast } from "sonner";
 import useCartStore from "@/store";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import OrderTimeline from "./OrderTimeline";
 import { requestOrderCancellation } from "@/actions/orderCancellationActions";
 import {
@@ -46,6 +46,7 @@ import { cn } from "@/lib/utils";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
+import { displayProductName } from "@/lib/display-product-name";
 
 interface OrderDetailsPageProps {
   order: {
@@ -57,7 +58,7 @@ interface OrderDetailsPageProps {
     products: Array<{
       product: {
         _id: string;
-        name: string;
+        name: unknown;
         slug?: { current: string };
         image?: { asset: { url: string } };
         price: number;
@@ -176,6 +177,7 @@ const getPaymentStatusColor = (status: string) => {
 
 const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
   const dictionary = useDictionary();
+  const locale = useLocale();
   const toLocalizedPath = useLocalizedPath();
   const d = (path: string, fallback: string) =>
     t(dictionary, `userDashboard.orders.detail.${path}`, fallback);
@@ -559,34 +561,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
             <CardContent>
               <div className="space-y-4">
                 {order.products?.map(
-                  (
-                    item: {
-                      product: {
-                        _id: string;
-                        name: string;
-                        slug?: { current: string };
-                        image?: { asset: { url: string } };
-                        price: number;
-                        currency: string;
-                        categories?: Array<{ title: string }>;
-                      };
-                      quantity: number;
-                      weight?: {
-                        value: string;
-                        price: number;
-                      };
-                      grind?: {
-                        type: string;
-                        label: string;
-                      };
-                      packaging?: {
-                        id: string;
-                        title: string;
-                        price: number;
-                      };
-                    },
-                    index: number
-                  ) => {
+                  (item, index) => {
                     return (
                       <div
                         key={index}
@@ -596,7 +571,7 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                           <div className="relative w-16 h-16 shrink-0">
                             <Image
                               src={urlFor(item.product.image).url()}
-                              alt={item.product.name}
+                              alt={displayProductName(item.product, locale)}
                               fill
                               className="object-cover rounded-md"
                             />
@@ -609,10 +584,10 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                                 href={toLocalizedPath(`/product/${item.product.slug.current}`)}
                                 className="hover:text-shop_dark_green transition-colors"
                               >
-                                {item.product.name}
+                                {displayProductName(item.product, locale)}
                               </Link>
                             ) : (
-                              item.product.name
+                              displayProductName(item.product, locale)
                             )}
                           </h3>
                           

@@ -42,6 +42,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 interface AnalyticsData {
   revenue: {
@@ -142,14 +144,16 @@ const AdminAnalytics = () => {
   const prepareTopProductsChartData = () => {
     if (!analytics?.topProducts) return [];
 
-    return analytics.topProducts.map((product, index) => ({
-      name:
-        product.name && product.name.length > 15
-          ? product.name.substring(0, 15) + "..."
-          : product.name || "Unknown Product",
-      revenue: product.revenue,
-      sales: product.sales,
-    }));
+    return analytics.topProducts.map((product) => {
+      const fullName =
+        displayProductName({ name: product.name }, i18n.defaultLocale) ||
+        "Unknown Product";
+      return {
+        name: fullName.length > 15 ? fullName.substring(0, 15) + "..." : fullName,
+        revenue: product.revenue,
+        sales: product.sales,
+      };
+    });
   };
 
   const StatCard = ({

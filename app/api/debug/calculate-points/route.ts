@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
-import { blockDebugInProduction } from "@/lib/debug-route-guard";
 
+/** Loyalty / points calculator disabled. */
 export async function GET() {
-  const blocked = blockDebugInProduction();
-  if (blocked) return blocked;
+  return NextResponse.json(
+    { error: "Loyalty points are not available", code: "LOYALTY_DISABLED" },
+    { status: 410 },
+  );
+}
 
-  return NextResponse.json({ message: "Calculate points endpoint" });
+export async function POST() {
+  return NextResponse.json(
+    { error: "Loyalty points are not available", code: "LOYALTY_DISABLED" },
+    { status: 410 },
+  );
 }

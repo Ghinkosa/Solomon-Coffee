@@ -46,6 +46,8 @@ import {
 } from "@/actions/orderEmployeeActions";
 import PriceFormatter from "../PriceFormatter";
 import OrderNotes from "./OrderNotes";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 type Order = {
   _id: string;
@@ -72,7 +74,7 @@ type Order = {
     quantity: number;
     product: {
       _id: string;
-      name: string;
+      name: unknown;
       price: number;
       image?: string;
     };
@@ -433,13 +435,13 @@ export default function DeliveryOrderSheet({
                   {item.product.image && (
                     <img
                       src={item.product.image}
-                      alt={item.product.name}
+                      alt={displayProductName(item.product, i18n.defaultLocale)}
                       className="w-16 h-16 object-cover rounded"
                     />
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm line-clamp-2">
-                      {item.product.name}
+                      {displayProductName(item.product, i18n.defaultLocale)}
                     </p>
                     <div className="flex items-center justify-between mt-1">
                       <span className="text-xs text-muted-foreground">

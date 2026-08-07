@@ -49,6 +49,8 @@ import { Order } from "./types";
 import { showToast } from "@/lib/toast";
 import { OrderDetailsSkeleton } from "./SkeletonLoaders";
 import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 const ORDER_STATUS_OPTIONS: Array<{
   value: string;
@@ -1028,7 +1030,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                         {product?.image ? (
                           <img
                             src={product.image}
-                            alt={product.name}
+                            alt={displayProductName(product, i18n.defaultLocale)}
                             className="w-16 h-16 object-cover rounded-md border shadow-sm"
                           />
                         ) : (
@@ -1038,7 +1040,8 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-900 truncate mb-1">
-                            {product?.name || "Unknown Product"}
+                            {displayProductName(product, i18n.defaultLocale) ||
+                              "Unknown Product"}
                           </p>
                           {meta ? (
                             <p className="text-xs text-gray-500 mb-1">{meta}</p>

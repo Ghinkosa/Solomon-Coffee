@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import PriceFormatter from "@/components/PriceFormatter";
 import { format } from "date-fns";
 import { Loader2, Package, Search } from "lucide-react";
+import { displayProductName } from "@/lib/display-product-name";
+import { useLocale } from "@/hooks/useLocale";
 
 interface GuestOrder {
   _id: string;
@@ -24,7 +26,7 @@ interface GuestOrder {
   orderDate?: string;
   products?: Array<{
     quantity: number;
-    product?: { name?: string };
+    product?: { name?: unknown };
   }>;
   address?: {
     address?: string;
@@ -37,6 +39,7 @@ interface GuestOrder {
 export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
   const t = dictionary?.ordersTrack ?? {};
   const statusLabels = (t.statusLabels ?? {}) as Record<string, string>;
+  const locale = useLocale();
 
   const formatOrderStatus = (status?: string) => {
     if (!status) {
@@ -226,16 +229,22 @@ export default function TrackOrderClient({ dictionary }: { dictionary: any }) {
 
               <div className="space-y-2">
                 <h3 className="font-medium">{t.items ?? "Items"}</h3>
-                {order.products?.map((line, index) => (
+                {order.products?.map((line, index) => {
+                  const productName =
+                    displayProductName(line.product, locale) ||
+                    t.product ||
+                    "Product";
+                  return (
                   <div
-                    key={`${line.product?.name}-${index}`}
+                    key={`${productName}-${index}`}
                     className="flex justify-between text-sm border rounded-lg p-3"
                   >
                     <span>
-                      {line.product?.name || t.product || "Product"} x {line.quantity}
+                      {productName} x {line.quantity}
                     </span>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               {canPayOnline && (

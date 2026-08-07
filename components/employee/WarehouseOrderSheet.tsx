@@ -27,6 +27,8 @@ import { Employee } from "@/types/employee";
 import { assignDeliveryman } from "@/actions/orderEmployeeActions";
 import { writeClient } from "@/sanity/lib/client";
 import OrderNotes from "./OrderNotes";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 interface WarehouseOrderSheetProps {
   order: any;
@@ -232,13 +234,17 @@ export default function WarehouseOrderSheet({
                     {imageUrl && (
                       <img
                         src={imageUrl}
-                        alt={product?.name || "Product"}
+                        alt={
+                          displayProductName(product, i18n.defaultLocale) ||
+                          "Product"
+                        }
                         className="w-20 h-20 object-cover rounded-md"
                       />
                     )}
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-sm mb-1">
-                        {product?.name || "Unknown Product"}
+                        {displayProductName(product, i18n.defaultLocale) ||
+                          "Unknown Product"}
                       </h4>
                       <div className="text-sm text-muted-foreground">
                         Quantity: {item.quantity}

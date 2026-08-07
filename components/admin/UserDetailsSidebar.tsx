@@ -20,7 +20,6 @@ import {
   Calendar,
   Clock,
   Database,
-  Gift,
   DollarSign,
   Bell,
   RefreshCw,
@@ -106,7 +105,7 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
           onUserUpdate(updatedUser);
           showToast.success(
             "Store profile created",
-            `${user.fullName} can now receive notifications and track loyalty points.`
+            `${user.fullName} can now receive notifications.`
           );
         } else {
           // For other actions, close the sidebar
@@ -292,16 +291,7 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
 
                     <Separator />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground mb-1">
-                          <Gift className="h-3 w-3" />
-                          Loyalty Points
-                        </div>
-                        <div className="text-lg font-semibold">
-                          {user.loyaltyPoints.toLocaleString()}
-                        </div>
-                      </div>
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="text-center">
                         <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground mb-1">
                           <DollarSign className="h-3 w-3" />
@@ -355,7 +345,6 @@ export const UserDetailsSidebar: React.FC<UserDetailsSidebarProps> = ({
                     </div>
                     <ul className="text-xs text-muted-foreground mt-1 space-y-1">
                       <li>• Notification management</li>
-                      <li>• Loyalty points tracking</li>
                       <li>• Purchase history</li>
                       <li>• User preferences</li>
                     </ul>

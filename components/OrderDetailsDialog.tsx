@@ -17,6 +17,8 @@ import { urlFor } from "@/sanity/lib/image";
 import { Button } from "./ui/button";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 interface OrderDetailsDialogProps {
   order: MY_ORDERS_QUERY_RESULT[number] | null;
@@ -149,7 +151,9 @@ const OrderDetailsDialog: FC<OrderDetailsDialogProps> = ({
                     />
                   )}
 
-                  {product?.product && product?.product?.name}
+                  {product?.product &&
+                    (displayProductName(product.product, i18n.defaultLocale) ||
+                      l("productAlt", "Product"))}
                 </TableCell>
                 <TableCell>{product?.quantity}</TableCell>
                 <TableCell>

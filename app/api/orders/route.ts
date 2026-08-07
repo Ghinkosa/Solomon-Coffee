@@ -407,6 +407,19 @@ export const POST = async (request: NextRequest) => {
       } catch (adminEmailError) {
         console.error("Failed to notify admins of new order:", adminEmailError);
       }
+
+      // Customer confirmation email — server-owned (not browser fire-and-forget)
+      try {
+        const { sendOrderConfirmationEmailByOrderId } = await import(
+          "@/lib/order-confirmation-email"
+        );
+        await sendOrderConfirmationEmailByOrderId(createdOrder._id);
+      } catch (codEmailError) {
+        console.error(
+          "Failed to send COD order confirmation email:",
+          codEmailError,
+        );
+      }
     }
 
     return NextResponse.json({

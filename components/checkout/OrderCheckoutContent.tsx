@@ -22,10 +22,11 @@ import { urlFor } from "@/sanity/lib/image";
 import { toast } from "sonner";
 import { PAYMENT_METHODS, PaymentMethod } from "@/lib/orderStatus";
 import Link from "next/link";
-import { useLocalizedPath } from "@/hooks/useLocale";
+import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import { Badge } from "@/components/ui/badge";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
+import { displayProductName } from "@/lib/display-product-name";
 
 interface OrderProduct {
   product: {
@@ -68,6 +69,7 @@ interface OrderCheckoutContentProps {
 
 export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
   const dictionary = useDictionary();
+  const locale = useLocale();
   const checkoutCopy = (dictionary?.checkout ?? {}) as Record<string, unknown>;
   const orderPayment = checkoutCopy.orderPayment as Record<string, unknown> | undefined;
   const orderToasts = orderPayment?.toasts as Record<string, string> | undefined;
@@ -287,14 +289,19 @@ export function OrderCheckoutContent({ order }: OrderCheckoutContentProps) {
                         ? urlFor(item.product.images[0]).url()
                         : "/placeholder.png"
                     }
-                    alt={item.product.name || t(dictionary, "ordersTrack.product", "Product")}
+                    alt={
+                      displayProductName(item.product, locale) ||
+                      t(dictionary, "ordersTrack.product", "Product")
+                    }
                     width={64}
                     height={64}
                     className="w-full h-full object-cover rounded"
                   />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium">{item.product.name}</h4>
+                  <h4 className="font-medium">
+                    {displayProductName(item.product, locale)}
+                  </h4>
                   <p className="text-sm text-muted-foreground">
                     {String(checkoutCopy.qty ?? t(dictionary, "checkout.qty", "Qty"))}: {item.quantity}
                   </p>

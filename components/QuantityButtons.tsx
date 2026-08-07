@@ -8,6 +8,7 @@ import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { useLocale } from "@/hooks/useLocale";
 import { getProductName } from "@/lib/product-locale";
+import { getAvailableStock, isOutOfStock as isLineOutOfStock } from "@/lib/cart-stock";
 
 interface Props {
   product: Product;
@@ -40,7 +41,8 @@ const QuantityButtons = ({
     selectedGrind,
     selectedPackaging,
   );
-  const isOutOfStock = product?.stock === 0;
+  const availableStock = getAvailableStock(product, selectedWeight);
+  const isOutOfStock = isLineOutOfStock(product, selectedWeight);
 
   const handleRemoveProduct = () => {
     removeItem(product?._id, selectedWeight, selectedGrind, selectedPackaging);
@@ -59,7 +61,7 @@ const QuantityButtons = ({
   };
 
   const handleAddToCart = () => {
-    if ((product?.stock as number) > itemCount) {
+    if (availableStock > itemCount) {
       addItem(product, selectedWeight, selectedGrind, selectedPackaging);
       toast.success(
         t(dictionary, "cartToasts.quantityIncreased", "Quantity increased successfully!"),

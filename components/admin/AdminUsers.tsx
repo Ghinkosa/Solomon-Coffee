@@ -222,14 +222,42 @@ const AdminUsers: React.FC = () => {
     }
   };
 
-  // Handle user update for instant feedback
+  // Handle user update for instant feedback (e.g. sidebar "Add store profile")
   const handleUserUpdate = (updatedUser: CombinedUser) => {
-    // Update the user in the users list
-    setUsers((prevUsers) =>
-      prevUsers.map((user) => (user.id === updatedUser.id ? updatedUser : user))
-    );
+    setUsers((prevUsers) => {
+      const prev = prevUsers.find((user) => user.id === updatedUser.id);
 
-    // Update the sidebar state with the new user data
+      // Defer header-stat deltas so we read list state after any preceding
+      // fetchUsers apply, and avoid nested setState inside this updater.
+      if (prev) {
+        queueMicrotask(() => {
+          if (!prev.inSanity && updatedUser.inSanity) {
+            setSanityUsersCount((count) => count + 1);
+            setClerkOnlyCount((count) => Math.max(0, count - 1));
+            if (updatedUser.isActive) {
+              setActiveUsersCount((count) => count + 1);
+            }
+          } else if (prev.inSanity && !updatedUser.inSanity) {
+            setSanityUsersCount((count) => Math.max(0, count - 1));
+            setClerkOnlyCount((count) => count + 1);
+            if (prev.isActive) {
+              setActiveUsersCount((count) => Math.max(0, count - 1));
+            }
+          } else if (prev.inSanity && updatedUser.inSanity) {
+            if (!prev.isActive && updatedUser.isActive) {
+              setActiveUsersCount((count) => count + 1);
+            } else if (prev.isActive && !updatedUser.isActive) {
+              setActiveUsersCount((count) => Math.max(0, count - 1));
+            }
+          }
+        });
+      }
+
+      return prevUsers.map((user) =>
+        user.id === updatedUser.id ? updatedUser : user,
+      );
+    });
+
     setSidebarState((prev) => ({
       ...prev,
       user: updatedUser,
@@ -659,7 +687,7 @@ const AdminUsers: React.FC = () => {
                                 </div>
                                 {user.inSanity && (
                                   <div className="text-xs text-muted-foreground">
-                                    Points: {user.loyaltyPoints} | Spent: $
+                                    Spent: $
                                     {user.totalSpent}
                                   </div>
                                 )}
@@ -850,7 +878,7 @@ const AdminUsers: React.FC = () => {
                             </div>
                             {user.inSanity && (
                               <div className="text-xs text-muted-foreground">
-                                Points: {user.loyaltyPoints} | Spent: $
+                                Spent: $
                                 {user.totalSpent}
                               </div>
                             )}
@@ -900,7 +928,8 @@ const AdminUsers: React.FC = () => {
                                 {user.employeeRole}
                               </Badge>
                             )}
-                          {user.notificationCount > 1 && (
+                          {(!employeeOpsEnabled || !user.isEmployee) &&
+                            user.notificationCount > 0 && (
                             <Badge variant="outline" className="text-xs">
                               {user.notificationCount} notifications
                             </Badge>

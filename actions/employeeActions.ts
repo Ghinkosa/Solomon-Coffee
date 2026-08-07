@@ -9,6 +9,7 @@ import {
   ROLE_PERMISSIONS,
 } from "@/types/employee";
 import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
+import { resolveAdminAccess } from "@/lib/adminGate";
 
 const EMPLOYEE_OPS_DISABLED_MESSAGE =
   "Employee management is currently turned off. Contact Sheba Cup Coffee to enable this add-on.";
@@ -16,6 +17,28 @@ const EMPLOYEE_OPS_DISABLED_MESSAGE =
 function ensureEmployeeOpsEnabled(): { success: false; message: string } | null {
   if (isEmployeeOpsEnabled()) return null;
   return { success: false, message: EMPLOYEE_OPS_DISABLED_MESSAGE };
+}
+
+/** Admin allowlist only — Sanity profile alone is never enough. */
+async function requireAdminActor(): Promise<
+  { ok: true; email: string; clerkUserId: string } | { ok: false; message: string }
+> {
+  const { userId } = await auth();
+  if (!userId) {
+    return { ok: false, message: "Unauthorized" };
+  }
+
+  const gate = await resolveAdminAccess(userId);
+  if (gate.status === "admin") {
+    return { ok: true, email: gate.email, clerkUserId: userId };
+  }
+  if (gate.status === "unavailable") {
+    return {
+      ok: false,
+      message: "Admin verification unavailable. Try again shortly.",
+    };
+  }
+  return { ok: false, message: "Admin access required" };
 }
 
 // Assign employee role to a user
@@ -27,20 +50,9 @@ export async function assignEmployeeRole(
   if (disabled) return disabled;
 
   try {
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
-    }
-
-    // Get admin user to verify permissions
-    const adminUser = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId][0]`,
-      { clerkUserId }
-    );
-
-    if (!adminUser) {
-      return { success: false, message: "Admin user not found" };
+    const admin = await requireAdminActor();
+    if (!admin.ok) {
+      return { success: false, message: admin.message };
     }
 
     // Get user to assign role to
@@ -60,7 +72,7 @@ export async function assignEmployeeRole(
         isEmployee: true,
         employeeRole: role,
         employeeStatus: "active",
-        employeeAssignedBy: adminUser.email,
+        employeeAssignedBy: admin.email,
         employeeAssignedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       })
@@ -78,7 +90,7 @@ export async function assignEmployeeRole(
         lastName: updatedUser.lastName,
         role,
         status: "active",
-        assignedBy: adminUser.email,
+        assignedBy: admin.email,
         assignedAt: new Date().toISOString(),
         permissions: ROLE_PERMISSIONS[role],
         createdAt: updatedUser.createdAt,
@@ -105,10 +117,9 @@ export async function removeEmployeeRole(
   if (disabled) return disabled;
 
   try {
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
+    const admin = await requireAdminActor();
+    if (!admin.ok) {
+      return { success: false, message: admin.message };
     }
 
     await backendClient
@@ -144,19 +155,9 @@ export async function updateEmployeeStatus(
   if (disabled) return disabled;
 
   try {
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
-    }
-
-    const adminUser = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId][0]`,
-      { clerkUserId }
-    );
-
-    if (!adminUser) {
-      return { success: false, message: "Admin user not found" };
+    const admin = await requireAdminActor();
+    if (!admin.ok) {
+      return { success: false, message: admin.message };
     }
 
     const updateData: any = {
@@ -165,7 +166,7 @@ export async function updateEmployeeStatus(
     };
 
     if (status === "suspended") {
-      updateData.employeeSuspendedBy = adminUser.email;
+      updateData.employeeSuspendedBy = admin.email;
       updateData.employeeSuspendedAt = new Date().toISOString();
       if (reason) {
         updateData.employeeSuspensionReason = reason;
@@ -192,6 +193,9 @@ export async function getAllEmployees(): Promise<Employee[]> {
   if (!isEmployeeOpsEnabled()) return [];
 
   try {
+    const admin = await requireAdminActor();
+    if (!admin.ok) return [];
+
     const employees = await backendClient.fetch(
       `*[_type == "user" && isEmployee == true] | order(employeeAssignedAt desc) {
         _id,
@@ -238,6 +242,9 @@ export async function getEmployeesByRole(
   if (!isEmployeeOpsEnabled()) return [];
 
   try {
+    const admin = await requireAdminActor();
+    if (!admin.ok) return [];
+
     const employees = await backendClient.fetch(
       `*[_type == "user" && isEmployee == true && employeeRole == $role && employeeStatus == "active"] | order(firstName asc) {
         _id,
@@ -321,9 +328,13 @@ export async function getCurrentEmployee(): Promise<Employee | null> {
   }
 }
 
-// Get all users (potential employees)
+// Get all users (potential employees) — admin only, never public
 export async function getAllUsers() {
   try {
+    if (!isEmployeeOpsEnabled()) return [];
+    const admin = await requireAdminActor();
+    if (!admin.ok) return [];
+
     const users = await backendClient.fetch(
       `*[_type == "user"] | order(createdAt desc) {
         _id,
@@ -360,6 +371,11 @@ export async function updateEmployeePerformance(
   }>
 ): Promise<{ success: boolean; message: string }> {
   try {
+    const admin = await requireAdminActor();
+    if (!admin.ok) {
+      return { success: false, message: admin.message };
+    }
+
     const user = await backendClient.fetch(
       `*[_type == "user" && _id == $userId][0] { employeePerformance }`,
       { userId }

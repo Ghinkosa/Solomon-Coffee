@@ -12,6 +12,7 @@ import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getGrindLabel } from "@/lib/i18n-nav";
 import { getDefaultStyleOption } from "@/lib/product-style-options";
+import { getAvailableStock, isOutOfStock as isLineOutOfStock } from "@/lib/cart-stock";
 
 interface Props {
   product: Product;
@@ -80,14 +81,15 @@ const AddToCartButton = memo(({
     effectiveGrind,
     effectivePackaging,
   );
-  const isOutOfStock = product?.stock === 0;
+  const availableStock = getAvailableStock(product, effectiveWeight);
+  const isOutOfStock = isLineOutOfStock(product, effectiveWeight);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   const handleAddToCart = useCallback(() => {
-    if ((product?.stock as number) > itemCount) {
+    if (availableStock > itemCount) {
       addItem(product, effectiveWeight, effectiveGrind, effectivePackaging);
 
       openCartDrawer({
@@ -112,12 +114,13 @@ const AddToCartButton = memo(({
   }, [
     product,
     itemCount,
+    availableStock,
     addItem,
     openCartDrawer,
     effectiveWeight,
     effectiveGrind,
     effectivePackaging,
-    totalItemPrice,
+    dictionary,
   ]);
 
   if (!isClient) {

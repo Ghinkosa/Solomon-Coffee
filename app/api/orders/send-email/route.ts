@@ -13,6 +13,8 @@ import {
   getUserPreferencesByClerkId,
   getUserPreferencesByEmail,
 } from "@/lib/userPreferences.server";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n, type Locale } from "@/i18n-config";
 
 // Extended interface for email preparation that can handle Sanity images
 interface EmailOrderItem {
@@ -83,7 +85,7 @@ export async function POST(request: NextRequest) {
       products?: Array<{
         quantity: number;
         weight?: { price?: number };
-        product?: { name?: string; price?: number; image?: unknown };
+        product?: { name?: unknown; price?: number; image?: unknown };
       }>;
     } | null>(
       `*[_type == "order" && orderNumber == $orderNumber][0]{
@@ -157,6 +159,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const emailLocale = (
+      (i18n.locales as readonly string[]).includes(order.locale || "")
+        ? order.locale
+        : i18n.defaultLocale
+    ) as Locale;
+
     const emailDataWithImages: OrderConfirmationData = {
       customerName: order.customerName || orderData.customerName || "Customer",
       customerEmail: order.email || orderData.customerEmail,
@@ -165,7 +173,10 @@ export async function POST(request: NextRequest) {
         ? new Date(order.orderDate).toLocaleDateString()
         : orderData.orderDate,
       items: (order.products || []).map((item) => ({
-        name: item.product?.name || "Product",
+        name:
+          displayProductName(item.product, emailLocale) ||
+          displayProductName(item.product, i18n.defaultLocale) ||
+          "Product",
         price: item.weight?.price || item.product?.price || 0,
         quantity: item.quantity,
         image: getEmailImageUrl(

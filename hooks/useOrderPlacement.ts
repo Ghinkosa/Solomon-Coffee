@@ -12,39 +12,6 @@ import { getGrindLabel } from "@/lib/i18n-nav";
 import { getProductName } from "@/lib/product-locale";
 import { i18n } from "@/i18n-config";
 
-interface EmailOrderItem {
-  name: string;
-  price: number;
-  quantity: number;
-  weight?: string;
-  weightPrice?: number;
-  grind?: string;
-  packaging?: string;
-  packagingPrice?: number;
-  image?: any;
-}
-
-interface EmailOrderData {
-  customerName: string;
-  customerEmail: string;
-  orderId: string;
-  orderDate: string;
-  items: EmailOrderItem[];
-  subtotal: number;
-  packagingFee: number;
-  shipping: number;
-  tax: number;
-  total: number;
-  shippingAddress: {
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
-}
-
 interface Address {
   _id: string;
   name: string;
@@ -245,60 +212,8 @@ export function useOrderPlacement({ user }: UseOrderPlacementProps) {
 
       setOrderPlacementState(true, "emailing");
 
-      // ✅ Prepare Email Data with ALL selections (Weight, Grind, Packaging)
-      const emailData: EmailOrderData = {
-        customerName: selectedAddress.name || "Customer",
-        customerEmail:
-          selectedAddress.email ||
-          user?.emailAddresses[0]?.emailAddress ||
-          "",
-        orderId: orderNumber,
-        orderDate: new Date().toLocaleDateString(),
-        items: cartSnapshot.map((item) => {
-          const finalWeight = item.selectedWeight || selectionsData?.find(s => s.productId === item.product._id)?.weight;
-          const finalGrind = item.selectedGrind || selectionsData?.find(s => s.productId === item.product._id)?.grind;
-          const finalPackaging = item.selectedPackaging || selectionsData?.find(s => s.productId === item.product._id)?.packaging;
-          
-          return {
-            name: item.product.name || "Unknown Product",
-            price: finalWeight?.price || getItemCurrentPrice(item),
-            quantity: item.quantity,
-            weight: finalWeight?.weight,
-            weightPrice: finalWeight?.price,
-            grind: finalGrind?.grindType,
-            packaging: finalPackaging?.title,
-            packagingPrice: finalPackaging?.price,
-            image: item.product.images?.[0] || undefined,
-          };
-        }),
-        subtotal,
-        packagingFee,
-        shipping,
-        tax,
-        total,
-        shippingAddress: {
-          name: selectedAddress.name,
-          street: selectedAddress.address,
-          city: selectedAddress.city,
-          state: selectedAddress.state,
-          zipCode: selectedAddress.zip,
-          country: "United States",
-        },
-      };
-
-      // Send the confirmation email now ONLY for COD orders (payment is settled
-      // on delivery, so the order is genuinely confirmed). For Stripe, the email
-      // is sent by the webhook after payment succeeds — otherwise customers who
-      // abandon checkout would get a "thank you for your purchase" email for an
-      // order they never paid for.
-      if (selectedPaymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY) {
-        fetch("/api/orders/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderData: emailData }),
-        }).catch((err) => console.error("Email failed:", err));
-      }
-
+      // COD confirmation email is sent server-side at order create.
+      // Stripe email is sent by the webhook after payment succeeds.
       setOrderPlacementState(true, "redirecting");
 
       // Handle redirect based on payment method

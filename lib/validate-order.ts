@@ -5,6 +5,13 @@ import {
   type CheckoutPricingItem,
 } from "@/lib/checkout-pricing";
 import { getTaxRuleForState } from "@/lib/tax-settings";
+import {
+  getStyleOptionLabel,
+  PRODUCT_STYLE_VALUES,
+  resolveProductStyleOptions,
+} from "@/lib/product-style-options";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 interface OrderRequestItem {
   product: {
@@ -43,6 +50,7 @@ interface ValidateOrderInput {
 
 interface SanityProduct {
   _id: string;
+  name?: unknown;
   price?: number;
   discount?: number;
   stock?: number;
@@ -51,6 +59,11 @@ interface SanityProduct {
     price: number;
     stock?: number;
     isDefault?: boolean;
+  }>;
+  grindOptions?: Array<{
+    grindType: string;
+    isDefault?: boolean;
+    available?: boolean;
   }>;
   packagingOptions?: Array<{
     packaging?: {
@@ -101,10 +114,12 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
   const products = await readClient.fetch<SanityProduct[]>(
     `*[_type == "product" && _id in $ids && (!defined(isArchived) || isArchived != true)]{
       _id,
+      name,
       price,
       discount,
       stock,
       weightOptions,
+      grindOptions,
       packagingOptions[]{
         packaging->{
           _id,
@@ -127,6 +142,11 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
       return { valid: false as const, error: "One or more products were not found" };
     }
 
+    const productName =
+      displayProductName(product, i18n.defaultLocale) ||
+      displayProductName(item.product, i18n.defaultLocale) ||
+      product._id;
+
     const requestedWeight = item.weight?.value?.trim();
     const selectedWeight = requestedWeight
       ? product.weightOptions?.find((option) => option.weight === requestedWeight)
@@ -135,7 +155,7 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
     if (requestedWeight && !selectedWeight) {
       return {
         valid: false as const,
-        error: `The selected weight is no longer available for ${item.product._id}`,
+        error: `The selected weight is no longer available for ${productName}`,
       };
     }
 
@@ -146,7 +166,32 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
     if (availableStock < item.quantity) {
       return {
         valid: false as const,
-        error: `Insufficient stock for ${item.product._id}`,
+        error: `Insufficient stock for ${productName}`,
+      };
+    }
+
+    const styleOptions = resolveProductStyleOptions(product.grindOptions);
+    const availableStyles = styleOptions.filter((s) => s.available);
+    let resolvedGrind: { type: string; label: string } | undefined;
+
+    if (item.grind?.type) {
+      const requestedStyle = item.grind.type.trim();
+      if (!PRODUCT_STYLE_VALUES.has(requestedStyle)) {
+        return {
+          valid: false as const,
+          error: `Invalid coffee style selected for ${productName}. Please refresh your cart.`,
+        };
+      }
+      const match = availableStyles.find((s) => s.grindType === requestedStyle);
+      if (!match) {
+        return {
+          valid: false as const,
+          error: `The selected coffee style is no longer available for ${productName}. Please refresh your cart.`,
+        };
+      }
+      resolvedGrind = {
+        type: match.grindType,
+        label: getStyleOptionLabel(match.grindType),
       };
     }
 
@@ -163,15 +208,12 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
       quantity: item.quantity,
       unitPrice,
       discountPercent: product.discount ?? 0,
-      // Only ever trust the server-side packaging price. Never fall back to the
-      // client-supplied price — an unmatched packaging id contributes $0 and the
-      // total check below will reject a tampered cart.
       packagingPrice,
     });
 
     resolvedLines.push({
       productId: item.product._id,
-      productName: item.product.name,
+      productName,
       productCategory: item.product.category,
       quantity: item.quantity,
       unitPrice,
@@ -179,12 +221,7 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
       packagingId: packagingFromDb?._id,
       packagingTitle: packagingFromDb?.title || item.packaging?.title,
       weightValue: selectedWeight?.weight || item.weight?.value,
-      grind: item.grind?.type
-        ? {
-            type: item.grind.type,
-            label: item.grind.label,
-          }
-        : undefined,
+      grind: resolvedGrind,
     });
   }
 

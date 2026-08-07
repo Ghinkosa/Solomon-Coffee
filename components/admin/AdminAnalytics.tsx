@@ -28,6 +28,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
+import { displayProductName } from "@/lib/display-product-name";
+import { i18n } from "@/i18n-config";
 
 interface AnalyticsData {
   revenue: {
@@ -324,7 +326,10 @@ const AdminAnalytics = () => {
                   >
                     <div>
                       <div className="font-medium text-sm text-dark-color">
-                        {product.name}
+                        {displayProductName(
+                          { name: product.name },
+                          i18n.defaultLocale,
+                        ) || String(product.name || "")}
                       </div>
                       <div className="text-xs text-light-color">
                         {product.sales} sales

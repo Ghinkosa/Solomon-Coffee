@@ -156,12 +156,16 @@ export default clerkMiddleware(async (auth, req) => {
       );
     }
 
+    // Fail closed: never expose Sanity Studio when admin cannot be verified.
     if (gate.status === "unavailable") {
       console.warn(
-        "[proxy] Studio Clerk lookup unavailable; continuing",
+        "[proxy] Studio Clerk lookup unavailable; denying access",
         gate.reason,
       );
-      return NextResponse.next();
+      const loginUrl = new URL(`/${locale}/admin/login`, req.url);
+      loginUrl.searchParams.set("redirectTo", pathname);
+      loginUrl.searchParams.set("reason", "auth_unavailable");
+      return NextResponse.redirect(loginUrl);
     }
 
     return NextResponse.next();
