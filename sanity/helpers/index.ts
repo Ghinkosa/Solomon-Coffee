@@ -13,7 +13,7 @@ export const getProductsByCategory = async (categorySlug: string) => {
         ...,
         packaging->
       }
-    } | order(name asc)`,
+    } | order(coalesce(name.en, name.es, name.ar, name) asc)`,
   );
   try {
     const products = await sanityFetch({
@@ -40,7 +40,7 @@ export const getAllProducts = async () => {
         ...,
         packaging->
       }
-    } | order(name asc)`,
+    } | order(coalesce(name.en, name.es, name.ar, name) asc)`,
   );
   try {
     const products = await sanityFetch({

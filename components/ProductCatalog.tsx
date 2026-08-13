@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import NoProductAvailable from "./product/NoProductAvailable";
 import { productSearchBlob, getProductName } from "@/lib/product-locale";
+import { toDisplayText } from "@/lib/locale-content";
 import { useLocale } from "@/hooks/useLocale";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -261,7 +262,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
               const category = categories.find((c) => c._id === catId);
               return category ? (
                 <Badge key={catId} variant="secondary" className="gap-1">
-                  {category.title}
+                  {toDisplayText(category.title, lang)}
                   <X
                     className="w-3 h-3 cursor-pointer"
                     onClick={() => toggleCategory(catId)}
@@ -342,7 +343,7 @@ const ProductCatalog = ({ initialProducts, categories }: Props) => {
                           htmlFor={category._id}
                           className="text-sm flex-1 cursor-pointer"
                         >
-                          {category.title}
+                          {toDisplayText(category.title, lang)}
                         </label>
                       </div>
                     ))}

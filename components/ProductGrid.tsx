@@ -54,11 +54,13 @@ const ProductGrid = ({
   }, []);
 
   function getSortQuery(sort: SortOption): string {
+    const nameAsc = "coalesce(name.en, name.es, name.ar, name) asc";
+    const nameDesc = "coalesce(name.en, name.es, name.ar, name) desc";
     switch (sort) {
       case "name-asc":
-        return "name asc";
+        return nameAsc;
       case "name-desc":
-        return "name desc";
+        return nameDesc;
       case "price-asc":
         return "price asc";
       case "price-desc":
@@ -66,7 +68,7 @@ const ProductGrid = ({
       case "newest":
         return "_createdAt desc";
       default:
-        return "name asc";
+        return nameAsc;
     }
   }
 

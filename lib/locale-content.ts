@@ -42,6 +42,22 @@ export function resolveLocaleString(
   return "";
 }
 
+/**
+ * Safe React-child text for CMS values that may be a plain string or
+ * `{ en, es, ar }` locale map. Never return a non-primitive.
+ */
+export function toDisplayText(
+  value: unknown,
+  locale: Locale = i18n.defaultLocale,
+): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return resolveLocaleString(value, locale);
+}
+
 /** Build a locale object, dropping empty strings. */
 export function toLocaleStrings(
   input: Partial<Record<Locale, string | undefined>> | string | null | undefined,

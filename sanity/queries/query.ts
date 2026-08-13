@@ -9,14 +9,14 @@ const BANNER_QUERY = defineQuery(
 const FEATURED_CATEGORY_QUERY = defineQuery(
   `*[_type == 'category' && featured == true] | order(name desc)`
 );
-const ALL_PRODUCTS_QUERY = defineQuery(`*[_type=="product" && (!defined(isArchived) || isArchived != true)] | order(name asc)`);
+const ALL_PRODUCTS_QUERY = defineQuery(`*[_type=="product" && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc)`);
 const DEAL_PRODUCTS = defineQuery(
-  `*[_type == 'product' && status == 'hot' && (!defined(isArchived) || isArchived != true)] | order(name asc){
+  `*[_type == 'product' && status == 'hot' && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc){
   ...,"categories": categories[]->title
 }`
 );
 const FEATURE_PRODUCTS = defineQuery(
-  `*[_type == 'product' && isFeatured == true && (!defined(isArchived) || isArchived != true)] | order(name asc){
+  `*[_type == 'product' && isFeatured == true && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc){
     ...,"categories": categories[]->title
 }`
 );
@@ -92,7 +92,7 @@ const ADMIN_CATEGORIES_QUERY = defineQuery(
 );
 
 const PRODUCT_BY_SLUG_QUERY = defineQuery(
-  `*[_type == "product" && slug.current == $slug && (!defined(isArchived) || isArchived != true)] | order(name asc) [0]{
+  `*[_type == "product" && slug.current == $slug && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc) [0]{
     ...,
     "averageRating": math::avg(*[_type == "review" && product._ref == ^._id && status == "approved"].rating),
     "totalReviews": count(*[_type == "review" && product._ref == ^._id && status == "approved"])
@@ -100,7 +100,7 @@ const PRODUCT_BY_SLUG_QUERY = defineQuery(
 );
 
 const RELATED_PRODUCTS_QUERY = defineQuery(
-  `*[_type == "product" && (!defined(isArchived) || isArchived != true) && count((categories[]._ref)[@ in $categoryIds]) > 0 && slug.current != $currentSlug] | order(name asc) [0...$limit]{
+  `*[_type == "product" && (!defined(isArchived) || isArchived != true) && count((categories[]._ref)[@ in $categoryIds]) > 0 && slug.current != $currentSlug] | order(coalesce(name.en, name.es, name.ar, name) asc) [0...$limit]{
     _id,
     name,
     slug,

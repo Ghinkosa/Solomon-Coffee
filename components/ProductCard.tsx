@@ -14,6 +14,7 @@ import { useLocalizedPath, useLocale } from "@/hooks/useLocale";
 import { useDictionary } from "@/lib/dictionary-context";
 import { t } from "@/lib/dictionary-utils";
 import { getProductName } from "@/lib/product-locale";
+import { toDisplayText } from "@/lib/locale-content";
 
 interface ProductCardProps {
   product: Product;
@@ -24,18 +25,30 @@ interface ProductCardProps {
   onHoverEnd?: () => void;
 }
 
-function getCategoryLabel(category: unknown): string | null {
+function getCategoryLabel(category: unknown, locale: string): string | null {
   if (typeof category === "string") return category;
-  if (category && typeof category === "object" && "title" in category) {
-    const title = (category as { title?: string }).title;
-    return title ?? null;
+  if (!category || typeof category !== "object") return null;
+
+  // Expanded category doc: { title, slug, ... }
+  if ("title" in category) {
+    const title = toDisplayText(
+      (category as { title?: unknown }).title,
+      locale as "en" | "es" | "ar",
+    );
+    return title || null;
   }
-  return null;
+
+  // Some queries project `categories[]->title`, which may be a locale map.
+  const fromLocaleMap = toDisplayText(
+    category,
+    locale as "en" | "es" | "ar",
+  );
+  return fromLocaleMap || null;
 }
 
-function getCategoryLabels(product: Product): string[] {
+function getCategoryLabels(product: Product, locale: string): string[] {
   return (product.categories ?? [])
-    .map((category) => getCategoryLabel(category))
+    .map((category) => getCategoryLabel(category, locale))
     .filter((label): label is string => Boolean(label));
 }
 
@@ -83,7 +96,7 @@ const ProductCard = memo(
   const productHref = toLocalizedPath(`/product/${product?.slug?.current}`);
   const displayPrice = getDisplayPrice(product);
   const showOptionsHint = isShopMode && hasProductOptions(product);
-  const primaryCategoryLabel = getCategoryLabels(product)[0];
+  const primaryCategoryLabel = getCategoryLabels(product, lang)[0];
 
   const reviewLabel = product?.totalReviews
     ? `${product.totalReviews} ${
@@ -204,9 +217,9 @@ const ProductCard = memo(
 
         {mode !== "home" && (
           <div className={`mt-auto ${isShopMode ? "space-y-3 border-t border-gray-100 pt-3" : ""}`}>
-            {!isShopMode && getCategoryLabels(product).length > 0 && (
+            {!isShopMode && getCategoryLabels(product, lang).length > 0 && (
               <p className="uppercase line-clamp-1 text-xs font-medium text-light-text">
-                {getCategoryLabels(product).join(", ")}
+                {getCategoryLabels(product, lang).join(", ")}
               </p>
             )}
 

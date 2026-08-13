@@ -8,6 +8,8 @@ import HomeSectionHeader, {
   homeActionLinkClass,
   homeSubheadingClass,
 } from "./HomeSectionHeader";
+import { toDisplayText } from "@/lib/locale-content";
+import type { Locale } from "@/i18n-config";
 
 type CategoryWithCount = Category & { productCount?: number };
 
@@ -42,7 +44,9 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
         <ul className="mx-auto grid max-w-3xl gap-0 sm:max-w-4xl sm:grid-cols-2 sm:gap-x-12 lg:gap-x-16">
           {categories.map((category) => {
             const productCount = category.productCount ?? 0;
-            const initial = category.title?.charAt(0)?.toUpperCase() || "C";
+            const title =
+              toDisplayText(category.title, lang as Locale) || "Category";
+            const initial = title.charAt(0).toUpperCase() || "C";
 
             return (
               <li key={category._id} className="border-b border-shop_dark_green/10">
@@ -54,7 +58,7 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
                     {category.image ? (
                       <Image
                         src={urlFor(category.image).width(128).height(128).url()}
-                        alt={category.title || "Coffee category"}
+                        alt={title}
                         fill
                         sizes="64px"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -68,7 +72,7 @@ const HomeCategories = ({ categories, dictionary, lang = "en" }: Props) => {
 
                   <div className="min-w-0 flex-1 text-left">
                     <h3 className={`truncate transition-colors group-hover:text-shop_light_green ${homeSubheadingClass}`}>
-                      {category.title}
+                      {title}
                     </h3>
                     {productCount > 0 && (
                       <p className="mt-0.5 text-sm text-light-color md:text-base">

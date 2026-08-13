@@ -5,6 +5,8 @@ import Title from "../Title";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { Category } from "@/sanity.types";
+import { toDisplayText } from "@/lib/locale-content";
+import { useLocale } from "@/hooks/useLocale";
 
 interface Props {
   categories: Category[];
@@ -21,6 +23,8 @@ const CategoryList = ({
   categoryFilterTitle = "Categories",
   clearCategoryFilterLabel = "Clear category filter",
 }: Props) => {
+  const lang = useLocale();
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -40,6 +44,7 @@ const CategoryList = ({
         {categories?.map((category) => {
           const value = category._id;
           if (!value) return null;
+          const title = toDisplayText(category?.title, lang) || "Category";
 
           return (
             <div
@@ -59,7 +64,7 @@ const CategoryList = ({
                     : "text-gray-700 group-hover:text-gray-900"
                 }`}
               >
-                {category?.title}
+                {title}
               </Label>
             </div>
           );

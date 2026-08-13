@@ -43,7 +43,7 @@ const SearchBar = ({
 
   const fetchFeaturedProducts = useCallback(async () => {
     try {
-      const query = `*[_type == "product" && isFeatured == true && (!defined(isArchived) || isArchived != true)] | order(name asc)`;
+      const query = `*[_type == "product" && isFeatured == true && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc)`;
       const response = await client.fetch(query);
       setFeaturedProduct(response);
     } catch (error) {
@@ -113,7 +113,7 @@ const SearchBar = ({
         description.es match $search ||
         description.ar match $search ||
         description match $search
-      )] | order(name.en asc)`;
+      )] | order(coalesce(name.en, name.es, name.ar, name) asc)`;
       const params = { search: `${search}*` };
       const response = await client.fetch(query, params);
       setProducts(response);
@@ -373,7 +373,7 @@ const SearchBar = ({
                                       {item?.images && (
                                         <Image
                                           src={urlFor(item?.images[0]).url()}
-                                          alt={item.name || t(dict, "searchModal.productAlt", "Product")}
+                                          alt={getProductName(item, lang) || t(dict, "searchModal.productAlt", "Product")}
                                           fill
                                           className="object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
@@ -410,7 +410,7 @@ const SearchBar = ({
                                       className="block"
                                     >
                                       <h3 className="font-semibold text-gray-800 line-clamp-1 group-hover:text-shop_dark_green transition-colors mb-2">
-                                        {item.name}
+                                        {getProductName(item, lang)}
                                       </h3>
                                     </Link>
 
@@ -444,20 +444,21 @@ const SearchBar = ({
                             <div className="flex flex-wrap gap-2">
                               {featuredProduct
                                 .slice(0, 8)
-                                .map((item: Product) => (
+                                .map((item: Product) => {
+                                  const chipName = getProductName(item, lang);
+                                  return (
                                   <button
                                     key={item?._id}
-                                    onClick={() =>
-                                      setSearch(item?.name as string)
-                                    }
+                                    onClick={() => setSearch(chipName)}
                                     className="inline-flex items-center gap-1.5 bg-white hover:bg-shop_dark_green border border-gray-200 hover:border-shop_dark_green px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md"
                                   >
                                     <Search className="w-3 h-3" />
                                     <span className="line-clamp-1 max-w-[150px]">
-                                      {item?.name}
+                                      {chipName}
                                     </span>
                                   </button>
-                                ))}
+                                  );
+                                })}
                             </div>
                           </div>
                         </div>

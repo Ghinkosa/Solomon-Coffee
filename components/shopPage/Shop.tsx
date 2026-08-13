@@ -15,6 +15,8 @@ import {
   getShopGridColumnCount,
   useProductDetailsPanel,
 } from "@/hooks/useProductDetailsPanel";
+import { toDisplayText } from "@/lib/locale-content";
+import { useLocale } from "@/hooks/useLocale";
 
 interface Props {
   categories: Category[];
@@ -22,6 +24,7 @@ interface Props {
 }
 
 const Shop = ({ categories, dictionary }: Props) => {
+  const lang = useLocale();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -35,7 +38,7 @@ const Shop = ({ categories, dictionary }: Props) => {
             && (!defined(isArchived) || isArchived != true)
             && $selectedCategory in categories[]._ref
           ]
-          | order(name asc) {
+          | order(coalesce(name.en, name.es, name.ar, name) asc) {
             ...,
             categories[]->{
               _id,
@@ -60,7 +63,7 @@ const Shop = ({ categories, dictionary }: Props) => {
         : `*[_type == 'product'
             && (!defined(isArchived) || isArchived != true)
           ]
-          | order(name asc) {
+          | order(coalesce(name.en, name.es, name.ar, name) asc) {
             ...,
             categories[]->{
               _id,
@@ -148,10 +151,11 @@ const Shop = ({ categories, dictionary }: Props) => {
                 </span>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {dictionary?.shop?.category || "Category"}:{" "}
-                  {
+                  {toDisplayText(
                     categories?.find((cat) => cat?._id === selectedCategory)
-                      ?.title
-                  }
+                      ?.title,
+                    lang,
+                  )}
                 </span>
               </div>
             </div>

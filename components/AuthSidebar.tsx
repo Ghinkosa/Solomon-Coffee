@@ -46,9 +46,17 @@ const AuthSidebar = ({ dictionary, lang }: Props) => {
 
           <div className="w-full max-w-[400px] mx-auto flex justify-center">
             {authMode === "signIn" ? (
-              <SignIn routing="hash" />
+              <SignIn
+                routing="hash"
+                fallbackRedirectUrl={`/${lang}/user/dashboard`}
+                forceRedirectUrl={`/${lang}/user/dashboard`}
+              />
             ) : (
-              <SignUp routing="hash" />
+              <SignUp
+                routing="hash"
+                fallbackRedirectUrl={`/${lang}/user/dashboard`}
+                forceRedirectUrl={`/${lang}/user/dashboard`}
+              />
             )}
           </div>
 

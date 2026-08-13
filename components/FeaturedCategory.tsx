@@ -4,6 +4,8 @@ import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
 import { Category } from "@/sanity.types";
 import { getFeaturedCategory } from "@/sanity/queries";
+import { toDisplayText } from "@/lib/locale-content";
+import { i18n } from "@/i18n-config";
 
 const FeaturedCategory = async () => {
   const featuredCategories = await getFeaturedCategory(4);
@@ -11,7 +13,10 @@ const FeaturedCategory = async () => {
   return (
     <Container className="py-10 lg:py-20">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {featuredCategories?.map((category: Category) => (
+        {featuredCategories?.map((category: Category) => {
+          const title =
+            toDisplayText(category?.title, i18n.defaultLocale) || "Category";
+          return (
           <div
             key={category?._id}
             className="bg-[#F5F5F5] px-5 py-3 flex items-center justify-between gap-4 rounded-md relative group overflow-hidden"
@@ -20,7 +25,7 @@ const FeaturedCategory = async () => {
               {category?.image && (
                 <Image
                   src={urlFor(category?.image).url()}
-                  alt="categoryImage"
+                  alt={title}
                   width={100}
                   height={100}
                   className="w-24 h-24 object-cover group-hover:scale-110 hoverEffect"
@@ -29,7 +34,7 @@ const FeaturedCategory = async () => {
             </div>
             <div className="flex-1">
               <h3 className="text-sm font-semibold uppercase">
-                {category?.title}
+                {title}
               </h3>
               <Link
                 href={`/category/${category?.slug?.current}`}
@@ -41,7 +46,8 @@ const FeaturedCategory = async () => {
               </p>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </Container>
   );
