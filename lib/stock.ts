@@ -171,11 +171,8 @@ export async function incrementOrderStock(
 /**
  * Restore stock for a cancelled order — idempotent and self-guarding.
  *
- * Only restores when the order actually had stock decremented
- * (`stockDecremented === true`) and hasn't already been restored
- * (`stockRestored !== true`), so it is safe to call from every cancellation
- * path (user self-cancel, admin cancel, cancellation-request approval) and for
- * orders that never reserved inventory — those are no-ops.
+ * Claims `stockRestored` with a revision lock *before* incrementing inventory
+ * so concurrent cancel paths cannot double-restore.
  */
 export async function restoreOrderStock(
   orderId: string,
@@ -183,28 +180,99 @@ export async function restoreOrderStock(
 ): Promise<void> {
   try {
     const order = await backendClient.fetch<{
+      _rev?: string;
       stockDecremented?: boolean;
       stockRestored?: boolean;
       products?: OrderProductRef[];
     } | null>(
       `*[_type == "order" && _id == $orderId][0]{
-        stockDecremented, stockRestored, products
+        _rev, stockDecremented, stockRestored, products
       }`,
       { orderId },
     );
 
-    if (!order) return;
+    if (!order?._rev) return;
     if (!order.stockDecremented || order.stockRestored) return;
     if (!order.products || order.products.length === 0) return;
 
-    await incrementOrderStock(order.products);
+    // Claim first — losers of the race exit without touching inventory.
+    try {
+      await backendClient
+        .patch(orderId)
+        .ifRevisionId(order._rev)
+        .set({ stockRestored: true })
+        .commit();
+    } catch {
+      return;
+    }
 
-    await backendClient
-      .patch(orderId)
-      .set({ stockRestored: true })
-      .commit();
+    try {
+      await incrementOrderStock(order.products);
+    } catch (restoreError) {
+      // Allow a later retry if inventory restore failed after the claim.
+      try {
+        await backendClient
+          .patch(orderId)
+          .set({ stockRestored: false })
+          .commit();
+      } catch (rollbackError) {
+        console.error(
+          `Failed to roll back stockRestored claim for order ${orderId}:`,
+          rollbackError,
+        );
+      }
+      throw restoreError;
+    }
   } catch (error) {
     console.error(`Failed to restore stock for order ${orderId}:`, error);
     if (options?.throwOnError) throw error;
+  }
+}
+
+/**
+ * Claim `stockDecremented` then decrement inventory (webhook / late paths).
+ * Revision-locked so concurrent webhooks cannot double-decrement.
+ */
+export async function claimAndDecrementOrderStock(
+  orderId: string,
+  orderProducts: OrderProductRef[],
+): Promise<{ claimed: boolean }> {
+  const order = await backendClient.fetch<{
+    _rev?: string;
+    stockDecremented?: boolean;
+  } | null>(
+    `*[_type == "order" && _id == $orderId][0]{ _rev, stockDecremented }`,
+    { orderId },
+  );
+
+  if (!order?._rev) return { claimed: false };
+  if (order.stockDecremented) return { claimed: false };
+
+  try {
+    await backendClient
+      .patch(orderId)
+      .ifRevisionId(order._rev)
+      .set({ stockDecremented: true })
+      .commit();
+  } catch {
+    return { claimed: false };
+  }
+
+  try {
+    await decrementOrderStock(orderProducts, { strict: true });
+    return { claimed: true };
+  } catch (error) {
+    try {
+      await backendClient
+        .patch(orderId)
+        .set({ stockDecremented: false })
+        .commit();
+    } catch (rollbackError) {
+      console.error(
+        `Failed to roll back stockDecremented claim for order ${orderId}:`,
+        rollbackError,
+      );
+    }
+    throw error;
   }
 }

@@ -143,6 +143,7 @@ export const POST = async (request: NextRequest) => {
       .set({
         stripeCheckoutSessionId: session.id,
         stripeCheckoutExpiresAt: new Date(expiresAt * 1000).toISOString(),
+        pricingLocked: true,
       })
       .commit();
 

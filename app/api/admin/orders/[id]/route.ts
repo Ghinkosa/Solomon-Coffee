@@ -6,6 +6,7 @@ import { refundOrderPayment, buildRefundMessage } from "@/lib/stripeRefund";
 import { restoreOrderStock } from "@/lib/stock";
 import { buildTimelineFieldsForStatus } from "@/lib/orderTimelineSync";
 import { invalidateOrder } from "@/lib/cache";
+import { expireCheckoutSessionIfOpen } from "@/lib/expireCheckoutSession";
 
 export async function PATCH(
   req: NextRequest,
@@ -26,6 +27,8 @@ export async function PATCH(
         paymentStatus,
         paymentMethod,
         stripePaymentIntentId,
+        stripeCheckoutSessionId,
+        pricingLocked,
         totalPrice,
         amountPaid,
         clerkUserId,
@@ -54,6 +57,43 @@ export async function PATCH(
 
     if (!currentOrder) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // Freeze money fields once a Checkout session exists or payment completed.
+    if (
+      updateData.totalPrice !== undefined &&
+      updateData.totalPrice !== currentOrder.totalPrice
+    ) {
+      const priceLocked =
+        currentOrder.pricingLocked === true ||
+        Boolean(currentOrder.stripeCheckoutSessionId) ||
+        currentOrder.paymentStatus === "paid" ||
+        currentOrder.paymentStatus === "refunded";
+      if (priceLocked) {
+        return NextResponse.json(
+          {
+            error:
+              "Order total is locked after checkout or payment. Cancel and recreate, or use the refund flow.",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    if (
+      updateData.paymentStatus !== undefined &&
+      updateData.paymentStatus !== currentOrder.paymentStatus &&
+      (currentOrder.paymentStatus === "paid" ||
+        currentOrder.paymentStatus === "refunded") &&
+      updateData.status !== "cancelled"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Paid/refunded payment status can only change through the cancel/refund flow.",
+        },
+        { status: 400 },
+      );
     }
 
     const allowedFields = [
@@ -112,6 +152,8 @@ export async function PATCH(
       updateData.status === "cancelled" &&
       currentOrder.status !== "cancelled"
     ) {
+      await expireCheckoutSessionIfOpen(currentOrder.stripeCheckoutSessionId);
+
       const refundResult = await refundOrderPayment(currentOrder);
 
       stripeRefunded = refundResult.stripeRefunded;

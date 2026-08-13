@@ -26,6 +26,51 @@ function ensureEmployeeOpsEnabledList(): never[] | null {
   return null;
 }
 
+type ActiveEmployee = {
+  _id: string;
+  email: string;
+  employeeRole: EmployeeRole;
+  employeePerformance?: {
+    ordersProcessed?: number;
+    ordersDelivered?: number;
+    cashCollected?: number;
+  };
+};
+
+async function requireActiveEmployee(
+  roles: EmployeeRole[],
+): Promise<{ employee: ActiveEmployee } | { error: string }> {
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) {
+    return { error: "Unauthorized" };
+  }
+
+  const employee = await backendClient.fetch<ActiveEmployee | null>(
+    `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && employeeRole in $roles][0]{
+      _id, email, employeeRole, employeePerformance
+    }`,
+    { clerkUserId, roles },
+  );
+
+  if (!employee) {
+    return { error: "Only active employees with the required role can do this" };
+  }
+
+  return { employee };
+}
+
+function assertDeliverymanAssignment(
+  order: { assignedDeliverymanId?: string } | null,
+  employee: ActiveEmployee,
+): string | null {
+  if (!order) return "Order not found";
+  if (employee.employeeRole === "incharge") return null;
+  if (order.assignedDeliverymanId !== employee._id) {
+    return "This order is not assigned to you";
+  }
+  return null;
+}
+
 // Add status history entry
 async function addStatusHistory(
   orderId: string,
@@ -68,7 +113,7 @@ export async function confirmAddress(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeRole == "callcenter"][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && employeeRole == "callcenter"][0]`,
       { clerkUserId }
     );
 
@@ -131,7 +176,7 @@ export async function updateShippingAddress(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeRole == "callcenter"][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && employeeRole == "callcenter"][0]`,
       { clerkUserId }
     );
 
@@ -194,7 +239,7 @@ export async function confirmOrder(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "callcenter" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "callcenter" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -296,7 +341,7 @@ export async function markAsPacked(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "packer" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "packer" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -388,7 +433,7 @@ export async function assignDeliveryman(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "warehouse" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "warehouse" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -413,7 +458,7 @@ export async function assignDeliveryman(
     }
 
     const deliveryman = await backendClient.fetch(
-      `*[_type == "user" && _id == $deliverymanId && isEmployee == true && employeeRole == "deliveryman"][0]`,
+      `*[_type == "user" && _id == $deliverymanId && isEmployee == true && employeeStatus == "active" && employeeRole == "deliveryman"][0]`,
       { deliverymanId }
     );
 
@@ -471,43 +516,38 @@ export async function markAsDelivered(
   if (opsDisabled) return opsDisabled;
 
   try {
-    const { userId: clerkUserId } = await auth();
-
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
+    const actor = await requireActiveEmployee(["deliveryman", "incharge"]);
+    if ("error" in actor) {
+      return { success: false, message: actor.error };
     }
+    const { employee } = actor;
 
-    const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
-      { clerkUserId }
-    );
-
-    if (!employee) {
-      return {
-        success: false,
-        message: "Only deliverymen can mark orders as delivered",
-      };
-    }
-
-    // Get current order
     const order = await backendClient.fetch(
       `*[_type == "order" && _id == $orderId][0]`,
       { orderId }
     );
 
-    // Check if payment is required
-    const isCOD = order.paymentMethod === "cash_on_delivery";
-    const isPending = order.paymentStatus === "pending";
+    const assignmentError = assertDeliverymanAssignment(order, employee);
+    if (assignmentError) {
+      return { success: false, message: assignmentError };
+    }
 
-    if ((isCOD || isPending) && !order.cashCollected) {
+    const isCOD = order.paymentMethod === "cash_on_delivery";
+    if (isCOD && !order.cashCollected) {
       return {
         success: false,
         message:
           "Cash must be collected from customer before marking as delivered",
       };
     }
+    if (!isCOD && order.paymentStatus !== "paid") {
+      return {
+        success: false,
+        message: "Order must be paid before marking as delivered",
+      };
+    }
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       deliveredBy: employee.email,
       deliveredAt: new Date().toISOString(),
       deliveryNotes: notes,
@@ -524,7 +564,6 @@ export async function markAsDelivered(
       notes
     );
 
-    // Send notification to customer
     try {
       await sendOrderStatusNotification({
         clerkUserId: order.clerkUserId,
@@ -554,14 +593,12 @@ export async function markAsDelivered(
       console.error("Failed to send delivered email:", emailError);
     }
 
-    // Update employee performance
     const currentPerformance = employee.employeePerformance || {};
     await updateEmployeePerformance(employee._id, {
       ordersProcessed: (currentPerformance.ordersProcessed || 0) + 1,
       ordersDelivered: (currentPerformance.ordersDelivered || 0) + 1,
     });
 
-    // Invalidate caches for instant updates
     await invalidateOrder(orderId, order.clerkUserId);
 
     return {
@@ -578,7 +615,7 @@ export async function markAsDelivered(
   }
 }
 
-// Deliveryman: Collect cash from customer (separate from delivery)
+// Deliveryman: Collect cash from customer (COD only)
 export async function collectCash(
   orderId: string,
   cashAmount: number
@@ -587,64 +624,104 @@ export async function collectCash(
   if (opsDisabled) return opsDisabled;
 
   try {
-    const { userId: clerkUserId } = await auth();
+    const actor = await requireActiveEmployee(["deliveryman", "incharge"]);
+    if ("error" in actor) {
+      return { success: false, message: actor.error };
+    }
+    const { employee } = actor;
 
-    if (!clerkUserId) {
-      return { success: false, message: "Unauthorized" };
+    if (
+      typeof cashAmount !== "number" ||
+      !Number.isFinite(cashAmount) ||
+      cashAmount < 0
+    ) {
+      return { success: false, message: "Invalid cash amount" };
     }
 
-    const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
-      { clerkUserId }
+    const order = await backendClient.fetch<{
+      _id: string;
+      _rev?: string;
+      paymentMethod?: string;
+      paymentStatus?: string;
+      totalPrice?: number;
+      cashCollected?: boolean;
+      assignedDeliverymanId?: string;
+      clerkUserId?: string;
+    } | null>(
+      `*[_type == "order" && _id == $orderId][0]{
+        _id, _rev, paymentMethod, paymentStatus, totalPrice,
+        cashCollected, assignedDeliverymanId, clerkUserId
+      }`,
+      { orderId },
     );
 
-    if (!employee) {
+    if (!order?._rev) {
+      return { success: false, message: "Order not found" };
+    }
+
+    const assignmentError = assertDeliverymanAssignment(order, employee);
+    if (assignmentError) {
+      return { success: false, message: assignmentError };
+    }
+
+    if (order.paymentMethod !== "cash_on_delivery") {
       return {
         success: false,
-        message: "Only deliverymen can collect cash",
+        message: "Cash collection is only allowed for cash-on-delivery orders",
       };
     }
 
-    // Get current order
-    const order = await backendClient.fetch(
-      `*[_type == "order" && _id == $orderId][0]`,
-      { orderId }
-    );
-
-    if (order.cashCollected) {
+    if (order.paymentStatus === "paid" || order.cashCollected) {
       return {
         success: false,
         message: "Cash has already been collected for this order",
       };
     }
 
-    await backendClient
-      .patch(orderId)
-      .set({
-        cashCollected: true,
-        cashCollectedAmount: cashAmount,
-        cashCollectedAt: new Date().toISOString(),
-        paymentStatus: "paid",
-      })
-      .commit();
+    const expected = Number(order.totalPrice) || 0;
+    if (Math.abs(cashAmount - expected) > 0.01) {
+      return {
+        success: false,
+        message: `Cash amount must match order total ($${expected.toFixed(2)})`,
+      };
+    }
+
+    try {
+      await backendClient
+        .patch(orderId)
+        .ifRevisionId(order._rev)
+        .set({
+          cashCollected: true,
+          cashCollectedAmount: expected,
+          cashCollectedAt: new Date().toISOString(),
+          paymentStatus: "paid",
+        })
+        .commit();
+    } catch {
+      return {
+        success: false,
+        message: "Cash was already collected by another update",
+      };
+    }
 
     await addStatusHistory(
       orderId,
       "Cash Collected",
       employee.email,
       employee.employeeRole,
-      `Cash collected: $${cashAmount}`
+      `Cash collected: $${expected.toFixed(2)}`
     );
 
-    // Update employee performance
     const currentPerformance = employee.employeePerformance || {};
     await updateEmployeePerformance(employee._id, {
-      cashCollected: (currentPerformance.cashCollected || 0) + cashAmount,
+      cashCollected: (currentPerformance.cashCollected || 0) + expected,
     });
+
+    await invalidateOrder(orderId, order.clerkUserId);
 
     return {
       success: true,
-      message: `Cash collected: $${cashAmount}`,
+      message: `Cash collected: $${expected.toFixed(2)}`,
     };
   } catch (error) {
     console.error("Error collecting cash:", error);
@@ -672,7 +749,7 @@ export async function startDelivery(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -776,7 +853,7 @@ export async function rescheduleDelivery(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -785,6 +862,15 @@ export async function rescheduleDelivery(
         success: false,
         message: "Only deliverymen can reschedule deliveries",
       };
+    }
+
+    const order = await backendClient.fetch(
+      `*[_type == "order" && _id == $orderId][0]{ assignedDeliverymanId }`,
+      { orderId }
+    );
+    const assignmentError = assertDeliverymanAssignment(order, employee);
+    if (assignmentError) {
+      return { success: false, message: assignmentError };
     }
 
     await backendClient
@@ -836,7 +922,7 @@ export async function markDeliveryFailed(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -847,11 +933,14 @@ export async function markDeliveryFailed(
       };
     }
 
-    // Get current order
     const order = await backendClient.fetch(
       `*[_type == "order" && _id == $orderId][0]`,
       { orderId }
     );
+    const assignmentError = assertDeliverymanAssignment(order, employee);
+    if (assignmentError) {
+      return { success: false, message: assignmentError };
+    }
 
     await backendClient
       .patch(orderId)
@@ -901,7 +990,7 @@ export async function receivePaymentFromDeliveryman(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "accounts" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "accounts" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -990,7 +1079,7 @@ export async function submitCashToAccounts(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "deliveryman" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -1003,7 +1092,7 @@ export async function submitCashToAccounts(
 
     // Verify the selected accounts employee exists and is active
     const accountsEmployee = await backendClient.fetch(
-      `*[_type == "user" && _id == $accountsEmployeeId && isEmployee == true && (employeeRole == "accounts" || employeeRole == "incharge") && employeeStatus == "active"][0]`,
+      `*[_type == "user" && _id == $accountsEmployeeId && isEmployee == true && employeeStatus == "active" && (employeeRole == "accounts" || employeeRole == "incharge") && employeeStatus == "active"][0]`,
       { accountsEmployeeId }
     );
 
@@ -1105,7 +1194,7 @@ export async function rejectCashSubmission(
     }
 
     const employee = await backendClient.fetch(
-      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && (employeeRole == "accounts" || employeeRole == "incharge")][0]`,
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active" && (employeeRole == "accounts" || employeeRole == "incharge")][0]`,
       { clerkUserId }
     );
 
@@ -1476,7 +1565,7 @@ export async function getActiveAccountsEmployees() {
 
     // Get all active accounts employees
     const accountsEmployees = await backendClient.fetch(
-      `*[_type == "user" && isEmployee == true && (employeeRole == "accounts" || employeeRole == "incharge") && employeeStatus == "active"] | order(firstName asc) {
+      `*[_type == "user" && isEmployee == true && employeeStatus == "active" && (employeeRole == "accounts" || employeeRole == "incharge") && employeeStatus == "active"] | order(firstName asc) {
         _id,
         firstName,
         lastName,

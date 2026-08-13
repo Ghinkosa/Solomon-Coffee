@@ -170,6 +170,7 @@ export async function POST(
         .set({
           stripeCheckoutSessionId: checkoutSession.id,
           stripeCheckoutExpiresAt: new Date(expiresAt * 1000).toISOString(),
+          pricingLocked: true,
           stripeCustomerId, // Ensure we have the correct customer ID
         })
         .commit();

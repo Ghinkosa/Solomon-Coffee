@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { writeClient, client } from "@/sanity/lib/client";
 import { refundOrderPayment } from "@/lib/stripeRefund";
 import { restoreOrderStock } from "@/lib/stock";
+import { expireCheckoutSessionIfOpen } from "@/lib/expireCheckoutSession";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
         paymentStatus,
         status,
         stripePaymentIntentId,
+        stripeCheckoutSessionId,
         clerkUserId
       }`,
       { orderId },
@@ -67,6 +69,8 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
+
+    await expireCheckoutSessionIfOpen(order.stripeCheckoutSessionId);
 
     const refundResult = await refundOrderPayment(order);
 

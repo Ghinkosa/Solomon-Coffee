@@ -15,6 +15,8 @@ type EmailStrings = {
   qty: string;
   price: string;
   subtotal: string;
+  packaging: string;
+  discount: string;
   shipping: string;
   tax: string;
   total: string;
@@ -50,6 +52,8 @@ const translations: Record<EmailLocale, EmailStrings> = {
     qty: "Qty",
     price: "Price",
     subtotal: "Subtotal:",
+    packaging: "Packaging:",
+    discount: "Discount:",
     shipping: "Shipping:",
     tax: "Tax:",
     total: "Total:",
@@ -91,6 +95,8 @@ const translations: Record<EmailLocale, EmailStrings> = {
     qty: "Cant.",
     price: "Precio",
     subtotal: "Subtotal:",
+    packaging: "Empaque:",
+    discount: "Descuento:",
     shipping: "Envío:",
     tax: "Impuesto:",
     total: "Total:",
@@ -132,6 +138,8 @@ const translations: Record<EmailLocale, EmailStrings> = {
     qty: "الكمية",
     price: "السعر",
     subtotal: "المجموع الفرعي:",
+    packaging: "التعبئة:",
+    discount: "الخصم:",
     shipping: "الشحن:",
     tax: "الضريبة:",
     total: "الإجمالي:",

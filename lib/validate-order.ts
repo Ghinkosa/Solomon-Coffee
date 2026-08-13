@@ -254,6 +254,16 @@ export async function validateOrderPricing(input: ValidateOrderInput) {
     };
   }
 
+  if (!(calculated.total > 0)) {
+    return {
+      valid: false as const,
+      code: "INVALID_TOTAL",
+      error:
+        "Order total must be greater than zero. Please check product discounts and try again.",
+      calculated,
+    };
+  }
+
   return {
     valid: true as const,
     calculated,

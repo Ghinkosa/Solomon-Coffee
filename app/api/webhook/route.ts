@@ -5,9 +5,16 @@ import stripe from "@/lib/stripe";
 import { backendClient } from "@/sanity/lib/backendClient";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
-import { decrementOrderStock, restoreOrderStock } from "@/lib/stock";
+import {
+  claimAndDecrementOrderStock,
+  restoreOrderStock,
+} from "@/lib/stock";
 import { buildStripeInvoiceLineItems } from "@/lib/invoice-lines";
 import { sendOrderConfirmationEmailByOrderId } from "@/lib/order-confirmation-email";
+import {
+  refundLateCheckoutPayment,
+  stripeAmountMatchesOrder,
+} from "@/lib/stripePaymentGuard";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -130,13 +137,17 @@ export async function POST(req: NextRequest) {
       if (orderId) {
         const existing = await backendClient.fetch<{
           _rev?: string;
+          status?: string;
           paymentStatus?: string;
           paymentMethod?: string;
           fulfillmentProcessed?: boolean;
           stockDecremented?: boolean;
+          stockRestored?: boolean;
+          totalPrice?: number;
         } | null>(
           `*[_type == "order" && _id == $orderId][0]{
-            _rev, paymentStatus, paymentMethod, fulfillmentProcessed, stockDecremented
+            _rev, status, paymentStatus, paymentMethod, fulfillmentProcessed,
+            stockDecremented, stockRestored, totalPrice
           }`,
           { orderId },
         );
@@ -155,6 +166,49 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ received: true, skipped: "duplicate" });
         }
 
+        const paymentIntentId =
+          typeof session.payment_intent === "string"
+            ? session.payment_intent
+            : session.payment_intent?.id;
+
+        // Never revive a cancelled / refunded order. Refund the late payment.
+        if (
+          existing.status === ORDER_STATUSES.CANCELLED ||
+          existing.paymentStatus === PAYMENT_STATUSES.CANCELLED ||
+          existing.paymentStatus === "refunded" ||
+          existing.stockRestored
+        ) {
+          await refundLateCheckoutPayment({
+            orderId,
+            sessionId: session.id,
+            paymentIntentId,
+          });
+          return NextResponse.json({
+            received: true,
+            skipped: "order_cancelled_or_stock_restored",
+          });
+        }
+
+        // Paid amount must match the server-stored order total.
+        if (
+          !stripeAmountMatchesOrder(session.amount_total, existing.totalPrice)
+        ) {
+          console.error("Stripe amount mismatch for order", {
+            orderId,
+            sessionAmount: session.amount_total,
+            orderTotal: existing.totalPrice,
+          });
+          await refundLateCheckoutPayment({
+            orderId,
+            sessionId: session.id,
+            paymentIntentId,
+          });
+          return NextResponse.json({
+            received: true,
+            skipped: "amount_mismatch_refunded",
+          });
+        }
+
         // Persist ALL payment details together with the PAID flag in one atomic,
         // revision-locked commit. This guarantees stripePaymentIntentId /
         // amountPaid are stored whenever the order is marked paid (so it stays
@@ -168,8 +222,9 @@ export async function POST(req: NextRequest) {
         const paymentUpdate: Record<string, unknown> = {
           paymentStatus: PAYMENT_STATUSES.PAID,
           stripeCheckoutSessionId: session.id,
-          stripePaymentIntentId: session.payment_intent as string,
+          stripePaymentIntentId: paymentIntentId,
           paymentCompletedAt: new Date().toISOString(),
+          pricingLocked: true,
         };
         if (session.customer) {
           paymentUpdate.stripeCustomerId = session.customer as string;
@@ -214,11 +269,7 @@ export async function POST(req: NextRequest) {
           );
 
           if (stockOrder?.products) {
-            await decrementOrderStock(stockOrder.products);
-            await backendClient
-              .patch(orderId)
-              .set({ stockDecremented: true })
-              .commit();
+            await claimAndDecrementOrderStock(orderId, stockOrder.products);
           }
         }
 

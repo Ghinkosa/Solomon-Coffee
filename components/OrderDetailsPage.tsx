@@ -83,6 +83,7 @@ interface OrderDetailsPageProps {
     subtotal: number;
     tax: number;
     shipping: number;
+    packagingFee?: number;
     totalPrice: number;
     currency: string;
     amountDiscount: number;
@@ -691,6 +692,14 @@ const OrderDetailsPage: React.FC<OrderDetailsPageProps> = ({ order }) => {
                   <span className="text-gray-600">{d("subtotal", "Subtotal")}</span>
                   <PriceFormatter amount={currentOrder.subtotal} />
                 </div>
+                {(currentOrder.packagingFee ?? 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">
+                      {d("packaging", "Packaging")}
+                    </span>
+                    <PriceFormatter amount={currentOrder.packagingFee} />
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">{d("tax", "Tax")}</span>
                   <PriceFormatter amount={currentOrder.tax} />

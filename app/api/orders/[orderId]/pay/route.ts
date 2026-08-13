@@ -117,8 +117,9 @@ export async function POST(
     await backendClient
       .patch(order._id)
       .set({
-        stripeCheckoutSessionId: session.id,
-        stripeCheckoutExpiresAt: new Date(expiresAt * 1000).toISOString(),
+          stripeCheckoutSessionId: session.id,
+          stripeCheckoutExpiresAt: new Date(expiresAt * 1000).toISOString(),
+          pricingLocked: true,
       })
       .commit();
 

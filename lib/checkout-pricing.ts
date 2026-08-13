@@ -159,45 +159,78 @@ export function calculateCheckoutTotals(
 
   for (const item of items) {
     const lineUnitPrice = item.unitPrice;
-    const linePackaging = item.packagingPrice || 0;
-    const discountPercent = item.discountPercent || 0;
-    const lineDiscount = (discountPercent * lineUnitPrice * item.quantity) / 100;
+    const linePackaging = Math.max(0, item.packagingPrice || 0);
+    const discountPercent = clampProductDiscountPercent(item.discountPercent);
+    const lineDiscount =
+      (discountPercent * lineUnitPrice * item.quantity) / 100;
 
     subtotal += lineUnitPrice * item.quantity;
     packagingFee += linePackaging * item.quantity;
     productDiscount += lineDiscount;
   }
 
-  const subtotalAfterProductDiscount = subtotal - productDiscount;
-  const businessDiscount = subtotalAfterProductDiscount * businessDiscountRate;
-  const subtotalAfterBusinessDiscount =
-    subtotalAfterProductDiscount - businessDiscount;
+  const subtotalAfterProductDiscount = Math.max(0, subtotal - productDiscount);
+  const businessDiscount =
+    subtotalAfterProductDiscount *
+    (Number.isFinite(businessDiscountRate)
+      ? Math.max(0, Math.min(1, businessDiscountRate))
+      : 0);
+  const subtotalAfterBusinessDiscount = Math.max(
+    0,
+    subtotalAfterProductDiscount - businessDiscount,
+  );
   const merchandiseBase = subtotalAfterBusinessDiscount + packagingFee;
   const shipping =
-    merchandiseBase >= freeShippingThreshold ? 0 : flatShippingFee;
+    merchandiseBase >= freeShippingThreshold ? 0 : Math.max(0, flatShippingFee);
   const taxableBase = taxShipping
     ? merchandiseBase + shipping
     : merchandiseBase;
-  const tax = taxableBase * (Number.isFinite(taxRate) ? Math.max(0, taxRate) : 0);
-  const total = merchandiseBase + shipping + tax;
+  const tax =
+    taxableBase * (Number.isFinite(taxRate) ? Math.max(0, taxRate) : 0);
+
+  const roundedSubtotal = roundCurrency(subtotal);
+  const roundedProductDiscount = roundCurrency(productDiscount);
+  const roundedBusinessDiscount = roundCurrency(businessDiscount);
+  const roundedPackaging = roundCurrency(packagingFee);
+  const roundedShipping = roundCurrency(shipping);
+  const roundedTax = roundCurrency(tax);
+  // Single source of truth: total from already-rounded components.
+  const total = roundCurrency(
+    roundedSubtotal -
+      roundedProductDiscount -
+      roundedBusinessDiscount +
+      roundedPackaging +
+      roundedShipping +
+      roundedTax,
+  );
 
   return {
-    subtotal: roundCurrency(subtotal),
-    productDiscount: roundCurrency(productDiscount),
-    businessDiscount: roundCurrency(businessDiscount),
-    packagingFee: roundCurrency(packagingFee),
-    shipping: roundCurrency(shipping),
-    tax: roundCurrency(tax),
-    total: roundCurrency(total),
+    subtotal: roundedSubtotal,
+    productDiscount: roundedProductDiscount,
+    businessDiscount: roundedBusinessDiscount,
+    packagingFee: roundedPackaging,
+    shipping: roundedShipping,
+    tax: roundedTax,
+    total: Math.max(0, total),
   };
 }
 
 export function totalsAreClose(
   expected: number,
   actual: number,
-  tolerance = 0.05,
+  tolerance = 0.01,
 ): boolean {
   return Math.abs(expected - actual) <= tolerance;
+}
+
+/** Product catalog discounts are percentages in 0–100. */
+export function clampProductDiscountPercent(
+  value: number | undefined | null,
+): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
+  if (value < 0) return 0;
+  if (value > 100) return 100;
+  return value;
 }
 
 function roundCurrency(value: number): number {

@@ -43,6 +43,8 @@ interface OrderConfirmationData {
   orderDate: string;
   items: OrderItem[];
   subtotal: number;
+  packagingFee?: number;
+  amountDiscount?: number;
   shipping: number;
   tax: number;
   total: number;
@@ -557,6 +559,22 @@ const generateOrderConfirmationHTML = (data: OrderConfirmationData): string => {
                         <span>${t.subtotal}</span>
                         <span>${formatCurrency(data.subtotal)}</span>
                     </div>
+                    ${
+                      (data.packagingFee || 0) > 0
+                        ? `<div class="total-row">
+                        <span>${t.packaging}</span>
+                        <span>${formatCurrency(data.packagingFee || 0)}</span>
+                    </div>`
+                        : ""
+                    }
+                    ${
+                      (data.amountDiscount || 0) > 0
+                        ? `<div class="total-row">
+                        <span>${t.discount}</span>
+                        <span>-${formatCurrency(data.amountDiscount || 0)}</span>
+                    </div>`
+                        : ""
+                    }
                     <div class="total-row">
                         <span>${t.shipping}</span>
                         <span>${formatCurrency(data.shipping)}</span>

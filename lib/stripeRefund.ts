@@ -53,10 +53,15 @@ export async function refundOrderPayment(
   }
 
   try {
-    const refund = await stripe.refunds.create({
-      payment_intent: order.stripePaymentIntentId!,
-      reason: "requested_by_customer",
-    });
+    const refund = await stripe.refunds.create(
+      {
+        payment_intent: order.stripePaymentIntentId!,
+        reason: "requested_by_customer",
+      },
+      {
+        idempotencyKey: `order-refund-${order.stripePaymentIntentId}`,
+      },
+    );
 
     return {
       stripeRefunded: true,
@@ -65,12 +70,21 @@ export async function refundOrderPayment(
       stripeRefundId: refund.id,
     };
   } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Stripe refund failed";
+    if (/already been refunded|charge_already_refunded/i.test(message)) {
+      return {
+        stripeRefunded: true,
+        manualRefundRequired: false,
+        refundAmount,
+      };
+    }
     console.error("Stripe refund error:", error);
     return {
       stripeRefunded: false,
       manualRefundRequired: true,
       refundAmount,
-      error: error instanceof Error ? error.message : "Stripe refund failed",
+      error: message,
     };
   }
 }

@@ -10,6 +10,7 @@ import {
   buildRefundMessage,
 } from "@/lib/stripeRefund";
 import { restoreOrderStock } from "@/lib/stock";
+import { expireCheckoutSessionIfOpen } from "@/lib/expireCheckoutSession";
 
 async function requireAdminForCancellation(): Promise<
   { ok: true; email: string } | { ok: false; message: string }
@@ -57,6 +58,7 @@ export async function approveCancellationRequest(
         amountPaid,
         paymentMethod,
         stripePaymentIntentId,
+        stripeCheckoutSessionId,
         clerkUserId,
         email,
         customerName,
@@ -80,6 +82,8 @@ export async function approveCancellationRequest(
     if (order.status === "cancelled") {
       return { success: false, message: "Order is already cancelled" };
     }
+
+    await expireCheckoutSessionIfOpen(order.stripeCheckoutSessionId);
 
     const refundResult = await refundOrderPayment(order);
 
@@ -271,6 +275,7 @@ export async function cancelOrder(
         amountPaid,
         paymentMethod,
         stripePaymentIntentId,
+        stripeCheckoutSessionId,
         clerkUserId,
         email,
         customerName
@@ -293,6 +298,8 @@ export async function cancelOrder(
           "Cannot cancel delivered orders. Please process a return instead.",
       };
     }
+
+    await expireCheckoutSessionIfOpen(order.stripeCheckoutSessionId);
 
     const refundResult = await refundOrderPayment(order);
 

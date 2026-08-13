@@ -25,6 +25,8 @@ type OrderEmailRow = {
   subtotal?: number;
   shipping?: number;
   tax?: number;
+  packagingFee?: number;
+  amountDiscount?: number;
   totalPrice?: number;
   address?: {
     name?: string;
@@ -59,6 +61,8 @@ export async function sendOrderConfirmationEmailByOrderId(
         subtotal,
         shipping,
         tax,
+        packagingFee,
+        amountDiscount,
         totalPrice,
         address,
         products[]{
@@ -110,6 +114,8 @@ export async function sendOrderConfirmationEmailByOrderId(
         ),
       })),
       subtotal: order.subtotal || 0,
+      packagingFee: order.packagingFee || 0,
+      amountDiscount: order.amountDiscount || 0,
       shipping: order.shipping || 0,
       tax: order.tax || 0,
       total: order.totalPrice || 0,
