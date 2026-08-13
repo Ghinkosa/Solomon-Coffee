@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdminUser } from "@/lib/adminAuth";
 import { readClient, writeClient } from "@/sanity/lib/client";
 import { revalidatePath } from "next/cache";
+import { expireCheckoutSessionIfOpen } from "@/lib/expireCheckoutSession";
+import { restoreOrderStock } from "@/lib/stock";
 
 // Disable Next.js caching for this route
 export const dynamic = "force-dynamic";
@@ -148,10 +150,54 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // Delete orders from Sanity
+    // Only allow safe deletes: cancelled, or never paid. Expire open Checkout
+    // and restore stock so deletes cannot orphan inventory or live sessions.
     const deleteResults = [];
     for (const orderIdToDelete of orderIds) {
       try {
+        const order = await writeClient.fetch<{
+          _id: string;
+          status?: string;
+          paymentStatus?: string;
+          stripeCheckoutSessionId?: string;
+          stockDecremented?: boolean;
+          stockRestored?: boolean;
+        } | null>(
+          `*[_type == "order" && _id == $id][0]{
+            _id, status, paymentStatus, stripeCheckoutSessionId,
+            stockDecremented, stockRestored
+          }`,
+          { id: orderIdToDelete },
+        );
+
+        if (!order) {
+          deleteResults.push({
+            orderId: orderIdToDelete,
+            success: false,
+            error: "Order not found",
+          });
+          continue;
+        }
+
+        const isCancelled = order.status === "cancelled";
+        const neverPaid =
+          order.paymentStatus !== "paid" && order.paymentStatus !== "refunded";
+
+        if (!isCancelled && !neverPaid) {
+          deleteResults.push({
+            orderId: orderIdToDelete,
+            success: false,
+            error:
+              "Only cancelled or unpaid orders can be deleted. Cancel/refund first.",
+          });
+          continue;
+        }
+
+        await expireCheckoutSessionIfOpen(order.stripeCheckoutSessionId);
+        if (order.stockDecremented && !order.stockRestored) {
+          await restoreOrderStock(orderIdToDelete, { throwOnError: true });
+        }
+
         await writeClient.delete(orderIdToDelete);
         deleteResults.push({ orderId: orderIdToDelete, success: true });
       } catch (error) {

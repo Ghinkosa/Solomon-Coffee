@@ -144,10 +144,13 @@ export async function POST(req: NextRequest) {
           stockDecremented?: boolean;
           stockRestored?: boolean;
           totalPrice?: number;
+          stripeCheckoutSessionId?: string;
+          stripePaymentIntentId?: string;
         } | null>(
           `*[_type == "order" && _id == $orderId][0]{
             _rev, status, paymentStatus, paymentMethod, fulfillmentProcessed,
-            stockDecremented, stockRestored, totalPrice
+            stockDecremented, stockRestored, totalPrice,
+            stripeCheckoutSessionId, stripePaymentIntentId
           }`,
           { orderId },
         );
@@ -160,16 +163,43 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        // Idempotency gate: only skip once fulfillment has FULLY completed.
-        // (Do not gate on paymentStatus — a mid-way failure must be resumable.)
-        if (existing.fulfillmentProcessed) {
-          return NextResponse.json({ received: true, skipped: "duplicate" });
-        }
-
         const paymentIntentId =
           typeof session.payment_intent === "string"
             ? session.payment_intent
             : session.payment_intent?.id;
+
+        const isExtraSession =
+          Boolean(existing.stripeCheckoutSessionId) &&
+          existing.stripeCheckoutSessionId !== session.id;
+        const isExtraIntent =
+          Boolean(paymentIntentId) &&
+          Boolean(existing.stripePaymentIntentId) &&
+          existing.stripePaymentIntentId !== paymentIntentId;
+
+        // Already fulfilled or already paid — refund any *additional* payment.
+        if (
+          existing.fulfillmentProcessed ||
+          existing.paymentStatus === PAYMENT_STATUSES.PAID
+        ) {
+          if (isExtraSession || isExtraIntent) {
+            const refund = await refundLateCheckoutPayment({
+              orderId,
+              sessionId: session.id,
+              paymentIntentId,
+            });
+            if (!refund.refunded) {
+              return NextResponse.json(
+                { error: "Duplicate payment refund failed", detail: refund.error },
+                { status: 500 },
+              );
+            }
+            return NextResponse.json({
+              received: true,
+              skipped: "duplicate_payment_refunded",
+            });
+          }
+          return NextResponse.json({ received: true, skipped: "duplicate" });
+        }
 
         // Never revive a cancelled / refunded order. Refund the late payment.
         if (
@@ -178,11 +208,17 @@ export async function POST(req: NextRequest) {
           existing.paymentStatus === "refunded" ||
           existing.stockRestored
         ) {
-          await refundLateCheckoutPayment({
+          const refund = await refundLateCheckoutPayment({
             orderId,
             sessionId: session.id,
             paymentIntentId,
           });
+          if (!refund.refunded && paymentIntentId) {
+            return NextResponse.json(
+              { error: "Late payment refund failed", detail: refund.error },
+              { status: 500 },
+            );
+          }
           return NextResponse.json({
             received: true,
             skipped: "order_cancelled_or_stock_restored",
@@ -198,11 +234,17 @@ export async function POST(req: NextRequest) {
             sessionAmount: session.amount_total,
             orderTotal: existing.totalPrice,
           });
-          await refundLateCheckoutPayment({
+          const refund = await refundLateCheckoutPayment({
             orderId,
             sessionId: session.id,
             paymentIntentId,
           });
+          if (!refund.refunded && paymentIntentId) {
+            return NextResponse.json(
+              { error: "Amount mismatch refund failed", detail: refund.error },
+              { status: 500 },
+            );
+          }
           return NextResponse.json({
             received: true,
             skipped: "amount_mismatch_refunded",
@@ -245,7 +287,45 @@ export async function POST(req: NextRequest) {
             .set(paymentUpdate)
             .commit();
         } catch {
-          // Another concurrent delivery claimed it; it will finish fulfillment.
+          // Lost the race — another delivery marked paid. Refund this extra PI.
+          const latest = await backendClient.fetch<{
+            paymentStatus?: string;
+            stripeCheckoutSessionId?: string;
+            stripePaymentIntentId?: string;
+            fulfillmentProcessed?: boolean;
+          } | null>(
+            `*[_type == "order" && _id == $orderId][0]{
+              paymentStatus, stripeCheckoutSessionId, stripePaymentIntentId, fulfillmentProcessed
+            }`,
+            { orderId },
+          );
+          const extra =
+            (latest?.stripeCheckoutSessionId &&
+              latest.stripeCheckoutSessionId !== session.id) ||
+            (latest?.stripePaymentIntentId &&
+              paymentIntentId &&
+              latest.stripePaymentIntentId !== paymentIntentId);
+          if (
+            extra &&
+            (latest?.paymentStatus === PAYMENT_STATUSES.PAID ||
+              latest?.fulfillmentProcessed)
+          ) {
+            const refund = await refundLateCheckoutPayment({
+              orderId,
+              sessionId: session.id,
+              paymentIntentId,
+            });
+            if (!refund.refunded && paymentIntentId) {
+              return NextResponse.json(
+                { error: "Race duplicate refund failed", detail: refund.error },
+                { status: 500 },
+              );
+            }
+            return NextResponse.json({
+              received: true,
+              skipped: "duplicate_payment_refunded",
+            });
+          }
           return NextResponse.json({ received: true, skipped: "duplicate" });
         }
 

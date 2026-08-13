@@ -5,6 +5,7 @@ import { backendClient } from "@/sanity/lib/backendClient";
 import stripe from "@/lib/stripe";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/orderStatus";
 import { getBaseUrl } from "@/lib/get-base-url";
+import { expirePriorCheckoutSession } from "@/lib/expireCheckoutSession";
 
 export async function POST(
   request: NextRequest,
@@ -34,6 +35,7 @@ export async function POST(
         paymentMethod,
         totalPrice,
         currency,
+        stripeCheckoutSessionId,
         products[]{
           _key,
           quantity,
@@ -83,6 +85,8 @@ export async function POST(
     const baseUrl = getBaseUrl();
     const currency = (order.currency || "USD").toLowerCase();
     const expiresAt = Math.floor(Date.now() / 1000) + 30 * 60;
+
+    await expirePriorCheckoutSession(order.stripeCheckoutSessionId);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],

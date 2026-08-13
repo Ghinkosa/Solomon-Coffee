@@ -59,6 +59,36 @@ export async function PATCH(
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    // Cancelled orders are terminal — do not revive via admin PATCH.
+    if (
+      currentOrder.status === "cancelled" &&
+      updateData.status !== undefined &&
+      updateData.status !== "cancelled"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Cancelled orders cannot be revived. Create a new order if needed.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // Never mark paid through admin PATCH — Stripe webhook / collectCash only.
+    if (
+      updateData.paymentStatus !== undefined &&
+      updateData.paymentStatus !== currentOrder.paymentStatus &&
+      updateData.paymentStatus === "paid"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Cannot mark an order paid via admin. Use Stripe checkout or cash collection.",
+        },
+        { status: 400 },
+      );
+    }
+
     // Freeze money fields once a Checkout session exists or payment completed.
     if (
       updateData.totalPrice !== undefined &&

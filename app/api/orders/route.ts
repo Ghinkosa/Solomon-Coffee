@@ -311,6 +311,7 @@ export const POST = async (request: NextRequest) => {
         paymentMethod === PAYMENT_METHODS.CASH_ON_DELIVERY
           ? PAYMENT_STATUSES.PENDING
           : PAYMENT_STATUSES.PENDING,
+      pricingLocked: true,
       subtotal: calculated.subtotal,
       shipping: calculated.shipping,
       tax: calculated.tax,

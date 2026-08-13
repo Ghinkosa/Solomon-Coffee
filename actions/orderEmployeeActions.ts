@@ -641,6 +641,7 @@ export async function collectCash(
     const order = await backendClient.fetch<{
       _id: string;
       _rev?: string;
+      status?: string;
       paymentMethod?: string;
       paymentStatus?: string;
       totalPrice?: number;
@@ -649,7 +650,7 @@ export async function collectCash(
       clerkUserId?: string;
     } | null>(
       `*[_type == "order" && _id == $orderId][0]{
-        _id, _rev, paymentMethod, paymentStatus, totalPrice,
+        _id, _rev, status, paymentMethod, paymentStatus, totalPrice,
         cashCollected, assignedDeliverymanId, clerkUserId
       }`,
       { orderId },
@@ -657,6 +658,13 @@ export async function collectCash(
 
     if (!order?._rev) {
       return { success: false, message: "Order not found" };
+    }
+
+    if (order.status === "cancelled" || order.paymentStatus === "cancelled") {
+      return {
+        success: false,
+        message: "Cannot collect cash on a cancelled order",
+      };
     }
 
     const assignmentError = assertDeliverymanAssignment(order, employee);

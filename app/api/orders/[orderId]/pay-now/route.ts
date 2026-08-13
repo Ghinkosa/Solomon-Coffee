@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { writeClient } from "@/sanity/lib/client";
 import stripe from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/get-base-url";
+import { expirePriorCheckoutSession } from "@/lib/expireCheckoutSession";
 
 export async function POST(
   request: NextRequest,
@@ -49,6 +50,7 @@ export async function POST(
         paymentStatus,
         stripeCustomerId,
         stripePaymentIntentId,
+        stripeCheckoutSessionId,
         address
       }`,
       { orderId, clerkUserId: user.id }
@@ -138,6 +140,8 @@ export async function POST(
     const expiresAt = Math.floor(Date.now() / 1000) + 30 * 60;
 
     try {
+      await expirePriorCheckoutSession(order.stripeCheckoutSessionId);
+
       const checkoutSession = await stripe.checkout.sessions.create({
         customer: stripeCustomerId,
         payment_method_types: ["card"],

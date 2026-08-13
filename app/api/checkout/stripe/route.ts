@@ -4,6 +4,7 @@ import stripe from "@/lib/stripe";
 import { readClient, writeClient } from "@/sanity/lib/client";
 import { getBaseUrl } from "@/lib/get-base-url";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { expirePriorCheckoutSession } from "@/lib/expireCheckoutSession";
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -44,6 +45,7 @@ export const POST = async (request: NextRequest) => {
       currency?: string;
       clerkUserId?: string;
       isGuest?: boolean;
+      stripeCheckoutSessionId?: string;
     }>(
       `*[_type == "order" && _id == $orderId][0]{
         _id,
@@ -54,7 +56,8 @@ export const POST = async (request: NextRequest) => {
         email,
         currency,
         clerkUserId,
-        isGuest
+        isGuest,
+        stripeCheckoutSessionId
       }`,
       { orderId },
     );
@@ -109,6 +112,9 @@ export const POST = async (request: NextRequest) => {
     const customerEmail = order.email || email;
     const guestFlag = Boolean(isGuest || order.isGuest || !order.clerkUserId);
     const expiresAt = Math.floor(Date.now() / 1000) + 30 * 60;
+
+    // Retries must not leave an older open session payable (double charge).
+    await expirePriorCheckoutSession(order.stripeCheckoutSessionId);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
