@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { writeClient } from "@/sanity/lib/client";
 import { requireAdminUser } from "@/lib/adminAuth";
+import { isLoyaltyEnabled } from "@/lib/featureFlags";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
           membershipType: "premium",
           premiumApprovedBy: adminEmail,
           premiumApprovedAt: new Date().toISOString(),
-          loyaltyPoints: 100, // Welcome bonus
+          ...(isLoyaltyEnabled() ? { loyaltyPoints: 100 } : {}),
           updatedAt: new Date().toISOString(),
         })
         .commit();

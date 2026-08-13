@@ -84,7 +84,7 @@ export function PackagingSelector({ selectedId, onSelect }: PackagingSelectorPro
           const isSelected = selectedId === pkg._id;
           
           // Get image URL safely
-          let imgUrl = "/placeholder-pkg.png";
+          let imgUrl = "/placeholder.png";
           if ((pkg as any).imageUrl) {
             imgUrl = (pkg as any).imageUrl;
           } else if (pkg.image && typeof pkg.image === 'object' && (pkg.image as any).asset?.url) {

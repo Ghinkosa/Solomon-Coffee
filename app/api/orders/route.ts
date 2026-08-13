@@ -20,6 +20,11 @@ import {
 } from "@/lib/shipping-address-validation";
 import crypto from "crypto";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+
+const GUEST_ORDER_LIMIT = 5;
+const AUTH_ORDER_LIMIT = 30;
+const ORDER_WINDOW_MS = 15 * 60 * 1000;
 
 export async function GET() {
   try {
@@ -46,6 +51,25 @@ export const POST = async (request: NextRequest) => {
     const { userId } = await auth();
     const user = await currentUser();
     const isGuest = !userId || !user;
+
+    const ipAddress = getClientIp(request);
+    const rate = checkRateLimit(
+      isGuest ? `orders-guest:${ipAddress}` : `orders-auth:${userId || ipAddress}`,
+      isGuest ? GUEST_ORDER_LIMIT : AUTH_ORDER_LIMIT,
+      ORDER_WINDOW_MS,
+    );
+    if (!rate.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many order attempts. Please try again later.",
+          retryAfterSeconds: rate.retryAfterSeconds,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
 
     const reqBody = await request.json();
     const {

@@ -26,7 +26,6 @@ import {
   Calendar,
   ChevronLeft,
   Clock,
-  Eye,
   BookOpen,
   ArrowRight,
 } from "lucide-react";
@@ -61,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  return generateBlogMetadata(blog);
+  return generateBlogMetadata(blog, lang as Locale);
 }
 
 const SingleBlogPage = async ({
@@ -79,7 +78,7 @@ const SingleBlogPage = async ({
   if (!blog) return notFound();
 
   // Generate structured data
-  const blogSchema = generateBlogSchema(blog);
+  const blogSchema = generateBlogSchema(blog, lang as Locale);
 
   // Calculate reading time based on content length
   const calculateReadingTime = (body: unknown[]) => {
@@ -178,8 +177,8 @@ const SingleBlogPage = async ({
                   </div>
 
                   <div className="flex items-center gap-1">
-                    <Eye size={16} />
-                    <span>2.5K views</span>
+                    <BookOpen size={16} />
+                    <span>{bs.articleLabel ?? "Article"}</span>
                   </div>
                 </div>
               </div>

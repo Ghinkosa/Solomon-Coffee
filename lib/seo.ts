@@ -94,6 +94,7 @@ export function generateProductMetadata(
 export function generateCategoryMetadata(
   category: Category,
   productCount: number = 0,
+  locale: Locale = i18n.defaultLocale,
 ): Metadata {
   const title = category.title || "Category";
   const description =
@@ -102,7 +103,8 @@ export function generateCategoryMetadata(
   const imageUrl = category.image
     ? urlFor(category.image).url()
     : "/og-image.jpg";
-  const url = `${BASE_URL}/category/${category.slug?.current}`;
+  const path = `/category/${category.slug?.current}`;
+  const url = localizedUrl(path, locale);
 
   return {
     title,
@@ -138,6 +140,7 @@ export function generateCategoryMetadata(
     },
     alternates: {
       canonical: url,
+      languages: buildHreflangAlternates(path),
     },
   };
 }
@@ -145,7 +148,10 @@ export function generateCategoryMetadata(
 /**
  * Generate metadata for blog pages
  */
-export function generateBlogMetadata(blog: any): Metadata {
+export function generateBlogMetadata(
+  blog: any,
+  locale: Locale = i18n.defaultLocale,
+): Metadata {
   const title = blog.title || "Blog Post";
   const description =
     blog.description ||
@@ -153,7 +159,8 @@ export function generateBlogMetadata(blog: any): Metadata {
   const imageUrl = blog.mainImage
     ? urlFor(blog.mainImage).url()
     : "/og-image.jpg";
-  const url = `${BASE_URL}/blog/${blog.slug?.current}`;
+  const path = `/blog/${blog.slug?.current}`;
+  const url = localizedUrl(path, locale);
 
   return {
     title,
@@ -186,6 +193,7 @@ export function generateBlogMetadata(blog: any): Metadata {
     },
     alternates: {
       canonical: url,
+      languages: buildHreflangAlternates(path),
     },
   };
 }
@@ -240,8 +248,12 @@ export function generateProductSchema(product: any, locale: Locale = i18n.defaul
 /**
  * Generate Blog Schema (JSON-LD)
  */
-export function generateBlogSchema(blog: any) {
+export function generateBlogSchema(
+  blog: any,
+  locale: Locale = i18n.defaultLocale,
+) {
   const imageUrl = blog.mainImage ? urlFor(blog.mainImage).url() : "";
+  const url = localizedUrl(`/blog/${blog.slug?.current}`, locale);
 
   return {
     "@context": "https://schema.org",
@@ -265,7 +277,7 @@ export function generateBlogSchema(blog: any) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${BASE_URL}/blog/${blog.slug?.current}`,
+      "@id": url,
     },
   };
 }
@@ -331,7 +343,7 @@ export function generateWebsiteSchema() {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${BASE_URL}/shop?search={search_term_string}`,
+        urlTemplate: `${BASE_URL}/${i18n.defaultLocale}/shop?search={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -341,7 +353,11 @@ export function generateWebsiteSchema() {
 /**
  * Generate ItemList Schema for product listings
  */
-export function generateItemListSchema(products: any[], listName: string) {
+export function generateItemListSchema(
+  products: any[],
+  listName: string,
+  locale: Locale = i18n.defaultLocale,
+) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -350,8 +366,8 @@ export function generateItemListSchema(products: any[], listName: string) {
     itemListElement: products.map((product, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `${BASE_URL}/product/${product.slug?.current}`,
-      name: getProductName(product, i18n.defaultLocale),
+      url: localizedUrl(`/product/${product.slug?.current}`, locale),
+      name: getProductName(product, locale),
     })),
   };
 }

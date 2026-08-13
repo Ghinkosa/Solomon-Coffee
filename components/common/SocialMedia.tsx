@@ -1,4 +1,4 @@
-import { Facebook, Linkedin, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
+import { contactConfig } from "@/config/contact";
 
 interface Props {
   className?: string;
@@ -14,26 +15,32 @@ interface Props {
   variant?: "light" | "dark" | "footer";
 }
 
-const socialLink = [
+const socialDefs = [
   {
-    title: "Youtube",
-    href: "https://www.youtube.com/@shebascoffee",
+    title: "YouTube",
+    href: contactConfig.socialMedia.youtube,
     icon: <Youtube className="w-5 h-5" />,
     color: "hover:text-red-600 hover:border-red-600",
   },
   {
-    title: "Linkedin",
-    href: "https://www.linkedin.com/company/shebas-coffee",
+    title: "LinkedIn",
+    href: contactConfig.socialMedia.linkedin,
     icon: <Linkedin className="w-5 h-5" />,
     color: "hover:text-blue-600 hover:border-blue-600",
   },
   {
     title: "Facebook",
-    href: "https://www.facebook.com/shebascoffee",
+    href: contactConfig.socialMedia.facebook,
     icon: <Facebook className="w-5 h-5" />,
     color: "hover:text-blue-600 hover:border-blue-600",
   },
-];
+  {
+    title: "Instagram",
+    href: contactConfig.socialMedia.instagram,
+    icon: <Instagram className="w-5 h-5" />,
+    color: "hover:text-pink-600 hover:border-pink-600",
+  },
+] as const;
 
 const SocialMedia = ({
   className,
@@ -43,6 +50,11 @@ const SocialMedia = ({
 }: Props) => {
   const isDark = variant === "dark";
   const isFooter = variant === "footer";
+  const socialLink = socialDefs.filter((item) => Boolean(item.href));
+
+  if (socialLink.length === 0) {
+    return null;
+  }
 
   return (
     <TooltipProvider>

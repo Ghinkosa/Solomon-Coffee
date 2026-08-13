@@ -153,7 +153,7 @@ export function WeightGrindSelector({
           <div className="grid grid-cols-2 gap-3">
             {packagingOptions.map((pkg) => {
               const isSelected = selectedPackaging?._id === pkg._id;
-              const imgUrl = (pkg as any).imageUrl || "/placeholder-pkg.png";
+              const imgUrl = (pkg as any).imageUrl || "/placeholder.png";
 
               return (
                 <button

@@ -37,6 +37,7 @@ export const contactConfig = {
     twitter: process.env.NEXT_PUBLIC_TWITTER_URL || "",
     instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "",
     linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || "",
+    youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || "",
   },
   legal: {
     copyright:
@@ -49,9 +50,6 @@ export const contactConfig = {
     helpCenter: "/help",
     faq: "/faqs",
     trackOrder: "/order/track",
-    returns: "/returns",
-    shipping: "/shipping",
-    sizeGuide: "/size-guide",
   },
 };
 

@@ -3,6 +3,7 @@ import { writeClient, readClient } from "@/sanity/lib/client";
 import { USER_BY_EMAIL_FILTER, SANITY_USER_TYPE } from "@/lib/sanity-user";
 import { requireAdminUser } from "@/lib/adminAuth";
 import { DEFAULT_USER_PREFERENCES } from "@/lib/userPreferences";
+import { isLoyaltyEnabled } from "@/lib/featureFlags";
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,7 +62,8 @@ export async function POST(request: NextRequest) {
         activatedAt: new Date().toISOString(),
         activatedBy: admin.userEmail || "admin-creation",
         rewardPoints: 0,
-        loyaltyPoints: premium ? 100 : 0,
+        loyaltyPoints:
+          premium && isLoyaltyEnabled() ? 100 : 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         preferences: {

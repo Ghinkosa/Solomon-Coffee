@@ -7,6 +7,25 @@ import { updateEmployeePerformance } from "./employeeActions";
 import { sendOrderStatusNotification } from "@/lib/notificationService";
 import { invalidateOrder } from "@/lib/cache";
 
+import { isEmployeeOpsEnabled } from "@/lib/featureFlags";
+
+function ensureEmployeeOpsEnabled(): { success: false; message: string } | null {
+  if (!isEmployeeOpsEnabled()) {
+    return {
+      success: false,
+      message: "Employee order operations are disabled",
+    };
+  }
+  return null;
+}
+
+function ensureEmployeeOpsEnabledList(): never[] | null {
+  if (!isEmployeeOpsEnabled()) {
+    return [];
+  }
+  return null;
+}
+
 // Add status history entry
 async function addStatusHistory(
   orderId: string,
@@ -38,6 +57,9 @@ export async function confirmAddress(
   orderId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -98,6 +120,9 @@ export async function updateShippingAddress(
     phone?: string;
   }
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -158,6 +183,9 @@ export async function confirmOrder(
   orderId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -257,6 +285,9 @@ export async function markAsPacked(
   orderId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -346,6 +377,9 @@ export async function assignDeliveryman(
   deliverymanId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -433,6 +467,9 @@ export async function markAsDelivered(
   orderId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -546,6 +583,9 @@ export async function collectCash(
   orderId: string,
   cashAmount: number
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -621,6 +661,9 @@ export async function startDelivery(
   orderId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -722,6 +765,9 @@ export async function rescheduleDelivery(
   newDate: string,
   reason: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -779,6 +825,9 @@ export async function markDeliveryFailed(
   orderId: string,
   reason: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -841,6 +890,9 @@ export async function receivePaymentFromDeliveryman(
   orderId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -927,6 +979,9 @@ export async function submitCashToAccounts(
   accountsEmployeeId: string,
   notes?: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -1039,6 +1094,9 @@ export async function rejectCashSubmission(
   orderId: string,
   rejectionReason: string
 ): Promise<{ success: boolean; message: string }> {
+  const opsDisabled = ensureEmployeeOpsEnabled();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -1122,6 +1180,9 @@ export async function rejectCashSubmission(
 
 // Get orders for employee role
 export async function getOrdersForEmployee() {
+  const opsDisabled = ensureEmployeeOpsEnabledList();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -1232,6 +1293,9 @@ export async function getOrdersForEmployee() {
 
 // Get orders for accounts department
 export async function getOrdersForAccounts() {
+  const opsDisabled = ensureEmployeeOpsEnabledList();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -1305,6 +1369,10 @@ export async function getOrdersForAccounts() {
 
 // Get payment statistics for accounts
 export async function getAccountsPaymentStats() {
+  if (!isEmployeeOpsEnabled()) {
+    return null;
+  }
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -1387,6 +1455,9 @@ export async function getAccountsPaymentStats() {
 
 // Get active accounts employees for selection
 export async function getActiveAccountsEmployees() {
+  const opsDisabled = ensureEmployeeOpsEnabledList();
+  if (opsDisabled) return opsDisabled;
+
   try {
     const { userId: clerkUserId } = await auth();
 
@@ -1417,6 +1488,48 @@ export async function getActiveAccountsEmployees() {
     return accountsEmployees;
   } catch (error) {
     console.error("Error fetching accounts employees:", error);
+    return [];
+  }
+}
+
+/** Deliverymen list for warehouse assignment — server-only; never use writeClient in the browser. */
+export async function getActiveDeliverymenForAssignment(): Promise<
+  Array<{ _id: string; firstName: string; lastName: string; email: string }>
+> {
+  if (!isEmployeeOpsEnabled()) {
+    return [];
+  }
+
+  try {
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId) {
+      return [];
+    }
+
+    const employee = await backendClient.fetch(
+      `*[_type == "user" && clerkUserId == $clerkUserId && isEmployee == true && employeeStatus == "active"][0]{
+        employeeRole
+      }`,
+      { clerkUserId },
+    );
+
+    if (
+      !employee ||
+      !["warehouse", "incharge", "packer"].includes(employee.employeeRole)
+    ) {
+      return [];
+    }
+
+    return await backendClient.fetch(
+      `*[_type == "user" && isEmployee == true && employeeRole == "deliveryman" && employeeStatus == "active"] | order(firstName asc) {
+        _id,
+        firstName,
+        lastName,
+        email
+      }`,
+    );
+  } catch (error) {
+    console.error("Error fetching deliverymen:", error);
     return [];
   }
 }

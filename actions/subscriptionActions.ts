@@ -1,6 +1,11 @@
 "use server";
 
+import { headers } from "next/headers";
 import { client, writeClient } from "@/sanity/lib/client";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+
+const NEWSLETTER_LIMIT = 8;
+const NEWSLETTER_WINDOW_MS = 15 * 60 * 1000;
 
 interface SubscriptionData {
   email: string;
@@ -17,6 +22,27 @@ interface SubscriptionResponse {
   alreadySubscribed?: boolean;
 }
 
+async function assertNewsletterRateLimit(
+  email?: string,
+): Promise<SubscriptionResponse | null> {
+  const headerStore = await headers();
+  const ipAddress = getClientIp({ headers: headerStore });
+  const emailKey = email?.toLowerCase().trim() || "unknown";
+  const rate = checkRateLimit(
+    `newsletter-action:${ipAddress}:${emailKey}`,
+    NEWSLETTER_LIMIT,
+    NEWSLETTER_WINDOW_MS,
+  );
+  if (!rate.allowed) {
+    return {
+      success: false,
+      message: "Too many subscription attempts. Please try again later.",
+      error: "rate_limited",
+    };
+  }
+  return null;
+}
+
 /**
  * Subscribe a user to the newsletter
  * Checks for existing subscription before creating a new one
@@ -26,6 +52,9 @@ export async function subscribeToNewsletter(
 ): Promise<SubscriptionResponse> {
   try {
     const { email, source = "footer", ipAddress, userAgent } = subscriptionData;
+
+    const rateLimited = await assertNewsletterRateLimit(email);
+    if (rateLimited) return rateLimited;
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -129,6 +158,9 @@ export async function unsubscribeFromNewsletter(
   email: string
 ): Promise<SubscriptionResponse> {
   try {
+    const rateLimited = await assertNewsletterRateLimit(email);
+    if (rateLimited) return rateLimited;
+
     const subscription = await client.fetch(
       `*[_type == "subscription" && email == $email && status == "active"][0]`,
       { email: email.toLowerCase().trim() }

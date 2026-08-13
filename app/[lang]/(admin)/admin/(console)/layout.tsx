@@ -50,7 +50,7 @@ const AdminConsoleLayout = async ({
   };
 
   return (
-    <AdminAuthGuard isAdmin={true}>
+    <AdminAuthGuard isAdmin={gate.status === "admin"}>
       <AdminShell user={serializedUser}>{children}</AdminShell>
     </AdminAuthGuard>
   );

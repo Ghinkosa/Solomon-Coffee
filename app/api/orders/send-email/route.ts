@@ -15,6 +15,10 @@ import {
 } from "@/lib/userPreferences.server";
 import { displayProductName } from "@/lib/display-product-name";
 import { i18n, type Locale } from "@/i18n-config";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+
+const SEND_EMAIL_LIMIT = 10;
+const SEND_EMAIL_WINDOW_MS = 15 * 60 * 1000;
 
 // Extended interface for email preparation that can handle Sanity images
 interface EmailOrderItem {
@@ -47,6 +51,25 @@ interface EmailOrderData {
 
 export async function POST(request: NextRequest) {
   try {
+    const ipAddress = getClientIp(request);
+    const rate = checkRateLimit(
+      `orders-send-email:${ipAddress}`,
+      SEND_EMAIL_LIMIT,
+      SEND_EMAIL_WINDOW_MS,
+    );
+    if (!rate.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many email requests. Please try again later.",
+          retryAfterSeconds: rate.retryAfterSeconds,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSeconds) },
+        },
+      );
+    }
+
     const { userId } = await auth();
     const user = await currentUser();
     const { orderData }: { orderData: EmailOrderData } = await request.json();

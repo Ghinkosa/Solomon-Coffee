@@ -24,8 +24,7 @@ import { toast } from "sonner";
 import { urlFor } from "@/sanity/lib/image";
 import PriceFormatter from "@/components/PriceFormatter";
 import { Employee } from "@/types/employee";
-import { assignDeliveryman } from "@/actions/orderEmployeeActions";
-import { writeClient } from "@/sanity/lib/client";
+import { assignDeliveryman, getActiveDeliverymenForAssignment } from "@/actions/orderEmployeeActions";
 import OrderNotes from "./OrderNotes";
 import { displayProductName } from "@/lib/display-product-name";
 import { i18n } from "@/i18n-config";
@@ -60,19 +59,12 @@ export default function WarehouseOrderSheet({
   >([]);
   const [loadingDeliverymen, setLoadingDeliverymen] = useState(false);
 
-  // Fetch available deliverymen
+  // Fetch available deliverymen via server action (never writeClient on client)
   useEffect(() => {
     const fetchDeliverymen = async () => {
       setLoadingDeliverymen(true);
       try {
-        const data = await writeClient.fetch(`
-          *[_type == "user" && isEmployee == true && employeeRole == "deliveryman" && employeeStatus == "active"] {
-            _id,
-            firstName,
-            lastName,
-            email
-          }
-        `);
+        const data = await getActiveDeliverymenForAssignment();
         setDeliverymen(data);
       } catch (error) {
         console.error("Error fetching deliverymen:", error);

@@ -350,7 +350,7 @@ const ProductContent = ({
                     const isSelected = selectedPackaging?._id === pkg._id;
                     
                     // Get image URL safely
-                    let imgUrl = "/placeholder-pkg.png";
+                    let imgUrl = "/placeholder.png";
                     if (pkg.imageUrl) {
                       imgUrl = pkg.imageUrl;
                     } else if (pkg.image && typeof pkg.image === 'object') {

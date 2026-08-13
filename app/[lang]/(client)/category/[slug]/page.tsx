@@ -67,7 +67,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  return generateCategoryMetadata(currentCategory, products.length);
+  return generateCategoryMetadata(
+    currentCategory,
+    products.length,
+    lang as Locale,
+  );
 }
 
 const CategoryPage = async ({
@@ -114,7 +118,8 @@ const CategoryPage = async ({
 
   const itemListSchema = generateItemListSchema(
     products,
-    `${categoryTitle} ${t.productsSuffix ?? "Products"}`
+    `${categoryTitle} ${t.productsSuffix ?? "Products"}`,
+    lang as Locale,
   );
 
   return (
