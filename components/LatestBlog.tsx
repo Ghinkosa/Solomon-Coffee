@@ -13,6 +13,8 @@ import dayjs from "dayjs";
 import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { localizedPath } from "@/lib/localized-path";
+import { toDisplayText } from "@/lib/locale-content";
+import type { Locale } from "@/i18n-config";
 
 const LatestBlog = async ({
   dictionary,
@@ -22,6 +24,7 @@ const LatestBlog = async ({
   lang?: string;
 }) => {
   const blogs = (await getLatestBlogs()) as LatestBlogItem[];
+  const locale = lang as Locale;
 
   return (
     <Container>
@@ -57,7 +60,7 @@ const LatestBlog = async ({
                 <Link href={localizedPath(`/blog/${blog?.slug?.current}`, lang)}>
                   <Image
                     src={urlFor(blog?.mainImage).url()}
-                    alt={blog?.title || "Blog image"}
+                    alt={toDisplayText(blog?.title, locale) || "Blog image"}
                     width={500}
                     height={300}
                     className="w-full h-48 object-cover group-hover:scale-110 hoverEffect"
@@ -71,14 +74,18 @@ const LatestBlog = async ({
             <div className="p-6">
               {/* Meta Information */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
-                {blog?.blogcategories?.map((item, index) => (
+                {blog?.blogcategories?.map((item, index) => {
+                  const categoryTitle = toDisplayText(item?.title, locale);
+                  if (!categoryTitle) return null;
+                  return (
                   <span
                     key={index}
                     className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-shop_light_pink text-shop_dark_green border border-shop_light_green/20 md:text-sm"
                   >
-                    {item?.title}
+                    {categoryTitle}
                   </span>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Date */}
@@ -90,7 +97,7 @@ const LatestBlog = async ({
               {/* Title */}
               <Link href={localizedPath(`/blog/${blog?.slug?.current}`, lang)} className="block">
                 <h3 className="font-serif text-lg font-bold text-dark-color line-clamp-2 group-hover:text-shop_dark_green hoverEffect leading-tight mb-4 md:text-xl">
-                  {blog?.title}
+                  {toDisplayText(blog?.title, locale)}
                 </h3>
               </Link>
 

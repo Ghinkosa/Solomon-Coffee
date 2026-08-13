@@ -13,6 +13,7 @@ import {
   getProductDescription,
   getProductName,
 } from "@/lib/product-locale";
+import { toDisplayText } from "@/lib/locale-content";
 
 interface ProductExpandedDetailsProps {
   product: Product;
@@ -170,10 +171,14 @@ export function ProductExpandedDetails({
         .map((cat: unknown) => {
           if (typeof cat === "string") return cat.trim();
           if (!cat || typeof cat !== "object") return "";
-          if ("title" in cat && typeof (cat as { title?: unknown }).title === "string") {
-            return ((cat as { title: string }).title).trim();
+          if ("title" in cat) {
+            return toDisplayText(
+              (cat as { title?: unknown }).title,
+              lang,
+            );
           }
-          return "";
+          // categories[]->title may return a locale map directly
+          return toDisplayText(cat, lang);
         })
         .filter(Boolean)
         .join(", ")

@@ -12,12 +12,14 @@ const FEATURED_CATEGORY_QUERY = defineQuery(
 const ALL_PRODUCTS_QUERY = defineQuery(`*[_type=="product" && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc)`);
 const DEAL_PRODUCTS = defineQuery(
   `*[_type == 'product' && status == 'hot' && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc){
-  ...,"categories": categories[]->title
+  ...,
+  categories[]->{ _id, title, slug }
 }`
 );
 const FEATURE_PRODUCTS = defineQuery(
   `*[_type == 'product' && isFeatured == true && (!defined(isArchived) || isArchived != true)] | order(coalesce(name.en, name.es, name.ar, name) asc){
-    ...,"categories": categories[]->title
+    ...,
+    categories[]->{ _id, title, slug }
 }`
 );
 

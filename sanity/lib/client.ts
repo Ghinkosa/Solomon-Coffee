@@ -8,17 +8,14 @@ const resolveSanityToken = (
 ) => primary?.trim() || fallback?.trim() || undefined;
 
 // Read-only client for fetching data (uses CDN for better performance)
+// Stega is disabled on the storefront client — encoded/edit overlays can
+// interfere with locale objects ({ en, ar }) used as product names.
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
-  stega: {
-    studioUrl:
-      process.env.NODE_ENV === "production"
-        ? `https://${process.env.VERCEL_URL}/studio`
-        : `${process.env.NEXT_PUBLIC_BASE_URL}/studio`,
-  },
+  stega: false,
 });
 
 // Authenticated read client for server-side queries that need a token

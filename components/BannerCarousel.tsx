@@ -7,6 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { localizedPath } from "@/lib/localized-path";
 import { urlFor } from "@/sanity/lib/image";
+import { toDisplayText } from "@/lib/locale-content";
+import type { Locale } from "@/i18n-config";
 import { useCallback, useEffect, useState } from "react";
 
 interface Banner {
@@ -118,10 +120,8 @@ const BannerCarousel = ({ banners, lang, dictionary }: BannerCarouselProps) => {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  const getLocalizedValue = (field: any) => {
-    if (!field) return "";
-    return field[lang] || field["en"] || "";
-  };
+  const getLocalizedValue = (field: unknown) =>
+    toDisplayText(field, (lang || "en") as Locale);
 
   const heroShopLink = `/${lang || "en"}/shop`;
 

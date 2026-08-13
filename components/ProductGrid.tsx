@@ -78,7 +78,11 @@ const ProductGrid = ({
       try {
         const baseQuery = `*[_type == "product" && (!defined(isArchived) || isArchived != true)] | order(${getSortQuery(sortBy)}) {
           ...,
-          "categories": categories[]->title,
+          categories[]->{
+            _id,
+            title,
+            slug
+          },
           weightOptions[],
           grindOptions[],
           packagingOptions[] {
@@ -98,7 +102,11 @@ const ProductGrid = ({
         const filteredQuery = selectedTab
           ? `*[_type == "product" && (!defined(isArchived) || isArchived != true) && variant == $variant] | order(${getSortQuery(sortBy)}) {
               ...,
-              "categories": categories[]->title,
+              categories[]->{
+                _id,
+                title,
+                slug
+              },
               weightOptions[],
               grindOptions[],
               packagingOptions[] {
