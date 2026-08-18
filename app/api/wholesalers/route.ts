@@ -9,7 +9,7 @@ const WINDOW_MS = 15 * 60 * 1000;
 export async function POST(request: NextRequest) {
   try {
     const ipAddress = getClientIp(request);
-    const rate = checkRateLimit(`wholesale:${ipAddress}`, LIMIT, WINDOW_MS);
+    const rate = await checkRateLimit(`wholesale:${ipAddress}`, LIMIT, WINDOW_MS);
     if (!rate.allowed) {
       return NextResponse.json(
         {

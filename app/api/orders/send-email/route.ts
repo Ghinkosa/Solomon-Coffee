@@ -52,7 +52,7 @@ interface EmailOrderData {
 export async function POST(request: NextRequest) {
   try {
     const ipAddress = getClientIp(request);
-    const rate = checkRateLimit(
+    const rate = await checkRateLimit(
       `orders-send-email:${ipAddress}`,
       SEND_EMAIL_LIMIT,
       SEND_EMAIL_WINDOW_MS,

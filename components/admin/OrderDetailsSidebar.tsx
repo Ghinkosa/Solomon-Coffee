@@ -263,16 +263,30 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
 
     setIsUpdating(true);
     try {
+      const payload = {
+        status: formData.status,
+        totalPrice: formData.totalPrice,
+        trackingNumber: formData.trackingNumber,
+        notes: formData.notes,
+        estimatedDelivery: formData.estimatedDelivery,
+        packingNotes: formData.packingNotes,
+        deliveryNotes: formData.deliveryNotes,
+        deliveryAttempts: formData.deliveryAttempts,
+        rescheduledDate: formData.rescheduledDate,
+        rescheduledReason: formData.rescheduledReason,
+      };
+
       const response = await fetch(`/api/admin/orders/${order._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update order");
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || "Failed to update order");
       }
 
       const result = await response.json();
@@ -301,7 +315,9 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
       onClose();
     } catch (error) {
       console.error("Error updating order:", error);
-      showToast.error("Failed to update order");
+      showToast.error(
+        error instanceof Error ? error.message : "Failed to update order",
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -561,6 +577,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                     <Label htmlFor="paymentStatus">Payment Status</Label>
                     <Select
                       value={formData.paymentStatus}
+                      disabled
                       onValueChange={(value) =>
                         handleInputChange("paymentStatus", value)
                       }
@@ -961,6 +978,7 @@ const OrderDetailsSidebar: React.FC<OrderDetailsSidebarProps> = ({
                       type="number"
                       step="0.01"
                       min="0"
+                      disabled
                       value={formData.cashCollectedAmount}
                       onChange={(e) =>
                         handleInputChange(

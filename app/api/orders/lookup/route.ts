@@ -8,7 +8,7 @@ const WINDOW_MS = 15 * 60 * 1000;
 export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request);
-    const rate = checkRateLimit(`order-lookup:${ip}`, LIMIT, WINDOW_MS);
+    const rate = await checkRateLimit(`order-lookup:${ip}`, LIMIT, WINDOW_MS);
     if (!rate.allowed) {
       return NextResponse.json(
         {

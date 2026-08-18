@@ -113,14 +113,37 @@ export async function PATCH(
     if (
       updateData.paymentStatus !== undefined &&
       updateData.paymentStatus !== currentOrder.paymentStatus &&
-      (currentOrder.paymentStatus === "paid" ||
-        currentOrder.paymentStatus === "refunded") &&
       updateData.status !== "cancelled"
     ) {
       return NextResponse.json(
         {
           error:
-            "Paid/refunded payment status can only change through the cancel/refund flow.",
+            "Payment status can only change through the checkout, cash collection, or cancel/refund flows.",
+        },
+        { status: 400 },
+      );
+    }
+
+    const forbiddenManualFields = [
+      "cashCollected",
+      "cashCollectedAmount",
+      "cashCollectedAt",
+      "paymentReceivedBy",
+      "paymentReceivedAt",
+      "cancelledAt",
+      "cancelledBy",
+      "refundedToWallet",
+      "refundAmount",
+      "statusHistory",
+      "stripeRefundId",
+    ];
+    const forbiddenField = forbiddenManualFields.find(
+      (field) => updateData[field] !== undefined,
+    );
+    if (forbiddenField) {
+      return NextResponse.json(
+        {
+          error: `${forbiddenField} is managed server-side and cannot be updated manually.`,
         },
         { status: 400 },
       );
@@ -129,7 +152,6 @@ export async function PATCH(
     const allowedFields = [
       "status",
       "totalPrice",
-      "paymentStatus",
       "trackingNumber",
       "notes",
       "estimatedDelivery",
@@ -153,16 +175,6 @@ export async function PATCH(
       "deliveryAttempts",
       "rescheduledDate",
       "rescheduledReason",
-      "cashCollected",
-      "cashCollectedAmount",
-      "cashCollectedAt",
-      "paymentReceivedBy",
-      "paymentReceivedAt",
-      "cancelledAt",
-      "cancelledBy",
-      "refundedToWallet",
-      "refundAmount",
-      "statusHistory",
     ];
 
     const filteredUpdateData: Record<string, unknown> = {};

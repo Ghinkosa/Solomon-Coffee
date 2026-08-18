@@ -53,7 +53,7 @@ export const POST = async (request: NextRequest) => {
     const isGuest = !userId || !user;
 
     const ipAddress = getClientIp(request);
-    const rate = checkRateLimit(
+    const rate = await checkRateLimit(
       isGuest ? `orders-guest:${ipAddress}` : `orders-auth:${userId || ipAddress}`,
       isGuest ? GUEST_ORDER_LIMIT : AUTH_ORDER_LIMIT,
       ORDER_WINDOW_MS,

@@ -9,7 +9,11 @@ import { expirePriorCheckoutSession } from "@/lib/expireCheckoutSession";
 export const POST = async (request: NextRequest) => {
   try {
     const ip = getClientIp(request);
-    const rate = checkRateLimit(`stripe-checkout:${ip}`, 20, 15 * 60 * 1000);
+    const rate = await checkRateLimit(
+      `stripe-checkout:${ip}`,
+      20,
+      15 * 60 * 1000,
+    );
     if (!rate.allowed) {
       return NextResponse.json(
         {

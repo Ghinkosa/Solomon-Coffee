@@ -8,7 +8,7 @@ const WINDOW_MS = 15 * 60 * 1000;
 export async function POST(request: NextRequest) {
   try {
     const ipAddress = getClientIp(request);
-    const rate = checkRateLimit(`contact:${ipAddress}`, LIMIT, WINDOW_MS);
+    const rate = await checkRateLimit(`contact:${ipAddress}`, LIMIT, WINDOW_MS);
     if (!rate.allowed) {
       return NextResponse.json(
         {

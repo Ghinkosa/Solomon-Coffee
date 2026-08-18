@@ -91,6 +91,7 @@ export async function DELETE(req: NextRequest) {
         userId: string;
         clerkDeleted: boolean;
         sanityDeleted: boolean;
+        blocked?: boolean;
         sanityDataDeleted?: {
           addresses: number;
           orders: number;
@@ -102,6 +103,68 @@ export async function DELETE(req: NextRequest) {
         clerkDeleted: false,
         sanityDeleted: false,
       };
+
+      let existingUser: { _id: string; email?: string | null } | null = null;
+      let relatedData:
+        | {
+            addresses: string[];
+            orders: string[];
+            reviews: string[];
+          }
+        | undefined;
+
+      // Inspect the store profile before deleting auth. Paid/refunded orders are
+      // a hard stop because they need explicit refund/history handling first.
+      try {
+        const protectedOrders = await writeClient.fetch<
+          { _id: string; orderNumber?: string }[]
+        >(
+          `*[_type == "order" && clerkUserId == $clerkUserId && (paymentStatus == "paid" || paymentStatus == "refunded")]{
+            _id,
+            orderNumber
+          }`,
+          { clerkUserId: userIdToDelete }
+        );
+
+        if (protectedOrders.length > 0) {
+          result.blocked = true;
+          result.error = `User has paid/refunded orders and cannot be deleted safely (${protectedOrders
+            .map((order) => order.orderNumber || order._id)
+            .join(", ")})`;
+          deleteResults.push(result);
+          continue;
+        }
+
+        existingUser = await writeClient.fetch(
+          `*[_type == "user" && clerkUserId == $clerkUserId][0]{_id, email}`,
+          { clerkUserId: userIdToDelete }
+        );
+
+        if (existingUser) {
+          // Get all related data including references
+          relatedData = await writeClient.fetch(
+            `{
+              "addresses": *[_type == "address" && (email == $email || user._ref == $sanityId)]._id,
+              "orders": *[_type == "order" && clerkUserId == $clerkUserId]._id,
+              "reviews": *[_type == "review" && user._ref == $sanityId]._id,
+              "userAddresses": *[_type == "user" && _id == $sanityId][0].addresses[]._ref
+            }`,
+            {
+              email: existingUser.email,
+              clerkUserId: userIdToDelete,
+              sanityId: existingUser._id,
+            }
+          );
+        }
+      } catch (error) {
+        console.error(
+          `Failed to inspect user ${userIdToDelete} before delete:`,
+          error
+        );
+        result.error = error instanceof Error ? error.message : "Unknown error";
+        deleteResults.push(result);
+        continue;
+      }
 
       // Try to delete from Clerk (might not exist)
       try {
@@ -123,27 +186,7 @@ export async function DELETE(req: NextRequest) {
 
       // Try to delete from Sanity (and all related data)
       try {
-        const existingUser = await writeClient.fetch(
-          `*[_type == "user" && clerkUserId == $clerkUserId][0]{_id, email}`,
-          { clerkUserId: userIdToDelete }
-        );
-
-        if (existingUser) {
-          // Get all related data including references
-          const relatedData = await writeClient.fetch(
-            `{
-              "addresses": *[_type == "address" && (email == $email || user._ref == $sanityId)]._id,
-              "orders": *[_type == "order" && clerkUserId == $clerkUserId]._id,
-              "reviews": *[_type == "review" && user._ref == $sanityId]._id,
-              "userAddresses": *[_type == "user" && _id == $sanityId][0].addresses[]._ref
-            }`,
-            {
-              email: existingUser.email,
-              clerkUserId: userIdToDelete,
-              sanityId: existingUser._id,
-            }
-          );
-
+        if (existingUser && relatedData) {
           // Create transaction to delete everything
           const transaction = writeClient.transaction();
 

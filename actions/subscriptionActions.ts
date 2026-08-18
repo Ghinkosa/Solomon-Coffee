@@ -28,7 +28,7 @@ async function assertNewsletterRateLimit(
   const headerStore = await headers();
   const ipAddress = getClientIp({ headers: headerStore });
   const emailKey = email?.toLowerCase().trim() || "unknown";
-  const rate = checkRateLimit(
+  const rate = await checkRateLimit(
     `newsletter-action:${ipAddress}:${emailKey}`,
     NEWSLETTER_LIMIT,
     NEWSLETTER_WINDOW_MS,

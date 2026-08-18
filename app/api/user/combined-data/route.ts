@@ -27,7 +27,7 @@ export async function GET() {
       clerkUser.emailAddresses?.[0]?.emailAddress;
 
     // Fetch all data in parallel
-    const [user, orders, notifications, accountProfile, checkoutSettings] =
+    const [user, orders, _notifications, accountProfile, checkoutSettings] =
       await Promise.all([
         // Get user data including employee status
         client.fetch(
@@ -35,22 +35,16 @@ export async function GET() {
           _id,
           email,
           role,
-          isEmployee
+          isEmployee,
+          "unreadNotifications": count(notifications[read != true])
         }`,
           { userId },
         ),
         // Get orders count
-        client.fetch(`count(*[_type == "order" && userId == $userId])`, {
+        client.fetch(`count(*[_type == "order" && clerkUserId == $userId])`, {
           userId,
         }),
-        // Get unread notifications count
-        client.fetch(
-          `*[_type == "notification" && userId == $userId && !read] | order(_createdAt desc)[0...20]{
-          _id,
-          read
-        }`,
-          { userId },
-        ),
+        Promise.resolve(null),
         // Get account tier profile (premium/business) used for checkout discounts.
         email
           ? client.fetch(
@@ -74,7 +68,10 @@ export async function GET() {
         isAdmin: isAnyEmailAdmin(
           clerkUser.emailAddresses.map((entry) => entry.emailAddress),
         ),
-        unreadNotifications: notifications?.length || 0,
+        unreadNotifications:
+          typeof user?.unreadNotifications === "number"
+            ? user.unreadNotifications
+            : 0,
         accountDiscountRate: accountDiscount.rate,
         accountDiscountType: accountDiscount.type,
         businessDiscountPercent: rateToPercent(

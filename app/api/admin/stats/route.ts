@@ -28,10 +28,10 @@ export async function GET() {
           "recentRevenue": *[_type == "order" && dateTime(orderDate) >= dateTime($currentMonthStart) && defined(totalPrice)].totalPrice,
           "lastMonthOrders": count(*[_type == "order" && dateTime(orderDate) >= dateTime($lastMonthStart) && dateTime(orderDate) <= dateTime($lastMonthEnd)]),
           "lastMonthRevenue": *[_type == "order" && dateTime(orderDate) >= dateTime($lastMonthStart) && dateTime(orderDate) <= dateTime($lastMonthEnd) && defined(totalPrice)].totalPrice,
-          "cardPayments": *[_type == "order" && paymentMethod == "card" && paymentStatus == "paid"].totalPrice,
+          "cardPayments": *[_type == "order" && (paymentMethod == "card" || paymentMethod == "stripe") && paymentStatus == "paid"].totalPrice,
           "codPaid": *[_type == "order" && paymentMethod == "cash_on_delivery" && paymentStatus == "paid"].totalPrice,
           "codPending": *[_type == "order" && paymentMethod == "cash_on_delivery" && paymentStatus == "pending"].totalPrice,
-          "totalCardOrders": count(*[_type == "order" && paymentMethod == "card"]),
+          "totalCardOrders": count(*[_type == "order" && (paymentMethod == "card" || paymentMethod == "stripe")]),
           "totalCodOrders": count(*[_type == "order" && paymentMethod == "cash_on_delivery"]),
           "codPendingOrders": count(*[_type == "order" && paymentMethod == "cash_on_delivery" && paymentStatus == "pending"])
         }`,
